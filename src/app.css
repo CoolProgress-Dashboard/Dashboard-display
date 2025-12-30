@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  background: #f6f5f2;
+  color: #1b1c1f;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2rem;
+  background: #faf6ee;
+  border-bottom: 1px solid #e2ddd2;
+}
+
+.logo {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.app-header a {
+  color: #1b1c1f;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.app-main {
+  padding: 2rem;
+  flex: 1;
+}
+
+.hero {
+  max-width: 720px;
+  margin: 4rem auto;
+  text-align: left;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 0.75rem;
+  color: #6b6254;
+}
+
+.hero h1 {
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  margin: 0.6rem 0 1rem;
+}
+
+.lead {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.primary,
+.ghost {
+  padding: 0.75rem 1.4rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.primary {
+  background: #1b1c1f;
+  color: #f7f5f2;
+}
+
+.ghost {
+  border: 1px solid #1b1c1f;
+  color: #1b1c1f;
+}
