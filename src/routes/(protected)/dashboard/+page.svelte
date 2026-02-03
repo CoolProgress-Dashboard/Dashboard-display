@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import '$lib/styles/dashboard.css';
-  import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
+  import { env } from '$env/dynamic/public';
   import {
     createDefaultData,
     getAccessData,
@@ -43,8 +43,8 @@
     // =====================================================
     // CONFIGURATION
     // =====================================================
-    const SUPABASE_URL = PUBLIC_SUPABASE_URL;
-    const SUPABASE_KEY = PUBLIC_SUPABASE_ANON_KEY;
+    const SUPABASE_URL = env.PUBLIC_SUPABASE_URL;
+    const SUPABASE_KEY = env.PUBLIC_SUPABASE_ANON_KEY;
 
     const byId = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
     const setText = (id: string, value: string | number) => {
