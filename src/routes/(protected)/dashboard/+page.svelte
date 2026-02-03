@@ -2023,19 +2023,40 @@
         function updateNewEmissionsMap() {
             if (!emissionsMapSvg) return;
 
-            // Get all emissions by country
+            // Get all emissions by country (unfiltered by country for map display)
             let countryValues: Record<string, number> = {};
             if (emissionsDataSource === 'clasp') {
-                const byCountry = getClaspEmissionsByCountry();
-                Object.entries(byCountry).forEach(([code, d]) => {
-                    countryValues[code] = d.total;
+                const unfilteredClasp = data.claspEnergy.filter(r => {
+                    if (r.year !== emissionsYear) return false;
+                    if (emissionsAppliances.length > 0 && !emissionsAppliances.includes(r.appliance)) return false;
+                    if (emissionsRegion) {
+                        const region = getCountryRegion(r.country_code);
+                        if (region !== emissionsRegion) return false;
+                    }
+                    return true;
+                });
+                unfilteredClasp.forEach(r => {
+                    const co2 = getClaspCO2(r, emissionsScenario);
+                    if (!countryValues[r.country_code]) countryValues[r.country_code] = 0;
+                    countryValues[r.country_code] += co2;
                 });
             } else {
-                const byCountry = getSubcoolEmissionsByCountry();
-                Object.entries(byCountry).forEach(([code, d]) => {
-                    if (emissionsType === 'direct') countryValues[code] = d.direct;
-                    else if (emissionsType === 'indirect') countryValues[code] = d.indirect;
-                    else countryValues[code] = d.total;
+                const unfilteredSubcool = data.subcool.filter(r => {
+                    if (r.year !== emissionsYear) return false;
+                    if (r.scenario_name !== emissionsScenario) return false;
+                    if (emissionsRegion) {
+                        const region = getCountryRegion(r.country_code);
+                        if (region !== emissionsRegion) return false;
+                    }
+                    return true;
+                });
+                unfilteredSubcool.forEach(r => {
+                    const direct = r.direct_emission_mt || 0;
+                    const indirect = r.indirect_emission_mt || 0;
+                    if (!countryValues[r.country_code]) countryValues[r.country_code] = 0;
+                    if (emissionsType === 'direct') countryValues[r.country_code] += direct;
+                    else if (emissionsType === 'indirect') countryValues[r.country_code] += indirect;
+                    else countryValues[r.country_code] += direct + indirect;
                 });
             }
 
@@ -3340,7 +3361,23 @@
 
         function updateAccessMap() {
             if (!accessMapSvg) return;
-            const accessTotals = getAccessTotalsFiltered();
+            // Use unfiltered-by-country data for map display so all countries stay visible
+            const mapFilters: AccessFilters = {
+                year: accessYear,
+                impactLevels: accessImpactLevels,
+                populationCategories: accessPopCategories,
+                region: accessRegionFilter,
+                country: ''
+            };
+            const mapData = getAccessDataBySource(data, mapFilters, accessDataSource);
+            const accessTotals: Record<string, number> = {};
+            mapData.forEach((record) => {
+                const value = record.population_without_cooling || 0;
+                if (!accessTotals[record.country_code]) {
+                    accessTotals[record.country_code] = 0;
+                }
+                accessTotals[record.country_code] += value;
+            });
 
             accessMapSvg.selectAll('.access-path')
                 .transition()
@@ -4158,18 +4195,13 @@
         function updatePolicyMap(mapType: string) {
             policyMapType = mapType;
 
-            // Update map colors and visibility based on selected type
+            // Update map colors based on selected type (all countries stay visible)
             ndcMapSvg.selectAll('.ndc-path')
                 .transition()
                 .duration(300)
                 .attr('fill', function() {
                     const code = d3.select(this).attr('data-code');
                     if (!code) return '#e2e8f0';
-
-                    // Hide other countries when a specific country is selected
-                    if (globalCountryFilter && code !== globalCountryFilter) {
-                        return 'transparent';
-                    }
 
                     const country = data.countries.find(c => c.country_code === code);
                     if (selectedRegion && country?.region !== selectedRegion) {
@@ -4194,11 +4226,6 @@
                     return '#e2e8f0';
                 })
                 .attr('stroke', function() {
-                    const code = d3.select(this).attr('data-code');
-                    // Hide stroke for non-selected countries
-                    if (globalCountryFilter && code !== globalCountryFilter) {
-                        return 'transparent';
-                    }
                     return '#cbd5e1';
                 });
 
