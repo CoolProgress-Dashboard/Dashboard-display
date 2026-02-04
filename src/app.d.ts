@@ -11,6 +11,13 @@ declare global {
     interface PageData {
       session?: Session | null;
     }
+
+    interface Platform {
+      env?: {
+        PUBLIC_SUPABASE_URL?: string;
+        PUBLIC_SUPABASE_ANON_KEY?: string;
+      };
+    }
   }
 }
 

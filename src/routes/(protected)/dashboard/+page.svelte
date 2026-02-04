@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import '$lib/styles/dashboard.css';
-  import { env } from '$env/dynamic/public';
   import {
     createDefaultData,
     getAccessData,
@@ -43,8 +42,8 @@
     // =====================================================
     // CONFIGURATION
     // =====================================================
-    const SUPABASE_URL = env.PUBLIC_SUPABASE_URL;
-    const SUPABASE_KEY = env.PUBLIC_SUPABASE_ANON_KEY;
+    const SUPABASE_URL = 'https://hcpmdkkavtadgugrqohl.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjcG1ka2thdnRhZGd1Z3Jxb2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyODcwMzAsImV4cCI6MjA3Nzg2MzAzMH0.hjYqzGqAQ_C7vVsAo-UcSICFEpzsKP5R5xGi8sh-etA';
 
     const byId = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
     const setText = (id: string, value: string | number) => {
