@@ -7,8 +7,8 @@
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "node build/index.js",
-    "check": "svelte-check --tsconfig ./tsconfig.json"
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "cf:build": "npm install && npm run build"
   },
   "dependencies": {
     "@supabase/ssr": "^0.3.0",
