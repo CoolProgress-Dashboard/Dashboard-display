@@ -104,7 +104,7 @@ export const loadDashboardData = async (
         url,
         key,
         'meps',
-        'country_code,country_name,status,requirement_type,year_adopted,region'
+        'country_code,country_name,policy_name,equipment_type,requirement_type,policy_instrument,status,year_adopted,year_revised,region'
       ),
       fetchTable<AccessRecord>(
         url,

@@ -21,9 +21,13 @@ export type Kigali = {
 export type Meps = {
   country_code: string;
   country_name?: string | null;
-  status?: string | null;
+  policy_name?: string | null;
+  equipment_type?: string | null;
   requirement_type?: string | null;
+  policy_instrument?: string | null;
+  status?: string | null;
   year_adopted?: number | null;
+  year_revised?: number | null;
   region?: string | null;
 };
 

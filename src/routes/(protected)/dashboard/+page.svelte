@@ -10,7 +10,7 @@
     getNdcRecord,
     loadDashboardData
   } from '$lib/services/dashboard-data';
-  import type { AccessFilters, Country, DashboardData, EmissionsFilters, NdcFilters } from '$lib/services/dashboard-types';
+  import type { AccessFilters, Country, DashboardData, EmissionsFilters, Meps, NdcFilters } from '$lib/services/dashboard-types';
 
   onMount(async () => {
     const loadScript = (src: string) =>
@@ -119,7 +119,6 @@
     // MEPS filters
     let mepsRegionFilter = '';
     let mepsEquipmentTypes: string[] = [];
-    let mepsStatusFilter = '';
 
     // Kigali filters
     let kigaliRegionFilter = '';
@@ -191,9 +190,7 @@
         insight:
           'MEPS adoption remains uneven, especially in fast-growing cooling markets. Harmonized standards can prevent dumping of low-efficiency units.',
         sources: [
-          { name: 'U4E Model Regulations', url: '#' },
-          { name: 'CLASP Policy Database', url: '#' },
-          { name: 'SEforAll Efficiency Hub', url: '#' }
+          { name: 'CLASP Policy Resource Center (CPRC)', url: 'https://www.clasp.ngo/tools/clasp-policy-resource-center/', logo: '/images/clasp-logo.png' }
         ]
       },
       kigali: {
@@ -208,8 +205,8 @@
         ]
       },
       access: {
-        headline: 'Cooling Access Gap: Who\'s at Risk?',
-        subhead: 'Tracking populations lacking access to cooling for thermal comfort, food safety & healthcare',
+        headline: 'Pillar 4: Access & Vulnerability',
+        subhead: 'Tracking populations lacking access to cooling',
         insight:
           'Over 1 billion people face high risk from inadequate cooling access. Urban poor (695M) and rural poor (309M) are most vulnerable. Sustainable cooling solutions require passive design, efficient equipment, and climate-friendly refrigerants.',
         sources: [
@@ -247,6 +244,53 @@
           }
         )
         .join('');
+    };
+
+    const updateSidebarStats = () => {
+      const setLabel = (n: number, text: string) => { const el = byId(`stat-label-${n}`); if (el) el.textContent = text; };
+      const setVal = (n: number, text: string | number) => { const el = byId(`stat-val-${n}`); if (el) el.textContent = String(text); };
+
+      if (currentView === 'emissions') {
+        try {
+          const totals = getEmissionsTotals();
+          if (emissionsDataSource === 'clasp') {
+            const t = totals as { total: number; byAppliance: Record<string, number>; countriesCount: number };
+            setLabel(1, 'Countries Covered');
+            setVal(1, t.countriesCount);
+            setLabel(2, `Total CO\u2082 (Mt)`);
+            setVal(2, t.total.toFixed(1));
+            setLabel(3, 'Scenario');
+            setVal(3, emissionsScenario);
+            setLabel(4, 'Year');
+            setVal(4, emissionsYear);
+          } else {
+            const t = totals as { total: number; direct: number; indirect: number; countriesCount: number };
+            setLabel(1, 'Countries Covered');
+            setVal(1, t.countriesCount);
+            setLabel(2, `Total (Mt CO\u2082e)`);
+            setVal(2, t.total.toFixed(1));
+            setLabel(3, `Direct (Mt)`);
+            setVal(3, t.direct.toFixed(1));
+            setLabel(4, `Indirect (Mt)`);
+            setVal(4, t.indirect.toFixed(1));
+          }
+        } catch {
+          // Data not ready yet
+        }
+      } else {
+        // Default stats
+        const pledgeCount = data.pledge.filter(p => p.signatory === 1).length;
+        const kigaliCount = data.kigali.filter(k => k.kigali_party === 1).length;
+        const mepsCountries = new Set(data.meps.map(m => m.country_code)).size;
+        setLabel(1, 'Total Countries');
+        setVal(1, data.countries.length);
+        setLabel(2, 'GCP Coverage');
+        setVal(2, `${Math.round(pledgeCount / data.countries.length * 100)}%`);
+        setLabel(3, 'Kigali Coverage');
+        setVal(3, `${Math.round(kigaliCount / data.kigali.length * 100)}%`);
+        setLabel(4, 'MEPS Coverage');
+        setVal(4, `${Math.round(mepsCountries / data.countries.length * 100)}%`);
+      }
     };
 
     const updateViewingBadges = () => {
@@ -371,11 +415,8 @@
             // Policy KPIs are now updated by updateNDCKPIs()
 
             // Summary Stats
-            setText('stat-countries', data.countries.length);
-            setText('stat-gcp', `${Math.round(pledgeCount/data.countries.length*100)}%`);
-            setText('stat-kigali', `${Math.round(kigaliCount/data.kigali.length*100)}%`);
-            setText('stat-meps', `${Math.round(mepsCountries/data.countries.length*100)}%`);
             setText('stat-updated', new Date().toLocaleDateString());
+            updateSidebarStats();
         }
 
         // =====================================================
@@ -567,20 +608,20 @@
 
             legendEl.innerHTML = `
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#166534"></div>
-                    High
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background:#65a30d"></div>
-                    Medium
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background:#fbbf24"></div>
+                    <div class="legend-color" style="background:#86efac"></div>
                     Low
                 </div>
                 <div class="legend-item">
+                    <div class="legend-color" style="background:#fde047"></div>
+                    Medium
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background:#fb923c"></div>
+                    High
+                </div>
+                <div class="legend-item">
                     <div class="legend-color" style="background:#ef4444"></div>
-                    Critical
+                    Very High
                 </div>
             `;
         }
@@ -1234,8 +1275,9 @@
                             stack: 'total',
                             smooth: true,
                             symbol: 'none',
+                            color: s.color,
                             lineStyle: { width: 0 },
-                            areaStyle: { opacity: 0.8, color: s.color },
+                            areaStyle: { opacity: 0.8 },
                             emphasis: { focus: 'series' },
                             data: s.data
                         })),
@@ -1840,11 +1882,11 @@
             const logMax = Math.log10(maxValue + 1);
             const ratio = logValue / logMax;
 
-            // Color gradient from green (low) to yellow to red (high)
-            if (ratio < 0.25) return '#166534';  // High potential
-            if (ratio < 0.5) return '#65a30d';   // Medium
-            if (ratio < 0.75) return '#fbbf24';  // Low
-            return '#ef4444';                     // Critical
+            // Color gradient from light green (low) to red (very high)
+            if (ratio < 0.25) return '#86efac';  // Low - light green
+            if (ratio < 0.5) return '#fde047';   // Medium - yellow
+            if (ratio < 0.75) return '#fb923c';  // High - orange
+            return '#ef4444';                     // Very High - red
         }
 
         async function initEmissionsMap() {
@@ -2082,7 +2124,7 @@
             if (!container) return;
 
             const thresholds = [0.25, 0.5, 0.75, 1.0];
-            const colors = ['#166534', '#65a30d', '#fbbf24', '#ef4444'];
+            const colors = ['#86efac', '#fde047', '#fb923c', '#ef4444'];
             const labels = ['Low', 'Medium', 'High', 'Very High'];
 
             container.innerHTML = thresholds.map((t, i) => {
@@ -2279,8 +2321,68 @@
         // =====================================================
         let mepsMapSvg: any;
 
+        function isMepsRecord(r: Meps) {
+            return r.policy_instrument?.includes('MEPS') || r.policy_instrument?.includes('Minimum Performance Standard');
+        }
+
+        function isLabelRecord(r: Meps) {
+            return r.policy_instrument?.includes('Label');
+        }
+
+        const REGION_MAP: Record<string, string> = {
+            // Asia
+            'Eastern Asia': 'Asia',
+            'South-eastern Asia': 'Asia',
+            'Southern Asia': 'Asia',
+            'Central Asia': 'Asia',
+            'East Asia & Pacific': 'Asia',
+            'South Asia': 'Asia',
+            'East Asia': 'Asia',
+            'Southeast Asia': 'Asia',
+            'Asia': 'Asia',
+            // Africa
+            'Sub-Saharan Africa': 'Africa',
+            'Northern Africa': 'Africa',
+            'North Africa': 'Africa',
+            'Africa': 'Africa',
+            // Americas
+            'Latin America': 'Americas',
+            'Latin America & Caribbean': 'Americas',
+            'Northern America': 'Americas',
+            'North America': 'Americas',
+            'Central America': 'Americas',
+            'South America': 'Americas',
+            'Caribbean': 'Americas',
+            'Americas': 'Americas',
+            // Europe
+            'EU': 'Europe',
+            'Non-EU': 'Europe',
+            'Europe & Central Asia': 'Europe',
+            'Western Europe': 'Europe',
+            'Eastern Europe': 'Europe',
+            'Europe': 'Europe',
+            // Middle East
+            'Middle East & North Africa': 'Middle East',
+            'Middle East': 'Middle East',
+            // Oceania
+            'Australia and New Zealand': 'Oceania',
+            'Polynesia': 'Oceania',
+            'Melanesia': 'Oceania',
+            'Micronesia': 'Oceania',
+            'Oceania': 'Oceania',
+            'Pacific': 'Oceania'
+        };
+
+        function getMergedRegion(region: string | undefined): string {
+            if (!region) return 'Other';
+            return REGION_MAP[region] || 'Other';
+        }
+
         function getMepsStatus(code: string | undefined) {
-            if (!code) return { level: 'critical', label: 'Critical' };
+            if (!code) return { level: 'none', label: 'No Data' };
+
+            // Use map-filtered data (respects equipment/region/status filters but NOT country filter)
+            const records = getMapFilteredMeps().filter(m => m.country_code === code);
 
             if (selectedRegion) {
                 const country = data.countries.find(c => c.country_code === code);
@@ -2289,36 +2391,40 @@
                 }
             }
 
-            const records = data.meps.filter(m => m.country_code === code);
             if (!records.length) {
-                return { level: 'critical', label: 'Critical' };
+                return { level: 'critical', label: 'No Policies' };
             }
 
-            const hasMandatory = records.some(r => r.requirement_type === 'Mandatory');
-            if (hasMandatory) {
-                return { level: 'high', label: 'High/Active' };
+            const hasMeps = records.some(r => isMepsRecord(r));
+            const hasLabel = records.some(r => isLabelRecord(r));
+
+            if (hasMeps && hasLabel) {
+                return { level: 'both', label: 'MEPS & Labels' };
+            }
+            if (hasMeps) {
+                return { level: 'meps', label: 'MEPS Only' };
+            }
+            if (hasLabel) {
+                return { level: 'labels', label: 'Labels Only' };
             }
 
-            const hasVoluntary = records.some(r => r.requirement_type === 'Voluntary');
-            if (hasVoluntary) {
-                return { level: 'medium', label: 'Medium/Partial' };
-            }
-
-            return { level: 'low', label: 'Low/None' };
+            return { level: 'limited', label: 'Other Policies' };
         }
 
         function getMepsColor(level: string) {
             switch (level) {
-                case 'high':
-                    return '#166534';
-                case 'medium':
-                    return '#65a30d';
-                case 'low':
-                    return '#fbbf24';
+                case 'both':
+                    return '#166534'; // Dark green - has both MEPS & Labels
+                case 'meps':
+                    return '#2563eb'; // Blue - MEPS only
+                case 'labels':
+                    return '#f59e0b'; // Amber - Labels only
+                case 'limited':
+                    return '#94a3b8'; // Slate - other policies
                 case 'critical':
-                    return '#ef4444';
+                    return '#ef4444'; // Red - no policies
                 default:
-                    return '#e2e8f0';
+                    return '#e2e8f0'; // Light gray - no data
             }
         }
 
@@ -2362,10 +2468,22 @@
                         const code = countryIdToCode[normalizeId(d.id)];
                         const country = data.countries.find(c => c.country_code === code);
                         const status = getMepsStatus(code);
-                        tooltip.innerHTML = `
-                            <strong>${country?.country_name || code || 'Unknown'}</strong><br>
-                            <span style="color: var(--text-secondary)">MEPS Status: ${status.label}</span>
-                        `;
+                        // Use raw data for tooltip (not filtered) so hover always shows full picture
+                        const allRecs = data.meps.filter(m => m.country_code === code);
+                        const mepsRecs = allRecs.filter(r => isMepsRecord(r));
+                        const labelRecs = allRecs.filter(r => isLabelRecord(r));
+                        const equips = [...new Set(allRecs.map(m => m.equipment_type).filter(Boolean))];
+                        let tooltipHtml = `<strong>${country?.country_name || code || 'Unknown'}</strong><br>
+                            <span style="color:${getMepsColor(status.level)};font-weight:600">${status.label}</span>`;
+                        if (allRecs.length > 0) {
+                            tooltipHtml += `<br><span style="color:#ddd;font-size:0.85em">`;
+                            if (mepsRecs.length > 0) tooltipHtml += `MEPS: ${mepsRecs.length}`;
+                            if (mepsRecs.length > 0 && labelRecs.length > 0) tooltipHtml += ` | `;
+                            if (labelRecs.length > 0) tooltipHtml += `Labels: ${labelRecs.length}`;
+                            tooltipHtml += `</span>`;
+                            if (equips.length > 0) tooltipHtml += `<br><span style="font-size:0.8em">${equips.join(', ')}</span>`;
+                        }
+                        tooltip.innerHTML = tooltipHtml;
                         tooltip.style.opacity = 1;
                         tooltip.style.left = (event.pageX + 10) + 'px';
                         tooltip.style.top = (event.pageY + 10) + 'px';
@@ -2403,19 +2521,19 @@
             legend.innerHTML = `
                 <div class="legend-item">
                     <div class="legend-color" style="background:#166534"></div>
-                    High/Active
+                    MEPS & Labels
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#65a30d"></div>
-                    Medium/Partial
+                    <div class="legend-color" style="background:#2563eb"></div>
+                    MEPS Only
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#fbbf24"></div>
-                    Low/None
+                    <div class="legend-color" style="background:#f59e0b"></div>
+                    Labels Only
                 </div>
                 <div class="legend-item">
                     <div class="legend-color" style="background:#ef4444"></div>
-                    Critical
+                    No Policies
                 </div>
             `;
         }
@@ -2428,27 +2546,27 @@
 
             const codes = new Set(data.countries.map(c => c.country_code));
             const total = codes.size;
-            const counts = { high: 0, medium: 0, low: 0, critical: 0 };
+            const counts = { both: 0, meps: 0, labels: 0, critical: 0 };
 
             codes.forEach((code) => {
                 const status = getMepsStatus(code);
-                if (status.level === 'high') counts.high += 1;
-                else if (status.level === 'medium') counts.medium += 1;
-                else if (status.level === 'low') counts.low += 1;
+                if (status.level === 'both') counts.both += 1;
+                else if (status.level === 'meps') counts.meps += 1;
+                else if (status.level === 'labels') counts.labels += 1;
                 else if (status.level === 'critical') counts.critical += 1;
             });
 
             if (!total) {
-                setWidth('meps-progress-high', 0);
-                setWidth('meps-progress-medium', 0);
-                setWidth('meps-progress-low', 0);
+                setWidth('meps-progress-both', 0);
+                setWidth('meps-progress-meps', 0);
+                setWidth('meps-progress-labels', 0);
                 setWidth('meps-progress-critical', 0);
                 return;
             }
 
-            setWidth('meps-progress-high', (counts.high / total) * 100);
-            setWidth('meps-progress-medium', (counts.medium / total) * 100);
-            setWidth('meps-progress-low', (counts.low / total) * 100);
+            setWidth('meps-progress-both', (counts.both / total) * 100);
+            setWidth('meps-progress-meps', (counts.meps / total) * 100);
+            setWidth('meps-progress-labels', (counts.labels / total) * 100);
             setWidth('meps-progress-critical', (counts.critical / total) * 100);
         }
 
@@ -2456,16 +2574,23 @@
         // MEPS ENHANCED FUNCTIONS
         // =====================================================
 
+        // Filtered for KPIs/charts — includes country filter
         function getFilteredMeps() {
             return data.meps.filter(m => {
-                // Global country filter from sidebar
                 if (globalCountryFilter && m.country_code !== globalCountryFilter) return false;
-                // Region filter
                 if (mepsRegionFilter && m.region !== mepsRegionFilter) return false;
-                // Equipment type filter
-                if (mepsEquipmentTypes.length > 0 && m.requirement_type && !mepsEquipmentTypes.includes(m.requirement_type)) return false;
-                // Status filter
-                if (mepsStatusFilter && m.status !== mepsStatusFilter) return false;
+                // Equipment type filter — if none selected, nothing passes
+                if (!mepsEquipmentTypes.includes(m.equipment_type || '')) return false;
+                return true;
+            });
+        }
+
+        // Filtered for MAP — never filters by selected country so all countries stay visible
+        function getMapFilteredMeps() {
+            return data.meps.filter(m => {
+                if (mepsRegionFilter && m.region !== mepsRegionFilter) return false;
+                // Equipment type filter — if none selected, nothing passes
+                if (!mepsEquipmentTypes.includes(m.equipment_type || '')) return false;
                 return true;
             });
         }
@@ -2474,9 +2599,9 @@
             const filtered = getFilteredMeps();
             const countriesWithMeps = new Set(filtered.map(m => m.country_code)).size;
             const totalPolicies = filtered.length;
-            const equipmentTypes = new Set(filtered.map(m => m.requirement_type).filter(Boolean)).size;
-            const regions = new Set(filtered.map(m => m.region).filter(Boolean)).size;
-            return { countriesWithMeps, totalPolicies, equipmentTypes, regions };
+            const mepsCount = filtered.filter(r => isMepsRecord(r)).length;
+            const labelsCount = filtered.filter(r => isLabelRecord(r)).length;
+            return { countriesWithMeps, totalPolicies, mepsCount, labelsCount };
         }
 
         function initMepsFilters() {
@@ -2493,36 +2618,23 @@
                 });
             }
 
-            // Populate status filter
-            const statusSelect = document.getElementById('meps-status-filter') as HTMLSelectElement;
-            if (statusSelect) {
-                const statuses = new Set(data.meps.map(m => m.status).filter(Boolean));
-                statusSelect.innerHTML = '<option value="">All Statuses</option>';
-                Array.from(statuses).sort().forEach(s => {
-                    const opt = document.createElement('option');
-                    opt.value = s as string;
-                    opt.textContent = s as string;
-                    statusSelect.appendChild(opt);
-                });
-            }
-
-            // Populate equipment type toggles
+            // Populate equipment type toggles (hardcoded 3 categories)
             const toggleContainer = document.getElementById('meps-equipment-toggles');
             if (toggleContainer) {
-                const equipTypes = new Set(data.meps.map(m => m.requirement_type).filter(Boolean));
-                mepsEquipmentTypes = Array.from(equipTypes) as string[]; // Select all by default
+                const equipTypes = ['Air Conditioning', 'Domestic Refrigeration', 'Fans'];
+                mepsEquipmentTypes = [...equipTypes]; // Select all by default
                 toggleContainer.innerHTML = '';
-                Array.from(equipTypes).sort().forEach(et => {
+                equipTypes.forEach(et => {
                     const btn = document.createElement('button');
                     btn.className = 'toggle-btn active';
                     btn.type = 'button';
-                    btn.dataset.equipment = et as string;
-                    btn.textContent = et as string;
+                    btn.dataset.equipment = et;
+                    btn.textContent = et;
                     btn.addEventListener('click', () => {
                         btn.classList.toggle('active');
                         if (btn.classList.contains('active')) {
-                            if (!mepsEquipmentTypes.includes(et as string)) {
-                                mepsEquipmentTypes.push(et as string);
+                            if (!mepsEquipmentTypes.includes(et)) {
+                                mepsEquipmentTypes.push(et);
                             }
                         } else {
                             mepsEquipmentTypes = mepsEquipmentTypes.filter(e => e !== et);
@@ -2542,138 +2654,41 @@
             };
             setEl('meps-kpi-countries', kpis.countriesWithMeps);
             setEl('meps-kpi-policies', kpis.totalPolicies);
-            setEl('meps-kpi-equipment', kpis.equipmentTypes);
-            setEl('meps-kpi-regions', kpis.regions);
+            setEl('meps-kpi-equipment', kpis.mepsCount);
+            setEl('meps-kpi-regions', kpis.labelsCount);
         }
 
+        let selectedMepsCountry = '';
+
         function updateMepsCharts() {
-            const filtered = getFilteredMeps();
-
-            // Chart 1: MEPS by Region (bar chart)
-            const regionCounts: Record<string, number> = {};
-            filtered.forEach(m => {
-                const r = m.region || 'Unknown';
-                regionCounts[r] = (regionCounts[r] || 0) + 1;
-            });
-            const regionData = Object.entries(regionCounts).sort((a, b) => b[1] - a[1]);
-
-            setChart('chart-meps-by-region', {
-                tooltip: { trigger: 'axis', formatter: '{b}: {c} policies' },
-                grid: { left: '3%', right: '4%', bottom: '15%', top: '5%', containLabel: true },
-                xAxis: {
-                    type: 'category',
-                    data: regionData.map(d => d[0]),
-                    axisLabel: { rotate: 30, fontSize: 10, interval: 0 }
-                },
-                yAxis: { type: 'value', name: 'Policies', nameTextStyle: { fontSize: 11 } },
-                series: [{
-                    type: 'bar',
-                    data: regionData.map(d => d[1]),
-                    itemStyle: { color: '#3b82f6' }
-                }]
-            });
-
-            // Chart 2: Policy Adoption Timeline (line chart)
-            const yearCounts: Record<number, number> = {};
-            filtered.forEach(m => {
-                if (m.year_adopted) {
-                    yearCounts[m.year_adopted] = (yearCounts[m.year_adopted] || 0) + 1;
-                }
-            });
-            const years = Object.keys(yearCounts).map(Number).sort((a, b) => a - b);
-            let cumulative = 0;
-            const cumulativeData = years.map(y => {
-                cumulative += yearCounts[y];
-                return { year: y, count: cumulative };
-            });
-
-            setChart('chart-meps-timeline', {
-                tooltip: { trigger: 'axis', formatter: (params: any) => `${params[0].axisValue}: ${params[0].value} total policies` },
-                grid: { left: '3%', right: '4%', bottom: '10%', top: '10%', containLabel: true },
-                xAxis: {
-                    type: 'category',
-                    data: cumulativeData.map(d => String(d.year)),
-                    axisLabel: { fontSize: 10, interval: 'auto' }
-                },
-                yAxis: { type: 'value', name: 'Cumulative', nameTextStyle: { fontSize: 11 } },
-                series: [{
-                    type: 'line',
-                    data: cumulativeData.map(d => d.count),
-                    smooth: true,
-                    areaStyle: { opacity: 0.3 },
-                    itemStyle: { color: '#22c55e' }
-                }]
-            });
-
-            // Chart 3: Equipment Type Coverage (horizontal bar)
-            const equipmentCounts: Record<string, Set<string>> = {};
-            filtered.forEach(m => {
-                if (m.requirement_type) {
-                    if (!equipmentCounts[m.requirement_type]) {
-                        equipmentCounts[m.requirement_type] = new Set();
-                    }
-                    equipmentCounts[m.requirement_type].add(m.country_code);
-                }
-            });
-            const equipData = Object.entries(equipmentCounts)
-                .map(([name, countries]) => ({ name, count: countries.size }))
-                .sort((a, b) => b.count - a.count);
-
-            setChart('chart-meps-equipment', {
-                tooltip: { trigger: 'axis', formatter: '{b}: {c} countries' },
-                grid: { left: '3%', right: '8%', bottom: '3%', top: '3%', containLabel: true },
-                xAxis: { type: 'value', axisLabel: { fontSize: 10 } },
-                yAxis: {
-                    type: 'category',
-                    data: equipData.map(d => d.name).reverse(),
-                    axisLabel: { fontSize: 10 }
-                },
-                series: [{
-                    type: 'bar',
-                    data: equipData.map(d => d.count).reverse(),
-                    itemStyle: { color: '#f59e0b' }
-                }]
-            });
-
-            // Chart 4: Policy Status Distribution (doughnut)
-            const statusCounts: Record<string, number> = {};
-            filtered.forEach(m => {
-                const s = m.status || 'Unknown';
-                statusCounts[s] = (statusCounts[s] || 0) + 1;
-            });
-            const statusData = Object.entries(statusCounts).map(([name, value]) => ({ name, value }));
-            const statusColors = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6'];
-
-            setChart('chart-meps-status', {
-                tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
-                legend: { bottom: 5, textStyle: { fontSize: 10 } },
-                series: [{
-                    type: 'pie',
-                    radius: ['35%', '60%'],
-                    center: ['50%', '45%'],
-                    data: statusData.map((d, i) => ({ ...d, itemStyle: { color: statusColors[i % statusColors.length] } })),
-                    itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 },
-                    label: { show: false },
-                    emphasis: { label: { show: true, fontSize: 12, fontWeight: 'bold' } }
-                }]
-            });
+            // If a country is selected, show country-specific charts
+            if (selectedMepsCountry) {
+                const records = data.meps.filter(m => m.country_code === selectedMepsCountry);
+                updateMepsCountryCharts(selectedMepsCountry, records);
+            } else {
+                // Show global charts
+                updateMepsGlobalCharts();
+            }
         }
 
         function updateMepsCountryDetail(code: string) {
+            selectedMepsCountry = code;
             const container = document.querySelector('#meps-country-detail .country-detail') as HTMLElement;
             if (!container) return;
 
             const country = data.countries.find(c => c.country_code === code);
-            const mepsRecords = data.meps.filter(m => m.country_code === code);
-            const regionData = data.regions.find(r => r.country_code === code);
+            const allRecords = data.meps.filter(m => m.country_code === code);
+            const regionRec = data.regions.find(r => r.country_code === code);
 
             if (!country) {
                 container.innerHTML = `<h4>Unknown Country</h4><p class="side-muted">No data available for ${code}</p>`;
                 return;
             }
 
-            const region = regionData?.region || country.region || 'N/A';
-            const hasMeps = mepsRecords.length > 0;
+            const region = regionRec?.region || country.region || 'N/A';
+            const mepsRecs = allRecords.filter(r => isMepsRecord(r));
+            const labelRecs = allRecords.filter(r => isLabelRecord(r));
+            const status = getMepsStatus(code);
 
             let html = `<h4>${country.country_name}</h4>
                 <div class="detail-row">
@@ -2681,52 +2696,447 @@
                     <span class="value">${region}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="label">MEPS Status</span>
-                    <span class="badge ${hasMeps ? 'green' : 'red'}">${hasMeps ? 'Has MEPS' : 'No MEPS'}</span>
-                </div>`;
-
-            if (hasMeps) {
-                html += `<div class="detail-row">
+                    <span class="label">Status</span>
+                    <span class="badge" style="background:${getMepsColor(status.level)}20;color:${getMepsColor(status.level)};border:1px solid ${getMepsColor(status.level)}40">${status.label}</span>
+                </div>
+                <div class="detail-row">
                     <span class="label">Total Policies</span>
-                    <span class="value">${mepsRecords.length}</span>
+                    <span class="value">${allRecords.length}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">MEPS</span>
+                    <span class="value" style="color:#2563eb;font-weight:600">${mepsRecs.length}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Labels</span>
+                    <span class="value" style="color:#f59e0b;font-weight:600">${labelRecs.length}</span>
                 </div>`;
-
-                // List equipment types
-                const equipTypes = [...new Set(mepsRecords.map(m => m.requirement_type).filter(Boolean))];
-                if (equipTypes.length > 0) {
-                    html += `<div class="detail-row">
-                        <span class="label">Equipment Types</span>
-                        <span class="value">${equipTypes.join(', ')}</span>
-                    </div>`;
-                }
-
-                // First adoption year
-                const years = mepsRecords.map(m => m.year_adopted).filter(Boolean) as number[];
-                if (years.length > 0) {
-                    const firstYear = Math.min(...years);
-                    html += `<div class="detail-row">
-                        <span class="label">First Adoption</span>
-                        <span class="value">${firstYear}</span>
-                    </div>`;
-                }
-
-                // Status breakdown
-                const statusBreakdown: Record<string, number> = {};
-                mepsRecords.forEach(m => {
-                    const s = m.status || 'Unknown';
-                    statusBreakdown[s] = (statusBreakdown[s] || 0) + 1;
-                });
-                html += `<hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0.75rem 0;">
-                    <div style="font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Policy Breakdown</div>`;
-                Object.entries(statusBreakdown).forEach(([status, count]) => {
-                    html += `<div class="detail-row">
-                        <span class="label">${status}</span>
-                        <span class="value">${count}</span>
-                    </div>`;
-                });
-            }
 
             container.innerHTML = html;
+
+            // Update the charts below the map to show country-specific data
+            updateMepsCountryCharts(code, allRecords);
+        }
+
+        function updateMepsCountryCharts(code: string, records: Meps[]) {
+            const country = data.countries.find(c => c.country_code === code);
+            const countryName = country?.country_name || code;
+            const equipTypes = ['Air Conditioning', 'Domestic Refrigeration', 'Fans'];
+            const equipShort: Record<string, string> = { 'Air Conditioning': 'AC', 'Domestic Refrigeration': 'Fridge', 'Fans': 'Fans' };
+            const equipColors: Record<string, string> = { 'Air Conditioning': '#2563eb', 'Domestic Refrigeration': '#16a34a', 'Fans': '#a855f7' };
+
+            // Update chart titles for country view
+            const setTitle = (id: string, text: string) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+            setTitle('meps-chart2-title', `${countryName}: Policy Timeline`);
+            setTitle('meps-chart2-subtitle', 'When MEPS and Labels were introduced');
+            setTitle('meps-chart3-title', `${countryName}: Policy Details`);
+            setTitle('meps-chart3-subtitle', 'Complete breakdown by appliance, instrument and status');
+
+            // Hide chart 1 container (Region chart) in country view — timeline takes full width
+            const chart1Card = document.getElementById('chart-meps-by-region')?.closest('.card-panel') as HTMLElement | null;
+            if (chart1Card) chart1Card.style.display = 'none';
+            // Make the charts grid single-column so timeline spans full width
+            const chartsGrid = chart1Card?.parentElement as HTMLElement | null;
+            if (chartsGrid) chartsGrid.style.gridTemplateColumns = '1fr';
+
+            // ── Chart 2: Policy Timeline ──
+            // Shapes: circle = MEPS, diamond = Labels
+            // Colors: blue = AC, green = Fridge, purple = Fans
+            // Category Y-axis: ['Labels', 'MEPS']
+            const timelineEvents: { year: number; name: string; equip: string; isMeps: boolean }[] = [];
+            records.forEach(r => {
+                const year = r.year_adopted || r.year_revised;
+                if (!year) return;
+                const name = r.policy_name || r.equipment_type || 'Policy';
+                const equip = r.equipment_type || '';
+                const hasMeps = isMepsRecord(r);
+                const hasLabel = isLabelRecord(r);
+                if (hasMeps) timelineEvents.push({ year, name, equip, isMeps: true });
+                if (hasLabel) timelineEvents.push({ year, name, equip, isMeps: false });
+            });
+
+            const allEventYears = timelineEvents.map(e => e.year).filter(Boolean);
+            const minYear = allEventYears.length ? Math.min(...allEventYears) : 2000;
+            const maxYear = allEventYears.length ? Math.max(...allEventYears) : 2025;
+
+            // Jitter: spread overlapping points at same (year, category)
+            const jitterMap: Record<string, number> = {};
+            const getJitter = (year: number, catIdx: number) => {
+                const key = `${year}_${catIdx}`;
+                const idx = jitterMap[key] || 0;
+                jitterMap[key] = idx + 1;
+                if (idx === 0) return 0;
+                const sign = idx % 2 === 1 ? 1 : -1;
+                return sign * Math.ceil(idx / 2) * 0.12;
+            };
+
+            const yCategories = ['Labels', 'MEPS'];
+
+            // Build one series per appliance+type combination
+            const tlSeries: any[] = [];
+            equipTypes.forEach(et => {
+                const short = equipShort[et];
+                const color = equipColors[et];
+                // MEPS for this appliance (circle) — category index 1
+                const mepsData = timelineEvents
+                    .filter(e => e.equip === et && e.isMeps)
+                    .map(e => ({ value: [e.year, 1 + getJitter(e.year, 1)], name: e.name }));
+                if (mepsData.length > 0) {
+                    tlSeries.push({
+                        name: `${short} MEPS`,
+                        type: 'scatter',
+                        symbolSize: 14,
+                        symbol: 'circle',
+                        color: color,
+                        data: mepsData,
+                        label: { show: false }
+                    });
+                }
+                // Labels for this appliance (diamond) — category index 0
+                const labelData = timelineEvents
+                    .filter(e => e.equip === et && !e.isMeps)
+                    .map(e => ({ value: [e.year, 0 + getJitter(e.year, 0)], name: e.name }));
+                if (labelData.length > 0) {
+                    tlSeries.push({
+                        name: `${short} Label`,
+                        type: 'scatter',
+                        symbolSize: 14,
+                        symbol: 'diamond',
+                        color: color,
+                        data: labelData,
+                        label: { show: false }
+                    });
+                }
+            });
+
+            setChart('chart-meps-timeline', {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: (params: any) => {
+                        const d = params.data;
+                        return `<strong>${d.name}</strong><br>Year: ${d.value[0]}<br>${params.seriesName}`;
+                    }
+                },
+                legend: {
+                    data: tlSeries.map(s => s.name),
+                    top: 0,
+                    textStyle: { fontSize: 10 },
+                    itemWidth: 14,
+                    itemHeight: 10
+                },
+                grid: { left: 70, right: 20, bottom: 35, top: '22%' },
+                xAxis: {
+                    type: 'value',
+                    min: minYear - 1,
+                    max: maxYear + 1,
+                    axisLabel: { fontSize: 12, fontWeight: 'bold' as const, color: '#1e293b', formatter: (v: number) => String(Math.round(v)) },
+                    axisLine: { show: true, lineStyle: { color: '#cbd5e1' } },
+                    axisTick: { show: true, lineStyle: { color: '#cbd5e1' } },
+                    splitLine: { show: true, lineStyle: { type: 'dashed', opacity: 0.2 } }
+                },
+                yAxis: {
+                    type: 'value',
+                    min: -0.6,
+                    max: 1.6,
+                    splitNumber: 1,
+                    axisLabel: { show: false },
+                    axisTick: { show: false },
+                    axisLine: { show: false },
+                    splitLine: { show: false }
+                },
+                series: [
+                    // Invisible helper series to hold the markLines
+                    {
+                        type: 'scatter',
+                        data: [],
+                        silent: true,
+                        markLine: {
+                            silent: true,
+                            symbol: 'none',
+                            animation: false,
+                            data: [
+                                {
+                                    yAxis: 0,
+                                    label: {
+                                        show: true,
+                                        formatter: 'Labels',
+                                        position: 'start',
+                                        fontSize: 13,
+                                        fontWeight: 'bold',
+                                        color: '#0f172a',
+                                        padding: [0, 8, 0, 0]
+                                    },
+                                    lineStyle: { color: '#0f172a', opacity: 0.25, type: 'solid', width: 1 }
+                                },
+                                {
+                                    yAxis: 1,
+                                    label: {
+                                        show: true,
+                                        formatter: 'MEPS',
+                                        position: 'start',
+                                        fontSize: 13,
+                                        fontWeight: 'bold',
+                                        color: '#0f172a',
+                                        padding: [0, 8, 0, 0]
+                                    },
+                                    lineStyle: { color: '#0f172a', opacity: 0.25, type: 'solid', width: 1 }
+                                }
+                            ]
+                        }
+                    },
+                    ...tlSeries
+                ]
+            });
+
+            // ── Chart 3: Full-width Policy Details as enriched HTML ──
+            const chart3El = document.getElementById('chart-meps-equipment');
+            if (chart3El) {
+                if (charts['chart-meps-equipment']) {
+                    charts['chart-meps-equipment'].dispose();
+                    delete charts['chart-meps-equipment'];
+                }
+                chart3El.style.overflow = 'auto';
+
+                let html = `<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1.25rem;">`;
+                equipTypes.forEach(et => {
+                    const appRecs = records.filter(r => r.equipment_type === et);
+                    const color = equipColors[et];
+                    const meps = appRecs.filter(r => isMepsRecord(r));
+                    const labels = appRecs.filter(r => isLabelRecord(r));
+                    const mandatory = appRecs.filter(r => r.requirement_type === 'Mandatory').length;
+                    const voluntary = appRecs.filter(r => r.requirement_type === 'Voluntary').length;
+                    const adoptedYears = appRecs.map(r => r.year_adopted).filter(Boolean) as number[];
+                    const revisedYears = appRecs.map(r => r.year_revised).filter(Boolean) as number[];
+                    const firstAdopted = adoptedYears.length ? Math.min(...adoptedYears) : null;
+                    const lastRevised = revisedYears.length ? Math.max(...revisedYears) : null;
+
+                    html += `<div style="border:1px solid #e2e8f0;border-radius:0.5rem;padding:1rem;border-top:3px solid ${color};">`;
+                    html += `<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
+                        <span style="font-weight:700;font-size:0.95rem;color:${color}">${et}</span>
+                        <span style="margin-left:auto;font-size:0.75rem;color:#64748b;background:#f1f5f9;padding:2px 8px;border-radius:10px;">${appRecs.length} ${appRecs.length === 1 ? 'policy' : 'policies'}</span>
+                    </div>`;
+
+                    if (appRecs.length === 0) {
+                        html += `<div style="color:#94a3b8;font-size:0.8rem;font-style:italic;">No policies for this appliance</div>`;
+                    } else {
+                        // Summary stats row
+                        html += `<div style="display:flex;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap;">
+                            <div style="font-size:0.75rem;color:#334155;"><span style="color:#2563eb;font-weight:700;">${meps.length}</span> MEPS</div>
+                            <div style="font-size:0.75rem;color:#334155;"><span style="color:#f59e0b;font-weight:700;">${labels.length}</span> Labels</div>
+                            <div style="font-size:0.75rem;color:#334155;"><span style="font-weight:600;">${mandatory}</span> Mandatory</div>
+                            <div style="font-size:0.75rem;color:#334155;"><span style="font-weight:600;">${voluntary}</span> Voluntary</div>
+                        </div>`;
+
+                        // Timeline info
+                        if (firstAdopted || lastRevised) {
+                            html += `<div style="font-size:0.72rem;color:#64748b;margin-bottom:0.6rem;">`;
+                            if (firstAdopted) html += `First adopted: <strong>${firstAdopted}</strong>`;
+                            if (firstAdopted && lastRevised) html += ` &middot; `;
+                            if (lastRevised) html += `Last revised: <strong>${lastRevised}</strong>`;
+                            html += `</div>`;
+                        }
+
+                        // Policy list
+                        appRecs.forEach(r => {
+                            const name = r.policy_name || 'Unnamed Policy';
+                            const truncName = name.length > 80 ? name.substring(0, 77) + '...' : name;
+                            const hasMep = isMepsRecord(r);
+                            const hasLbl = isLabelRecord(r);
+                            const borderColor = hasMep ? '#2563eb' : '#f59e0b';
+                            const typeBadges: string[] = [];
+                            if (hasMep) typeBadges.push(`<span style="font-size:0.65rem;background:#dbeafe;color:#2563eb;padding:1px 5px;border-radius:3px;font-weight:600;">MEPS</span>`);
+                            if (hasLbl) typeBadges.push(`<span style="font-size:0.65rem;background:#fef3c7;color:#d97706;padding:1px 5px;border-radius:3px;font-weight:600;">Label</span>`);
+                            const reqBadge = r.requirement_type ? `<span style="font-size:0.65rem;background:#f1f5f9;color:#475569;padding:1px 5px;border-radius:3px;">${r.requirement_type}</span>` : '';
+
+                            html += `<div style="border-left:3px solid ${borderColor};padding:0.35rem 0.5rem;margin-bottom:0.4rem;background:#fafafa;border-radius:0 4px 4px 0;">
+                                <div style="font-size:0.78rem;color:#1e293b;line-height:1.4;">${truncName}</div>
+                                <div style="display:flex;gap:0.4rem;align-items:center;margin-top:0.2rem;flex-wrap:wrap;">
+                                    ${typeBadges.join('')}
+                                    ${reqBadge}
+                                    ${r.year_adopted ? `<span style="font-size:0.65rem;color:#64748b;">${r.year_adopted}${r.year_revised && r.year_revised !== r.year_adopted ? ' (rev. ' + r.year_revised + ')' : ''}</span>` : ''}
+                                    ${r.status ? `<span style="font-size:0.62rem;color:#94a3b8;">${r.status}</span>` : ''}
+                                </div>
+                            </div>`;
+                        });
+                    }
+
+                    html += `</div>`;
+                });
+                html += `</div>`;
+
+                chart3El.innerHTML = html;
+            }
+        }
+
+        function updateMepsGlobalCharts() {
+            const filtered = getFilteredMeps();
+
+            // Reset chart titles for global view
+            const setTitle = (id: string, text: string) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+            setTitle('meps-chart1-title', 'MEPS & Labels by Region');
+            setTitle('meps-chart1-subtitle', 'Countries with MEPS vs Labels per region');
+            setTitle('meps-chart2-title', 'Policy Adoption Timeline');
+            setTitle('meps-chart2-subtitle', 'Cumulative MEPS & Labels adoption over time');
+            setTitle('meps-chart3-title', 'Equipment Type Coverage');
+            setTitle('meps-chart3-subtitle', 'Countries with MEPS vs Labels by appliance');
+
+            // Restore chart 1 container and grid layout for global view
+            const chart1Card = document.getElementById('chart-meps-by-region')?.closest('.card-panel') as HTMLElement | null;
+            if (chart1Card) chart1Card.style.display = '';
+            const chartsGrid = chart1Card?.parentElement as HTMLElement | null;
+            if (chartsGrid) chartsGrid.style.gridTemplateColumns = '';
+
+            // Clear HTML content from chart1 if it was used for policy list
+            const chart1El = document.getElementById('chart-meps-by-region');
+            if (chart1El && !charts['chart-meps-by-region']) {
+                chart1El.innerHTML = '';
+                chart1El.style.overflow = '';
+            }
+
+            // Clear HTML content from chart3 if it was used for policy details
+            const chart3El = document.getElementById('chart-meps-equipment');
+            if (chart3El && !charts['chart-meps-equipment']) {
+                chart3El.innerHTML = '';
+                chart3El.style.overflow = '';
+            }
+
+            // Chart 1: Countries with MEPS vs Labels by Region (grouped bar) — merged regions
+            const regionStats: Record<string, { meps: Set<string>; labels: Set<string> }> = {};
+            filtered.forEach(m => {
+                const r = getMergedRegion(m.region);
+                if (!regionStats[r]) regionStats[r] = { meps: new Set(), labels: new Set() };
+                if (isMepsRecord(m)) regionStats[r].meps.add(m.country_code);
+                if (isLabelRecord(m)) regionStats[r].labels.add(m.country_code);
+            });
+            const desiredOrder = ['Asia', 'Africa', 'Americas', 'Europe', 'Middle East', 'Oceania'];
+            const regionNames = desiredOrder.filter(r => regionStats[r]);
+
+            setChart('chart-meps-by-region', {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    formatter: (params: any) => {
+                        let tip = `<strong>${params[0].axisValue}</strong>`;
+                        params.forEach((p: any) => { tip += `<br>${p.marker} ${p.seriesName}: ${p.value} countries`; });
+                        return tip;
+                    }
+                },
+                legend: { data: ['MEPS', 'Labels'], top: 5, textStyle: { fontSize: 11 } },
+                grid: { left: '3%', right: '4%', bottom: '15%', top: '15%', containLabel: true },
+                xAxis: {
+                    type: 'category',
+                    data: regionNames,
+                    axisLabel: { rotate: 30, fontSize: 10, interval: 0 }
+                },
+                yAxis: { type: 'value', name: 'Countries', nameTextStyle: { fontSize: 11 } },
+                series: [
+                    {
+                        name: 'MEPS',
+                        type: 'bar',
+                        data: regionNames.map(r => regionStats[r].meps.size),
+                        color: '#2563eb',
+                        barGap: '10%'
+                    },
+                    {
+                        name: 'Labels',
+                        type: 'bar',
+                        data: regionNames.map(r => regionStats[r].labels.size),
+                        color: '#f59e0b'
+                    }
+                ]
+            });
+
+            // Chart 2: Policy Adoption Timeline (MEPS vs Labels over time)
+            const yearMeps: Record<number, number> = {};
+            const yearLabels: Record<number, number> = {};
+            filtered.forEach(m => {
+                if (m.year_adopted) {
+                    if (isMepsRecord(m)) yearMeps[m.year_adopted] = (yearMeps[m.year_adopted] || 0) + 1;
+                    if (isLabelRecord(m)) yearLabels[m.year_adopted] = (yearLabels[m.year_adopted] || 0) + 1;
+                }
+            });
+            const allYears = [...new Set([...Object.keys(yearMeps), ...Object.keys(yearLabels)].map(Number))].sort((a, b) => a - b);
+            let cumMeps = 0, cumLabels = 0;
+            const cumMepsData = allYears.map(y => { cumMeps += (yearMeps[y] || 0); return cumMeps; });
+            const cumLabelsData = allYears.map(y => { cumLabels += (yearLabels[y] || 0); return cumLabels; });
+
+            setChart('chart-meps-timeline', {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: (params: any) => {
+                        let tip = `<strong>${params[0].axisValue}</strong>`;
+                        params.forEach((p: any) => { tip += `<br>${p.marker} ${p.seriesName}: ${p.value}`; });
+                        return tip;
+                    }
+                },
+                legend: { data: ['MEPS', 'Labels'], top: 5, textStyle: { fontSize: 11 } },
+                grid: { left: '3%', right: '4%', bottom: '10%', top: '15%', containLabel: true },
+                xAxis: {
+                    type: 'category',
+                    data: allYears.map(String),
+                    axisLabel: { fontSize: 10, interval: 'auto' }
+                },
+                yAxis: { type: 'value', name: 'Cumulative', nameTextStyle: { fontSize: 11 } },
+                series: [
+                    {
+                        name: 'MEPS',
+                        type: 'line',
+                        data: cumMepsData,
+                        smooth: true,
+                        areaStyle: { opacity: 0.2 },
+                        color: '#2563eb'
+                    },
+                    {
+                        name: 'Labels',
+                        type: 'line',
+                        data: cumLabelsData,
+                        smooth: true,
+                        areaStyle: { opacity: 0.2 },
+                        color: '#f59e0b'
+                    }
+                ]
+            });
+
+            // Chart 3: Equipment Type Coverage (MEPS vs Labels per appliance)
+            const equipTypes = ['Air Conditioning', 'Domestic Refrigeration', 'Fans'];
+            const equipMeps = equipTypes.map(et => new Set(filtered.filter(r => r.equipment_type === et && isMepsRecord(r)).map(r => r.country_code)).size);
+            const equipLabels = equipTypes.map(et => new Set(filtered.filter(r => r.equipment_type === et && isLabelRecord(r)).map(r => r.country_code)).size);
+
+            setChart('chart-meps-equipment', {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    formatter: (params: any) => {
+                        let tip = `<strong>${params[0].axisValue}</strong>`;
+                        params.forEach((p: any) => { tip += `<br>${p.marker} ${p.seriesName}: ${p.value} countries`; });
+                        return tip;
+                    }
+                },
+                legend: { data: ['MEPS', 'Labels'], top: 5, textStyle: { fontSize: 11 } },
+                grid: { left: '3%', right: '8%', bottom: '3%', top: '15%', containLabel: true },
+                xAxis: { type: 'value', axisLabel: { fontSize: 10 } },
+                yAxis: {
+                    type: 'category',
+                    data: equipTypes.slice().reverse(),
+                    axisLabel: { fontSize: 10 }
+                },
+                series: [
+                    {
+                        name: 'MEPS',
+                        type: 'bar',
+                        data: equipMeps.slice().reverse(),
+                        color: '#2563eb',
+                        barGap: '10%'
+                    },
+                    {
+                        name: 'Labels',
+                        type: 'bar',
+                        data: equipLabels.slice().reverse(),
+                        color: '#f59e0b'
+                    }
+                ]
+            });
+
         }
 
         function updateMepsView() {
@@ -3694,46 +4104,72 @@
                 return;
             }
 
-            // Get emissions based on current data source
+            // Get emissions for hovered country (ignoring globalCountryFilter so tooltip works for all countries)
             let tooltipContent = '';
+            const country = data.countries.find(c => c.country_code === code);
+            const countryName = country?.country_name || code;
+
             if (emissionsDataSource === 'clasp') {
-                const byCountry = getClaspEmissionsByCountry();
-                const countryData = byCountry[code];
-                if (!countryData) {
-                    tooltipContent = `<strong>${code}</strong><br><em>No CLASP (Indirect) data available</em>`;
+                const countryRecords = data.claspEnergy.filter(r =>
+                    r.country_code === code &&
+                    r.year === emissionsYear &&
+                    (emissionsAppliances.length === 0 || emissionsAppliances.includes(r.appliance))
+                );
+                if (countryRecords.length === 0) {
+                    tooltipContent = `<strong>${countryName}</strong><br><em>No CLASP (Indirect) data available</em>`;
                 } else {
                     const scenarioName = CLASP_SCENARIO_NAMES[emissionsScenario] || emissionsScenario;
+                    let total = 0;
                     let breakdown = '';
-                    Object.entries(countryData.byAppliance).forEach(([app, val]) => {
+                    const byAppliance: Record<string, number> = {};
+                    countryRecords.forEach(r => {
+                        const co2 = getClaspCO2(r, emissionsScenario);
+                        total += co2;
+                        byAppliance[r.appliance] = (byAppliance[r.appliance] || 0) + co2;
+                    });
+                    Object.entries(byAppliance).forEach(([app, val]) => {
                         if (val > 0) {
                             breakdown += `${CLASP_APPLIANCE_SHORT[app] || app}: ${val.toFixed(3)} Mt<br>`;
                         }
                     });
                     tooltipContent = `
-                        <strong>${countryData.name}</strong><br>
+                        <strong>${countryName}</strong><br>
                         <span style="color: #64748b; font-size: 0.85em;">CLASP (Indirect) | ${scenarioName} | ${emissionsYear}</span><br>
-                        <strong>Indirect: ${countryData.total.toFixed(3)} Mt CO2</strong><br>
+                        <strong>Indirect: ${total.toFixed(3)} Mt CO2</strong><br>
                         ${breakdown}
                     `;
                 }
             } else {
-                const byCountry = getSubcoolEmissionsByCountry();
-                const countryData = byCountry[code];
-                if (!countryData) {
-                    tooltipContent = `<strong>${code}</strong><br><em>No HEAT Modelling data available</em>`;
+                const countryRecords = data.subcool.filter(r =>
+                    r.country_code === code &&
+                    r.year === emissionsYear &&
+                    r.scenario_name === emissionsScenario
+                );
+                if (countryRecords.length === 0) {
+                    tooltipContent = `<strong>${countryName}</strong><br><em>No HEAT Modelling data available</em>`;
                 } else {
                     const scenarioName = HEAT_SCENARIO_NAMES[emissionsScenario] || emissionsScenario;
+                    let direct = 0, indirect = 0;
+                    const bySubsector: Record<string, { direct: number; indirect: number }> = {};
+                    countryRecords.forEach(r => {
+                        direct += r.direct_emission_mt || 0;
+                        indirect += r.indirect_emission_mt || 0;
+                        if (!bySubsector[r.subsector]) bySubsector[r.subsector] = { direct: 0, indirect: 0 };
+                        bySubsector[r.subsector].direct += r.direct_emission_mt || 0;
+                        bySubsector[r.subsector].indirect += r.indirect_emission_mt || 0;
+                    });
+                    const total = direct + indirect;
                     const typeLabel = emissionsType === 'direct' ? 'Direct' : emissionsType === 'indirect' ? 'Indirect' : 'Total';
-                    const displayValue = emissionsType === 'direct' ? countryData.direct : emissionsType === 'indirect' ? countryData.indirect : countryData.total;
+                    const displayValue = emissionsType === 'direct' ? direct : emissionsType === 'indirect' ? indirect : total;
                     let breakdown = '';
-                    Object.entries(countryData.bySubsector).forEach(([sub, vals]) => {
+                    Object.entries(bySubsector).forEach(([sub, vals]) => {
                         const subVal = emissionsType === 'direct' ? vals.direct : emissionsType === 'indirect' ? vals.indirect : (vals.direct + vals.indirect);
                         if (subVal > 0) {
                             breakdown += `${HEAT_SUBSECTOR_SHORT[sub] || sub}: ${subVal.toFixed(3)} Mt<br>`;
                         }
                     });
                     tooltipContent = `
-                        <strong>${countryData.name}</strong><br>
+                        <strong>${countryName}</strong><br>
                         <span style="color: #64748b; font-size: 0.85em;">HEAT Modelling | ${scenarioName} | ${emissionsYear}</span><br>
                         <strong>${typeLabel}: ${displayValue.toFixed(3)} Mt CO2</strong><br>
                         ${breakdown}
@@ -4897,8 +5333,12 @@
                 btn.classList.toggle('active', btn.dataset.view === view);
             });
             updateSidePanels(view);
+            updateSidebarStats();
             updateViewingBadges();
             updateApplianceScopeState(view);
+            // Show/hide pillar info button
+            const infoBtn = document.getElementById('pillar-info-btn') as HTMLElement | null;
+            if (infoBtn) infoBtn.style.display = pillarInfo[view] ? '' : 'none';
             requestAnimationFrame(resizeCharts);
         }
 
@@ -4923,8 +5363,69 @@
         // =====================================================
         // EVENT HANDLERS
         // =====================================================
+        // Pillar information content
+        const pillarInfo: Record<string, { title: string; subtitle: string; body: string }> = {
+            emissions: {
+                title: 'Pillar 1: Emissions',
+                subtitle: 'Tracking Total, Direct, and Indirect emissions to monitor national progress toward net zero',
+                body: `<p>Pillar 1 tracks the sector\u2019s climate footprint by providing country-level data on Total, Direct, and Indirect emissions across three key appliance categories: Air Conditioners, Fans, and Refrigerators. This data distinguishes between direct emissions from high GWP refrigerant leaks and indirect emissions from electricity consumption. By analyzing these metrics at the national level, the dashboard enables targeted interventions to transition from high-GWP \u201Cbusiness as usual\u201D toward a sustainable cooling pathway.</p>
+<p class="pillar-modal-insight"><strong>Strategic Insight:</strong> Business-as-usual trajectories indicate a doubling of cooling emissions by 2050. Integrated interventions in appliance efficiency and refrigerant management provide a pathway to mitigate up to 80% of these projected emissions.</p>`
+            },
+            meps: {
+                title: 'Pillar 2: Product Efficiency',
+                subtitle: 'Shielding global energy grids by ensuring every unit sold is a high-efficiency model',
+                body: `<p>As the global cooling stock expands, Pillar 2 tracks the implementation of Minimum Energy Performance Standards (MEPS) and Energy Labels that act as the primary defense against runaway energy demand. By mandating that only high-efficiency units enter the market, MEPS eliminate the \u201Cenvironmental dumping\u201D of obsolete technology and shield global energy grids from overwhelming peak loads. This pillar monitors national progress in improving the average efficiency of air conditioners and refrigerators\u2014a critical step toward the Net Zero 2050 pathway that could save consumers over $800 billion in electricity costs by mid-century.</p>
+<p class="pillar-modal-insight"><strong>Strategic Insight:</strong> Uneven MEPS adoption in fast-growing markets allows for the \u2018environmental dumping\u2019 of obsolete technology. Harmonizing these standards is critical to stabilizing markets, protecting energy grids, and ensuring equitable access to high-efficiency cooling.</p>`
+            },
+            kigali: {
+                title: 'Pillar 3: Refrigerant Transition',
+                subtitle: 'Defusing the \u201Cinvisible climate bomb\u201D by phasing out high-GWP refrigerants',
+                body: `<p>Pillar 3 monitors global progress in defusing the \u201Cinvisible climate bomb\u201D by tracking the phase-down of high-GWP refrigerants. It focuses on the transition toward natural and low-GWP alternatives in alignment with the Kigali Amendment, providing critical data on refrigerant pathways for cooling appliances. Full implementation of the Kigali Amendment is estimated to prevent up to 0.5\u00B0C of global warming by 2100, while avoiding approximately 105 billion tonnes of CO\u2082 equivalent emissions by mid-century.</p>
+<p>In addition to phasing down high-GWP refrigerants as quickly as possible, comprehensive climate strategies increasingly emphasize the role of Lifecycle Refrigerant Management (LRM) as a powerful driver for both environmental protection and industrial growth.</p>
+<p class="pillar-modal-insight"><strong>Strategic Insight:</strong> Accelerating the transition to low-GWP refrigerants minimizes lifetime climate impact and prevents the long-term locking-in of potent greenhouse gas emissions.</p>
+<p class="pillar-modal-links"><strong>For more information:</strong><br/>Lifecycle Refrigerant Management \u2014 <a href="https://www.ccacoalition.org/resources/guidance-sustainable-cooling-approaches-enhanced-ndcs" target="_blank" rel="noopener noreferrer">CCAC Guidance on Sustainable Cooling</a><br/>The Kigali Amendment \u2014 <a href="https://kigalisim.org/" target="_blank" rel="noopener noreferrer">kigalisim.org</a></p>`
+            },
+            access: {
+                title: 'Pillar 4: Cooling Access & Vulnerability',
+                subtitle: 'Ensuring cooling for all as a fundamental human right and a life-saving necessity',
+                body: `<p>Pillar 4 provides a data-driven inventory of the \u201Ccooling gap\u201D based on the Sustainable Energy for All (SEforALL) Chilling Prospects publication. It tracks national and sub-national data for people globally at high risk due to a lack of basic cooling infrastructure for thermal safety, food security, and medical cold chains. By disaggregating populations into rural and urban poor and high/medium/low-risk groups, the dashboard identifies where heat exposure intersects with poverty and energy access gaps. This tracking serves as an evidence base for monitoring the scale of cooling vulnerability and assessing the progress of global efforts to provide life-saving cooling to the most exposed communities.</p>
+<p class="pillar-modal-insight"><strong>Strategic Insight:</strong> Cooling is a life-saving necessity, yet a over 1 billion-person \u2018access gap\u2019 persists, representing a critical threat to health and food security. Closing this gap is a matter of climate equity, requiring integrated solutions to protect the health and livelihoods of the most vulnerable.</p>`
+            },
+            policy: {
+                title: 'Pillar 5: Policy Framework',
+                subtitle: 'Tracking the legal and political commitments that turn promises into law',
+                body: `<p>Pillar 5 tracks the evolution of global cooling governance by monitoring the adoption and stringency of national and international commitments. It provides an inventory of the Global Cooling Pledge signatories and assesses the integration of cooling-specific targets into Nationally Determined Contributions (NDCs) and National Cooling Action Plans (NCAPs). This data identifies the transition of voluntary climate promises into binding domestic regulations and enforceable management standards.</p>`
+            }
+        };
+
+        function openPillarModal() {
+            const info = pillarInfo[currentView];
+            if (!info) return;
+            const overlay = document.getElementById('pillar-modal-overlay');
+            const title = document.getElementById('pillar-modal-title');
+            const subtitle = document.getElementById('pillar-modal-subtitle');
+            const body = document.getElementById('pillar-modal-body');
+            if (title) title.textContent = info.title;
+            if (subtitle) subtitle.textContent = info.subtitle;
+            if (body) body.innerHTML = info.body;
+            if (overlay) overlay.classList.add('active');
+        }
+
+        function closePillarModal() {
+            const overlay = document.getElementById('pillar-modal-overlay');
+            if (overlay) overlay.classList.remove('active');
+        }
+
         function setupEventHandlers() {
             console.log('Setting up event handlers...');
+
+            // Pillar Information modal
+            document.getElementById('pillar-info-btn')?.addEventListener('click', openPillarModal);
+            document.getElementById('pillar-modal-close')?.addEventListener('click', closePillarModal);
+            document.getElementById('pillar-modal-overlay')?.addEventListener('click', (e) => {
+                if ((e.target as HTMLElement).id === 'pillar-modal-overlay') closePillarModal();
+            });
+
             // Navigation
             const navBtns = document.querySelectorAll<HTMLButtonElement>('.nav-btn');
             console.log('Found nav buttons:', navBtns.length);
@@ -4939,8 +5440,33 @@
                 btn.addEventListener('click', () => setApplianceScope(btn.dataset.scope ?? 'ac'));
             });
 
-            document.querySelectorAll<HTMLButtonElement>('.cta-btn').forEach((btn) => {
-                btn.addEventListener('click', () => switchView(btn.dataset.view));
+            // Overview carousel
+            let carouselIdx = 0;
+            const slides = document.querySelectorAll<HTMLElement>('.carousel-slide');
+            const dots = document.querySelectorAll<HTMLButtonElement>('.carousel-dots .dot');
+            const totalSlides = slides.length;
+
+            function showSlide(idx: number) {
+                carouselIdx = ((idx % totalSlides) + totalSlides) % totalSlides;
+                slides.forEach((s, i) => {
+                    s.classList.toggle('active', i === carouselIdx);
+                    s.classList.toggle('exit', i !== carouselIdx);
+                });
+                dots.forEach((d, i) => d.classList.toggle('active', i === carouselIdx));
+            }
+
+            document.getElementById('carousel-prev')?.addEventListener('click', () => showSlide(carouselIdx - 1));
+            document.getElementById('carousel-next')?.addEventListener('click', () => showSlide(carouselIdx + 1));
+            dots.forEach((d) => {
+                d.addEventListener('click', () => showSlide(Number(d.dataset.dot)));
+            });
+
+            // Auto-advance every 8 seconds, pause on hover
+            let autoPlay = setInterval(() => showSlide(carouselIdx + 1), 15000);
+            const carouselEl = document.querySelector('.overview-carousel');
+            carouselEl?.addEventListener('mouseenter', () => clearInterval(autoPlay));
+            carouselEl?.addEventListener('mouseleave', () => {
+                autoPlay = setInterval(() => showSlide(carouselIdx + 1), 15000);
             });
 
             // Map indicator
@@ -4968,7 +5494,13 @@
                     } else {
                         // Clear selection when "All Countries" is selected
                         selectedCountry = null;
+                        selectedMepsCountry = '';
                         clearCountryHighlights();
+                        // Reset country detail panel
+                        const mepsDetail = document.querySelector('#meps-country-detail .country-detail') as HTMLElement;
+                        if (mepsDetail) {
+                            mepsDetail.innerHTML = `<h4>Select a country</h4><p class="side-muted">Click on a country in the map to see details.</p>`;
+                        }
                     }
 
                     // Refresh views with new filter
@@ -5007,6 +5539,7 @@
                     if (typeRow) typeRow.style.display = emissionsDataSource === 'subcool' ? 'flex' : 'none';
 
                     updateEmissionsView();
+                    updateSidebarStats();
                 });
             });
 
@@ -5018,6 +5551,7 @@
                     const display = document.getElementById('emissions-year-display');
                     if (display) display.textContent = String(emissionsYear);
                     updateEmissionsView();
+                    updateSidebarStats();
                 });
             }
 
@@ -5027,6 +5561,7 @@
                 emissionsScenarioSelect.addEventListener('change', () => {
                     emissionsScenario = emissionsScenarioSelect.value;
                     updateEmissionsView();
+                    updateSidebarStats();
                 });
             }
 
@@ -5259,20 +5794,11 @@
                 });
             }
 
-            const mepsStatusFilterEl = document.getElementById('meps-status-filter') as HTMLSelectElement | null;
-            if (mepsStatusFilterEl) {
-                mepsStatusFilterEl.addEventListener('change', () => {
-                    mepsStatusFilter = mepsStatusFilterEl.value;
-                    updateMepsView();
-                });
-            }
-
             // Equipment type All/None buttons (toggle handlers are set up in initMepsFilters)
             const mepsEquipAll = document.getElementById('meps-equip-all');
             if (mepsEquipAll) {
                 mepsEquipAll.addEventListener('click', () => {
-                    const allTypes = [...new Set(data.meps.map(m => m.requirement_type).filter(Boolean))] as string[];
-                    mepsEquipmentTypes = allTypes;
+                    mepsEquipmentTypes = ['Air Conditioning', 'Domestic Refrigeration', 'Fans'];
                     document.querySelectorAll<HTMLButtonElement>('#meps-equipment-toggles .toggle-btn').forEach(btn => {
                         btn.classList.add('active');
                     });
@@ -5459,10 +5985,6 @@
         </button>
       </div>
 
-      <div class="sidebar-footer">
-        <p>Aligned with Data from:</p>
-        <p class="footer-strong">IEA • CLASP • U4E • Cool Coalition</p>
-      </div>
     </aside>
 
     <!-- Main Content -->
@@ -5474,99 +5996,169 @@
         </div>
         <div class="header-actions">
           <div id="last-updated">Loading...</div>
-          <button class="download-btn" type="button">
-            <i class="fa-solid fa-download"></i>
-            Download Report
+          <button class="pillar-info-btn" type="button" id="pillar-info-btn">
+            <i class="fa-solid fa-circle-info"></i>
+            Pillar Information
           </button>
         </div>
       </header>
             <!-- Overview View -->
             <section id="view-overview" class="view-section active">
-                <div class="overview-grid">
-                    <div class="overview-kpis">
-                        <div class="kpi-tile">
-                            <p class="kpi-title">Climate Impact</p>
-                            <div class="kpi-value" id="kpi-climate">~10%</div>
-                            <p class="kpi-subtitle">of Global Electricity</p>
-                            <p class="kpi-note">Used for cooling today.</p>
+                <!-- Compact Hero Banner -->
+                <div class="overview-hero compact">
+                    <div class="overview-hero-content">
+                        <h2>The Global Cooling Challenges</h2>
+                        <p>One of the most significant yet overlooked drivers of climate change. The time to act is now.</p>
+                    </div>
+                </div>
+
+                <!-- Horizontal KPIs -->
+                <div class="overview-kpis-row">
+                    <div class="kpi-tile kpi-ghg">
+                        <p class="kpi-title">GHG Emissions</p>
+                        <div class="kpi-value" id="kpi-climate">&gt;10%</div>
+                        <p class="kpi-subtitle">of Global GHG</p>
+                        <p class="kpi-note">Direct + indirect (MtCO<sub>2</sub>e)</p>
+                    </div>
+                    <div class="kpi-tile kpi-demand">
+                        <p class="kpi-title">Cooling Demand</p>
+                        <div class="kpi-value highlight-blue" id="kpi-capacity">3x</div>
+                        <p class="kpi-subtitle">Increase by 2050</p>
+                        <p class="kpi-note">Energy demand (TWh)</p>
+                    </div>
+                    <div class="kpi-tile kpi-vulnerable">
+                        <p class="kpi-title">At-Risk Population</p>
+                        <div class="kpi-value highlight-red" id="kpi-access">1.2B</div>
+                        <p class="kpi-subtitle">People Vulnerable</p>
+                        <p class="kpi-note">Without access to cooling</p>
+                    </div>
+                </div>
+
+                <!-- Carousel -->
+                <div class="overview-carousel">
+                    <button class="carousel-arrow carousel-prev" type="button" id="carousel-prev">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+
+                    <div class="carousel-viewport">
+                        <!-- Slide 1: The Challenge -->
+                        <div class="carousel-slide active" data-slide="0">
+                            <div class="slide-inner challenge-slide">
+                                <div class="slide-icon-col">
+                                    <div class="slide-icon challenge-icon">
+                                        <i class="fa-solid fa-triangle-exclamation"></i>
+                                    </div>
+                                    <div class="slide-label">1 / 4</div>
+                                </div>
+                                <div class="slide-body">
+                                    <h3>The Challenge</h3>
+                                    <p>Cooling currently accounts for over <strong>10% of global greenhouse gas emissions</strong>, a figure expected to <strong>double by 2050</strong> as heatwaves become more frequent and populations grow. Indirect emissions from energy consumption and direct emissions from high-GWP refrigerant leaks fuel a vicious cycle that leaves <strong>1.2 billion people</strong> vulnerable to life-threatening heat.</p>
+                                    <p style="margin-top:0.5rem;">According to the <a href="https://wedocs.unep.org/items/507e8c47-db6c-424a-9b76-7805a6e1d669" target="_blank" rel="noopener noreferrer" style="color:#2563eb;font-weight:700;text-decoration:underline;"><strong>Global Cooling Watch 2025 report</strong></a> (COP30), cooling demand is expected to <strong>triple by mid-century</strong>.</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="kpi-tile">
-                            <p class="kpi-title">Emissions Growth</p>
-                            <div class="kpi-value highlight-blue" id="kpi-capacity">2x</div>
-                            <p class="kpi-subtitle">By 2050 (BAU)</p>
-                            <p class="kpi-note">Without intervention.</p>
+
+                        <!-- Slide 2: Emissions Crisis -->
+                        <div class="carousel-slide" data-slide="1">
+                            <div class="slide-inner emissions-slide">
+                                <div class="slide-icon-col">
+                                    <div class="slide-icon emissions-icon">
+                                        <i class="fa-solid fa-smog"></i>
+                                    </div>
+                                    <div class="slide-label">2 / 4</div>
+                                </div>
+                                <div class="slide-body">
+                                    <h3>Emissions Crisis</h3>
+                                    <p>Currently responsible for <strong>10% of global power demand</strong>, cooling emissions are accelerating on two fronts: <strong>indirect emissions</strong> from inefficient appliances and <strong>direct emissions</strong> from "super-pollutant" refrigerants with global warming potentials thousands of times greater than CO<sub>2</sub>.</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="kpi-tile">
-                            <p class="kpi-title">At-Risk Population</p>
-                            <div class="kpi-value highlight-red" id="kpi-access">1.2B</div>
-                            <p class="kpi-subtitle">People Vulnerable</p>
-                            <p class="kpi-note">Lack cooling access.</p>
+
+                        <!-- Slide 3: Vulnerability Gap -->
+                        <div class="carousel-slide" data-slide="2">
+                            <div class="slide-inner vulnerability-slide">
+                                <div class="slide-icon-col">
+                                    <div class="slide-icon vulnerability-icon">
+                                        <i class="fa-solid fa-heart-pulse"></i>
+                                    </div>
+                                    <div class="slide-label">3 / 4</div>
+                                </div>
+                                <div class="slide-body">
+                                    <h3>Vulnerability Gap</h3>
+                                    <p>Rising temperatures are driving a surge in heat-related deaths, yet access to cooling remains a luxury of the few. In the world's most heat-stressed regions, over <strong>1.2 billion people</strong> live without the basic cooling infrastructure needed to survive intensifying heatwaves.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 4: The Path Forward -->
+                        <div class="carousel-slide" data-slide="3">
+                            <div class="slide-inner solution-slide">
+                                <div class="slide-icon-col">
+                                    <div class="slide-icon solution-icon">
+                                        <i class="fa-solid fa-lightbulb"></i>
+                                    </div>
+                                    <div class="slide-label">4 / 4</div>
+                                </div>
+                                <div class="slide-body">
+                                    <h3>The Path Forward</h3>
+                                    <p>A comprehensive transition could cut cooling emissions by up to <strong>80%</strong> through three pillars:</p>
+                                    <div class="slide-pillars">
+                                        <div class="slide-pillar tech">
+                                            <div class="pillar-col-icon"><i class="fa-solid fa-microchip"></i></div>
+                                            <div class="pillar-col-title">Technology</div>
+                                            <div class="pillar-col-desc">Super-efficient appliances and low-GWP refrigerants</div>
+                                        </div>
+                                        <div class="slide-pillar equity">
+                                            <div class="pillar-col-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                                            <div class="pillar-col-title">Equity</div>
+                                            <div class="pillar-col-desc">Universal cooling access for vulnerable populations</div>
+                                        </div>
+                                        <div class="slide-pillar governance">
+                                            <div class="pillar-col-icon"><i class="fa-solid fa-landmark"></i></div>
+                                            <div class="pillar-col-title">Governance</div>
+                                            <div class="pillar-col-desc">NCAPs and NDC commitments turned into enforceable law</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="overview-content-stack">
-                        <!-- The Challenge -->
-                        <div class="card-panel summary-card">
-                            <div class="summary-header">
-                                <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i>
-                                <h3>The Challenge</h3>
-                            </div>
-                            <p class="summary-text">
-                                Cooling demand is surging due to rising temperatures and urbanization. Without action,
-                                cooling emissions could <strong>double by 2050</strong>, driven by inefficient appliances
-                                and high-GWP refrigerants. Meanwhile, <strong>1.2 billion people</strong> lack adequate
-                                cooling, facing severe health risks from heat exposure.
-                            </p>
-                        </div>
+                    <button class="carousel-arrow carousel-next" type="button" id="carousel-next">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
 
-                        <!-- Key Messages -->
-                        <div class="key-messages-grid">
-                            <div class="message-card emissions">
-                                <div class="message-icon"><i class="fa-solid fa-smog"></i></div>
-                                <div class="message-content">
-                                    <h4>Emissions Crisis</h4>
-                                    <p>Cooling accounts for ~10% of global electricity. Direct (refrigerant) and indirect (energy) emissions are accelerating climate change.</p>
-                                </div>
-                            </div>
-                            <div class="message-card vulnerability">
-                                <div class="message-icon"><i class="fa-solid fa-heart-pulse"></i></div>
-                                <div class="message-content">
-                                    <h4>Vulnerability Gap</h4>
-                                    <p>Heat-related deaths are rising. Vulnerable populations in developing regions face the greatest risks with the least access to cooling.</p>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Dots -->
+                    <div class="carousel-dots" id="carousel-dots">
+                        <button class="dot active" data-dot="0" type="button"></button>
+                        <button class="dot" data-dot="1" type="button"></button>
+                        <button class="dot" data-dot="2" type="button"></button>
+                        <button class="dot" data-dot="3" type="button"></button>
+                    </div>
+                </div>
 
-                        <!-- The Solution -->
-                        <div class="card-panel summary-card solution">
-                            <div class="summary-header">
-                                <i class="fa-solid fa-lightbulb" style="color: #22c55e;"></i>
-                                <h3>The Path Forward</h3>
-                            </div>
-                            <p class="summary-text">
-                                A sustainable cooling transition requires: <strong>energy-efficient appliances</strong>,
-                                <strong>low-GWP refrigerants</strong> (Kigali Amendment), <strong>expanded access</strong>
-                                for vulnerable populations, and <strong>strong policy frameworks</strong> including NCAPs
-                                and NDC commitments. Together, these can cut cooling emissions by up to <strong>80%</strong>.
-                            </p>
+                <!-- CTA -->
+                <div class="overview-cta compact-cta">
+                    <div class="cta-content">
+                        <h2>Explore the Pillars of Transition</h2>
+                        <p>Track global progress on emissions, efficiency, refrigerants, access, and policy frameworks.</p>
+                        <div class="cta-pointer">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Use the navigation pane to explore each section</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="overview-cta">
-                    <div class="cta-content">
-                        <h2>Explore the 5 Pillars of Transition</h2>
-                        <p>
-                            Track global progress on emissions, efficiency, refrigerants, access, and policy frameworks.
-                        </p>
-                    </div>
-                    <div class="cta-actions">
-                        <button class="cta-btn primary" data-view="emissions" type="button">
-                            Start with Emissions
-                        </button>
-                        <button class="cta-btn ghost" data-view="access" type="button">
-                            View Access Gap
-                        </button>
+                <!-- Partner Logos -->
+                <div class="overview-partners">
+                    <span class="partners-label">Using data from</span>
+                    <div class="partners-logos">
+                        <img src="/images/clasp-logo.png" alt="CLASP" class="partner-logo" />
+                        <img src="/images/unep.png" alt="UNEP" class="partner-logo" />
+                        <img src="/images/giz-logo.jpg" alt="GIZ" class="partner-logo" />
+                        <img src="/images/seforall-logo.jpg" alt="SEforALL" class="partner-logo" />
+                        <img src="/images/climate-policy-radar-logo.jfif" alt="Climate Policy Radar" class="partner-logo" />
+                        <img src="/images/heat-logo.png" alt="HEAT" class="partner-logo" />
                     </div>
                 </div>
             </section>
@@ -5581,9 +6173,9 @@
                             <div>
                                 <div style="font-weight: 600; color: #1e40af; margin-bottom: 0.25rem;">About This Data</div>
                                 <div style="font-size: 0.85rem; color: #1e3a8a; line-height: 1.5;">
-                                    <strong>Minimum Energy Performance Standards (MEPS)</strong> set mandatory efficiency requirements for cooling appliances.
-                                    This data tracks MEPS adoption across countries for various equipment types including Air Conditioners, Refrigerators, and Fans.
-                                    <em>Source: CLASP Global MEPS & Labels Database</em>
+                                    <strong>Minimum Energy Performance Standards (MEPS) &amp; Labels</strong> set efficiency requirements for cooling appliances.
+                                    This data tracks MEPS and labeling policy adoption across countries for Air Conditioners, Domestic Refrigerators, and Fans.
+                                    <em>Source: CLASP Global Policy &amp; Regulatory Compliance Platform (cprc-clasp.ngo)</em>
                                 </div>
                             </div>
                         </div>
@@ -5593,23 +6185,23 @@
                     <div class="kpi-grid policy-kpis">
                         <div class="kpi-card blue">
                             <div class="kpi-value" id="meps-kpi-countries">-</div>
-                            <div class="kpi-label">Countries with MEPS</div>
-                            <div class="kpi-sublabel">Have adopted standards</div>
+                            <div class="kpi-label">Countries</div>
+                            <div class="kpi-sublabel">With MEPS or Labels</div>
                         </div>
                         <div class="kpi-card green">
                             <div class="kpi-value" id="meps-kpi-policies">-</div>
                             <div class="kpi-label">Total Policies</div>
-                            <div class="kpi-sublabel">MEPS records tracked</div>
+                            <div class="kpi-sublabel">MEPS &amp; Labels tracked</div>
                         </div>
-                        <div class="kpi-card amber">
-                            <div class="kpi-value" id="meps-kpi-equipment">-</div>
-                            <div class="kpi-label">Equipment Types</div>
-                            <div class="kpi-sublabel">Categories covered</div>
+                        <div class="kpi-card" style="border-left: 4px solid #2563eb;">
+                            <div class="kpi-value" id="meps-kpi-equipment" style="color:#2563eb">-</div>
+                            <div class="kpi-label">MEPS</div>
+                            <div class="kpi-sublabel">Performance standards</div>
                         </div>
-                        <div class="kpi-card purple">
-                            <div class="kpi-value" id="meps-kpi-regions">-</div>
-                            <div class="kpi-label">Regions</div>
-                            <div class="kpi-sublabel">Geographic coverage</div>
+                        <div class="kpi-card" style="border-left: 4px solid #f59e0b;">
+                            <div class="kpi-value" id="meps-kpi-regions" style="color:#f59e0b">-</div>
+                            <div class="kpi-label">Labels</div>
+                            <div class="kpi-sublabel">Energy labels</div>
                         </div>
                     </div>
 
@@ -5635,13 +6227,6 @@
                                 </div>
                             </div>
 
-                            <!-- Status Filter -->
-                            <div class="filter-group" style="flex: 1; min-width: 150px;">
-                                <label class="filter-label">Status</label>
-                                <select id="meps-status-filter" class="filter-select">
-                                    <option value="">All Statuses</option>
-                                </select>
-                            </div>
                         </div>
                     </div>
 
@@ -5650,18 +6235,20 @@
                         <div class="card-header">
                             <div class="card-title">
                                 <i class="fa-solid fa-bolt"></i>
-                                MEPS Coverage by Country
+                                MEPS &amp; Labels Coverage
                             </div>
                             <span class="viewing-pill">Viewing: <strong id="meps-viewing">Global</strong></span>
                         </div>
                         <div id="meps-map-container" class="map-surface"></div>
                         <div class="legend legend-row">
-                            <span class="legend-label">MEPS Status:</span>
+                            <span class="legend-label">Policy Status:</span>
                             <div id="meps-legend" class="legend-items"></div>
                         </div>
                         <div class="progress-bar" id="meps-progress">
-                            <span class="progress-segment high" id="meps-progress-high" title="Has MEPS"></span>
-                            <span class="progress-segment low" id="meps-progress-low" title="No MEPS"></span>
+                            <span class="progress-segment" id="meps-progress-both" title="MEPS & Labels" style="background:#166534"></span>
+                            <span class="progress-segment" id="meps-progress-meps" title="MEPS Only" style="background:#2563eb"></span>
+                            <span class="progress-segment" id="meps-progress-labels" title="Labels Only" style="background:#f59e0b"></span>
+                            <span class="progress-segment" id="meps-progress-critical" title="No Policies" style="background:#ef4444"></span>
                         </div>
                         <div id="meps-country-detail" class="country-card-inline">
                             <h3>Selected Country</h3>
@@ -5675,28 +6262,21 @@
                     <!-- Charts Grid -->
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem;">
                         <div class="card-panel">
-                            <h3>MEPS by Region</h3>
-                            <p class="chart-subtitle">Policy count per region</p>
+                            <h3 id="meps-chart1-title">MEPS & Labels by Region</h3>
+                            <p class="chart-subtitle" id="meps-chart1-subtitle">Countries with MEPS vs Labels per region</p>
                             <div id="chart-meps-by-region" class="chart-surface" style="height: 280px;"></div>
                         </div>
                         <div class="card-panel">
-                            <h3>Policy Adoption Timeline</h3>
-                            <p class="chart-subtitle">Cumulative MEPS adoption over time</p>
+                            <h3 id="meps-chart2-title">Policy Adoption Timeline</h3>
+                            <p class="chart-subtitle" id="meps-chart2-subtitle">Cumulative MEPS & Labels adoption over time</p>
                             <div id="chart-meps-timeline" class="chart-surface" style="height: 280px;"></div>
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem;">
-                        <div class="card-panel">
-                            <h3>Equipment Type Coverage</h3>
-                            <p class="chart-subtitle">Number of countries with MEPS by equipment</p>
-                            <div id="chart-meps-equipment" class="chart-surface" style="height: 280px;"></div>
-                        </div>
-                        <div class="card-panel">
-                            <h3>Policy Status Distribution</h3>
-                            <p class="chart-subtitle">Breakdown by status</p>
-                            <div id="chart-meps-status" class="chart-surface" style="height: 280px;"></div>
-                        </div>
+                    <div class="card-panel">
+                        <h3 id="meps-chart3-title">Equipment Type Coverage</h3>
+                        <p class="chart-subtitle" id="meps-chart3-subtitle">Countries with MEPS vs Labels by appliance</p>
+                        <div id="chart-meps-equipment" class="chart-surface" style="height: 320px;"></div>
                     </div>
                 </div>
             </section>
@@ -6232,20 +6812,20 @@
                 <p id="insight-text" class="insight-text"></p>
                 <div class="summary-stats">
                     <div class="stat-item">
-                        <span class="label">Total Countries</span>
-                        <span id="stat-countries">-</span>
+                        <span class="label" id="stat-label-1">Total Countries</span>
+                        <span id="stat-val-1">-</span>
                     </div>
                     <div class="stat-item">
-                        <span class="label">GCP Coverage</span>
-                        <span id="stat-gcp">-</span>
+                        <span class="label" id="stat-label-2">GCP Coverage</span>
+                        <span id="stat-val-2">-</span>
                     </div>
                     <div class="stat-item">
-                        <span class="label">Kigali Coverage</span>
-                        <span id="stat-kigali">-</span>
+                        <span class="label" id="stat-label-3">Kigali Coverage</span>
+                        <span id="stat-val-3">-</span>
                     </div>
                     <div class="stat-item">
-                        <span class="label">MEPS Coverage</span>
-                        <span id="stat-meps">-</span>
+                        <span class="label" id="stat-label-4">MEPS Coverage</span>
+                        <span id="stat-val-4">-</span>
                     </div>
                     <div class="stat-item">
                         <span class="label">Data Updated</span>
@@ -6257,4 +6837,16 @@
     </div>
 
     <div class="tooltip" id="tooltip"></div>
+
+    <!-- Pillar Information Modal -->
+    <div class="pillar-modal-overlay" id="pillar-modal-overlay">
+        <div class="pillar-modal">
+            <button class="pillar-modal-close" type="button" id="pillar-modal-close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h2 id="pillar-modal-title"></h2>
+            <p class="pillar-modal-subtitle" id="pillar-modal-subtitle"></p>
+            <div class="pillar-modal-body" id="pillar-modal-body"></div>
+        </div>
+    </div>
 </div>
