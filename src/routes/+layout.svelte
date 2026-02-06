@@ -3,7 +3,10 @@
 </script>
 
 <svelte:head>
-  <title>Cooling Dashboard</title>
+  <title>Global Cooling Intelligence Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </svelte:head>
 
 <slot />

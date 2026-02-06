@@ -22,51 +22,36 @@ const fetchTable = async <T>(
   filter = '',
   limit = 1000
 ): Promise<T[]> => {
-  // For large tables, fetch all records with pagination
-  if (limit > 1000) {
-    const allRecords: T[] = [];
-    let offset = 0;
-    const batchSize = 1000;
+  const allRecords: T[] = [];
+  let offset = 0;
+  const batchSize = 1000;
 
-    while (true) {
-      const endpoint = `${url}/rest/v1/${table}?select=${columns}${filter}&limit=${batchSize}&offset=${offset}`;
-      const response = await fetch(endpoint, {
-        headers: {
-          apikey: key,
-          Authorization: `Bearer ${key}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch ${table}: ${response.status}`);
+  while (true) {
+    const endpoint = `${url}/rest/v1/${table}?select=${columns}${filter}&limit=${batchSize}&offset=${offset}`;
+    const response = await fetch(endpoint, {
+      headers: {
+        apikey: key,
+        Authorization: `Bearer ${key}`
       }
+    });
 
-      const batch: T[] = await response.json();
-      allRecords.push(...batch);
-
-      if (batch.length < batchSize) {
-        break; // No more records
-      }
-      offset += batchSize;
+    if (!response.ok) {
+      const body = await response.text().catch(() => '');
+      throw new Error(`Failed to fetch ${table}: ${response.status} ${body}`);
     }
 
-    return allRecords;
-  }
+    const batch: T[] = await response.json();
+    allRecords.push(...batch);
 
-  // Standard fetch for smaller tables
-  const endpoint = `${url}/rest/v1/${table}?select=${columns}${filter}`;
-  const response = await fetch(endpoint, {
-    headers: {
-      apikey: key,
-      Authorization: `Bearer ${key}`
+    // Stop if we got fewer records than the batch size (no more pages)
+    // or if we've reached the requested limit
+    if (batch.length < batchSize || allRecords.length >= limit) {
+      break;
     }
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${table}: ${response.status}`);
+    offset += batchSize;
   }
 
-  return response.json();
+  return allRecords;
 };
 
 export const createDefaultData = (): DashboardData => ({
@@ -86,90 +71,103 @@ export const createDefaultData = (): DashboardData => ({
   refrigerants: []
 });
 
+const safeFetch = async <T>(
+  url: string,
+  key: string,
+  table: string,
+  columns: string,
+  filter = '',
+  limit = 1000
+): Promise<T[]> => {
+  try {
+    return await fetchTable<T>(url, key, table, columns, filter, limit);
+  } catch (err) {
+    console.error(`[Dashboard] Failed to load "${table}":`, err);
+    return [];
+  }
+};
+
 export const loadDashboardData = async (
   url: string,
   key: string
 ): Promise<DashboardData> => {
   const [countries, pledge, kigali, meps, access, accessForecast, emissions, ndcTracker, ncap, claspEnergy, subcool, regions, refrigerants] =
     await Promise.all([
-      fetchTable(url, key, 'countries', 'country_code,country_name,region'),
-      fetchTable(url, key, 'global_cooling_pledge', 'country_code,country_name,signatory'),
-      fetchTable(
+      safeFetch(url, key, 'countries', 'country_code,country_name,region'),
+      safeFetch(url, key, 'global_cooling_pledge', 'country_code,country_name,signatory'),
+      safeFetch(
         url,
         key,
         'kip',
         'country_code,country_name,kigali_party,montreal_protocol_party,group_type'
       ),
-      fetchTable(
+      safeFetch(
         url,
         key,
         'meps',
         'country_code,country_name,policy_name,equipment_type,requirement_type,policy_instrument,status,year_adopted,year_revised,region'
       ),
-      fetchTable<AccessRecord>(
+      safeFetch<AccessRecord>(
         url,
         key,
         'access_to_cooling_seeforall',
         'id,country_code,country_name,region,impact_category,population_category,impact_level,gender_type,year,population_without_cooling',
         '',
-        5000 // Fetch all access records (~3,696 records)
+        5000
       ),
-      // Access to Cooling Forecast data (2025-2030)
-      fetchTable<AccessForecastRecord>(
+      safeFetch<AccessForecastRecord>(
         url,
         key,
         'access_to_cooling_forecast',
         'id,country_code,country_name,region,impact_category,population_category,impact_level,gender_type,year,population_without_cooling',
         '',
-        5000 // Fetch all forecast records
+        5000
       ),
-      fetchTable(
+      safeFetch(
         url,
         key,
         'v_emissions_summary',
-        'country_code,country_name,region,year,scenario_code,appliance_category,total_emissions,direct_emissions,indirect_emissions'
+        'country_code,country_name,region,year,scenario_code,appliance_category,total_emissions,direct_emissions,indirect_emissions',
+        '',
+        10000 // ~9,740 rows need pagination
       ),
-      fetchTable(
+      safeFetch(
         url,
         key,
         'ndc_tracker_clasp',
         'country_code,country_name,continent,subregion,annex_status,ndc_type,category,mention_status,mention_value',
         '',
-        15000 // Fetch all NDC records (table has ~11,700 records)
+        15000
       ),
-      fetchTable<NcapRecord>(
+      safeFetch<NcapRecord>(
         url,
         key,
         'ncap',
         'id,country_code,country_name,year,long_term_goal,sectoral_targets,energy_consumed_twh,ghg_emissions_mtco2e,cooling_access_vulnerability,energy_efficiency_demand_reduction,refrigerant_management,remarks,policy_available_pdf'
       ),
-      // CLASP Energy Consumption data
-      fetchTable<ClaspEnergyRecord>(
+      safeFetch<ClaspEnergyRecord>(
         url,
         key,
         'clasp_energy_consumption',
         'id,country_code,country_name,year,appliance,bau_final_energy_twh,bau_co2_mt,gb_final_energy_twh,gb_co2_mt,gb_annual_co2_red_mt,nzh_final_energy_twh,nzh_co2_mt,nzh_annual_co2_red_mt,bat_final_energy_twh,bat_co2_mt,bat_annual_co2_red_mt,appliance_units_in_use,appliance_ownership_rate',
         '',
-        50000 // Large table with many records
+        50000
       ),
-      // Global Model Subcool data
-      fetchTable<SubcoolRecord>(
+      safeFetch<SubcoolRecord>(
         url,
         key,
         'global_model_subcool',
         'id,scenario_id,scenario_name,country_code,country_name,subsector_id,subsector,year,indirect_emission_mt,direct_emission_mt,stock,unit_sales,ec_gwh',
         '',
-        100000 // Large table
+        100000
       ),
-      // Regions lookup
-      fetchTable<RegionRecord>(
+      safeFetch<RegionRecord>(
         url,
         key,
         'regions',
         'id,country_code,region,subregion,continent'
       ),
-      // Refrigerants with GWP data
-      fetchTable<RefrigerantRecord>(
+      safeFetch<RefrigerantRecord>(
         url,
         key,
         'refrigerants',

@@ -181,7 +181,7 @@
           'Without intervention, cooling emissions could double by 2050. Efficiency and refrigerant transition can unlock 80% reductions.',
         sources: [
           { name: 'Mepsy by CLASP', url: 'https://www.clasp.ngo/tools/mepsy/', logo: '/images/clasp-logo.png' },
-          { name: 'Green Cooling Initiative', url: 'https://www.green-cooling-initiative.org/country-data#!total-emissions/all-sectors/absolute', logos: ['/images/heat-logo.png', '/images/giz-logo.jpg'] }
+          { name: 'Green Cooling Initiative', url: 'https://www.green-cooling-initiative.org/country-data#!total-emissions/all-sectors/absolute', logos: ['/images/heat-logo.png', '/images/giz-logo.png'] }
         ]
       },
       meps: {
@@ -296,13 +296,22 @@
     const updateViewingBadges = () => {
       // Get country name from global filter
       let label = 'Global';
+      let isCountryView = false;
       if (globalCountryFilter) {
         const country = data.countries.find(c => c.country_code === globalCountryFilter);
         label = country?.country_name || globalCountryFilter;
+        isCountryView = true;
       }
       const emissionsViewing = document.getElementById('emissions-viewing');
       if (emissionsViewing) {
         emissionsViewing.textContent = label;
+      }
+      // Update KPI box titles based on country selection
+      const emissionsKpiTitle = document.getElementById('emissions-kpi-title');
+      if (emissionsKpiTitle) {
+        emissionsKpiTitle.innerHTML = isCountryView
+          ? `<i class="fa-solid fa-flag"></i> ${label}`
+          : `<i class="fa-solid fa-globe"></i> Global View`;
       }
       const mepsViewing = document.getElementById('meps-viewing');
       if (mepsViewing) {
@@ -608,19 +617,19 @@
 
             legendEl.innerHTML = `
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#86efac"></div>
+                    <div class="legend-color" style="background:#8BC34A"></div>
                     Low
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#fde047"></div>
+                    <div class="legend-color" style="background:#E89B8C"></div>
                     Medium
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#fb923c"></div>
+                    <div class="legend-color" style="background:#E85A4F"></div>
                     High
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#ef4444"></div>
+                    <div class="legend-color" style="background:#E85A4F"></div>
                     Very High
                 </div>
             `;
@@ -729,6 +738,12 @@
                 return;
             }
 
+            // For Policy view, show simplified country name only
+            if (currentView === 'policy') {
+                updatePolicyCountryDetail(code);
+                return;
+            }
+
             const pledgeRec = data.pledge.find(p => p.country_code === code);
             const kigaliRec = data.kigali.find(k => k.country_code === code);
             const mepsRec = data.meps.find(m => m.country_code === code);
@@ -812,21 +827,15 @@
             // Get all years of data for this country
             const countryData = data.access.filter(r => r.country_code === code);
 
-            // Aggregate by year (sum all categories)
-            const yearlyTotals = ACCESS_YEARS.map(year => {
-                const yearData = countryData.filter(r => r.year === year);
-                const total = yearData.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
-                return { year, total };
-            });
-
-            // Build stacked data by category over time
+            // CCC Palette colors for population categories
             const categoryColors: Record<string, string> = {
-                'Rural Poor': '#ef4444',
-                'Urban Poor': '#f97316',
-                'Lower-Middle Income': '#fbbf24',
-                'Middle-Income': '#22c55e'
+                'Rural Poor': '#E85A4F',
+                'Urban Poor': '#E89B8C',
+                'Lower-Middle Income': '#8BC34A',
+                'Middle-Income': '#3D6B6B'
             };
 
+            // Build stacked data by category over time
             const stackedData = POPULATION_CATEGORIES.map(cat => {
                 return {
                     name: cat,
@@ -838,11 +847,8 @@
                 };
             });
 
-            // Current year data with breakdown by category
+            // Current year data with breakdown by category (for pie chart)
             const currentYearData = countryData.filter(r => r.year === accessYear);
-            const currentYearTotal = currentYearData.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
-
-            // Category breakdown for current year (for pie chart)
             const categoryBreakdown = POPULATION_CATEGORIES.map(cat => {
                 const catTotal = currentYearData
                     .filter(r => r.population_category === cat)
@@ -850,53 +856,71 @@
                 return { category: cat, value: catTotal, color: categoryColors[cat] };
             }).filter(cb => cb.value > 0);
 
-            // Calculate change from first to last year
-            const firstYear = yearlyTotals[0];
-            const lastYear = yearlyTotals[yearlyTotals.length - 1];
-            const change = lastYear.total - firstYear.total;
-            const changePercent = firstYear.total > 0 ? ((change / firstYear.total) * 100).toFixed(1) : '0';
-            const changeColor = change > 0 ? '#ef4444' : '#22c55e';
-            const changeIcon = change > 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+            // Calculate totals for stats
+            const currentYearTotal = currentYearData.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
+            const baselineYear = ACCESS_YEARS[0];
+            const baselineData = countryData.filter(r => r.year === baselineYear);
+            const baselineTotal = baselineData.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
+            const changePercent = baselineTotal > 0 ? ((currentYearTotal - baselineTotal) / baselineTotal * 100).toFixed(1) : '0';
+            const changeColor = Number(changePercent) > 0 ? '#E85A4F' : '#8BC34A';
+            const changeIcon = Number(changePercent) > 0 ? 'fa-arrow-up' : 'fa-arrow-down';
 
-            // Impact level for current year
-            const impactLevels = [...new Set(currentYearData.map(r => r.impact_level).filter(Boolean))];
-            const primaryImpact = impactLevels.includes('High') ? 'High' : impactLevels.includes('Medium') ? 'Medium' : impactLevels[0] || 'N/A';
-            const impactColor = primaryImpact === 'High' ? '#ef4444' : primaryImpact === 'Medium' ? '#f97316' : '#22c55e';
+            // Get region from country data
+            const region = country.region || 'Global South';
 
-            // Set the HTML content with improved layout
+            // Generate trend description
+            const trendDirection = Number(changePercent) > 0 ? 'increased' : 'decreased';
+            const dominantCategory = categoryBreakdown.reduce((max, c) => c.value > max.value ? c : max, { category: '', value: 0 }).category;
+            const trendDescription = `Population without cooling access has ${trendDirection} by ${Math.abs(Number(changePercent))}% since ${baselineYear}.`;
+            const breakdownDescription = dominantCategory ? `The largest vulnerable group is ${dominantCategory}, making up the majority of those at risk.` : '';
+
+            // Set the HTML content matching Emissions view style
             accessDetail.innerHTML = `
-                <h4>${country.country_name}</h4>
-                <div class="detail-row">
-                    <span class="label">Region</span>
-                    <span class="value">${country.region || 'N/A'}</span>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                    <h4 style="color: #92400e; font-size: 1.1rem; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-flag" style="color: #f59e0b;"></i>
+                        ${country.country_name}
+                        <span style="font-size: 0.75rem; font-weight: 400; color: #64748b; margin-left: 0.5rem;">${region}</span>
+                    </h4>
+                    <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                        <span style="font-size: 0.8rem; color: #E85A4F; font-weight: 600;">
+                            <i class="fa-solid fa-users" style="margin-right: 0.25rem;"></i>
+                            ${(currentYearTotal / 1e6).toFixed(1)}M at risk
+                        </span>
+                        <span style="font-size: 0.8rem; color: ${changeColor}; font-weight: 500;">
+                            <i class="fa-solid ${changeIcon}" style="margin-right: 0.25rem;"></i>
+                            ${Math.abs(Number(changePercent))}% since ${baselineYear}
+                        </span>
+                    </div>
                 </div>
-                <div class="detail-row">
-                    <span class="label">Impact Level</span>
-                    <span class="badge" style="background: ${impactColor}; color: white;">${primaryImpact}</span>
+                <div class="country-charts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1rem;">
+                    <div class="chart-box" style="background: #fafafa; border-radius: 8px; padding: 0.75rem;">
+                        <div style="font-size: 0.75rem; font-weight: 600; color: #92400e; margin-bottom: 0.5rem;">
+                            <i class="fa-solid fa-chart-area" style="margin-right: 0.3rem; color: #f59e0b;"></i>
+                            Population at Risk Over Time
+                        </div>
+                        <div class="access-stacked-chart" style="width: 100%; height: 200px;"></div>
+                    </div>
+                    <div class="chart-box" style="background: #fafafa; border-radius: 8px; padding: 0.75rem;">
+                        <div style="font-size: 0.75rem; font-weight: 600; color: #92400e; margin-bottom: 0.5rem;">
+                            <i class="fa-solid fa-chart-pie" style="margin-right: 0.3rem; color: #f59e0b;"></i>
+                            ${accessYear} Category Breakdown
+                        </div>
+                        <div class="access-pie-chart" style="width: 100%; height: 200px;"></div>
+                    </div>
                 </div>
-                <div class="detail-row">
-                    <span class="label">${accessYear} Population at Risk</span>
-                    <span class="value" style="font-weight: 600; color: #f97316;">${(currentYearTotal / 1e6).toFixed(1)}M</span>
+                <div class="country-insight" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 1rem; border-left: 3px solid #f59e0b;">
+                    <div style="font-size: 0.8rem; font-weight: 600; color: #92400e; margin-bottom: 0.5rem;">
+                        <i class="fa-solid fa-lightbulb" style="color: #f59e0b; margin-right: 0.35rem;"></i>
+                        Analysis for ${country.country_name}
+                    </div>
+                    <p style="font-size: 0.85rem; color: #78350f; line-height: 1.6; margin: 0;">
+                        ${trendDescription} ${breakdownDescription}
+                        <span style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #64748b;">
+                            <em>Data source: SEforALL Chilling Prospects • Year: ${accessYear}</em>
+                        </span>
+                    </p>
                 </div>
-                <div class="detail-row">
-                    <span class="label">Change (2013-2024)</span>
-                    <span class="value" style="color: ${changeColor}">
-                        <i class="fa-solid ${changeIcon}" style="font-size: 0.65rem;"></i>
-                        ${Math.abs(Number(changePercent))}%
-                    </span>
-                </div>
-                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0.75rem 0;">
-                <div style="font-size: 0.7rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">
-                    <i class="fa-solid fa-chart-area" style="margin-right: 0.3rem;"></i>
-                    Population at Risk by Category Over Time
-                </div>
-                <div class="access-stacked-chart" style="width: 100%; height: 180px; background: #fafafa; border-radius: 4px;"></div>
-                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0.75rem 0;">
-                <div style="font-size: 0.7rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">
-                    <i class="fa-solid fa-chart-pie" style="margin-right: 0.3rem;"></i>
-                    ${accessYear} Distribution
-                </div>
-                <div class="access-pie-chart" style="width: 100%; height: 160px; background: #fafafa; border-radius: 4px;"></div>
             `;
 
             // Render charts after DOM update
@@ -918,12 +942,20 @@
                 if (stackedContainer) {
                     accessCountryStackedChart = echarts.init(stackedContainer);
                     accessCountryStackedChart.setOption({
-                        grid: { top: 15, right: 15, bottom: 30, left: 50 },
-                        legend: { show: false },
+                        grid: { top: 30, right: 10, bottom: 28, left: 50 },
+                        legend: {
+                            show: true,
+                            top: 0,
+                            left: 'center',
+                            itemWidth: 14,
+                            itemHeight: 10,
+                            textStyle: { fontSize: 11, color: '#475569', fontWeight: 500 },
+                            itemGap: 10
+                        },
                         xAxis: {
                             type: 'category',
                             data: ACCESS_YEARS.map(String),
-                            axisLabel: { fontSize: 11, interval: 2, fontWeight: 500 },
+                            axisLabel: { fontSize: 11, interval: 'auto', fontWeight: 500, color: '#475569' },
                             axisLine: { lineStyle: { color: '#cbd5e1' } },
                             axisTick: { show: false },
                             boundaryGap: false
@@ -933,9 +965,14 @@
                             axisLabel: {
                                 fontSize: 11,
                                 fontWeight: 500,
+                                color: '#475569',
                                 formatter: (v: number) => v >= 1e6 ? `${(v / 1e6).toFixed(0)}M` : v >= 1e3 ? `${(v / 1e3).toFixed(0)}K` : String(v)
                             },
-                            splitLine: { lineStyle: { color: '#f1f5f9' } }
+                            splitLine: { lineStyle: { color: '#e2e8f0' } },
+                            name: 'Population',
+                            nameLocation: 'middle',
+                            nameGap: 35,
+                            nameTextStyle: { fontSize: 10, color: '#64748b', fontWeight: 500 }
                         },
                         series: stackedData.map((cat, idx) => ({
                             name: cat.name,
@@ -1032,17 +1069,17 @@
             const regionData = data.regions.find(r => r.country_code === code);
             const region = regionData?.region || country.region || 'N/A';
 
-            // Colors for appliances/subsectors and emission types
+            // Colors for appliances/subsectors and emission types - CCC Palette
             const applianceColors: Record<string, string> = {
-                'Air Conditioning': '#3b82f6',
-                'Ceiling and Portable Fans': '#22c55e',
-                'Refrigerator-Freezers': '#f97316',
-                'Split residential air conditioners': '#3b82f6',
-                'Domestic refrigeration': '#f97316'
+                'Air Conditioning': '#3D6B6B',
+                'Ceiling and Portable Fans': '#8BC34A',
+                'Refrigerator-Freezers': '#E89B8C',
+                'Split residential air conditioners': '#3D6B6B',
+                'Domestic refrigeration': '#E89B8C'
             };
             const emissionTypeColors: Record<string, string> = {
-                'Direct': '#ef4444',
-                'Indirect': '#3b82f6'
+                'Direct': '#E85A4F',
+                'Indirect': '#3D6B6B'
             };
 
             let years: number[] = [];
@@ -1158,64 +1195,115 @@
                 currentYearTotal = directTotal + indirectTotal;
             }
 
-            // Calculate trend (first vs last available year total)
+            // Calculate trend relative to 2025 baseline
+            const baselineYear = 2025;
+            const baselineYearIndex = years.indexOf(baselineYear);
             let changePercent = '0';
             let changeColor = '#64748b';
             let changeIcon = 'fa-minus';
-            if (years.length >= 2) {
+            let comparisonText = '';
+
+            if (baselineYearIndex !== -1 && emissionsYear >= baselineYear) {
+                // For future years, compare to 2025
+                const baselineTotal = stackedSeriesData.reduce((sum, s) => sum + (s.data[baselineYearIndex] || 0), 0);
+                const selectedYearIndex = years.indexOf(emissionsYear);
+                const selectedYearTotal = selectedYearIndex !== -1
+                    ? stackedSeriesData.reduce((sum, s) => sum + (s.data[selectedYearIndex] || 0), 0)
+                    : currentYearTotal;
+                const change = selectedYearTotal - baselineTotal;
+                if (baselineTotal > 0) {
+                    changePercent = ((change / baselineTotal) * 100).toFixed(1);
+                }
+                changeColor = change > 0 ? '#ef4444' : change < 0 ? '#22c55e' : '#64748b';
+                changeIcon = change > 0 ? 'fa-arrow-up' : change < 0 ? 'fa-arrow-down' : 'fa-minus';
+                comparisonText = 'vs 2025';
+            } else if (years.length >= 2) {
+                // For historical data, compare first to selected year
                 const firstYearTotal = stackedSeriesData.reduce((sum, s) => sum + (s.data[0] || 0), 0);
-                const lastYearTotal = stackedSeriesData.reduce((sum, s) => sum + (s.data[s.data.length - 1] || 0), 0);
-                const change = lastYearTotal - firstYearTotal;
+                const change = currentYearTotal - firstYearTotal;
                 if (firstYearTotal > 0) {
                     changePercent = ((change / firstYearTotal) * 100).toFixed(1);
                 }
                 changeColor = change > 0 ? '#ef4444' : change < 0 ? '#22c55e' : '#64748b';
                 changeIcon = change > 0 ? 'fa-arrow-up' : change < 0 ? 'fa-arrow-down' : 'fa-minus';
+                comparisonText = `vs ${years[0]}`;
             }
 
-            // Chart title based on data source
-            const chartTitle = emissionsDataSource === 'clasp'
+            // Chart titles based on data source
+            const lineChartTitle = emissionsDataSource === 'clasp'
                 ? 'Emissions by Appliance Over Time'
                 : 'Direct vs Indirect Emissions Over Time';
+            const pieChartTitle = `${emissionsYear} Breakdown`;
 
-            // Set the HTML content
+            // Generate trend description
+            const trendDirection = Number(changePercent) > 0 ? 'increase' : Number(changePercent) < 0 ? 'decrease' : 'remain stable';
+            const trendDescription = years.length >= 2
+                ? `Emissions are projected to ${trendDirection} by ${Math.abs(Number(changePercent))}% from 2025 to ${emissionsYear} under the ${scenarioLabel} scenario.`
+                : 'Insufficient data to calculate trend.';
+
+            // Generate breakdown description
+            const topSource = currentYearBreakdown.length > 0
+                ? currentYearBreakdown.reduce((a, b) => a.value > b.value ? a : b)
+                : null;
+            const breakdownDescription = topSource
+                ? `In ${emissionsYear}, ${topSource.name} accounts for the largest share of emissions at ${((topSource.value / currentYearTotal) * 100).toFixed(0)}% (${topSource.value.toFixed(2)} Mt CO2).`
+                : 'No detailed breakdown available for the selected year.';
+
+            // Set the HTML content with side-by-side charts and explanatory text
             emissionsDetail.innerHTML = `
-                <h4>${country.country_name}</h4>
-                <div class="detail-row">
-                    <span class="label">Region</span>
-                    <span class="value">${region}</span>
+                <div class="year-indicator" style="background: linear-gradient(135deg, #3D6B6B 0%, #4A7F7F 100%); color: white; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-calendar-day" style="font-size: 1.1rem;"></i>
+                        <span style="font-size: 1.25rem; font-weight: 700;">${emissionsYear}</span>
+                        <span style="font-size: 0.75rem; opacity: 0.9;">• ${scenarioLabel}</span>
+                    </div>
+                    <span style="font-size: 0.7rem; opacity: 0.85;"><i class="fa-solid fa-sliders" style="margin-right: 0.3rem;"></i>Use the year slider above to explore different projections</span>
                 </div>
-                <div class="detail-row">
-                    <span class="label">Data Source</span>
-                    <span class="badge blue">${dataSourceLabel}</span>
+                <div class="country-header" style="margin-bottom: 1rem;">
+                    <h4 style="color: #3D6B6B; font-size: 1.1rem; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-flag" style="color: #8BC34A;"></i>
+                        ${country.country_name}
+                        <span style="font-size: 0.75rem; font-weight: 400; color: #64748b; margin-left: 0.5rem;">${region}</span>
+                    </h4>
+                    <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                        <span style="font-size: 0.8rem; color: #E85A4F; font-weight: 600;">
+                            <i class="fa-solid fa-cloud" style="margin-right: 0.25rem;"></i>
+                            ${currentYearTotal.toFixed(2)} Mt CO2
+                        </span>
+                        <span style="font-size: 0.8rem; color: ${changeColor}; font-weight: 500;">
+                            <i class="fa-solid ${changeIcon}" style="margin-right: 0.25rem;"></i>
+                            ${Math.abs(Number(changePercent))}% ${comparisonText}
+                        </span>
+                    </div>
                 </div>
-                <div class="detail-row">
-                    <span class="label">Scenario</span>
-                    <span class="value">${scenarioLabel}</span>
+                <div class="country-charts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1rem;">
+                    <div class="chart-box" style="background: #fafafa; border-radius: 8px; padding: 0.75rem;">
+                        <div style="font-size: 0.75rem; font-weight: 600; color: #3D6B6B; margin-bottom: 0.5rem;">
+                            <i class="fa-solid fa-chart-area" style="margin-right: 0.3rem; color: #8BC34A;"></i>
+                            ${lineChartTitle}
+                        </div>
+                        <div class="emissions-line-chart" style="width: 100%; height: 200px;"></div>
+                    </div>
+                    <div class="chart-box" style="background: #fafafa; border-radius: 8px; padding: 0.75rem;">
+                        <div style="font-size: 0.75rem; font-weight: 600; color: #3D6B6B; margin-bottom: 0.5rem;">
+                            <i class="fa-solid fa-chart-pie" style="margin-right: 0.3rem; color: #8BC34A;"></i>
+                            ${pieChartTitle}
+                        </div>
+                        <div class="emissions-pie-chart" style="width: 100%; height: 200px;"></div>
+                    </div>
                 </div>
-                <div class="detail-row">
-                    <span class="label">${emissionsYear} Emissions</span>
-                    <span class="value" style="font-weight: 600; color: #ef4444;">${currentYearTotal.toFixed(2)} Mt CO2</span>
+                <div class="country-insight" style="background: linear-gradient(135deg, #EBF4F4 0%, #F5FAFA 100%); border-radius: 8px; padding: 1rem; border-left: 3px solid #8BC34A;">
+                    <div style="font-size: 0.8rem; font-weight: 600; color: #2D5252; margin-bottom: 0.5rem;">
+                        <i class="fa-solid fa-lightbulb" style="color: #8BC34A; margin-right: 0.35rem;"></i>
+                        Analysis for ${country.country_name}
+                    </div>
+                    <p style="font-size: 0.85rem; color: #3D6B6B; line-height: 1.6; margin: 0;">
+                        ${trendDescription} ${breakdownDescription}
+                        <span style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #64748b;">
+                            <em>Data source: ${dataSourceLabel} • Scenario: ${scenarioLabel}</em>
+                        </span>
+                    </p>
                 </div>
-                <div class="detail-row">
-                    <span class="label">Trend</span>
-                    <span class="value" style="color: ${changeColor}">
-                        <i class="fa-solid ${changeIcon}" style="font-size: 0.65rem;"></i>
-                        ${Math.abs(Number(changePercent))}%
-                    </span>
-                </div>
-                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0.75rem 0;">
-                <div style="font-size: 0.7rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">
-                    <i class="fa-solid fa-chart-area" style="margin-right: 0.3rem;"></i>
-                    ${chartTitle}
-                </div>
-                <div class="emissions-line-chart" style="width: 100%; height: 180px; background: #fafafa; border-radius: 4px;"></div>
-                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 0.75rem 0;">
-                <div style="font-size: 0.7rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">
-                    <i class="fa-solid fa-chart-pie" style="margin-right: 0.3rem;"></i>
-                    ${emissionsYear} Breakdown
-                </div>
-                <div class="emissions-pie-chart" style="width: 100%; height: 160px; background: #fafafa; border-radius: 4px;"></div>
             `;
 
             // Render charts after DOM update
@@ -1345,6 +1433,174 @@
                     });
                 } else if (pieContainer) {
                     pieContainer.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #94a3b8; font-size: 0.75rem;">No data for selected year</div>';
+                }
+            }, 100);
+        }
+
+        // Show global aggregated emissions when no country is selected
+        function showGlobalEmissionsDetail() {
+            const emissionsDetail = document.querySelector('#emissions-country-detail .country-detail') as HTMLElement;
+            if (!emissionsDetail) return;
+
+            const dataSourceLabel = emissionsDataSource === 'clasp' ? 'CLASP' : 'HEAT Modelling';
+            const scenarioLabel = emissionsDataSource === 'clasp'
+                ? CLASP_SCENARIO_NAMES[emissionsScenario] || emissionsScenario
+                : HEAT_SCENARIO_NAMES[emissionsScenario] || emissionsScenario;
+
+            // Get global totals
+            const totals = getEmissionsTotals();
+            let globalTotal = 0;
+            let globalBreakdown: { name: string; value: number; color: string }[] = [];
+
+            const applianceColors: Record<string, string> = {
+                'Air Conditioning': '#3D6B6B',
+                'Ceiling and Portable Fans': '#8BC34A',
+                'Refrigerator-Freezers': '#E89B8C',
+                'AC': '#3D6B6B',
+                'Fans': '#8BC34A',
+                'Refrigerators': '#E89B8C'
+            };
+
+            if (emissionsDataSource === 'clasp') {
+                const t = totals as { total: number; byAppliance: Record<string, number>; countriesCount: number };
+                globalTotal = t.total;
+                Object.entries(t.byAppliance).forEach(([app, val]) => {
+                    if (val > 0) {
+                        const shortName = CLASP_APPLIANCE_SHORT[app] || app;
+                        globalBreakdown.push({
+                            name: shortName,
+                            value: val,
+                            color: applianceColors[shortName] || applianceColors[app] || '#64748b'
+                        });
+                    }
+                });
+            } else {
+                const t = totals as { total: number; direct: number; indirect: number; countriesCount: number };
+                globalTotal = t.total;
+                if (t.direct > 0) globalBreakdown.push({ name: 'Direct', value: t.direct, color: '#E85A4F' });
+                if (t.indirect > 0) globalBreakdown.push({ name: 'Indirect', value: t.indirect, color: '#3D6B6B' });
+            }
+
+            const topSource = globalBreakdown.length > 0
+                ? globalBreakdown.reduce((a, b) => a.value > b.value ? a : b)
+                : null;
+
+            const lineChartTitle = emissionsDataSource === 'clasp'
+                ? 'Global Emissions by Appliance'
+                : 'Global Direct vs Indirect Emissions';
+
+            emissionsDetail.innerHTML = `
+                <div class="year-indicator" style="background: linear-gradient(135deg, #3D6B6B 0%, #4A7F7F 100%); color: white; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-calendar-day" style="font-size: 1.1rem;"></i>
+                        <span style="font-size: 1.25rem; font-weight: 700;">${emissionsYear}</span>
+                        <span style="font-size: 0.75rem; opacity: 0.9;">• ${scenarioLabel}</span>
+                    </div>
+                    <span style="font-size: 0.7rem; opacity: 0.85;"><i class="fa-solid fa-sliders" style="margin-right: 0.3rem;"></i>Use the year slider above to explore different projections</span>
+                </div>
+                <div class="country-header" style="margin-bottom: 1rem;">
+                    <h4 style="color: #3D6B6B; font-size: 1.1rem; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-globe" style="color: #8BC34A;"></i>
+                        Global Overview
+                    </h4>
+                    <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                        <span style="font-size: 0.8rem; color: #E85A4F; font-weight: 600;">
+                            <i class="fa-solid fa-cloud" style="margin-right: 0.25rem;"></i>
+                            ${globalTotal.toFixed(1)} Mt CO2
+                        </span>
+                    </div>
+                </div>
+                <div class="country-charts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1rem;">
+                    <div class="chart-box" style="background: #fafafa; border-radius: 8px; padding: 0.75rem;">
+                        <div style="font-size: 0.75rem; font-weight: 600; color: #3D6B6B; margin-bottom: 0.5rem;">
+                            <i class="fa-solid fa-chart-pie" style="margin-right: 0.3rem; color: #8BC34A;"></i>
+                            ${emissionsYear} Breakdown
+                        </div>
+                        <div class="emissions-pie-chart" style="width: 100%; height: 200px;"></div>
+                    </div>
+                    <div class="chart-box" style="background: #fafafa; border-radius: 8px; padding: 0.75rem;">
+                        <div style="font-size: 0.75rem; font-weight: 600; color: #3D6B6B; margin-bottom: 0.5rem;">
+                            <i class="fa-solid fa-ranking-star" style="margin-right: 0.3rem; color: #8BC34A;"></i>
+                            Top Emitting Countries
+                        </div>
+                        <div class="emissions-bar-chart" style="width: 100%; height: 200px;"></div>
+                    </div>
+                </div>
+                <div class="country-insight" style="background: linear-gradient(135deg, #EBF4F4 0%, #F5FAFA 100%); border-radius: 8px; padding: 1rem; border-left: 3px solid #8BC34A;">
+                    <div style="font-size: 0.8rem; font-weight: 600; color: #2D5252; margin-bottom: 0.5rem;">
+                        <i class="fa-solid fa-lightbulb" style="color: #8BC34A; margin-right: 0.35rem;"></i>
+                        Global Analysis
+                    </div>
+                    <p style="font-size: 0.85rem; color: #3D6B6B; line-height: 1.6; margin: 0;">
+                        Global cooling emissions total ${globalTotal.toFixed(1)} Mt CO2 in ${emissionsYear} under the ${scenarioLabel} scenario.
+                        ${topSource ? `${topSource.name} accounts for the largest share at ${((topSource.value / globalTotal) * 100).toFixed(0)}% (${topSource.value.toFixed(1)} Mt CO2).` : ''}
+                        <span style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #64748b;">
+                            <em>Data source: ${dataSourceLabel} • Scenario: ${scenarioLabel} • Click a country on the map for detailed breakdown</em>
+                        </span>
+                    </p>
+                </div>
+            `;
+
+            // Render charts after DOM update
+            setTimeout(() => {
+                const pieContainer = emissionsDetail.querySelector('.emissions-pie-chart') as HTMLElement;
+                const barContainer = emissionsDetail.querySelector('.emissions-bar-chart') as HTMLElement;
+
+                // Dispose existing charts
+                if (emissionsCountryPieChart) {
+                    emissionsCountryPieChart.dispose();
+                    emissionsCountryPieChart = null;
+                }
+                if (emissionsCountryLineChart) {
+                    emissionsCountryLineChart.dispose();
+                    emissionsCountryLineChart = null;
+                }
+
+                // Render pie chart
+                if (pieContainer && globalBreakdown.length > 0) {
+                    emissionsCountryPieChart = echarts.init(pieContainer);
+                    emissionsCountryPieChart.setOption({
+                        tooltip: { trigger: 'item', formatter: (params: any) => `${params.name}: ${params.value.toFixed(1)} Mt (${params.percent}%)` },
+                        series: [{
+                            type: 'pie',
+                            radius: ['35%', '65%'],
+                            center: ['50%', '50%'],
+                            itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 },
+                            label: { show: true, fontSize: 11, fontWeight: 500, color: '#475569', formatter: (p: any) => `${p.name}\n${p.percent}%` },
+                            data: globalBreakdown.map(c => ({ name: c.name, value: c.value, itemStyle: { color: c.color } }))
+                        }]
+                    });
+                }
+
+                // Render top countries bar chart
+                if (barContainer) {
+                    let countryData: { name: string; value: number }[] = [];
+                    if (emissionsDataSource === 'clasp') {
+                        const byCountry = getClaspEmissionsByCountry();
+                        countryData = Object.entries(byCountry)
+                            .map(([code, data]) => ({ name: data.name || code, value: data.total }))
+                            .sort((a, b) => b.value - a.value)
+                            .slice(0, 8);
+                    } else {
+                        const byCountry = getSubcoolEmissionsByCountry();
+                        countryData = Object.entries(byCountry)
+                            .map(([code, data]) => ({ name: data.name || code, value: data.total }))
+                            .sort((a, b) => b.value - a.value)
+                            .slice(0, 8);
+                    }
+
+                    emissionsCountryLineChart = echarts.init(barContainer);
+                    emissionsCountryLineChart.setOption({
+                        tooltip: { trigger: 'axis', formatter: '{b}: {c} Mt' },
+                        grid: { left: '3%', right: '8%', bottom: '3%', top: '3%', containLabel: true },
+                        xAxis: { type: 'value', axisLabel: { fontSize: 10 } },
+                        yAxis: { type: 'category', data: countryData.map(d => d.name).reverse(), axisLabel: { fontSize: 10 } },
+                        series: [{
+                            type: 'bar',
+                            data: countryData.map(d => d.value).reverse(),
+                            itemStyle: { color: '#3D6B6B', borderRadius: [0, 4, 4, 0] }
+                        }]
+                    });
                 }
             }, 100);
         }
@@ -1479,7 +1735,7 @@
                         label: { show: false },
                         data: [
                             { value: both, name: 'Both GCP + Kigali', itemStyle: { color: '#22c55e' } },
-                            { value: pledgeOnly, name: 'GCP Only', itemStyle: { color: '#3b82f6' } },
+                            { value: pledgeOnly, name: 'GCP Only', itemStyle: { color: '#8BC34A' } },
                             { value: kigaliOnly, name: 'Kigali Only', itemStyle: { color: '#f59e0b' } },
                             {
                                 value: data.countries.length - both - pledgeOnly - kigaliOnly,
@@ -1882,11 +2138,11 @@
             const logMax = Math.log10(maxValue + 1);
             const ratio = logValue / logMax;
 
-            // Color gradient from light green (low) to red (very high)
-            if (ratio < 0.25) return '#86efac';  // Low - light green
-            if (ratio < 0.5) return '#fde047';   // Medium - yellow
-            if (ratio < 0.75) return '#fb923c';  // High - orange
-            return '#ef4444';                     // Very High - red
+            // CCC color gradient from green (low) to orange-red (very high)
+            if (ratio < 0.25) return '#8BC34A';  // Low - CCC green
+            if (ratio < 0.5) return '#E89B8C';   // Medium - CCC coral
+            if (ratio < 0.75) return '#E85A4F';  // High - CCC orange-red
+            return '#D94539';                     // Very High - CCC dark orange-red
         }
 
         async function initEmissionsMap() {
@@ -1906,6 +2162,29 @@
                 .attr('height', '100%')
                 .attr('viewBox', `0 0 ${width} ${height}`)
                 .attr('preserveAspectRatio', 'xMidYMid meet');
+
+            // Add background rect to capture ocean clicks
+            emissionsMapSvg.append('rect')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('fill', 'transparent')
+                .style('cursor', 'pointer')
+                .on('click', () => {
+                    // Deselect country and show global view
+                    selectedCountry = null;
+                    globalCountryFilter = '';
+                    const countrySelect = byId<HTMLSelectElement>('country-filter');
+                    if (countrySelect) countrySelect.value = '';
+
+                    // Clear visual selection on map
+                    clearCountryHighlights();
+
+                    updateViewingBadges();
+                    updateEmissionsView();
+
+                    // Show global aggregated view in country detail section
+                    showGlobalEmissionsDetail();
+                });
 
             const projection = d3.geoNaturalEarth1()
                 .scale(width / 6)
@@ -1967,20 +2246,20 @@
         function updateEmissionsLegend() {
             byId('emissions-legend').innerHTML = `
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#166534"></div>
-                    High
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background:#65a30d"></div>
-                    Medium
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color" style="background:#fbbf24"></div>
+                    <div class="legend-color" style="background:#8BC34A"></div>
                     Low
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#ef4444"></div>
-                    Critical
+                    <div class="legend-color" style="background:#E89B8C"></div>
+                    Medium
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background:#E85A4F"></div>
+                    High
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background:#E85A4F"></div>
+                    Very High
                 </div>
                 <div class="legend-item">
                     <div class="legend-color" style="background:#e2e8f0"></div>
@@ -2046,17 +2325,40 @@
             });
         }
 
+        // Update the meta pills in KPI box header
+        function updateEmissionsMetaPills() {
+            const sourceEl = document.getElementById('emissions-meta-source');
+            const yearEl = document.getElementById('emissions-meta-year');
+            const scenarioEl = document.getElementById('emissions-meta-scenario');
+
+            if (sourceEl) {
+                sourceEl.innerHTML = `<i class="fa-solid fa-database"></i> ${emissionsDataSource === 'clasp' ? 'CLASP' : 'HEAT'}`;
+            }
+            if (yearEl) {
+                yearEl.innerHTML = `<i class="fa-solid fa-calendar"></i> ${emissionsYear}`;
+            }
+            if (scenarioEl) {
+                const scenarioName = emissionsDataSource === 'clasp'
+                    ? CLASP_SCENARIO_NAMES[emissionsScenario] || emissionsScenario
+                    : HEAT_SCENARIO_NAMES[emissionsScenario] || emissionsScenario;
+                scenarioEl.innerHTML = `<i class="fa-solid fa-chart-line"></i> ${scenarioName}`;
+            }
+        }
+
         // Main update function for emissions view
         function updateEmissionsView() {
             updateNewEmissionsKPIs();
             updateNewEmissionsMap();
             updateEmissionsCharts();
-            // Refresh country detail if a country is selected
+            updateEmissionsMetaPills();
+            // Refresh country detail if a country is selected, otherwise show global
             if (selectedCountry) {
                 const country = data.countries.find(c => c.country_code === selectedCountry);
                 if (country) {
                     updateEmissionsCountryDetail(selectedCountry, country);
                 }
+            } else {
+                showGlobalEmissionsDetail();
             }
         }
 
@@ -2118,13 +2420,13 @@
             updateNewEmissionsLegend(maxValue);
         }
 
-        // Update emissions legend
+        // Update emissions legend - CCC Palette
         function updateNewEmissionsLegend(maxValue: number) {
             const container = document.getElementById('emissions-legend');
             if (!container) return;
 
             const thresholds = [0.25, 0.5, 0.75, 1.0];
-            const colors = ['#86efac', '#fde047', '#fb923c', '#ef4444'];
+            const colors = ['#8BC34A', '#E89B8C', '#E85A4F', '#D94539'];
             const labels = ['Low', 'Medium', 'High', 'Very High'];
 
             container.innerHTML = thresholds.map((t, i) => {
@@ -2238,7 +2540,7 @@
                 series: [{
                     type: 'bar',
                     data: countryData.map(d => d.value).reverse(),
-                    itemStyle: { color: '#3b82f6' }
+                    itemStyle: { color: '#8BC34A' }
                 }]
             });
         }
@@ -2414,15 +2716,15 @@
         function getMepsColor(level: string) {
             switch (level) {
                 case 'both':
-                    return '#166534'; // Dark green - has both MEPS & Labels
+                    return '#2D5252'; // CCC dark teal - has both MEPS & Labels
                 case 'meps':
-                    return '#2563eb'; // Blue - MEPS only
+                    return '#3D6B6B'; // CCC teal - MEPS only
                 case 'labels':
-                    return '#f59e0b'; // Amber - Labels only
+                    return '#8BC34A'; // CCC green - Labels only
                 case 'limited':
-                    return '#94a3b8'; // Slate - other policies
+                    return '#E89B8C'; // CCC coral - other policies
                 case 'critical':
-                    return '#ef4444'; // Red - no policies
+                    return '#E85A4F'; // CCC orange-red - no policies
                 default:
                     return '#e2e8f0'; // Light gray - no data
             }
@@ -2447,6 +2749,23 @@
                 .translate([width / 2, height / 1.8]);
 
             const path = d3.geoPath().projection(projection);
+
+            // Ocean click handler - deselect country and return to global view
+            mepsMapSvg.append('rect')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('fill', 'transparent')
+                .style('cursor', 'pointer')
+                .on('click', () => {
+                    selectedCountry = null;
+                    globalCountryFilter = '';
+                    const countrySelect = byId<HTMLSelectElement>('country-filter');
+                    if (countrySelect) countrySelect.value = '';
+                    clearCountryHighlights();
+                    updateViewingBadges();
+                    updateMepsView();
+                    showGlobalMepsDetail();
+                });
 
             try {
                 const world = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json');
@@ -2520,19 +2839,19 @@
             if (!legend) return;
             legend.innerHTML = `
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#166534"></div>
+                    <div class="legend-color" style="background:#2D5252"></div>
                     MEPS & Labels
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#2563eb"></div>
+                    <div class="legend-color" style="background:#3D6B6B"></div>
                     MEPS Only
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#f59e0b"></div>
+                    <div class="legend-color" style="background:#8BC34A"></div>
                     Labels Only
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#ef4444"></div>
+                    <div class="legend-color" style="background:#E85A4F"></div>
                     No Policies
                 </div>
             `;
@@ -2678,39 +2997,13 @@
 
             const country = data.countries.find(c => c.country_code === code);
             const allRecords = data.meps.filter(m => m.country_code === code);
-            const regionRec = data.regions.find(r => r.country_code === code);
 
             if (!country) {
                 container.innerHTML = `<h4>Unknown Country</h4><p class="side-muted">No data available for ${code}</p>`;
                 return;
             }
 
-            const region = regionRec?.region || country.region || 'N/A';
-            const mepsRecs = allRecords.filter(r => isMepsRecord(r));
-            const labelRecs = allRecords.filter(r => isLabelRecord(r));
-            const status = getMepsStatus(code);
-
-            let html = `<h4>${country.country_name}</h4>
-                <div class="detail-row">
-                    <span class="label">Region</span>
-                    <span class="value">${region}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="label">Status</span>
-                    <span class="badge" style="background:${getMepsColor(status.level)}20;color:${getMepsColor(status.level)};border:1px solid ${getMepsColor(status.level)}40">${status.label}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="label">Total Policies</span>
-                    <span class="value">${allRecords.length}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="label">MEPS</span>
-                    <span class="value" style="color:#2563eb;font-weight:600">${mepsRecs.length}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="label">Labels</span>
-                    <span class="value" style="color:#f59e0b;font-weight:600">${labelRecs.length}</span>
-                </div>`;
+            let html = `<h4>${country.country_name}</h4>`;
 
             container.innerHTML = html;
 
@@ -2723,7 +3016,7 @@
             const countryName = country?.country_name || code;
             const equipTypes = ['Air Conditioning', 'Domestic Refrigeration', 'Fans'];
             const equipShort: Record<string, string> = { 'Air Conditioning': 'AC', 'Domestic Refrigeration': 'Fridge', 'Fans': 'Fans' };
-            const equipColors: Record<string, string> = { 'Air Conditioning': '#2563eb', 'Domestic Refrigeration': '#16a34a', 'Fans': '#a855f7' };
+            const equipColors: Record<string, string> = { 'Air Conditioning': '#3D6B6B', 'Domestic Refrigeration': '#8BC34A', 'Fans': '#E89B8C' };
 
             // Update chart titles for country view
             const setTitle = (id: string, text: string) => { const el = document.getElementById(id); if (el) el.textContent = text; };
@@ -2921,7 +3214,7 @@
                     } else {
                         // Summary stats row
                         html += `<div style="display:flex;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap;">
-                            <div style="font-size:0.75rem;color:#334155;"><span style="color:#2563eb;font-weight:700;">${meps.length}</span> MEPS</div>
+                            <div style="font-size:0.75rem;color:#334155;"><span style="color:#4A7F7F;font-weight:700;">${meps.length}</span> MEPS</div>
                             <div style="font-size:0.75rem;color:#334155;"><span style="color:#f59e0b;font-weight:700;">${labels.length}</span> Labels</div>
                             <div style="font-size:0.75rem;color:#334155;"><span style="font-weight:600;">${mandatory}</span> Mandatory</div>
                             <div style="font-size:0.75rem;color:#334155;"><span style="font-weight:600;">${voluntary}</span> Voluntary</div>
@@ -2942,9 +3235,9 @@
                             const truncName = name.length > 80 ? name.substring(0, 77) + '...' : name;
                             const hasMep = isMepsRecord(r);
                             const hasLbl = isLabelRecord(r);
-                            const borderColor = hasMep ? '#2563eb' : '#f59e0b';
+                            const borderColor = hasMep ? '#4A7F7F' : '#f59e0b';
                             const typeBadges: string[] = [];
-                            if (hasMep) typeBadges.push(`<span style="font-size:0.65rem;background:#dbeafe;color:#2563eb;padding:1px 5px;border-radius:3px;font-weight:600;">MEPS</span>`);
+                            if (hasMep) typeBadges.push(`<span style="font-size:0.65rem;background:#EBF4F4;color:#4A7F7F;padding:1px 5px;border-radius:3px;font-weight:600;">MEPS</span>`);
                             if (hasLbl) typeBadges.push(`<span style="font-size:0.65rem;background:#fef3c7;color:#d97706;padding:1px 5px;border-radius:3px;font-weight:600;">Label</span>`);
                             const reqBadge = r.requirement_type ? `<span style="font-size:0.65rem;background:#f1f5f9;color:#475569;padding:1px 5px;border-radius:3px;">${r.requirement_type}</span>` : '';
 
@@ -3034,7 +3327,7 @@
                         name: 'MEPS',
                         type: 'bar',
                         data: regionNames.map(r => regionStats[r].meps.size),
-                        color: '#2563eb',
+                        color: '#4A7F7F',
                         barGap: '10%'
                     },
                     {
@@ -3084,7 +3377,7 @@
                         data: cumMepsData,
                         smooth: true,
                         areaStyle: { opacity: 0.2 },
-                        color: '#2563eb'
+                        color: '#4A7F7F'
                     },
                     {
                         name: 'Labels',
@@ -3125,7 +3418,7 @@
                         name: 'MEPS',
                         type: 'bar',
                         data: equipMeps.slice().reverse(),
-                        color: '#2563eb',
+                        color: '#4A7F7F',
                         barGap: '10%'
                     },
                     {
@@ -3143,11 +3436,82 @@
             updateMepsKPIs();
             updateMepsMap();
             updateMepsCharts();
+            updateMepsKpiTitle();
+            updateMepsMetaPills();
             // Update viewing pill
             const viewingEl = document.getElementById('meps-viewing');
             if (viewingEl) {
                 viewingEl.textContent = mepsRegionFilter || 'Global';
             }
+        }
+
+        function updateMepsKpiTitle() {
+            const titleEl = document.getElementById('meps-kpi-title');
+            if (!titleEl) return;
+
+            if (selectedCountry) {
+                const country = data.countries.find(c => c.country_code === selectedCountry);
+                titleEl.innerHTML = `<i class="fa-solid fa-flag"></i> ${country?.country_name || selectedCountry}`;
+            } else {
+                titleEl.innerHTML = `<i class="fa-solid fa-globe"></i> Global View`;
+            }
+        }
+
+        function updateMepsMetaPills() {
+            const regionPill = document.getElementById('meps-meta-region');
+            const equipPill = document.getElementById('meps-meta-equipment');
+
+            if (regionPill) {
+                regionPill.innerHTML = `<i class="fa-solid fa-earth-americas"></i> ${mepsRegionFilter || 'All Regions'}`;
+            }
+            if (equipPill) {
+                const activeEquip = mepsEquipmentTypes.length;
+                const totalEquip = 3; // AC, Refrigeration, Fans
+                const equipText = activeEquip === 0 || activeEquip === totalEquip ? 'All Equipment' : `${activeEquip}/${totalEquip} Equipment`;
+                equipPill.innerHTML = `<i class="fa-solid fa-cogs"></i> ${equipText}`;
+            }
+
+            // Also update filter status bar tags
+            updateMepsFilterStatusBar();
+        }
+
+        function updateMepsFilterStatusBar() {
+            const regionTag = document.getElementById('meps-filter-region');
+            const equipTag = document.getElementById('meps-filter-equipment');
+
+            if (regionTag) {
+                regionTag.innerHTML = `<i class="fa-solid fa-earth-americas"></i> ${mepsRegionFilter || 'All Regions'}`;
+            }
+            if (equipTag) {
+                const activeEquip = mepsEquipmentTypes.length;
+                const totalEquip = 3; // AC, Refrigeration, Fans
+                const equipText = activeEquip === 0 || activeEquip === totalEquip ? 'All Equipment' : `${activeEquip}/${totalEquip} Equipment`;
+                equipTag.innerHTML = `<i class="fa-solid fa-cogs"></i> ${equipText}`;
+            }
+
+            // Update status title based on country selection
+            const statusTitle = document.getElementById('meps-status-title');
+            if (statusTitle) {
+                if (selectedCountry) {
+                    const country = data.countries.find(c => c.country_code === selectedCountry);
+                    statusTitle.textContent = country?.country_name || selectedCountry;
+                } else {
+                    statusTitle.textContent = 'Product Efficiency Analysis';
+                }
+            }
+        }
+
+        function showGlobalMepsDetail() {
+            const container = document.querySelector('#meps-country-detail .country-detail') as HTMLElement;
+            if (!container) return;
+
+            container.innerHTML = `
+                <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
+                    <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #8BC34A; margin-bottom: 0.75rem; display: block;"></i>
+                    <h4 style="color: #3D6B6B; margin-bottom: 0.5rem;">Select a Country</h4>
+                    <p style="font-size: 0.85rem;">Click on any country in the map above to view MEPS and labeling policy details.</p>
+                </div>
+            `;
         }
 
         // =====================================================
@@ -3183,13 +3547,13 @@
         function getKigaliColor(level: string) {
             switch (level) {
                 case 'high':
-                    return '#166534';
+                    return '#2D5252'; // CCC dark teal
                 case 'medium':
-                    return '#65a30d';
+                    return '#8BC34A'; // CCC green
                 case 'low':
-                    return '#fbbf24';
+                    return '#E89B8C'; // CCC coral
                 case 'critical':
-                    return '#ef4444';
+                    return '#E85A4F'; // CCC orange-red
                 default:
                     return '#e2e8f0';
             }
@@ -3208,6 +3572,23 @@
                 .attr('height', '100%')
                 .attr('viewBox', `0 0 ${width} ${height}`)
                 .attr('preserveAspectRatio', 'xMidYMid meet');
+
+            // Add background rect to capture ocean clicks
+            kigaliMapSvg.append('rect')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('fill', 'transparent')
+                .style('cursor', 'pointer')
+                .on('click', () => {
+                    selectedCountry = null;
+                    globalCountryFilter = '';
+                    const countrySelect = byId<HTMLSelectElement>('country-filter');
+                    if (countrySelect) countrySelect.value = '';
+                    clearCountryHighlights();
+                    updateViewingBadges();
+                    updateKigaliView();
+                    showGlobalKigaliDetail();
+                });
 
             const projection = d3.geoNaturalEarth1()
                 .scale(width / 6)
@@ -3275,19 +3656,19 @@
             if (!legend) return;
             legend.innerHTML = `
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#166534"></div>
+                    <div class="legend-color" style="background:#2D5252"></div>
                     High/Active
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#65a30d"></div>
+                    <div class="legend-color" style="background:#8BC34A"></div>
                     Medium/Partial
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#fbbf24"></div>
+                    <div class="legend-color" style="background:#E89B8C"></div>
                     Low/None
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#ef4444"></div>
+                    <div class="legend-color" style="background:#E85A4F"></div>
                     Critical
                 </div>
             `;
@@ -3451,7 +3832,7 @@
                 groupCounts[g] = (groupCounts[g] || 0) + 1;
             });
             const groupData = Object.entries(groupCounts).map(([name, value]) => ({ name, value }));
-            const groupColors = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6'];
+            const groupColors = ['#3D6B6B', '#8BC34A', '#E89B8C', '#E85A4F', '#4A7F7F'];
 
             setChart('chart-kigali-groups', {
                 tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
@@ -3474,12 +3855,12 @@
         function renderRefrigerantGWPChart() {
             if (!data.refrigerants || data.refrigerants.length === 0) return;
 
-            // Color mapping by refrigerant type
+            // Color mapping by refrigerant type - CCC Palette
             const typeColors: Record<string, string> = {
-                'HFC': '#ef4444',   // Red - High GWP
-                'HCFC': '#f59e0b',  // Amber - Medium GWP
-                'HFO': '#3b82f6',   // Blue - Low GWP
-                'NR': '#22c55e'     // Green - Natural (lowest GWP)
+                'HFC': '#E85A4F',   // Orange-red - High GWP
+                'HCFC': '#E89B8C',  // Coral - Medium GWP
+                'HFO': '#3D6B6B',   // Teal - Low GWP
+                'NR': '#8BC34A'     // Green - Natural (lowest GWP)
             };
 
             // Sort refrigerants by GWP (descending) for visual impact
@@ -3564,38 +3945,40 @@
             if (!container) return;
 
             const country = data.countries.find(c => c.country_code === code);
-            const kigaliRecord = data.kigali.find(k => k.country_code === code);
-            const regionData = data.regions.find(r => r.country_code === code);
 
             if (!country) {
                 container.innerHTML = `<h4>Unknown Country</h4><p class="side-muted">No data available for ${code}</p>`;
                 return;
             }
 
-            const region = regionData?.region || country.region || 'N/A';
-            const isKigaliParty = kigaliRecord?.kigali_party === 1;
-            const isMontrealParty = kigaliRecord?.montreal_protocol_party === 1;
-            const groupType = kigaliRecord?.group_type || 'N/A';
+            container.innerHTML = `<h4>${country.country_name}</h4>`;
+        }
 
-            let html = `<h4>${country.country_name}</h4>
-                <div class="detail-row">
-                    <span class="label">Region</span>
-                    <span class="value">${region}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="label">Kigali Amendment</span>
-                    <span class="badge ${isKigaliParty ? 'green' : 'red'}">${isKigaliParty ? 'Party' : 'Non-Party'}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="label">Montreal Protocol</span>
-                    <span class="badge ${isMontrealParty ? 'blue' : 'red'}">${isMontrealParty ? 'Party' : 'Non-Party'}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="label">Group Type</span>
-                    <span class="value">${groupType}</span>
-                </div>`;
+        function updatePolicyCountryDetail(code: string) {
+            const container = document.querySelector('#policy-country-detail .country-detail') as HTMLElement;
+            if (!container) return;
 
-            container.innerHTML = html;
+            const country = data.countries.find(c => c.country_code === code);
+
+            if (!country) {
+                container.innerHTML = `<h4>Unknown Country</h4><p class="side-muted">No data available for ${code}</p>`;
+                return;
+            }
+
+            container.innerHTML = `<h4>${country.country_name}</h4>`;
+        }
+
+        function showGlobalKigaliDetail() {
+            const container = document.querySelector('#kigali-country-detail .country-detail') as HTMLElement;
+            if (!container) return;
+
+            container.innerHTML = `
+                <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
+                    <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #8BC34A; margin-bottom: 0.75rem; display: block;"></i>
+                    <h4 style="color: #2D5252; margin-bottom: 0.5rem;">Select a Country</h4>
+                    <p style="font-size: 0.85rem;">Click on any country in the map above to view Kigali Amendment and refrigerant transition details.</p>
+                </div>
+            `;
         }
 
         function updateKigaliView() {
@@ -3607,6 +3990,33 @@
             if (viewingEl) {
                 viewingEl.textContent = kigaliRegionFilter || 'Global';
             }
+
+            // Also update filter status bar tags
+            updateKigaliFilterStatusBar();
+        }
+
+        function updateKigaliFilterStatusBar() {
+            const regionTag = document.getElementById('kigali-filter-region');
+            const groupTag = document.getElementById('kigali-filter-groups');
+
+            if (regionTag) {
+                regionTag.innerHTML = `<i class="fa-solid fa-earth-americas"></i> ${kigaliRegionFilter || 'All Regions'}`;
+            }
+            if (groupTag) {
+                const groupFilter = (document.getElementById('kigali-group-filter') as HTMLSelectElement)?.value || '';
+                groupTag.innerHTML = `<i class="fa-solid fa-users"></i> ${groupFilter || 'All Groups'}`;
+            }
+
+            // Update status title based on country selection
+            const statusTitle = document.getElementById('kigali-status-title');
+            if (statusTitle) {
+                if (selectedCountry) {
+                    const country = data.countries.find(c => c.country_code === selectedCountry);
+                    statusTitle.textContent = country?.country_name || selectedCountry;
+                } else {
+                    statusTitle.textContent = 'Kigali Amendment Tracker';
+                }
+            }
         }
 
         // =====================================================
@@ -3616,7 +4026,8 @@
 
         // 7-tier threshold-based color scale
         const ACCESS_THRESHOLDS = [1e6, 5e6, 20e6, 50e6, 200e6, 500e6];
-        const ACCESS_COLORS = ['#fef9c3', '#fde68a', '#fbbf24', '#f97316', '#ef4444', '#dc2626', '#991b1b'];
+        // CCC Palette - consistent 4-tier scale: green -> coral -> orange-red -> dark red
+        const ACCESS_COLORS = ['#8BC34A', '#8BC34A', '#E89B8C', '#E89B8C', '#E85A4F', '#D94539', '#D94539'];
         const ACCESS_LABELS = ['<1M', '1-5M', '5-20M', '20-50M', '50-200M', '200-500M', '>500M'];
 
         function getAccessTotalsFiltered(): Record<string, number> {
@@ -3654,13 +4065,13 @@
         function getAccessColor(level: string) {
             switch (level) {
                 case 'low':
-                    return '#22c55e';
+                    return '#8BC34A'; // CCC green
                 case 'medium':
-                    return '#f97316';
+                    return '#E89B8C'; // CCC coral
                 case 'high':
-                    return '#dc2626';
+                    return '#E85A4F'; // CCC orange-red
                 case 'critical':
-                    return '#991b1b';
+                    return '#D94539'; // CCC dark orange
                 default:
                     return '#e2e8f0';
             }
@@ -3715,6 +4126,23 @@
                 .translate([width / 2, height / 1.8]);
 
             const path = d3.geoPath().projection(projection);
+
+            // Ocean click handler - deselect country and return to global view
+            accessMapSvg.append('rect')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('fill', 'transparent')
+                .style('cursor', 'pointer')
+                .on('click', () => {
+                    selectedCountry = null;
+                    globalCountryFilter = '';
+                    const countrySelect = byId<HTMLSelectElement>('country-filter');
+                    if (countrySelect) countrySelect.value = '';
+                    clearCountryHighlights();
+                    updateViewingBadges();
+                    updateAccessView();
+                    showGlobalAccessDetail();
+                });
 
             try {
                 const world = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json');
@@ -3860,34 +4288,50 @@
 
             container.innerHTML = `
                 <div class="charts-grid-2col">
-                    <div class="card-panel">
-                        <h3>Population at Risk by Region</h3>
-                        <p class="chart-subtitle">Year: ${accessYear}</p>
-                        <div class="chart-container" style="height: 280px;">
-                            <div id="chart-access-regional" class="chart-surface"></div>
+                    <div class="card-panel chart-card">
+                        <div class="chart-card-header">
+                            <h3><i class="fa-solid fa-chart-bar" style="color: #E85A4F; margin-right: 0.5rem;"></i>Population at Risk by Region</h3>
+                            <p class="chart-subtitle">Year: ${accessYear}</p>
+                        </div>
+                        <div class="chart-card-body">
+                            <div class="chart-container" style="height: 280px;">
+                                <div id="chart-access-regional" class="chart-surface"></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="card-panel">
-                        <h3>Trend Over Time</h3>
-                        <p class="chart-subtitle">2013-2024</p>
-                        <div class="chart-container" style="height: 280px;">
-                            <div id="chart-access-trend" class="chart-surface"></div>
+                    <div class="card-panel chart-card">
+                        <div class="chart-card-header">
+                            <h3><i class="fa-solid fa-chart-line" style="color: #E85A4F; margin-right: 0.5rem;"></i>Trend Over Time</h3>
+                            <p class="chart-subtitle">2013-2024</p>
+                        </div>
+                        <div class="chart-card-body">
+                            <div class="chart-container" style="height: 280px;">
+                                <div id="chart-access-trend" class="chart-surface"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="charts-grid-2col">
-                    <div class="card-panel">
-                        <h3>By Population Category</h3>
-                        <p class="chart-subtitle">Current selection</p>
-                        <div class="chart-container" style="height: 280px;">
-                            <div id="chart-access-category" class="chart-surface"></div>
+                    <div class="card-panel chart-card">
+                        <div class="chart-card-header">
+                            <h3><i class="fa-solid fa-chart-pie" style="color: #E89B8C; margin-right: 0.5rem;"></i>By Population Category</h3>
+                            <p class="chart-subtitle">Current selection</p>
+                        </div>
+                        <div class="chart-card-body">
+                            <div class="chart-container" style="height: 280px;">
+                                <div id="chart-access-category" class="chart-surface"></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="card-panel">
-                        <h3>By Impact Level</h3>
-                        <p class="chart-subtitle">Distribution</p>
-                        <div class="chart-container" style="height: 280px;">
-                            <div id="chart-access-impact" class="chart-surface"></div>
+                    <div class="card-panel chart-card">
+                        <div class="chart-card-header">
+                            <h3><i class="fa-solid fa-ranking-star" style="color: #E89B8C; margin-right: 0.5rem;"></i>By Impact Level</h3>
+                            <p class="chart-subtitle">Distribution</p>
+                        </div>
+                        <div class="chart-card-body">
+                            <div class="chart-container" style="height: 280px;">
+                                <div id="chart-access-impact" class="chart-surface"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3999,7 +4443,7 @@
                     itemStyle: { color: '#ef4444' },
                     markLine: {
                         data: [{ xAxis: String(accessYear) }],
-                        lineStyle: { color: '#1d4ed8', type: 'dashed' },
+                        lineStyle: { color: '#3D6B6B', type: 'dashed' },
                         label: { formatter: 'Selected' }
                     }
                 }]
@@ -4017,11 +4461,12 @@
                 }
             });
 
+            // CCC Palette colors for population categories
             const categoryColors: Record<string, string> = {
-                'Rural Poor': '#ef4444',
-                'Urban Poor': '#f97316',
-                'Lower-Middle Income': '#fbbf24',
-                'Middle-Income': '#22c55e'
+                'Rural Poor': '#E85A4F',
+                'Urban Poor': '#E89B8C',
+                'Lower-Middle Income': '#8BC34A',
+                'Middle-Income': '#3D6B6B'
             };
 
             setChart('chart-access-category', {
@@ -4057,7 +4502,7 @@
                 }
             });
 
-            const impactColors: Record<string, string> = { High: '#dc2626', Medium: '#f97316', Low: '#22c55e' };
+            const impactColors: Record<string, string> = { High: '#E85A4F', Medium: '#E89B8C', Low: '#8BC34A' };
 
             setChart('chart-access-impact', {
                 tooltip: { trigger: 'axis', formatter: '{b}: {c}B' },
@@ -4092,6 +4537,81 @@
             updateAccessMap();
             updateAccessCharts();
             updateAccessKPIs();
+            updateAccessKpiTitle();
+            updateAccessMetaPills();
+        }
+
+        function updateAccessKpiTitle() {
+            const titleEl = document.getElementById('access-kpi-title');
+            if (!titleEl) return;
+
+            if (selectedCountry) {
+                const country = data.countries.find(c => c.country_code === selectedCountry);
+                titleEl.innerHTML = `<i class="fa-solid fa-flag"></i> ${country?.country_name || selectedCountry}`;
+            } else {
+                titleEl.innerHTML = `<i class="fa-solid fa-globe"></i> Global View`;
+            }
+        }
+
+        function updateAccessMetaPills() {
+            const sourcePill = document.getElementById('access-meta-source');
+            const yearPill = document.getElementById('access-meta-year');
+            const regionPill = document.getElementById('access-meta-region');
+
+            if (sourcePill) {
+                sourcePill.innerHTML = `<i class="fa-solid fa-database"></i> ${accessDataSource === 'historical' ? 'Historical' : 'Forecast'}`;
+            }
+            if (yearPill) {
+                yearPill.innerHTML = `<i class="fa-solid fa-calendar"></i> ${accessYear}`;
+            }
+            if (regionPill) {
+                regionPill.innerHTML = `<i class="fa-solid fa-earth-americas"></i> ${accessRegionFilter || 'All Regions'}`;
+            }
+
+            // Also update filter status bar tags
+            updateAccessFilterStatusBar();
+        }
+
+        function updateAccessFilterStatusBar() {
+            const yearTag = document.getElementById('access-filter-year');
+            const regionTag = document.getElementById('access-filter-region');
+            const riskTag = document.getElementById('access-filter-risk');
+
+            if (yearTag) {
+                yearTag.innerHTML = `<i class="fa-solid fa-calendar"></i> ${accessYear}`;
+            }
+            if (regionTag) {
+                regionTag.innerHTML = `<i class="fa-solid fa-earth-americas"></i> ${accessRegionFilter || 'All Regions'}`;
+            }
+            if (riskTag) {
+                // Get the current risk level filter if any
+                const riskFilter = (document.getElementById('access-risk-filter') as HTMLSelectElement)?.value || '';
+                riskTag.innerHTML = `<i class="fa-solid fa-exclamation-triangle"></i> ${riskFilter || 'All Risk Levels'}`;
+            }
+
+            // Update status title based on country selection
+            const statusTitle = document.getElementById('access-status-title');
+            if (statusTitle) {
+                if (selectedCountry) {
+                    const country = data.countries.find(c => c.country_code === selectedCountry);
+                    statusTitle.textContent = country?.country_name || selectedCountry;
+                } else {
+                    statusTitle.textContent = 'Cooling Access Gap Analysis';
+                }
+            }
+        }
+
+        function showGlobalAccessDetail() {
+            const container = document.querySelector('#access-country-detail .country-detail') as HTMLElement;
+            if (!container) return;
+
+            container.innerHTML = `
+                <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
+                    <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #f59e0b; margin-bottom: 0.75rem; display: block;"></i>
+                    <h4 style="color: #92400e; margin-bottom: 0.5rem;">Select a Country</h4>
+                    <p style="font-size: 0.85rem;">Click on any country in the map above to view cooling access gap details and population breakdown.</p>
+                </div>
+            `;
         }
 
         function handleEmissionsHover(event: MouseEvent, d: any) {
@@ -4197,15 +4717,16 @@
 
             // Get emissions by region for each year
             const regions = [...new Set(data.emissions.map(e => e.region).filter(Boolean))];
+            // CCC Palette for regions
             const regionColors = {
-                'Asia': '#ef4444',
-                'Africa': '#f59e0b',
-                'Europe': '#3b82f6',
-                'North America': '#22c55e',
-                'South America': '#8b5cf6',
-                'Oceania': '#ec4899',
-                'Latin America and the Caribbean': '#14b8a6',
-                'Middle East': '#f97316'
+                'Asia': '#E85A4F',
+                'Africa': '#E89B8C',
+                'Europe': '#3D6B6B',
+                'North America': '#8BC34A',
+                'South America': '#4A7F7F',
+                'Oceania': '#7CB342',
+                'Latin America and the Caribbean': '#2D5252',
+                'Middle East': '#D88676'
             };
 
             const datasets = regions.map((region, idx) => {
@@ -4382,9 +4903,9 @@
         }
 
         function getNDCColor(status: string | null | undefined) {
-            if (status === 'Mentioned') return '#1d4ed8';
-            if (status === 'Not mentioned') return '#3b82f6';
-            if (status === 'No NDC submitted') return '#93c5fd';
+            if (status === 'Mentioned') return '#2D5252'; // CCC dark teal - best status
+            if (status === 'Not mentioned') return '#E89B8C'; // CCC coral
+            if (status === 'No NDC submitted') return '#E85A4F'; // CCC orange-red
             return '#e2e8f0';
         }
 
@@ -4439,6 +4960,23 @@
 
             const path = d3.geoPath().projection(projection);
 
+            // Ocean click handler - deselect country and return to global view
+            ndcMapSvg.append('rect')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('fill', 'transparent')
+                .style('cursor', 'pointer')
+                .on('click', () => {
+                    selectedCountry = null;
+                    globalCountryFilter = '';
+                    const countrySelect = byId<HTMLSelectElement>('country-filter');
+                    if (countrySelect) countrySelect.value = '';
+                    clearCountryHighlights();
+                    updateViewingBadges();
+                    updatePolicyKPIs();
+                    showGlobalPolicyDetail();
+                });
+
             try {
                 const world = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json');
                 const countries = topojson.feature(world, world.objects.countries);
@@ -4457,10 +4995,10 @@
                         if (selectedRegion && country?.region !== selectedRegion) {
                             return '#e2e8f0';
                         }
-                        // Initialize with GCP view (first tab)
+                        // Initialize with GCP view (first tab) - CCC palette
                         const pledge = data.pledge.find(p => p.country_code === code);
                         if (!pledge) return '#e2e8f0';
-                        return pledge.signatory === 1 ? '#22c55e' : '#94a3b8';
+                        return pledge.signatory === 1 ? '#2D5252' : '#E89B8C';
                     })
                     .on('mouseover', handlePolicyHover)
                     .on('mouseout', handleOut)
@@ -4491,7 +5029,7 @@
 
             if (policyMapType === 'gcp') {
                 const pledge = data.pledge.find(p => p.country_code === code);
-                const statusColor = pledge?.signatory === 1 ? '#22c55e' : '#94a3b8';
+                const statusColor = pledge?.signatory === 1 ? '#2D5252' : '#E89B8C';
                 const statusText = pledge?.signatory === 1 ? 'Signatory' : 'Non-Signatory';
                 tooltip.innerHTML = `
                     <strong>${countryName}</strong><br>
@@ -4505,8 +5043,8 @@
                     tooltip.innerHTML = `<strong>${countryName}</strong><br><em>No NDC data</em>`;
                 } else {
                     const statusColor =
-                        record.mention_status === 'Mentioned' ? '#22c55e' :
-                        record.mention_status === 'Not mentioned' ? '#ef4444' : '#94a3b8';
+                        record.mention_status === 'Mentioned' ? '#2D5252' :
+                        record.mention_status === 'Not mentioned' ? '#E89B8C' : '#E85A4F';
                     tooltip.innerHTML = `
                         <strong>${countryName}</strong><br>
                         <span style="color: var(--text-secondary)">${ndcType} | ${ndcCategory}</span><br>
@@ -4521,7 +5059,7 @@
                     tooltip.innerHTML = `
                         <strong>${countryName}</strong><br>
                         <span style="color: var(--text-secondary)">National Cooling Action Plan</span><br>
-                        Status: <span style="color: #8b5cf6">Has NCAP</span><br>
+                        Status: <span style="color: #3D6B6B">Has NCAP</span><br>
                         ${ncapRecord.year ? 'Year: ' + ncapRecord.year + '<br>' : ''}
                         Region: ${region}
                     `;
@@ -4529,7 +5067,7 @@
                     tooltip.innerHTML = `
                         <strong>${countryName}</strong><br>
                         <span style="color: var(--text-secondary)">National Cooling Action Plan</span><br>
-                        Status: <span style="color: #94a3b8">No NCAP</span><br>
+                        Status: <span style="color: #E89B8C">No NCAP</span><br>
                         Region: ${region}
                     `;
                 }
@@ -4563,18 +5101,20 @@
         }
 
         function updateNDCLegend() {
+            // This function is used when NDC view is directly selected
+            // Uses the same CCC palette as updatePolicyLegend('ndc')
             byId('ndc-legend').innerHTML = `
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#1d4ed8"></div>
-                    High / Active
+                    <div class="legend-color" style="background:#2D5252"></div>
+                    Mentioned
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#3b82f6"></div>
-                    Medium / Partial
+                    <div class="legend-color" style="background:#E89B8C"></div>
+                    Not Mentioned
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#93c5fd"></div>
-                    Low / None
+                    <div class="legend-color" style="background:#E85A4F"></div>
+                    No NDC Submitted
                 </div>
                 <div class="legend-item">
                     <div class="legend-color" style="background:#e2e8f0"></div>
@@ -4600,10 +5140,10 @@
             } else {
                 const statusColor =
                     record.mention_status === 'Mentioned'
-                        ? '#22c55e'
+                        ? '#2D5252'
                         : record.mention_status === 'Not mentioned'
-                            ? '#ef4444'
-                            : '#94a3b8';
+                            ? '#E89B8C'
+                            : '#E85A4F';
                 tooltip.innerHTML = `
                     <strong>${record.country_name || code}</strong><br>
                     <span style="color: var(--text-secondary)">${ndcType} | ${ndcCategory}</span><br>
@@ -4644,19 +5184,19 @@
                     }
 
                     if (mapType === 'gcp') {
-                        // Global Cooling Pledge
+                        // Global Cooling Pledge - CCC palette
                         const pledge = data.pledge.find(p => p.country_code === code);
                         if (!pledge) return '#e2e8f0';
-                        return pledge.signatory === 1 ? '#22c55e' : '#94a3b8';
+                        return pledge.signatory === 1 ? '#2D5252' : '#E89B8C'; // CCC dark teal / coral
                     } else if (mapType === 'ndc') {
                         // NDC Cooling Mentions
                         const countryStatus = getCountryNDCStatus();
                         const status = countryStatus[code];
                         return getNDCColor(status ? status.status : null);
                     } else if (mapType === 'NCAP') {
-                        // NCAP Status - countries with NCAP
+                        // NCAP Status - countries with NCAP - CCC palette
                         const ncapCountry = data.ncap.find(n => n.country_code === code);
-                        return ncapCountry ? '#8b5cf6' : '#e2e8f0';
+                        return ncapCountry ? '#3D6B6B' : '#E89B8C'; // CCC teal / coral
                     }
                     return '#e2e8f0';
                 })
@@ -4676,11 +5216,11 @@
             if (mapType === 'gcp') {
                 legendEl.innerHTML = `
                     <div class="legend-item">
-                        <div class="legend-color" style="background:#22c55e"></div>
+                        <div class="legend-color" style="background:#2D5252"></div>
                         Signatory
                     </div>
                     <div class="legend-item">
-                        <div class="legend-color" style="background:#94a3b8"></div>
+                        <div class="legend-color" style="background:#E89B8C"></div>
                         Non-Signatory
                     </div>
                     <div class="legend-item">
@@ -4691,15 +5231,15 @@
             } else if (mapType === 'ndc') {
                 legendEl.innerHTML = `
                     <div class="legend-item">
-                        <div class="legend-color" style="background:#1d4ed8"></div>
+                        <div class="legend-color" style="background:#2D5252"></div>
                         Mentioned
                     </div>
                     <div class="legend-item">
-                        <div class="legend-color" style="background:#3b82f6"></div>
+                        <div class="legend-color" style="background:#E89B8C"></div>
                         Not Mentioned
                     </div>
                     <div class="legend-item">
-                        <div class="legend-color" style="background:#93c5fd"></div>
+                        <div class="legend-color" style="background:#E85A4F"></div>
                         No NDC Submitted
                     </div>
                     <div class="legend-item">
@@ -4710,11 +5250,11 @@
             } else if (mapType === 'NCAP') {
                 legendEl.innerHTML = `
                     <div class="legend-item">
-                        <div class="legend-color" style="background:#8b5cf6"></div>
+                        <div class="legend-color" style="background:#3D6B6B"></div>
                         Has NCAP
                     </div>
                     <div class="legend-item">
-                        <div class="legend-color" style="background:#e2e8f0"></div>
+                        <div class="legend-color" style="background:#E89B8C"></div>
                         No NCAP
                     </div>
                 `;
@@ -4791,7 +5331,7 @@
                         name: `Countries mentioning ${ndcCategory}`,
                         type: 'bar',
                         data: regionMentioned,
-                        itemStyle: { color: '#3b82f6' }
+                        itemStyle: { color: '#8BC34A' }
                     }
                 ]
             });
@@ -4813,6 +5353,78 @@
             updatePolicyKPIs();
             updatePolicyMap(policyMapType);
             updatePolicyChartsForMapType(policyMapType);
+            updatePolicyKpiTitle();
+            updatePolicyMetaPills();
+        }
+
+        function updatePolicyKpiTitle() {
+            const titleEl = document.getElementById('policy-kpi-title');
+            if (!titleEl) return;
+
+            if (selectedCountry) {
+                const country = data.countries.find(c => c.country_code === selectedCountry);
+                titleEl.innerHTML = `<i class="fa-solid fa-flag"></i> ${country?.country_name || selectedCountry}`;
+            } else {
+                titleEl.innerHTML = `<i class="fa-solid fa-globe"></i> Global View`;
+            }
+        }
+
+        function updatePolicyMetaPills() {
+            const tabPill = document.getElementById('policy-meta-tab');
+            if (tabPill) {
+                const tabNames: Record<string, string> = {
+                    'gcp': 'Global Cooling Pledge',
+                    'ndc': 'NDC Cooling Mentions',
+                    'NCAP': 'National Cooling Action Plans'
+                };
+                tabPill.innerHTML = `<i class="fa-solid fa-file-contract"></i> ${tabNames[policyMapType] || policyMapType}`;
+            }
+
+            // Also update filter status bar tags
+            updatePolicyFilterStatusBar();
+        }
+
+        function updatePolicyFilterStatusBar() {
+            const tabTag = document.getElementById('policy-filter-tab');
+            const regionTag = document.getElementById('policy-filter-region');
+
+            const tabNames: Record<string, string> = {
+                'gcp': 'Global Cooling Pledge',
+                'ndc': 'NDC Cooling Mentions',
+                'NCAP': 'National Cooling Action Plans'
+            };
+
+            if (tabTag) {
+                tabTag.innerHTML = `<i class="fa-solid fa-file-contract"></i> ${tabNames[policyMapType] || policyMapType}`;
+            }
+            if (regionTag) {
+                const regionFilter = (document.getElementById('ndc-region-filter') as HTMLSelectElement)?.value || '';
+                regionTag.innerHTML = `<i class="fa-solid fa-earth-americas"></i> ${regionFilter || 'All Regions'}`;
+            }
+
+            // Update status title based on country selection
+            const statusTitle = document.getElementById('policy-status-title');
+            if (statusTitle) {
+                if (selectedCountry) {
+                    const country = data.countries.find(c => c.country_code === selectedCountry);
+                    statusTitle.textContent = country?.country_name || selectedCountry;
+                } else {
+                    statusTitle.textContent = 'Policy Framework Analysis';
+                }
+            }
+        }
+
+        function showGlobalPolicyDetail() {
+            const container = document.querySelector('#policy-country-detail .country-detail') as HTMLElement;
+            if (!container) return;
+
+            container.innerHTML = `
+                <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
+                    <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #22c55e; margin-bottom: 0.75rem; display: block;"></i>
+                    <h4 style="color: #166534; margin-bottom: 0.5rem;">Select a Country</h4>
+                    <p style="font-size: 0.85rem;">Click on any country in the map above to view policy framework details including GCP, NDC, and NCAP status.</p>
+                </div>
+            `;
         }
 
         function updatePolicyKPIs() {
@@ -4922,7 +5534,7 @@
                         name: `Countries mentioning ${ndcCategory}`,
                         type: 'bar',
                         data: regionMentioned,
-                        itemStyle: { color: '#3b82f6' }
+                        itemStyle: { color: '#8BC34A' }
                     }
                 ]
             });
@@ -4957,7 +5569,7 @@
                         name: 'NDC 3.0',
                         type: 'bar',
                         data: ndc30Mentioned,
-                        itemStyle: { color: '#3b82f6' }
+                        itemStyle: { color: '#8BC34A' }
                     },
                     {
                         name: 'Previous NDC',
@@ -5006,34 +5618,50 @@
                 // Create GCP chart structure
                 container.innerHTML = `
                     <div class="charts-grid-2col">
-                        <div class="card-panel">
-                            <h3>Global Cooling Pledge by Region</h3>
-                            <p class="chart-subtitle">Signatories vs Non-Signatories</p>
-                            <div class="chart-container" style="height: 280px;">
-                                <div id="chart-gcp-regions" class="chart-surface"></div>
+                        <div class="card-panel chart-card">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-chart-bar" style="color: #8BC34A; margin-right: 0.5rem;"></i>Global Cooling Pledge by Region</h3>
+                                <p class="chart-subtitle">Signatories vs Non-Signatories</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div class="chart-container" style="height: 280px;">
+                                    <div id="chart-gcp-regions" class="chart-surface"></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="card-panel">
-                            <h3>GCP Signatories & NDC Cooling Mentions</h3>
-                            <p class="chart-subtitle">Energy Efficiency in NDC 3.0</p>
-                            <div class="chart-container" style="height: 280px;">
-                                <div id="chart-gcp-ndc-overlap" class="chart-surface"></div>
+                        <div class="card-panel chart-card">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-circle-nodes" style="color: #8BC34A; margin-right: 0.5rem;"></i>GCP Signatories & NDC Cooling Mentions</h3>
+                                <p class="chart-subtitle">Energy Efficiency in NDC 3.0</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div class="chart-container" style="height: 280px;">
+                                    <div id="chart-gcp-ndc-overlap" class="chart-surface"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="charts-grid-2col">
-                        <div class="card-panel">
-                            <h3>GCP Signatories by Region</h3>
-                            <p class="chart-subtitle">Regional distribution</p>
-                            <div class="chart-container" style="height: 280px;">
-                                <div id="chart-gcp-timeline" class="chart-surface"></div>
+                        <div class="card-panel chart-card">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-chart-pie" style="color: #3D6B6B; margin-right: 0.5rem;"></i>GCP Signatories by Region</h3>
+                                <p class="chart-subtitle">Regional distribution</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div class="chart-container" style="height: 280px;">
+                                    <div id="chart-gcp-timeline" class="chart-surface"></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="card-panel">
-                            <h3>Policy Framework Coverage</h3>
-                            <p class="chart-subtitle">GCP + NDC Status</p>
-                            <div class="chart-container" style="height: 280px;">
-                                <div id="chart-policy-coverage" class="chart-surface"></div>
+                        <div class="card-panel chart-card">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-layer-group" style="color: #3D6B6B; margin-right: 0.5rem;"></i>Policy Framework Coverage</h3>
+                                <p class="chart-subtitle">GCP + NDC Status</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div class="chart-container" style="height: 280px;">
+                                    <div id="chart-policy-coverage" class="chart-surface"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -5045,34 +5673,50 @@
                 // Create NDC chart structure
                 container.innerHTML = `
                     <div class="charts-grid-2col">
-                        <div class="card-panel">
-                            <h3>NDC Cooling Mentions by Category</h3>
-                            <p class="chart-subtitle">Excluding Kigali Amendment</p>
-                            <div class="chart-container" style="height: 280px;">
-                                <div id="chart-ndc-categories" class="chart-surface"></div>
+                        <div class="card-panel chart-card">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-tags" style="color: #3D6B6B; margin-right: 0.5rem;"></i>NDC Cooling Mentions by Category</h3>
+                                <p class="chart-subtitle">Excluding Kigali Amendment</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div class="chart-container" style="height: 280px;">
+                                    <div id="chart-ndc-categories" class="chart-surface"></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="card-panel">
-                            <h3>NDC Status by Region</h3>
-                            <p class="chart-subtitle">Countries mentioning cooling</p>
-                            <div class="chart-container" style="height: 280px;">
-                                <div id="chart-ndc-regions" class="chart-surface"></div>
+                        <div class="card-panel chart-card">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-earth-americas" style="color: #3D6B6B; margin-right: 0.5rem;"></i>NDC Status by Region</h3>
+                                <p class="chart-subtitle">Countries mentioning cooling</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div class="chart-container" style="height: 280px;">
+                                    <div id="chart-ndc-regions" class="chart-surface"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="charts-grid-2col">
-                        <div class="card-panel">
-                            <h3>NDC 3.0 vs Previous NDC</h3>
-                            <p class="chart-subtitle">Comparison of cooling mentions</p>
-                            <div class="chart-container" style="height: 280px;">
-                                <div id="chart-ndc-comparison" class="chart-surface"></div>
+                        <div class="card-panel chart-card">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-code-compare" style="color: #8BC34A; margin-right: 0.5rem;"></i>NDC 3.0 vs Previous NDC</h3>
+                                <p class="chart-subtitle">Comparison of cooling mentions</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div class="chart-container" style="height: 280px;">
+                                    <div id="chart-ndc-comparison" class="chart-surface"></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="card-panel">
-                            <h3>NDC Submission Status</h3>
-                            <p class="chart-subtitle">Countries by submission status</p>
-                            <div class="chart-container" style="height: 280px;">
-                                <div id="chart-ndc-submission" class="chart-surface"></div>
+                        <div class="card-panel chart-card">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-file-circle-check" style="color: #8BC34A; margin-right: 0.5rem;"></i>NDC Submission Status</h3>
+                                <p class="chart-subtitle">Countries by submission status</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div class="chart-container" style="height: 280px;">
+                                    <div id="chart-ndc-submission" class="chart-surface"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -5084,25 +5728,37 @@
                 // Create NCAP charts
                 container.innerHTML = `
                     <div class="charts-grid-2col">
-                        <div class="card-panel">
-                            <h3>NCAPs by Region</h3>
-                            <p class="chart-subtitle">Countries with National Cooling Action Plans</p>
-                            <div class="chart-container" style="height: 280px;">
-                                <div id="chart-ncap-regions" class="chart-surface"></div>
+                        <div class="card-panel chart-card">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-chart-bar" style="color: #3D6B6B; margin-right: 0.5rem;"></i>NCAPs by Region</h3>
+                                <p class="chart-subtitle">Countries with National Cooling Action Plans</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div class="chart-container" style="height: 280px;">
+                                    <div id="chart-ncap-regions" class="chart-surface"></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="card-panel">
-                            <h3>NCAP Development Timeline</h3>
-                            <p class="chart-subtitle">NCAPs by year of adoption</p>
-                            <div class="chart-container" style="height: 280px;">
-                                <div id="chart-ncap-timeline" class="chart-surface"></div>
+                        <div class="card-panel chart-card">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-clock-rotate-left" style="color: #3D6B6B; margin-right: 0.5rem;"></i>NCAP Development Timeline</h3>
+                                <p class="chart-subtitle">NCAPs by year of adoption</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div class="chart-container" style="height: 280px;">
+                                    <div id="chart-ncap-timeline" class="chart-surface"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card-panel">
-                        <h3>Countries with NCAPs</h3>
-                        <p class="chart-subtitle">List of countries that have developed National Cooling Action Plans</p>
-                        <div id="ncap-countries-list" class="ncap-countries-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; padding: 1rem;"></div>
+                    <div class="card-panel chart-card">
+                        <div class="chart-card-header">
+                            <h3><i class="fa-solid fa-list-check" style="color: #8BC34A; margin-right: 0.5rem;"></i>Countries with NCAPs</h3>
+                            <p class="chart-subtitle">List of countries that have developed National Cooling Action Plans</p>
+                        </div>
+                        <div class="chart-card-body">
+                            <div id="ncap-countries-list" class="ncap-countries-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; padding: 1rem;"></div>
+                        </div>
                     </div>
                 `;
                 // Initialize NCAP charts after DOM is ready
@@ -5303,7 +5959,7 @@
                     label: { show: false },
                     data: [
                         { value: bothCount, name: 'GCP + NDC', itemStyle: { color: '#22c55e' } },
-                        { value: gcpCount - bothCount, name: 'GCP Only', itemStyle: { color: '#3b82f6' } },
+                        { value: gcpCount - bothCount, name: 'GCP Only', itemStyle: { color: '#8BC34A' } },
                         { value: ndcCoolingCount - bothCount, name: 'NDC Only', itemStyle: { color: '#f59e0b' } },
                         { value: Math.max(0, neitherCount), name: 'Neither', itemStyle: { color: '#e2e8f0' } }
                     ]
@@ -5338,7 +5994,7 @@
             updateApplianceScopeState(view);
             // Show/hide pillar info button
             const infoBtn = document.getElementById('pillar-info-btn') as HTMLElement | null;
-            if (infoBtn) infoBtn.style.display = pillarInfo[view] ? '' : 'none';
+            if (infoBtn) infoBtn.style.display = pillarInfo[view] ? 'inline-flex' : 'none';
             requestAnimationFrame(resizeCharts);
         }
 
@@ -5440,10 +6096,10 @@
                 btn.addEventListener('click', () => setApplianceScope(btn.dataset.scope ?? 'ac'));
             });
 
-            // Overview carousel
+            // Overview carousel - no auto-rotation, user-controlled
             let carouselIdx = 0;
             const slides = document.querySelectorAll<HTMLElement>('.carousel-slide');
-            const dots = document.querySelectorAll<HTMLButtonElement>('.carousel-dots .dot');
+            const tabs = document.querySelectorAll<HTMLButtonElement>('.carousel-tab');
             const totalSlides = slides.length;
 
             function showSlide(idx: number) {
@@ -5452,21 +6108,13 @@
                     s.classList.toggle('active', i === carouselIdx);
                     s.classList.toggle('exit', i !== carouselIdx);
                 });
-                dots.forEach((d, i) => d.classList.toggle('active', i === carouselIdx));
+                tabs.forEach((t, i) => t.classList.toggle('active', i === carouselIdx));
             }
 
             document.getElementById('carousel-prev')?.addEventListener('click', () => showSlide(carouselIdx - 1));
             document.getElementById('carousel-next')?.addEventListener('click', () => showSlide(carouselIdx + 1));
-            dots.forEach((d) => {
-                d.addEventListener('click', () => showSlide(Number(d.dataset.dot)));
-            });
-
-            // Auto-advance every 8 seconds, pause on hover
-            let autoPlay = setInterval(() => showSlide(carouselIdx + 1), 15000);
-            const carouselEl = document.querySelector('.overview-carousel');
-            carouselEl?.addEventListener('mouseenter', () => clearInterval(autoPlay));
-            carouselEl?.addEventListener('mouseleave', () => {
-                autoPlay = setInterval(() => showSlide(carouselIdx + 1), 15000);
+            tabs.forEach((t) => {
+                t.addEventListener('click', () => showSlide(Number(t.dataset.slide)));
             });
 
             // Map indicator
@@ -5589,23 +6237,6 @@
                 });
             });
 
-            // All/None buttons for appliances
-            const emissionsAppAll = document.getElementById('emissions-app-all');
-            if (emissionsAppAll) {
-                emissionsAppAll.addEventListener('click', () => {
-                    emissionsAppliances = [...CLASP_APPLIANCES];
-                    document.querySelectorAll('#emissions-appliance-toggles .toggle-btn').forEach(b => b.classList.add('active'));
-                    updateEmissionsView();
-                });
-            }
-            const emissionsAppNone = document.getElementById('emissions-app-none');
-            if (emissionsAppNone) {
-                emissionsAppNone.addEventListener('click', () => {
-                    emissionsAppliances = [];
-                    document.querySelectorAll('#emissions-appliance-toggles .toggle-btn').forEach(b => b.classList.remove('active'));
-                    updateEmissionsView();
-                });
-            }
 
             // Emission type toggles (Subcool)
             document.querySelectorAll<HTMLButtonElement>('#emissions-type-toggles .toggle-btn').forEach(btn => {
@@ -5858,16 +6489,39 @@
             try {
                 setStatus('Loading data from Supabase...');
                 data = await loadDashboardData(SUPABASE_URL, SUPABASE_KEY);
-                console.log('NDC Tracker data loaded:', data.ndcTracker.length, 'records');
-                console.log('Sample NDC record:', data.ndcTracker[0]);
-                console.log('Access data loaded:', data.access.length, 'records');
-                console.log('Sample Access record:', data.access[0]);
-                setStatus(`Loaded ${data.countries.length} countries, ${data.access.length} access records`, 'success');
+
+                // Log loaded table sizes for debugging
+                const tables = {
+                    countries: data.countries.length,
+                    pledge: data.pledge.length,
+                    kigali: data.kigali.length,
+                    meps: data.meps.length,
+                    access: data.access.length,
+                    accessForecast: data.accessForecast.length,
+                    emissions: data.emissions.length,
+                    ndcTracker: data.ndcTracker.length,
+                    ncap: data.ncap.length,
+                    claspEnergy: data.claspEnergy.length,
+                    subcool: data.subcool.length,
+                    regions: data.regions.length,
+                    refrigerants: data.refrigerants.length
+                };
+                console.log('Dashboard data loaded:', tables);
+                const emptyTables = Object.entries(tables).filter(([, v]) => v === 0).map(([k]) => k);
+                if (emptyTables.length > 0) {
+                    console.warn('Tables with no data:', emptyTables);
+                }
+
+                if (data.countries.length === 0) {
+                    setStatus('Warning: No country data loaded. Check browser console for details.', 'error');
+                } else {
+                    setStatus(`Loaded ${data.countries.length} countries, ${data.access.length} access records`, 'success');
+                }
                 setText('last-updated', `Updated: ${new Date().toLocaleDateString()}`);
             } catch (error) {
                 const message = error instanceof Error ? error.message : String(error);
                 setStatus(`Error: ${message}`, 'error');
-                console.error(error);
+                console.error('Dashboard load error:', error);
                 return;
             }
 
@@ -5887,14 +6541,17 @@
             populateAccessRegionFilter();
             updateAccessCharts();
             updateAccessKPIs();
+            showGlobalAccessDetail();
 
             // Initialize Product Efficiency (MEPS)
             initMepsFilters();
             updateMepsView();
+            showGlobalMepsDetail();
 
             // Initialize Refrigerant Transition (Kigali)
             initKigaliFilters();
             updateKigaliView();
+            showGlobalKigaliDetail();
 
             initCharts();
 
@@ -5908,6 +6565,7 @@
             populatePolicyNDCFilters();
             initNDCCharts();
             updateNDCKPIs();
+            showGlobalPolicyDetail();
 
             setupEventHandlers();
             setApplianceScope('ac');
@@ -6004,136 +6662,174 @@
       </header>
             <!-- Overview View -->
             <section id="view-overview" class="view-section active">
-                <!-- Compact Hero Banner -->
-                <div class="overview-hero compact">
-                    <div class="overview-hero-content">
-                        <h2>The Global Cooling Challenges</h2>
-                        <p>One of the most significant yet overlooked drivers of climate change. The time to act is now.</p>
+              <div class="overview-layout">
+                <div class="overview-main">
+                <!-- Modern Hero Banner with CCC styling -->
+                <div class="hero-banner-modern">
+                    <div class="hero-bg-effects">
+                        <div class="hero-orb hero-orb-1"></div>
+                        <div class="hero-orb hero-orb-2"></div>
+                    </div>
+                    <h2 class="hero-title">
+                        <span class="gradient-text-ccc">Accelerating</span> the Transition to
+                        <span class="highlight-green">Sustainable Cooling</span>
+                    </h2>
+                    <p class="hero-subtitle">One of the most significant yet overlooked drivers of climate change. The time to act is now.</p>
+                </div>
+
+                <!-- Message Carousel - Primary Focus -->
+                <div class="overview-carousel-v2">
+                    <!-- Clickable Tab Navigation -->
+                    <div class="carousel-tabs">
+                        <button class="carousel-tab active" data-slide="0" type="button">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>The Challenge</span>
+                        </button>
+                        <button class="carousel-tab" data-slide="1" type="button">
+                            <i class="fa-solid fa-smog"></i>
+                            <span>Emissions Crisis</span>
+                        </button>
+                        <button class="carousel-tab" data-slide="2" type="button">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                            <span>Vulnerability Gap</span>
+                        </button>
+                        <button class="carousel-tab" data-slide="3" type="button">
+                            <i class="fa-solid fa-lightbulb"></i>
+                            <span>Path Forward</span>
+                        </button>
+                    </div>
+
+                    <!-- Slide Content -->
+                    <div class="carousel-content-area">
+                        <button class="carousel-arrow carousel-prev" type="button" id="carousel-prev">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+
+                        <div class="carousel-viewport">
+                            <!-- Slide 1: The Challenge -->
+                            <div class="carousel-slide active" data-slide="0">
+                                <div class="slide-inner-v2 challenge-slide">
+                                    <div class="slide-header">
+                                        <div class="slide-icon-badge challenge-badge">
+                                            <i class="fa-solid fa-triangle-exclamation"></i>
+                                        </div>
+                                        <h3>The Challenge</h3>
+                                    </div>
+                                    <div class="slide-message">
+                                        <p>Cooling is one of the most significant yet overlooked drivers of climate change. It currently accounts for over <strong>10% of global greenhouse gas emissions</strong>, a figure expected to <strong>double by 2050</strong> as heatwaves become more frequent and populations grow.</p>
+                                        <p>This creates a double-edged impact where indirect emissions from high energy consumption and direct emissions from high-GWP refrigerant leaks fuel a vicious cycle of increased emissions and further warming that leaves <strong>1.2 billion people</strong> vulnerable to life-threatening heat.</p>
+                                        <p>According to the <a href="https://wedocs.unep.org/items/507e8c47-db6c-424a-9b76-7805a6e1d669" target="_blank" rel="noopener noreferrer"><strong>Global Cooling Watch 2025 report</strong></a> (released at COP30), global cooling demand is expected to more than <strong>triple by mid-century</strong>. A sustainable cooling transition is urgently required to decouple rising demand from escalating emissions.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slide 2: Emissions Crisis -->
+                            <div class="carousel-slide" data-slide="1">
+                                <div class="slide-inner-v2 emissions-slide">
+                                    <div class="slide-header">
+                                        <div class="slide-icon-badge emissions-badge">
+                                            <i class="fa-solid fa-smog"></i>
+                                        </div>
+                                        <h3>Emissions Crisis</h3>
+                                    </div>
+                                    <div class="slide-message">
+                                        <p>Currently responsible for <strong>10% of global power demand</strong>, cooling emissions are accelerating on two fronts:</p>
+                                        <div class="slide-two-col">
+                                            <div class="slide-col">
+                                                <div class="col-label">Indirect Emissions</div>
+                                                <p>From inefficient appliances consuming massive amounts of electricity, driving up energy demand and carbon footprints worldwide.</p>
+                                            </div>
+                                            <div class="slide-col">
+                                                <div class="col-label">Direct Emissions</div>
+                                                <p>From "super-pollutant" refrigerants with global warming potentials thousands of times greater than CO<sub>2</sub>, leaking into the atmosphere.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slide 3: Vulnerability Gap -->
+                            <div class="carousel-slide" data-slide="2">
+                                <div class="slide-inner-v2 vulnerability-slide">
+                                    <div class="slide-header">
+                                        <div class="slide-icon-badge vulnerability-badge">
+                                            <i class="fa-solid fa-heart-pulse"></i>
+                                        </div>
+                                        <h3>Vulnerability Gap</h3>
+                                    </div>
+                                    <div class="slide-message">
+                                        <p>Rising temperatures are driving a surge in heat-related deaths, yet access to cooling remains a luxury of the few. In the world's most heat-stressed regions, over <strong>1.2 billion people</strong> live on the front lines of the climate crisis without the basic cooling infrastructure needed to survive intensifying heatwaves.</p>
+                                        <div class="slide-stat-highlight">
+                                            <span class="stat-number">1.2B</span>
+                                            <span class="stat-text">people live without basic cooling infrastructure in heat-stressed regions, facing life-threatening conditions as temperatures rise.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Slide 4: The Path Forward -->
+                            <div class="carousel-slide" data-slide="3">
+                                <div class="slide-inner-v2 solution-slide">
+                                    <div class="slide-header">
+                                        <div class="slide-icon-badge solution-badge">
+                                            <i class="fa-solid fa-lightbulb"></i>
+                                        </div>
+                                        <h3>The Path Forward</h3>
+                                    </div>
+                                    <div class="slide-message">
+                                        <p>A comprehensive transition could cut cooling-related emissions by up to <strong>80%</strong> through a unified strategy across three key pillars:</p>
+                                        <div class="slide-pillars-v2">
+                                            <div class="pillar-card tech">
+                                                <div class="pillar-icon"><i class="fa-solid fa-microchip"></i></div>
+                                                <div class="pillar-title">Technology</div>
+                                                <div class="pillar-desc">Rapid deployment of super-efficient appliances and low-GWP refrigerants in alignment with the Kigali Amendment.</div>
+                                            </div>
+                                            <div class="pillar-card equity">
+                                                <div class="pillar-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                                                <div class="pillar-title">Equity</div>
+                                                <div class="pillar-desc">Universal expanded access for heat-vulnerable populations to ensure health and productivity.</div>
+                                            </div>
+                                            <div class="pillar-card governance">
+                                                <div class="pillar-icon"><i class="fa-solid fa-landmark"></i></div>
+                                                <div class="pillar-title">Governance</div>
+                                                <div class="pillar-desc">Binding policy frameworks, such as NCAPs and enhanced NDC commitments that turn international pledges into enforceable domestic law.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="carousel-arrow carousel-next" type="button" id="carousel-next">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Horizontal KPIs -->
-                <div class="overview-kpis-row">
-                    <div class="kpi-tile kpi-ghg">
-                        <p class="kpi-title">GHG Emissions</p>
-                        <div class="kpi-value" id="kpi-climate">&gt;10%</div>
-                        <p class="kpi-subtitle">of Global GHG</p>
-                        <p class="kpi-note">Direct + indirect (MtCO<sub>2</sub>e)</p>
-                    </div>
-                    <div class="kpi-tile kpi-demand">
-                        <p class="kpi-title">Cooling Demand</p>
-                        <div class="kpi-value highlight-blue" id="kpi-capacity">3x</div>
-                        <p class="kpi-subtitle">Increase by 2050</p>
-                        <p class="kpi-note">Energy demand (TWh)</p>
-                    </div>
-                    <div class="kpi-tile kpi-vulnerable">
-                        <p class="kpi-title">At-Risk Population</p>
-                        <div class="kpi-value highlight-red" id="kpi-access">1.2B</div>
-                        <p class="kpi-subtitle">People Vulnerable</p>
-                        <p class="kpi-note">Without access to cooling</p>
-                    </div>
-                </div>
-
-                <!-- Carousel -->
-                <div class="overview-carousel">
-                    <button class="carousel-arrow carousel-prev" type="button" id="carousel-prev">
-                        <i class="fa-solid fa-chevron-left"></i>
-                    </button>
-
-                    <div class="carousel-viewport">
-                        <!-- Slide 1: The Challenge -->
-                        <div class="carousel-slide active" data-slide="0">
-                            <div class="slide-inner challenge-slide">
-                                <div class="slide-icon-col">
-                                    <div class="slide-icon challenge-icon">
-                                        <i class="fa-solid fa-triangle-exclamation"></i>
-                                    </div>
-                                    <div class="slide-label">1 / 4</div>
-                                </div>
-                                <div class="slide-body">
-                                    <h3>The Challenge</h3>
-                                    <p>Cooling currently accounts for over <strong>10% of global greenhouse gas emissions</strong>, a figure expected to <strong>double by 2050</strong> as heatwaves become more frequent and populations grow. Indirect emissions from energy consumption and direct emissions from high-GWP refrigerant leaks fuel a vicious cycle that leaves <strong>1.2 billion people</strong> vulnerable to life-threatening heat.</p>
-                                    <p style="margin-top:0.5rem;">According to the <a href="https://wedocs.unep.org/items/507e8c47-db6c-424a-9b76-7805a6e1d669" target="_blank" rel="noopener noreferrer" style="color:#2563eb;font-weight:700;text-decoration:underline;"><strong>Global Cooling Watch 2025 report</strong></a> (COP30), cooling demand is expected to <strong>triple by mid-century</strong>.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Slide 2: Emissions Crisis -->
-                        <div class="carousel-slide" data-slide="1">
-                            <div class="slide-inner emissions-slide">
-                                <div class="slide-icon-col">
-                                    <div class="slide-icon emissions-icon">
-                                        <i class="fa-solid fa-smog"></i>
-                                    </div>
-                                    <div class="slide-label">2 / 4</div>
-                                </div>
-                                <div class="slide-body">
-                                    <h3>Emissions Crisis</h3>
-                                    <p>Currently responsible for <strong>10% of global power demand</strong>, cooling emissions are accelerating on two fronts: <strong>indirect emissions</strong> from inefficient appliances and <strong>direct emissions</strong> from "super-pollutant" refrigerants with global warming potentials thousands of times greater than CO<sub>2</sub>.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Slide 3: Vulnerability Gap -->
-                        <div class="carousel-slide" data-slide="2">
-                            <div class="slide-inner vulnerability-slide">
-                                <div class="slide-icon-col">
-                                    <div class="slide-icon vulnerability-icon">
-                                        <i class="fa-solid fa-heart-pulse"></i>
-                                    </div>
-                                    <div class="slide-label">3 / 4</div>
-                                </div>
-                                <div class="slide-body">
-                                    <h3>Vulnerability Gap</h3>
-                                    <p>Rising temperatures are driving a surge in heat-related deaths, yet access to cooling remains a luxury of the few. In the world's most heat-stressed regions, over <strong>1.2 billion people</strong> live without the basic cooling infrastructure needed to survive intensifying heatwaves.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Slide 4: The Path Forward -->
-                        <div class="carousel-slide" data-slide="3">
-                            <div class="slide-inner solution-slide">
-                                <div class="slide-icon-col">
-                                    <div class="slide-icon solution-icon">
-                                        <i class="fa-solid fa-lightbulb"></i>
-                                    </div>
-                                    <div class="slide-label">4 / 4</div>
-                                </div>
-                                <div class="slide-body">
-                                    <h3>The Path Forward</h3>
-                                    <p>A comprehensive transition could cut cooling emissions by up to <strong>80%</strong> through three pillars:</p>
-                                    <div class="slide-pillars">
-                                        <div class="slide-pillar tech">
-                                            <div class="pillar-col-icon"><i class="fa-solid fa-microchip"></i></div>
-                                            <div class="pillar-col-title">Technology</div>
-                                            <div class="pillar-col-desc">Super-efficient appliances and low-GWP refrigerants</div>
-                                        </div>
-                                        <div class="slide-pillar equity">
-                                            <div class="pillar-col-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
-                                            <div class="pillar-col-title">Equity</div>
-                                            <div class="pillar-col-desc">Universal cooling access for vulnerable populations</div>
-                                        </div>
-                                        <div class="slide-pillar governance">
-                                            <div class="pillar-col-icon"><i class="fa-solid fa-landmark"></i></div>
-                                            <div class="pillar-col-title">Governance</div>
-                                            <div class="pillar-col-desc">NCAPs and NDC commitments turned into enforceable law</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                <!-- Compact KPI Strip - Supporting Data -->
+                <div class="kpi-strip">
+                    <div class="kpi-strip-item">
+                        <i class="fa-solid fa-smog"></i>
+                        <div class="kpi-strip-data">
+                            <span class="kpi-strip-value" id="kpi-climate">&gt;10%</span>
+                            <span class="kpi-strip-label">of Global GHG Emissions</span>
                         </div>
                     </div>
-
-                    <button class="carousel-arrow carousel-next" type="button" id="carousel-next">
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </button>
-
-                    <!-- Dots -->
-                    <div class="carousel-dots" id="carousel-dots">
-                        <button class="dot active" data-dot="0" type="button"></button>
-                        <button class="dot" data-dot="1" type="button"></button>
-                        <button class="dot" data-dot="2" type="button"></button>
-                        <button class="dot" data-dot="3" type="button"></button>
+                    <div class="kpi-strip-divider"></div>
+                    <div class="kpi-strip-item">
+                        <i class="fa-solid fa-bolt"></i>
+                        <div class="kpi-strip-data">
+                            <span class="kpi-strip-value" id="kpi-capacity">3x</span>
+                            <span class="kpi-strip-label">Demand Increase by 2050</span>
+                        </div>
+                    </div>
+                    <div class="kpi-strip-divider"></div>
+                    <div class="kpi-strip-item">
+                        <i class="fa-solid fa-users"></i>
+                        <div class="kpi-strip-data">
+                            <span class="kpi-strip-value" id="kpi-access">1.2B</span>
+                            <span class="kpi-strip-label">People Without Cooling Access</span>
+                        </div>
                     </div>
                 </div>
 
@@ -6148,89 +6844,72 @@
                         </div>
                     </div>
                 </div>
+                </div><!-- end overview-main -->
 
-                <!-- Partner Logos -->
-                <div class="overview-partners">
-                    <span class="partners-label">Using data from</span>
-                    <div class="partners-logos">
-                        <img src="/images/clasp-logo.png" alt="CLASP" class="partner-logo" />
-                        <img src="/images/unep.png" alt="UNEP" class="partner-logo" />
-                        <img src="/images/giz-logo.jpg" alt="GIZ" class="partner-logo" />
-                        <img src="/images/seforall-logo.jpg" alt="SEforALL" class="partner-logo" />
-                        <img src="/images/climate-policy-radar-logo.jfif" alt="Climate Policy Radar" class="partner-logo" />
-                        <img src="/images/heat-logo.png" alt="HEAT" class="partner-logo" />
+                <!-- Modern Partner Sidebar -->
+                <aside class="partner-sidebar-modern">
+                    <div class="partner-header-modern">
+                        <div class="partner-icon-wrap">
+                            <i class="fa-solid fa-handshake"></i>
+                        </div>
+                        <span class="partner-title-modern">Partners</span>
                     </div>
-                </div>
+                    <div class="partner-logos-modern">
+                        <div class="logo-card"><img src="/images/ccc-logo.png" alt="Clean Cooling Collaborative" /></div>
+                        <div class="logo-card"><img src="/images/cool-coalition.png" alt="Cool Coalition" /></div>
+                        <div class="logo-card square"><img src="/images/u4e-logo.png" alt="United for Efficiency" /></div>
+                        <div class="logo-card square"><img src="/images/unep.png" alt="UNEP" /></div>
+                        <div class="logo-card"><img src="/images/iea-logo.png" alt="International Energy Agency" /></div>
+                        <div class="logo-card"><img src="/images/clasp-logo.png" alt="CLASP" /></div>
+                        <div class="logo-card square small"><img src="/images/seforall-logo.jpg" alt="SEforALL" /></div>
+                        <div class="logo-card"><img src="/images/heat-logo.png" alt="HEAT" /></div>
+                        <div class="logo-card"><img src="/images/giz-logo.png" alt="GIZ" /></div>
+                        <div class="logo-card"><img src="/images/climate-policy-radar-logo.png" alt="Climate Policy Radar" /></div>
+                    </div>
+                    <div class="partner-footer-modern">
+                        <span>Working together for climate action</span>
+                    </div>
+                </aside>
+              </div><!-- end overview-layout -->
             </section>
 
             <!-- MEPS View -->
             <section id="view-meps" class="view-section">
                 <div class="pillar-stack">
-                    <!-- Info Panel -->
-                    <div class="card-panel" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-left: 4px solid #3b82f6; padding: 1rem 1.25rem;">
-                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                            <i class="fa-solid fa-circle-info" style="color: #2563eb; font-size: 1.1rem; margin-top: 2px;"></i>
-                            <div>
-                                <div style="font-weight: 600; color: #1e40af; margin-bottom: 0.25rem;">About This Data</div>
-                                <div style="font-size: 0.85rem; color: #1e3a8a; line-height: 1.5;">
-                                    <strong>Minimum Energy Performance Standards (MEPS) &amp; Labels</strong> set efficiency requirements for cooling appliances.
-                                    This data tracks MEPS and labeling policy adoption across countries for Air Conditioners, Domestic Refrigerators, and Fans.
-                                    <em>Source: CLASP Global Policy &amp; Regulatory Compliance Platform (cprc-clasp.ngo)</em>
-                                </div>
+                    <!-- KPI Cards Box with Title -->
+                    <div class="card-panel kpi-box">
+                        <div class="kpi-box-header">
+                            <h3 id="meps-kpi-title"><i class="fa-solid fa-globe"></i> Global View</h3>
+                            <div class="kpi-box-meta">
+                                <span class="meta-pill" id="meps-meta-region"><i class="fa-solid fa-earth-americas"></i> All Regions</span>
+                                <span class="meta-pill" id="meps-meta-equipment"><i class="fa-solid fa-cogs"></i> All Equipment</span>
+                            </div>
+                        </div>
+                        <div class="kpi-grid policy-kpis" style="margin-top: 0.75rem;">
+                            <div class="kpi-card blue">
+                                <div class="kpi-value" id="meps-kpi-countries">-</div>
+                                <div class="kpi-label">Countries</div>
+                                <div class="kpi-sublabel">With MEPS or Labels</div>
+                            </div>
+                            <div class="kpi-card green">
+                                <div class="kpi-value" id="meps-kpi-policies">-</div>
+                                <div class="kpi-label">Total Policies</div>
+                                <div class="kpi-sublabel">MEPS &amp; Labels tracked</div>
+                            </div>
+                            <div class="kpi-card" style="border-left: 4px solid #4A7F7F;">
+                                <div class="kpi-value" id="meps-kpi-equipment" style="color:#4A7F7F">-</div>
+                                <div class="kpi-label">MEPS</div>
+                                <div class="kpi-sublabel">Performance standards</div>
+                            </div>
+                            <div class="kpi-card" style="border-left: 4px solid #f59e0b;">
+                                <div class="kpi-value" id="meps-kpi-regions" style="color:#f59e0b">-</div>
+                                <div class="kpi-label">Labels</div>
+                                <div class="kpi-sublabel">Energy labels</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- KPI Cards -->
-                    <div class="kpi-grid policy-kpis">
-                        <div class="kpi-card blue">
-                            <div class="kpi-value" id="meps-kpi-countries">-</div>
-                            <div class="kpi-label">Countries</div>
-                            <div class="kpi-sublabel">With MEPS or Labels</div>
-                        </div>
-                        <div class="kpi-card green">
-                            <div class="kpi-value" id="meps-kpi-policies">-</div>
-                            <div class="kpi-label">Total Policies</div>
-                            <div class="kpi-sublabel">MEPS &amp; Labels tracked</div>
-                        </div>
-                        <div class="kpi-card" style="border-left: 4px solid #2563eb;">
-                            <div class="kpi-value" id="meps-kpi-equipment" style="color:#2563eb">-</div>
-                            <div class="kpi-label">MEPS</div>
-                            <div class="kpi-sublabel">Performance standards</div>
-                        </div>
-                        <div class="kpi-card" style="border-left: 4px solid #f59e0b;">
-                            <div class="kpi-value" id="meps-kpi-regions" style="color:#f59e0b">-</div>
-                            <div class="kpi-label">Labels</div>
-                            <div class="kpi-sublabel">Energy labels</div>
-                        </div>
-                    </div>
-
-                    <!-- Filter Panel -->
-                    <div class="card-panel filter-panel" style="padding: 1rem 1.25rem;">
-                        <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: flex-end;">
-                            <!-- Region Filter -->
-                            <div class="filter-group" style="flex: 1; min-width: 180px;">
-                                <label class="filter-label">Region</label>
-                                <select id="meps-region-filter" class="filter-select">
-                                    <option value="">All Regions</option>
-                                </select>
-                            </div>
-
-                            <!-- Requirement Type Toggles -->
-                            <div class="filter-group" style="flex: 2; min-width: 300px;">
-                                <label class="filter-label">Equipment Type
-                                    <button id="meps-equip-all" class="mini-btn" type="button">All</button>
-                                    <button id="meps-equip-none" class="mini-btn" type="button">None</button>
-                                </label>
-                                <div class="toggle-group" id="meps-equipment-toggles">
-                                    <!-- Will be populated dynamically -->
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <!-- Map and Country Detail -->
+                    <!-- Map Card with Filters Inside -->
                     <div class="card-panel map-card">
                         <div class="card-header">
                             <div class="card-title">
@@ -6239,6 +6918,9 @@
                             </div>
                             <span class="viewing-pill">Viewing: <strong id="meps-viewing">Global</strong></span>
                         </div>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem; padding: 0 0.5rem;">
+                            Policy adoption status for cooling appliances. Click a country for detailed breakdown.
+                        </div>
                         <div id="meps-map-container" class="map-surface"></div>
                         <div class="legend legend-row">
                             <span class="legend-label">Policy Status:</span>
@@ -6246,37 +6928,107 @@
                         </div>
                         <div class="progress-bar" id="meps-progress">
                             <span class="progress-segment" id="meps-progress-both" title="MEPS & Labels" style="background:#166534"></span>
-                            <span class="progress-segment" id="meps-progress-meps" title="MEPS Only" style="background:#2563eb"></span>
+                            <span class="progress-segment" id="meps-progress-meps" title="MEPS Only" style="background:#4A7F7F"></span>
                             <span class="progress-segment" id="meps-progress-labels" title="Labels Only" style="background:#f59e0b"></span>
                             <span class="progress-segment" id="meps-progress-critical" title="No Policies" style="background:#ef4444"></span>
                         </div>
-                        <div id="meps-country-detail" class="country-card-inline">
-                            <h3>Selected Country</h3>
-                            <div class="country-detail">
-                                <h4>Select a country</h4>
-                                <p class="side-muted">Click on a country in the map to see MEPS details.</p>
+
+                        <!-- Filters Inside Map Card -->
+                        <div class="map-filters" id="meps-filters-panel">
+                            <div class="filters-help" style="font-size: 0.8rem; color: #4A7F7F; margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; background: #F5FAFA; border-radius: 8px; border-left: 3px solid #8BC34A;">
+                                <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
+                                <strong>Customize your view:</strong> Filter by region and equipment type to explore MEPS and labeling policies for specific appliances across different regions.
+                            </div>
+                            <div class="filter-row" style="gap: 1rem; flex-wrap: wrap; align-items: flex-start;">
+                                <!-- Region Filter -->
+                                <div class="filter-group" style="flex: 1; min-width: 180px;">
+                                    <label class="filter-label">Region</label>
+                                    <select id="meps-region-filter" class="filter-select">
+                                        <option value="">All Regions</option>
+                                    </select>
+                                </div>
+
+                                <!-- Equipment Type Toggles -->
+                                <div class="filter-group" style="flex: 2; min-width: 300px;">
+                                    <label class="filter-label">Equipment Type</label>
+                                    <div class="toggle-group" id="meps-equipment-toggles">
+                                        <!-- Will be populated dynamically -->
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Charts Grid -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem;">
-                        <div class="card-panel">
-                            <h3 id="meps-chart1-title">MEPS & Labels by Region</h3>
-                            <p class="chart-subtitle" id="meps-chart1-subtitle">Countries with MEPS vs Labels per region</p>
-                            <div id="chart-meps-by-region" class="chart-surface" style="height: 280px;"></div>
-                        </div>
-                        <div class="card-panel">
-                            <h3 id="meps-chart2-title">Policy Adoption Timeline</h3>
-                            <p class="chart-subtitle" id="meps-chart2-subtitle">Cumulative MEPS & Labels adoption over time</p>
-                            <div id="chart-meps-timeline" class="chart-surface" style="height: 280px;"></div>
+                    <!-- Country Detail Section (outside map card for attachment) -->
+                    <div class="country-card-inline" id="meps-country-detail">
+                        <div class="country-detail">
+                            <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
+                                <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #8BC34A; margin-bottom: 0.75rem; display: block;"></i>
+                                <h4 style="color: #3D6B6B; margin-bottom: 0.5rem;">Select a Country</h4>
+                                <p style="font-size: 0.85rem;">Click on any country in the map above to view MEPS and labeling policy details.</p>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="card-panel">
-                        <h3 id="meps-chart3-title">Equipment Type Coverage</h3>
-                        <p class="chart-subtitle" id="meps-chart3-subtitle">Countries with MEPS vs Labels by appliance</p>
-                        <div id="chart-meps-equipment" class="chart-surface" style="height: 320px;"></div>
+                    <!-- Filter Status Bar -->
+                    <div class="filter-status-bar" id="meps-filter-bar">
+                        <div class="status-title">
+                            <i class="fa-solid fa-chart-simple"></i>
+                            <span id="meps-status-title">Product Efficiency Analysis</span>
+                        </div>
+                        <div class="status-filters">
+                            <span class="filter-tag" id="meps-filter-region"><i class="fa-solid fa-earth-americas"></i> All Regions</span>
+                            <span class="filter-tag" id="meps-filter-equipment"><i class="fa-solid fa-cogs"></i> All Equipment</span>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="charts-section" style="background: #fafafa; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div class="card-panel chart-card">
+                                <div class="chart-card-header">
+                                    <h3 id="meps-chart1-title"><i class="fa-solid fa-chart-bar" style="color: #8BC34A; margin-right: 0.5rem;"></i>MEPS & Labels by Region</h3>
+                                    <p class="chart-subtitle" id="meps-chart1-subtitle">Countries with MEPS vs Labels per region</p>
+                                </div>
+                                <div class="chart-card-body">
+                                    <div id="chart-meps-by-region" class="chart-surface" style="height: 280px;"></div>
+                                </div>
+                            </div>
+                            <div class="card-panel chart-card">
+                                <div class="chart-card-header">
+                                    <h3 id="meps-chart2-title"><i class="fa-solid fa-clock-rotate-left" style="color: #8BC34A; margin-right: 0.5rem;"></i>Policy Adoption Timeline</h3>
+                                    <p class="chart-subtitle" id="meps-chart2-subtitle">Cumulative MEPS & Labels adoption over time</p>
+                                </div>
+                                <div class="chart-card-body">
+                                    <div id="chart-meps-timeline" class="chart-surface" style="height: 280px;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-panel chart-card">
+                            <div class="chart-card-header">
+                                <h3 id="meps-chart3-title"><i class="fa-solid fa-cogs" style="color: #8BC34A; margin-right: 0.5rem;"></i>Equipment Type Coverage</h3>
+                                <p class="chart-subtitle" id="meps-chart3-subtitle">Countries with MEPS vs Labels by appliance</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div id="chart-meps-equipment" class="chart-surface" style="height: 320px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info Panel (at bottom) -->
+                    <div class="card-panel info-panel-bottom" style="background: linear-gradient(135deg, #EBF4F4 0%, #D5E5E5 100%); border-left: 4px solid #3D6B6B; padding: 1rem 1.25rem;">
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <i class="fa-solid fa-circle-info" style="color: #3D6B6B; font-size: 1.1rem; margin-top: 2px;"></i>
+                            <div>
+                                <div style="font-weight: 600; color: #2D5252; margin-bottom: 0.25rem;">About This Data</div>
+                                <div style="font-size: 0.85rem; color: #3D6B6B; line-height: 1.5;">
+                                    <strong>Minimum Energy Performance Standards (MEPS) &amp; Labels</strong> set efficiency requirements for cooling appliances.
+                                    This data tracks MEPS and labeling policy adoption across countries for Air Conditioners, Domestic Refrigerators, and Fans.
+                                    <em>Source: CLASP Global Policy &amp; Regulatory Compliance Platform (cprc-clasp.ngo)</em>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -6376,50 +7128,80 @@
                         </div>
                     </div>
 
-                    <!-- Charts Grid -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem;">
-                        <div class="card-panel">
-                            <h3>Kigali Status by Region</h3>
-                            <p class="chart-subtitle">Party vs Non-Party breakdown</p>
-                            <div id="chart-kigali-region" class="chart-surface" style="height: 280px;"></div>
+                    <!-- Filter Status Bar -->
+                    <div class="filter-status-bar kigali-theme" id="kigali-filter-bar">
+                        <div class="status-title">
+                            <i class="fa-solid fa-snowflake"></i>
+                            <span id="kigali-status-title">Refrigerant Transition Analysis</span>
                         </div>
-                        <div class="card-panel">
-                            <h3>Group Type Distribution</h3>
-                            <p class="chart-subtitle">Article 5 and Non-Article 5 countries</p>
-                            <div id="chart-kigali-groups" class="chart-surface" style="height: 280px;"></div>
+                        <div class="status-filters">
+                            <span class="filter-tag" id="kigali-filter-region"><i class="fa-solid fa-earth-americas"></i> All Regions</span>
+                            <span class="filter-tag" id="kigali-filter-groups"><i class="fa-solid fa-users"></i> All Groups</span>
                         </div>
                     </div>
 
-                    <!-- Refrigerant GWP Chart -->
-                    <div class="card-panel">
-                        <h3>Refrigerant Global Warming Potential (GWP)</h3>
-                        <p class="chart-subtitle">100-year GWP values by refrigerant type (AR6)</p>
-                        <div id="chart-refrigerant-gwp" class="chart-surface" style="height: 350px;"></div>
-                        <div style="display: flex; gap: 1.5rem; margin-top: 0.75rem; flex-wrap: wrap; justify-content: center;">
-                            <span style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem;">
-                                <span style="width: 12px; height: 12px; background: #ef4444; border-radius: 2px;"></span>
-                                HFC (High GWP)
-                            </span>
-                            <span style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem;">
-                                <span style="width: 12px; height: 12px; background: #f59e0b; border-radius: 2px;"></span>
-                                HCFC (Medium GWP)
-                            </span>
-                            <span style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem;">
-                                <span style="width: 12px; height: 12px; background: #3b82f6; border-radius: 2px;"></span>
-                                HFO (Low GWP)
-                            </span>
-                            <span style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem;">
-                                <span style="width: 12px; height: 12px; background: #22c55e; border-radius: 2px;"></span>
-                                Natural (Low GWP)
-                            </span>
+                    <!-- Charts Section -->
+                    <div class="charts-section" style="background: #fafafa; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+                            <div class="card-panel chart-card">
+                                <div class="chart-card-header">
+                                    <h3><i class="fa-solid fa-chart-pie" style="color: #8BC34A; margin-right: 0.5rem;"></i>Kigali Status by Region</h3>
+                                    <p class="chart-subtitle">Party vs Non-Party breakdown</p>
+                                </div>
+                                <div class="chart-card-body">
+                                    <div id="chart-kigali-region" class="chart-surface" style="height: 280px;"></div>
+                                </div>
+                            </div>
+                            <div class="card-panel chart-card">
+                                <div class="chart-card-header">
+                                    <h3><i class="fa-solid fa-users-rectangle" style="color: #8BC34A; margin-right: 0.5rem;"></i>Group Type Distribution</h3>
+                                    <p class="chart-subtitle">Article 5 and Non-Article 5 countries</p>
+                                </div>
+                                <div class="chart-card-body">
+                                    <div id="chart-kigali-groups" class="chart-surface" style="height: 280px;"></div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="card-panel">
-                        <h3>Market Share: Refrigerant Transition (2020-2050)</h3>
-                        <p class="chart-subtitle">AC • Global</p>
-                        <div class="chart-container" style="height: 320px;">
-                            <div id="chart-kigali-transition" class="chart-surface"></div>
+                        <!-- Refrigerant GWP Chart -->
+                        <div class="card-panel chart-card" style="margin-bottom: 1.5rem;">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-temperature-arrow-up" style="color: #E85A4F; margin-right: 0.5rem;"></i>Refrigerant Global Warming Potential (GWP)</h3>
+                                <p class="chart-subtitle">100-year GWP values by refrigerant type (AR6)</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div id="chart-refrigerant-gwp" class="chart-surface" style="height: 350px;"></div>
+                                <div style="display: flex; gap: 1.5rem; margin-top: 0.75rem; flex-wrap: wrap; justify-content: center;">
+                                    <span style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem;">
+                                        <span style="width: 12px; height: 12px; background: #ef4444; border-radius: 2px;"></span>
+                                        HFC (High GWP)
+                                    </span>
+                                    <span style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem;">
+                                        <span style="width: 12px; height: 12px; background: #f59e0b; border-radius: 2px;"></span>
+                                        HCFC (Medium GWP)
+                                    </span>
+                                    <span style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem;">
+                                        <span style="width: 12px; height: 12px; background: #8BC34A; border-radius: 2px;"></span>
+                                        HFO (Low GWP)
+                                    </span>
+                                    <span style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem;">
+                                        <span style="width: 12px; height: 12px; background: #22c55e; border-radius: 2px;"></span>
+                                        Natural (Low GWP)
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-panel chart-card">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-chart-area" style="color: #3D6B6B; margin-right: 0.5rem;"></i>Market Share: Refrigerant Transition (2020-2050)</h3>
+                                <p class="chart-subtitle">AC • Global</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div class="chart-container" style="height: 320px;">
+                                    <div id="chart-kigali-transition" class="chart-surface"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -6428,104 +7210,41 @@
             <!-- Access View -->
             <section id="view-access" class="view-section">
                 <div class="pillar-stack">
-                    <!-- Info Panel -->
-                    <div class="card-panel" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 4px solid #f59e0b; padding: 1rem 1.25rem;">
-                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                            <i class="fa-solid fa-circle-info" style="color: #d97706; font-size: 1.1rem; margin-top: 2px;"></i>
-                            <div>
-                                <div style="font-weight: 600; color: #92400e; margin-bottom: 0.25rem;">About This Data</div>
-                                <div style="font-size: 0.85rem; color: #78350f; line-height: 1.5;">
-                                    This analysis tracks cooling access gaps across <strong>77 countries</strong> in the Global South.
-                                    "At risk" populations lack adequate cooling for <strong>thermal comfort</strong>, <strong>food preservation</strong>, and <strong>medical storage</strong>.
-                                    Risk levels are based on income, infrastructure access, and climate vulnerability.
-                                </div>
+                    <!-- KPI Cards Box with Title -->
+                    <div class="card-panel kpi-box">
+                        <div class="kpi-box-header">
+                            <h3 id="access-kpi-title"><i class="fa-solid fa-globe"></i> Global View</h3>
+                            <div class="kpi-box-meta">
+                                <span class="meta-pill" id="access-meta-source"><i class="fa-solid fa-database"></i> Historical</span>
+                                <span class="meta-pill" id="access-meta-year"><i class="fa-solid fa-calendar"></i> 2024</span>
+                                <span class="meta-pill" id="access-meta-region"><i class="fa-solid fa-earth-americas"></i> All Regions</span>
+                            </div>
+                        </div>
+                        <div class="kpi-grid policy-kpis" style="margin-top: 0.75rem;">
+                            <div class="kpi-card red">
+                                <div class="kpi-value" id="access-kpi-total">-</div>
+                                <div class="kpi-label">People at Risk</div>
+                                <div class="kpi-sublabel">Without adequate cooling access</div>
+                            </div>
+                            <div class="kpi-card amber">
+                                <div class="kpi-value" id="access-kpi-high-impact">-</div>
+                                <div class="kpi-label">High-Risk Countries</div>
+                                <div class="kpi-sublabel">Facing severe cooling gaps</div>
+                            </div>
+                            <div class="kpi-card blue">
+                                <div class="kpi-value" id="access-kpi-countries">-</div>
+                                <div class="kpi-label">Countries Analyzed</div>
+                                <div class="kpi-sublabel">In current selection</div>
+                            </div>
+                            <div class="kpi-card green">
+                                <div class="kpi-value" id="access-kpi-regions">-</div>
+                                <div class="kpi-label">Regions Covered</div>
+                                <div class="kpi-sublabel">Geographic scope</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- KPI Cards -->
-                    <div class="kpi-grid policy-kpis">
-                        <div class="kpi-card red">
-                            <div class="kpi-value" id="access-kpi-total">-</div>
-                            <div class="kpi-label">People at Risk</div>
-                            <div class="kpi-sublabel">Without adequate cooling access</div>
-                        </div>
-                        <div class="kpi-card amber">
-                            <div class="kpi-value" id="access-kpi-high-impact">-</div>
-                            <div class="kpi-label">High-Risk Countries</div>
-                            <div class="kpi-sublabel">Facing severe cooling gaps</div>
-                        </div>
-                        <div class="kpi-card blue">
-                            <div class="kpi-value" id="access-kpi-countries">-</div>
-                            <div class="kpi-label">Countries Analyzed</div>
-                            <div class="kpi-sublabel">In current selection</div>
-                        </div>
-                        <div class="kpi-card green">
-                            <div class="kpi-value" id="access-kpi-regions">-</div>
-                            <div class="kpi-label">Regions Covered</div>
-                            <div class="kpi-sublabel">Geographic scope</div>
-                        </div>
-                    </div>
-
-                    <!-- Filter Controls -->
-                    <div class="card-panel" id="access-filters-panel">
-                        <div class="filter-row" style="gap: 1.5rem; flex-wrap: wrap; align-items: flex-end;">
-                            <!-- Data Source Toggle -->
-                            <div class="filter-group" style="flex: 1; min-width: 200px;">
-                                <label class="filter-label">Data Source</label>
-                                <div class="toggle-group" id="access-source-toggles">
-                                    <button class="toggle-btn active" data-source="historical" type="button" title="SEforALL data (2013-2024)">Historical</button>
-                                    <button class="toggle-btn" data-source="forecast" type="button" title="Forecast data (2025-2030)">Forecast</button>
-                                </div>
-                            </div>
-
-                            <!-- Year Slider -->
-                            <div class="filter-group" style="flex: 2; min-width: 200px;">
-                                <label class="filter-label">Data Year</label>
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <input type="range" id="access-year-slider" min="2013" max="2024" value="2024" style="flex: 1;" />
-                                    <span id="access-year-display" style="font-weight: 700; color: #1e3a5f; min-width: 45px;">2024</span>
-                                </div>
-                            </div>
-
-                            <!-- Risk Level Toggle -->
-                            <div class="filter-group" style="flex: 1; min-width: 180px;">
-                                <label class="filter-label">Risk Level</label>
-                                <div class="toggle-group" id="access-impact-toggles">
-                                    <button class="toggle-btn active" data-impact="High" type="button" title="1+ billion lacking crucial cooling">High</button>
-                                    <button class="toggle-btn active" data-impact="Medium" type="button" title="Limited sustainable options">Medium</button>
-                                    <button class="toggle-btn active" data-impact="Low" type="button" title="Better access to cooling">Low</button>
-                                </div>
-                            </div>
-
-                            <!-- Income Group Toggle -->
-                            <div class="filter-group" style="flex: 2; min-width: 280px;">
-                                <label class="filter-label">
-                                    Income Group
-                                    <span style="margin-left: 0.5rem;">
-                                        <button class="mini-btn" id="access-pop-all" type="button">All</button>
-                                        <button class="mini-btn" id="access-pop-none" type="button">None</button>
-                                    </span>
-                                </label>
-                                <div class="toggle-group" id="access-pop-toggles">
-                                    <button class="toggle-btn active" data-category="Rural Poor" type="button" title="309M at high risk globally">Rural Poor</button>
-                                    <button class="toggle-btn active" data-category="Urban Poor" type="button" title="695M at high risk globally">Urban Poor</button>
-                                    <button class="toggle-btn active" data-category="Lower-Middle Income" type="button" title="Limited affordable options">Lower-Middle</button>
-                                    <button class="toggle-btn active" data-category="Middle-Income" type="button" title="Better access to solutions">Middle</button>
-                                </div>
-                            </div>
-
-                            <!-- Region Dropdown -->
-                            <div class="filter-group" style="flex: 1; min-width: 150px;">
-                                <label class="filter-label" for="access-region-filter">Region</label>
-                                <select id="access-region-filter" class="filter-select">
-                                    <option value="">All Regions</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Map Card -->
+                    <!-- Map Card with Filters Inside -->
                     <div class="card-panel map-card">
                         <div class="card-header">
                             <div class="card-title">
@@ -6548,48 +7267,147 @@
                             <span class="progress-segment access-high" id="access-progress-high"></span>
                             <span class="progress-segment access-critical" id="access-progress-critical"></span>
                         </div>
-                        <div class="country-card-inline" id="access-country-detail">
-                            <h3>Selected Country</h3>
-                            <div class="country-detail">
-                                <h4>Select a country</h4>
-                                <p class="side-muted">Click on a country to see detailed breakdown.</p>
+
+                        <!-- Filters Inside Map Card -->
+                        <div class="map-filters" id="access-filters-panel">
+                            <div class="filters-help" style="font-size: 0.8rem; color: #92400e; margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; background: #fef3c7; border-radius: 8px; border-left: 3px solid #f59e0b;">
+                                <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
+                                <strong>Customize your view:</strong> Filter by data source, year, risk levels, income groups, and regions to explore cooling access gaps across different populations.
+                            </div>
+                            <div class="filter-row" style="gap: 1rem; flex-wrap: wrap; align-items: flex-start;">
+                                <!-- Data Source Toggle -->
+                                <div class="filter-group">
+                                    <label class="filter-label">Source</label>
+                                    <div class="toggle-group" id="access-source-toggles">
+                                        <button class="toggle-btn active" data-source="historical" type="button" title="SEforALL data (2013-2024)">Historical</button>
+                                        <button class="toggle-btn" data-source="forecast" type="button" title="Forecast data (2025-2030)">Forecast</button>
+                                    </div>
+                                </div>
+
+                                <!-- Year Slider -->
+                                <div class="filter-group" style="flex: 2; min-width: 180px;">
+                                    <label class="filter-label">Year</label>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <input type="range" id="access-year-slider" min="2013" max="2024" value="2024" style="flex: 1;" />
+                                        <span id="access-year-display" style="font-weight: 700; color: #3D6B6B; font-size: 0.85rem;">2024</span>
+                                    </div>
+                                </div>
+
+                                <!-- Risk Level Toggle -->
+                                <div class="filter-group">
+                                    <label class="filter-label">Risk Level</label>
+                                    <div class="toggle-group" id="access-impact-toggles">
+                                        <button class="toggle-btn active" data-impact="High" type="button" title="1+ billion lacking crucial cooling">High</button>
+                                        <button class="toggle-btn active" data-impact="Medium" type="button" title="Limited sustainable options">Medium</button>
+                                        <button class="toggle-btn active" data-impact="Low" type="button" title="Better access to cooling">Low</button>
+                                    </div>
+                                </div>
+
+                                <!-- Income Group Toggle -->
+                                <div class="filter-group" style="flex: 2; min-width: 250px;">
+                                    <label class="filter-label">Income Group</label>
+                                    <div class="toggle-group" id="access-pop-toggles">
+                                        <button class="toggle-btn active" data-category="Rural Poor" type="button" title="309M at high risk globally">Rural</button>
+                                        <button class="toggle-btn active" data-category="Urban Poor" type="button" title="695M at high risk globally">Urban</button>
+                                        <button class="toggle-btn active" data-category="Lower-Middle Income" type="button" title="Limited affordable options">Lower-Mid</button>
+                                        <button class="toggle-btn active" data-category="Middle-Income" type="button" title="Better access to solutions">Middle</button>
+                                    </div>
+                                </div>
+
+                                <!-- Region Dropdown -->
+                                <div class="filter-group">
+                                    <label class="filter-label">Region</label>
+                                    <select id="access-region-filter" class="filter-select">
+                                        <option value="">All Regions</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Dynamic Charts Container -->
-                    <div id="access-charts-container"></div>
+                    <!-- Country Detail Section (outside map card for attachment) -->
+                    <div class="country-card-inline" id="access-country-detail">
+                        <div class="country-detail">
+                            <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
+                                <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #f59e0b; margin-bottom: 0.75rem; display: block;"></i>
+                                <h4 style="color: #92400e; margin-bottom: 0.5rem;">Select a Country</h4>
+                                <p style="font-size: 0.85rem;">Click on any country in the map above to view cooling access gap details and population breakdown.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter Status Bar -->
+                    <div class="filter-status-bar access-theme" id="access-filter-bar">
+                        <div class="status-title">
+                            <i class="fa-solid fa-temperature-high"></i>
+                            <span id="access-status-title">Cooling Access Gap Analysis</span>
+                        </div>
+                        <div class="status-filters">
+                            <span class="filter-tag" id="access-filter-year"><i class="fa-solid fa-calendar"></i> 2023</span>
+                            <span class="filter-tag" id="access-filter-region"><i class="fa-solid fa-earth-americas"></i> All Regions</span>
+                            <span class="filter-tag" id="access-filter-risk"><i class="fa-solid fa-exclamation-triangle"></i> All Risk Levels</span>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="charts-section" style="background: #fafafa; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
+                        <div id="access-charts-container"></div>
+                    </div>
+
+                    <!-- Info Panel (at bottom) -->
+                    <div class="card-panel info-panel-bottom" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 4px solid #f59e0b; padding: 1rem 1.25rem;">
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <i class="fa-solid fa-circle-info" style="color: #d97706; font-size: 1.1rem; margin-top: 2px;"></i>
+                            <div>
+                                <div style="font-weight: 600; color: #92400e; margin-bottom: 0.25rem;">About This Data</div>
+                                <div style="font-size: 0.85rem; color: #78350f; line-height: 1.5;">
+                                    This analysis tracks cooling access gaps across <strong>77 countries</strong> in the Global South.
+                                    "At risk" populations lack adequate cooling for <strong>thermal comfort</strong>, <strong>food preservation</strong>, and <strong>medical storage</strong>.
+                                    Risk levels are based on income, infrastructure access, and climate vulnerability.
+                                    <em>Source: SEforALL Chilling Prospects Report</em>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
             <!-- Policy Framework View - NDC Tracker, GCP, NCAP -->
             <section id="view-policy" class="view-section">
                 <div class="pillar-stack">
-                    <!-- KPI Cards -->
-                    <div class="kpi-grid policy-kpis">
-                        <div class="kpi-card green">
-                            <div class="kpi-value" id="policy-kpi-gcp">-</div>
-                            <div class="kpi-label">GCP Signatories</div>
-                            <div class="kpi-sublabel">Global Cooling Pledge</div>
+                    <!-- KPI Cards Box with Title -->
+                    <div class="card-panel kpi-box">
+                        <div class="kpi-box-header">
+                            <h3 id="policy-kpi-title"><i class="fa-solid fa-globe"></i> Global View</h3>
+                            <div class="kpi-box-meta">
+                                <span class="meta-pill" id="policy-meta-tab"><i class="fa-solid fa-file-contract"></i> Global Cooling Pledge</span>
+                            </div>
                         </div>
-                        <div class="kpi-card blue">
-                            <div class="kpi-value" id="policy-kpi-ndc">-</div>
-                            <div class="kpi-label">NDC 3.0 Submitted</div>
-                            <div class="kpi-sublabel">Countries with new NDCs</div>
-                        </div>
-                        <div class="kpi-card amber">
-                            <div class="kpi-value" id="policy-kpi-cooling">-</div>
-                            <div class="kpi-label">Cooling Mentioned</div>
-                            <div class="kpi-sublabel">In NDCs (Energy Efficiency)</div>
-                        </div>
-                        <div class="kpi-card purple">
-                            <div class="kpi-value" id="policy-kpi-NCAP">-</div>
-                            <div class="kpi-label">NCAPs Developed</div>
-                            <div class="kpi-sublabel">National Cooling Action Plans</div>
+                        <div class="kpi-grid policy-kpis" style="margin-top: 0.75rem;">
+                            <div class="kpi-card green">
+                                <div class="kpi-value" id="policy-kpi-gcp">-</div>
+                                <div class="kpi-label">GCP Signatories</div>
+                                <div class="kpi-sublabel">Global Cooling Pledge</div>
+                            </div>
+                            <div class="kpi-card blue">
+                                <div class="kpi-value" id="policy-kpi-ndc">-</div>
+                                <div class="kpi-label">NDC 3.0 Submitted</div>
+                                <div class="kpi-sublabel">Countries with new NDCs</div>
+                            </div>
+                            <div class="kpi-card amber">
+                                <div class="kpi-value" id="policy-kpi-cooling">-</div>
+                                <div class="kpi-label">Cooling Mentioned</div>
+                                <div class="kpi-sublabel">In NDCs (Energy Efficiency)</div>
+                            </div>
+                            <div class="kpi-card purple">
+                                <div class="kpi-value" id="policy-kpi-NCAP">-</div>
+                                <div class="kpi-label">NCAPs Developed</div>
+                                <div class="kpi-sublabel">National Cooling Action Plans</div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Map Card -->
+                    <!-- Map Card with Tabs Inside -->
                     <div class="card-panel map-card">
                         <div class="card-header">
                             <div class="card-title">
@@ -6603,17 +7421,21 @@
                             <button class="tab-btn policy-map-tab" data-map="ndc" type="button">NDC Cooling Mentions</button>
                             <button class="tab-btn policy-map-tab" data-map="NCAP" type="button">NCAP</button>
                         </div>
+                        <div class="filters-help" style="font-size: 0.8rem; color: #3D6B6B; margin: 0.75rem 0; padding: 0.5rem 0.75rem; background: #F5FAFA; border-radius: 8px; border-left: 3px solid #22c55e;">
+                            <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
+                            <strong>Switch tabs</strong> to explore different policy frameworks: GCP signatories, NDC cooling mentions, or National Cooling Action Plans.
+                        </div>
                         <!-- NDC Filters (shown when NDC tab is active) -->
                         <div class="policy-filters" id="policy-ndc-filters">
-                            <div class="filter-row">
+                            <div class="filter-row" style="gap: 1rem;">
                                 <div class="filter-group">
-                                    <label for="policy-ndc-type">NDC Version</label>
+                                    <label class="filter-label" for="policy-ndc-type">NDC Version</label>
                                     <select id="policy-ndc-type" class="filter-select">
                                         <!-- Options populated dynamically -->
                                     </select>
                                 </div>
                                 <div class="filter-group">
-                                    <label for="policy-ndc-category">Category</label>
+                                    <label class="filter-label" for="policy-ndc-category">Category</label>
                                     <select id="policy-ndc-category" class="filter-select">
                                         <!-- Options populated dynamically -->
                                     </select>
@@ -6631,141 +7453,98 @@
                             <span class="progress-segment ndc-no-ndc" id="ndc-progress-no-ndc"></span>
                             <span class="progress-segment ndc-no-data" id="ndc-progress-no-data"></span>
                         </div>
-                        <div class="country-card-inline" id="policy-country-detail">
-                            <h3>Selected Country</h3>
-                            <div class="country-detail">
-                                <h4>Select a country</h4>
-                                <p class="side-muted">Click on a country in the map to see policy details.</p>
+                    </div>
+
+                    <!-- Country Detail Section (outside map card for attachment) -->
+                    <div class="country-card-inline" id="policy-country-detail">
+                        <div class="country-detail">
+                            <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
+                                <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #22c55e; margin-bottom: 0.75rem; display: block;"></i>
+                                <h4 style="color: #166534; margin-bottom: 0.5rem;">Select a Country</h4>
+                                <p style="font-size: 0.85rem;">Click on any country in the map above to view policy framework details including GCP, NDC, and NCAP status.</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Dynamic Charts Container - charts are injected here based on active tab -->
-                    <div id="policy-charts-container"></div>
+                    <!-- Filter Status Bar -->
+                    <div class="filter-status-bar policy-theme" id="policy-filter-bar">
+                        <div class="status-title">
+                            <i class="fa-solid fa-file-signature"></i>
+                            <span id="policy-status-title">Policy Framework Analysis</span>
+                        </div>
+                        <div class="status-filters">
+                            <span class="filter-tag" id="policy-filter-tab"><i class="fa-solid fa-file-contract"></i> Global Cooling Pledge</span>
+                            <span class="filter-tag" id="policy-filter-region"><i class="fa-solid fa-earth-americas"></i> All Regions</span>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="charts-section" style="background: #fafafa; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
+                        <div id="policy-charts-container"></div>
+                    </div>
+
+                    <!-- Info Panel (at bottom) -->
+                    <div class="card-panel info-panel-bottom" style="background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); border-left: 4px solid #22c55e; padding: 1rem 1.25rem;">
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <i class="fa-solid fa-circle-info" style="color: #166534; font-size: 1.1rem; margin-top: 2px;"></i>
+                            <div>
+                                <div style="font-weight: 600; color: #166534; margin-bottom: 0.25rem;">About Policy Frameworks</div>
+                                <div style="font-size: 0.85rem; color: #15803d; line-height: 1.5;">
+                                    <strong>GCP:</strong> Global Cooling Pledge signatories committed to sustainable cooling.
+                                    <strong>NDC:</strong> Nationally Determined Contributions tracking cooling mentions under the Paris Agreement.
+                                    <strong>NCAP:</strong> National Cooling Action Plans for comprehensive cooling strategies.
+                                    <em>Sources: UNFCCC, Cool Coalition, K-CEP</em>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
             <!-- Emissions View (Enhanced) -->
             <section id="view-emissions" class="view-section">
                 <div class="pillar-stack">
-                    <!-- Info Panel -->
-                    <div class="card-panel" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-left: 4px solid #3b82f6; padding: 1rem 1.25rem;">
-                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                            <i class="fa-solid fa-circle-info" style="color: #2563eb; font-size: 1.1rem; margin-top: 2px;"></i>
-                            <div>
-                                <div style="font-weight: 600; color: #1e40af; margin-bottom: 0.25rem;">About This Data</div>
-                                <div style="font-size: 0.85rem; color: #1e3a8a; line-height: 1.5;">
-                                    <strong>CLASP Data:</strong> Indirect emissions only (energy-related CO2) from cooling appliances (AC, Fans, Refrigerators) under different efficiency scenarios.
-                                    <strong>HEAT Modelling:</strong> Direct (refrigerant) and indirect (energy) emissions from AC and refrigeration with Kigali Protocol scenarios. <em>Developed in collaboration with GIZ.</em>
-                                </div>
+                    <!-- KPI Cards Box with Title -->
+                    <div class="card-panel kpi-box">
+                        <div class="kpi-box-header">
+                            <h3 id="emissions-kpi-title"><i class="fa-solid fa-globe"></i> Global View</h3>
+                            <div class="kpi-box-meta">
+                                <span class="meta-pill" id="emissions-meta-source"><i class="fa-solid fa-database"></i> CLASP</span>
+                                <span class="meta-pill" id="emissions-meta-year"><i class="fa-solid fa-calendar"></i> 2030</span>
+                                <span class="meta-pill" id="emissions-meta-scenario"><i class="fa-solid fa-chart-line"></i> BAU</span>
+                            </div>
+                        </div>
+                        <div class="kpi-grid policy-kpis" style="margin-top: 0.75rem;">
+                            <div class="kpi-card red">
+                                <div class="kpi-value" id="emissions-kpi-total">-</div>
+                                <div class="kpi-label">Total CO2 Emissions</div>
+                                <div class="kpi-sublabel">Mt CO2 equivalent</div>
+                            </div>
+                            <div class="kpi-card blue">
+                                <div class="kpi-value" id="emissions-kpi-ac">-</div>
+                                <div class="kpi-label">Air Conditioning</div>
+                                <div class="kpi-sublabel">Mt CO2</div>
+                            </div>
+                            <div class="kpi-card amber">
+                                <div class="kpi-value" id="emissions-kpi-fridge">-</div>
+                                <div class="kpi-label">Refrigeration</div>
+                                <div class="kpi-sublabel">Mt CO2</div>
+                            </div>
+                            <div class="kpi-card green">
+                                <div class="kpi-value" id="emissions-kpi-fans">-</div>
+                                <div class="kpi-label">Fans</div>
+                                <div class="kpi-sublabel">Mt CO2</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- KPI Cards -->
-                    <div class="kpi-grid policy-kpis">
-                        <div class="kpi-card red">
-                            <div class="kpi-value" id="emissions-kpi-total">-</div>
-                            <div class="kpi-label">Total CO2 Emissions</div>
-                            <div class="kpi-sublabel">Mt CO2 equivalent</div>
-                        </div>
-                        <div class="kpi-card blue">
-                            <div class="kpi-value" id="emissions-kpi-ac">-</div>
-                            <div class="kpi-label">Air Conditioning</div>
-                            <div class="kpi-sublabel">Mt CO2</div>
-                        </div>
-                        <div class="kpi-card amber">
-                            <div class="kpi-value" id="emissions-kpi-fridge">-</div>
-                            <div class="kpi-label">Refrigeration</div>
-                            <div class="kpi-sublabel">Mt CO2</div>
-                        </div>
-                        <div class="kpi-card green">
-                            <div class="kpi-value" id="emissions-kpi-fans">-</div>
-                            <div class="kpi-label">Fans</div>
-                            <div class="kpi-sublabel">Mt CO2</div>
-                        </div>
-                    </div>
-
-                    <!-- Filter Controls -->
-                    <div class="card-panel" id="emissions-filters-panel">
-                        <div class="filter-row" style="gap: 1.5rem; flex-wrap: wrap; align-items: flex-end;">
-                            <!-- Data Source Toggle -->
-                            <div class="filter-group" style="flex: 1; min-width: 200px;">
-                                <label class="filter-label">Data Source</label>
-                                <div class="toggle-group" id="emissions-source-toggles">
-                                    <button class="toggle-btn active" data-source="clasp" type="button" title="Indirect emissions only (energy-related CO2) by appliance">clasp</button>
-                                    <button class="toggle-btn" data-source="subcool" type="button" title="Direct and indirect emissions with Kigali scenarios (GIZ collaboration)">HEAT Modelling</button>
-                                </div>
-                            </div>
-
-                            <!-- Year Slider -->
-                            <div class="filter-group" style="flex: 2; min-width: 200px;">
-                                <label class="filter-label">Year</label>
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <input type="range" id="emissions-year-slider" min="2020" max="2045" value="2030" style="flex: 1;" />
-                                    <span id="emissions-year-display" style="font-weight: 700; color: #1e3a5f; min-width: 45px;">2030</span>
-                                </div>
-                            </div>
-
-                            <!-- Scenario Dropdown -->
-                            <div class="filter-group" style="flex: 1; min-width: 150px;">
-                                <label class="filter-label" for="emissions-scenario-select">Scenario</label>
-                                <select id="emissions-scenario-select" class="filter-select">
-                                    <option value="BAU">Business as Usual</option>
-                                    <option value="GB">Green Buildings</option>
-                                    <option value="NZH">Net Zero Homes</option>
-                                    <option value="BAT">Best Available Tech</option>
-                                </select>
-                            </div>
-
-                            <!-- Region Dropdown -->
-                            <div class="filter-group" style="flex: 1; min-width: 150px;">
-                                <label class="filter-label" for="emissions-region-select">Region</label>
-                                <select id="emissions-region-select" class="filter-select">
-                                    <option value="">All Regions</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Appliance Toggles (for CLASP) -->
-                        <div class="filter-row" style="margin-top: 1rem;" id="emissions-appliance-row">
-                            <div class="filter-group" style="flex: 1;">
-                                <label class="filter-label">
-                                    Appliances
-                                    <span style="margin-left: 0.5rem;">
-                                        <button class="mini-btn" id="emissions-app-all" type="button">All</button>
-                                        <button class="mini-btn" id="emissions-app-none" type="button">None</button>
-                                    </span>
-                                </label>
-                                <div class="toggle-group" id="emissions-appliance-toggles">
-                                    <button class="toggle-btn active" data-appliance="Air Conditioning" type="button">AC</button>
-                                    <button class="toggle-btn active" data-appliance="Ceiling and Portable Fans" type="button">Fans</button>
-                                    <button class="toggle-btn active" data-appliance="Refrigerator-Freezers" type="button">Refrigerators</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Emission Type Toggles (for Subcool) -->
-                        <div class="filter-row" style="margin-top: 1rem; display: none;" id="emissions-type-row">
-                            <div class="filter-group" style="flex: 1;">
-                                <label class="filter-label">Emission Type</label>
-                                <div class="toggle-group" id="emissions-type-toggles">
-                                    <button class="toggle-btn active" data-type="total" type="button">Total</button>
-                                    <button class="toggle-btn" data-type="direct" type="button">Direct (Refrigerants)</button>
-                                    <button class="toggle-btn" data-type="indirect" type="button">Indirect (Energy)</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Map Card -->
+                    <!-- Map Card with Filters Inside -->
                     <div class="card-panel map-card">
                         <div class="card-header">
                             <div class="card-title">
                                 <i class="fa-solid fa-earth-americas"></i>
                                 CO2 Emissions by Country
                             </div>
-                            <span class="viewing-pill">Viewing: <strong id="emissions-viewing">Global</strong></span>
                         </div>
                         <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem; padding: 0 0.5rem;">
                             Cooling sector emissions in Mt CO2. Click a country for detailed breakdown.
@@ -6776,34 +7555,104 @@
                             <div id="emissions-legend" class="legend-items"></div>
                         </div>
                         <div class="progress-bar" id="emissions-progress">
-                            <span class="progress-segment" id="emissions-progress-low" style="background: #166534;"></span>
-                            <span class="progress-segment" id="emissions-progress-medium" style="background: #65a30d;"></span>
-                            <span class="progress-segment" id="emissions-progress-high" style="background: #fbbf24;"></span>
-                            <span class="progress-segment" id="emissions-progress-critical" style="background: #ef4444;"></span>
+                            <span class="progress-segment" id="emissions-progress-low" style="background: #8BC34A;"></span>
+                            <span class="progress-segment" id="emissions-progress-medium" style="background: #E89B8C;"></span>
+                            <span class="progress-segment" id="emissions-progress-high" style="background: #E85A4F;"></span>
+                            <span class="progress-segment" id="emissions-progress-critical" style="background: #D94539;"></span>
                         </div>
-                        <div class="country-card-inline" id="emissions-country-detail">
-                            <h3>Selected Country</h3>
-                            <div class="country-detail">
-                                <h4>Select a country</h4>
-                                <p class="side-muted">Click on a country in the map to see emission details.</p>
+
+                        <!-- Filters Inside Map Card -->
+                        <div class="map-filters" id="emissions-filters-panel">
+                            <div class="filters-help" style="font-size: 0.8rem; color: #4A7F7F; margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; background: #F5FAFA; border-radius: 8px; border-left: 3px solid #8BC34A;">
+                                <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
+                                <strong>Customize your view:</strong> These filters control all data displayed on the map, charts, and KPIs above. Adjust the source, year, scenario, and appliances to explore different emission projections.
+                            </div>
+                            <div class="filter-row" style="gap: 1rem; flex-wrap: nowrap; align-items: flex-start;">
+                                <!-- Data Source Toggle -->
+                                <div class="filter-group">
+                                    <label class="filter-label">Source</label>
+                                    <div class="toggle-group" id="emissions-source-toggles">
+                                        <button class="toggle-btn active" data-source="clasp" type="button" title="Indirect emissions only (energy-related CO2) by appliance">CLASP</button>
+                                        <button class="toggle-btn" data-source="subcool" type="button" title="Direct and indirect emissions with Kigali scenarios (GIZ collaboration)">HEAT</button>
+                                    </div>
+                                </div>
+
+                                <!-- Year Slider -->
+                                <div class="filter-group" style="flex: 2; min-width: 200px;">
+                                    <label class="filter-label">Year</label>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <input type="range" id="emissions-year-slider" min="2020" max="2045" value="2030" style="flex: 1;" />
+                                        <span id="emissions-year-display" style="font-weight: 700; color: #3D6B6B; font-size: 0.85rem;">2030</span>
+                                    </div>
+                                </div>
+
+                                <!-- Scenario Dropdown -->
+                                <div class="filter-group">
+                                    <label class="filter-label" for="emissions-scenario-select">Scenario</label>
+                                    <select id="emissions-scenario-select" class="filter-select" style="min-width: 120px;">
+                                        <option value="BAU">Business as Usual</option>
+                                        <option value="GB">Green Buildings</option>
+                                        <option value="NZH">Net Zero Homes</option>
+                                        <option value="BAT">Best Available Tech</option>
+                                    </select>
+                                </div>
+
+                                <!-- Appliance Toggles (for CLASP) -->
+                                <div class="filter-group" id="emissions-appliance-row">
+                                    <label class="filter-label">Appliances</label>
+                                    <div class="toggle-group" id="emissions-appliance-toggles">
+                                        <button class="toggle-btn active" data-appliance="Air Conditioning" type="button">AC</button>
+                                        <button class="toggle-btn active" data-appliance="Ceiling and Portable Fans" type="button">Fans</button>
+                                        <button class="toggle-btn active" data-appliance="Refrigerator-Freezers" type="button">Refrigerators</button>
+                                    </div>
+                                </div>
+
+                                <!-- Emission Type Toggles (for Subcool) - shown when HEAT selected -->
+                                <div class="filter-group" id="emissions-type-row" style="display: none;">
+                                    <label class="filter-label">Type</label>
+                                    <div class="toggle-group" id="emissions-type-toggles">
+                                        <button class="toggle-btn active" data-type="total" type="button">Total</button>
+                                        <button class="toggle-btn" data-type="direct" type="button">Direct</button>
+                                        <button class="toggle-btn" data-type="indirect" type="button">Indirect</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Charts Container -->
+                    <!-- Charts Container (side by side) -->
                     <div id="emissions-charts-container"></div>
+
+                    <!-- Country Detail Section (at bottom) -->
+                    <div class="country-card-inline" id="emissions-country-detail">
+                        <div class="country-detail">
+                            <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
+                                <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #8BC34A; margin-bottom: 0.75rem; display: block;"></i>
+                                <h4 style="color: #3D6B6B; margin-bottom: 0.5rem;">Select a Country</h4>
+                                <p style="font-size: 0.85rem;">Click on any country in the map above to view detailed emission breakdowns and projections.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info Panel (at bottom) -->
+                    <div class="card-panel info-panel-bottom" style="background: linear-gradient(135deg, #EBF4F4 0%, #D5E5E5 100%); border-left: 4px solid #3D6B6B; padding: 1rem 1.25rem;">
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <i class="fa-solid fa-circle-info" style="color: #3D6B6B; font-size: 1.1rem; margin-top: 2px;"></i>
+                            <div>
+                                <div style="font-weight: 600; color: #2D5252; margin-bottom: 0.25rem;">About This Data</div>
+                                <div style="font-size: 0.85rem; color: #3D6B6B; line-height: 1.5;">
+                                    <strong>CLASP Data:</strong> Indirect emissions only (energy-related CO2) from cooling appliances (AC, Fans, Refrigerators) under different efficiency scenarios.
+                                    <strong>HEAT Modelling:</strong> Direct (refrigerant) and indirect (energy) emissions from AC and refrigeration with Kigali Protocol scenarios. <em>Developed in collaboration with GIZ.</em>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
 
         <!-- Right Sidebar -->
         <aside class="sidebar-right">
-            <div class="side-card" id="data-sources">
-                <h3>Authoritative Data Sources</h3>
-                <p class="side-muted">Access original datasets and policy trackers.</p>
-                <div class="source-list" id="source-list"></div>
-            </div>
-
             <div class="side-card insight-card">
                 <h3>
                     <i class="fa-solid fa-lightbulb"></i>
@@ -6830,6 +7679,30 @@
                     <div class="stat-item">
                         <span class="label">Data Updated</span>
                         <span id="stat-updated">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="side-card" id="data-sources">
+                <h3>Authoritative Data Sources</h3>
+                <p class="side-muted">Access original datasets and policy trackers.</p>
+                <div class="source-list" id="source-list"></div>
+            </div>
+
+            <!-- Partner Logos Rotating Box -->
+            <div class="side-card partner-logos-card" style="margin-top: auto;">
+                <h3>Supported by</h3>
+                <div class="partner-logos-carousel">
+                    <div class="partner-logos-track">
+                        <img src="/images/ccc-logo.png" alt="Clean Cooling Collaborative" class="partner-logo" />
+                        <img src="/images/cool-coalition.png" alt="Cool Coalition" class="partner-logo" />
+                        <img src="/images/heat-logo.png" alt="HEAT" class="partner-logo" />
+                        <img src="/images/giz-logo.png" alt="GIZ" class="partner-logo" />
+                        <!-- Duplicate for seamless loop -->
+                        <img src="/images/ccc-logo.png" alt="Clean Cooling Collaborative" class="partner-logo" />
+                        <img src="/images/cool-coalition.png" alt="Cool Coalition" class="partner-logo" />
+                        <img src="/images/heat-logo.png" alt="HEAT" class="partner-logo" />
+                        <img src="/images/giz-logo.png" alt="GIZ" class="partner-logo" />
                     </div>
                 </div>
             </div>
