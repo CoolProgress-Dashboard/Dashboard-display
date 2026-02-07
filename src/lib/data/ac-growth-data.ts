@@ -64,16 +64,10 @@ export const acStockData: ACStockDataPoint[] = [
     source: 'IEA: "1.6 billion" circa 2018, ~2B by 2020',
   },
   {
-    year: 2024,
-    stockMillions: 3099,
-    isProjected: false,
-    source: 'CCC: 3,098.96M units in 2024',
-  },
-  {
     year: 2025,
-    stockMillions: 3300,
-    isProjected: true,
-    source: 'IEA baseline scenario, interpolated from CCC',
+    stockMillions: 3100,
+    isProjected: false,
+    source: 'CCC: ~3.1B units (2024/25 boundary)',
   },
   {
     year: 2030,
@@ -134,7 +128,7 @@ export const acMilestones: ACMilestone[] = [
       '66 nations signed the Global Cooling Pledge at COP28 Dubai, committing to reduce cooling-related emissions 68% by 2050 and raise AC efficiency 50%.',
   },
   {
-    year: 2024,
+    year: 2025,
     label: '3 Billion ACs',
     description:
       'Global AC stock surpassed 3 billion units. CCC reports 3,099 million units installed worldwide.',

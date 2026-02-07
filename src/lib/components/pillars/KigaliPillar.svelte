@@ -1,46 +1,66 @@
 <script lang="ts">
+  import { VIEW_META } from '$lib/components/shared/config';
   export let active: boolean = false;
+  export let onPillarInfoClick: (() => void) | null = null;
+  const meta = VIEW_META.kigali;
 </script>
 
 <section id="view-kigali" class="view-section" class:active>
   <div class="pillar-stack">
-    <!-- Info Panel -->
-    <div class="card-panel" style="background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); border-left: 4px solid #22c55e; padding: 1rem 1.25rem;">
-      <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-        <i class="fa-solid fa-circle-info" style="color: #16a34a; font-size: 1.1rem; margin-top: 2px;"></i>
-        <div>
-          <div style="font-weight: 600; color: #166534; margin-bottom: 0.25rem;">About This Data</div>
-          <div style="font-size: 0.85rem; color: #14532d; line-height: 1.5;">
-            The <strong>Kigali Amendment</strong> to the Montreal Protocol targets the phase-down of hydrofluorocarbons (HFCs) used in cooling.
-            Countries are grouped into <strong>Article 5</strong> (developing) and <strong>Non-Article 5</strong> (developed) parties with different phase-down schedules.
-            Data tracks ratification status and refrigerant transition progress.
-          </div>
+    <!-- Unified Story + KPI Card -->
+    <div class="card-panel pillar-story-card">
+      <div class="pillar-story-header">
+        <div class="pillar-story-text">
+          <h1 class="pillar-headline">{meta.headline}</h1>
+          <p class="pillar-subhead">{meta.subhead}</p>
+        </div>
+        <div class="pillar-story-actions">
+          <span class="last-updated-label"></span>
+          {#if onPillarInfoClick}
+            <button class="pillar-info-btn" type="button" on:click={onPillarInfoClick}>
+              <i class="fa-solid fa-circle-info"></i> Pillar Information
+            </button>
+          {/if}
         </div>
       </div>
-    </div>
 
-    <!-- KPI Cards -->
-    <div class="kpi-grid policy-kpis">
-      <div class="kpi-card green">
-        <div class="kpi-value" id="kigali-kpi-parties">-</div>
-        <div class="kpi-label">Kigali Parties</div>
-        <div class="kpi-sublabel">Ratified the amendment</div>
+      <div class="kpi-grid policy-kpis" style="margin-top: 0.75rem;">
+        <div class="kpi-card green">
+          <div class="kpi-value" id="kigali-kpi-parties">-</div>
+          <div class="kpi-label">Kigali Parties</div>
+          <div class="kpi-sublabel">Ratified the amendment</div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kpi-value" id="kigali-kpi-montreal">-</div>
+          <div class="kpi-label">Montreal Protocol</div>
+          <div class="kpi-sublabel">Protocol parties</div>
+        </div>
+        <div class="kpi-card amber">
+          <div class="kpi-value" id="kigali-kpi-article5">-</div>
+          <div class="kpi-label">Article 5 Countries</div>
+          <div class="kpi-sublabel">Developing nations</div>
+        </div>
+        <div class="kpi-card teal">
+          <div class="kpi-value" id="kigali-kpi-non-article5">-</div>
+          <div class="kpi-label">Non-Article 5</div>
+          <div class="kpi-sublabel">Developed nations</div>
+        </div>
       </div>
-      <div class="kpi-card blue">
-        <div class="kpi-value" id="kigali-kpi-montreal">-</div>
-        <div class="kpi-label">Montreal Protocol</div>
-        <div class="kpi-sublabel">Protocol parties</div>
-      </div>
-      <div class="kpi-card amber">
-        <div class="kpi-value" id="kigali-kpi-article5">-</div>
-        <div class="kpi-label">Article 5 Countries</div>
-        <div class="kpi-sublabel">Developing nations</div>
-      </div>
-      <div class="kpi-card teal">
-        <div class="kpi-value" id="kigali-kpi-non-article5">-</div>
-        <div class="kpi-label">Non-Article 5</div>
-        <div class="kpi-sublabel">Developed nations</div>
-      </div>
+
+      {#if meta.methodology}
+        <div class="story-methodology">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>{meta.methodology}</span>
+          {#if meta.sources.length > 0}
+            <span class="story-sources">
+              &mdash;
+              {#each meta.sources as src, i}
+                <a href={src.url} target="_blank" rel="noopener noreferrer">{src.name}</a>{#if i < meta.sources.length - 1},{/if}
+              {/each}
+            </span>
+          {/if}
+        </div>
+      {/if}
     </div>
 
     <!-- Filter Panel -->

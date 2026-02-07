@@ -1,11 +1,29 @@
 <script lang="ts">
+  import { VIEW_META } from '$lib/components/shared/config';
   export let active: boolean = false;
+  export let onPillarInfoClick: (() => void) | null = null;
+  const meta = VIEW_META.access;
 </script>
 
 <section id="view-access" class="view-section" class:active>
   <div class="pillar-stack">
-    <!-- KPI Cards Box with Title -->
-    <div class="card-panel kpi-box">
+    <!-- Unified Story + KPI Card -->
+    <div class="card-panel pillar-story-card">
+      <div class="pillar-story-header">
+        <div class="pillar-story-text">
+          <h1 class="pillar-headline">{meta.headline}</h1>
+          <p class="pillar-subhead">{meta.subhead}</p>
+        </div>
+        <div class="pillar-story-actions">
+          <span class="last-updated-label"></span>
+          {#if onPillarInfoClick}
+            <button class="pillar-info-btn" type="button" on:click={onPillarInfoClick}>
+              <i class="fa-solid fa-circle-info"></i> Pillar Information
+            </button>
+          {/if}
+        </div>
+      </div>
+
       <div class="kpi-box-header">
         <h3 id="access-kpi-title"><i class="fa-solid fa-globe"></i> Global View</h3>
         <div class="kpi-box-meta">
@@ -36,6 +54,21 @@
           <div class="kpi-sublabel">Geographic scope</div>
         </div>
       </div>
+
+      {#if meta.methodology}
+        <div class="story-methodology">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>{meta.methodology}</span>
+          {#if meta.sources.length > 0}
+            <span class="story-sources">
+              &mdash;
+              {#each meta.sources as src, i}
+                <a href={src.url} target="_blank" rel="noopener noreferrer">{src.name}</a>{#if i < meta.sources.length - 1},{/if}
+              {/each}
+            </span>
+          {/if}
+        </div>
+      {/if}
     </div>
 
     <!-- Map Card with Filters Inside -->
@@ -146,22 +179,6 @@
     <!-- Charts Section -->
     <div class="charts-section" style="background: #fafafa; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
       <div id="access-charts-container"></div>
-    </div>
-
-    <!-- Info Panel -->
-    <div class="card-panel info-panel-bottom" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 4px solid #f59e0b; padding: 1rem 1.25rem;">
-      <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-        <i class="fa-solid fa-circle-info" style="color: #d97706; font-size: 1.1rem; margin-top: 2px;"></i>
-        <div>
-          <div style="font-weight: 600; color: #92400e; margin-bottom: 0.25rem;">About This Data</div>
-          <div style="font-size: 0.85rem; color: #78350f; line-height: 1.5;">
-            This analysis tracks cooling access gaps across <strong>77 countries</strong> in the Global South.
-            "At risk" populations lack adequate cooling for <strong>thermal comfort</strong>, <strong>food preservation</strong>, and <strong>medical storage</strong>.
-            Risk levels are based on income, infrastructure access, and climate vulnerability.
-            <em>Source: SEforALL Chilling Prospects Report</em>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </section>

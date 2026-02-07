@@ -18,29 +18,16 @@
     const historicalData = stocks.map((v, i) => isProjected[i] ? null : v);
     const projectedData = stocks.map((v, i) => isProjected[i] ? v : null);
 
-    // Bridge: last historical point also appears in projected
+    // Bridge: last historical point (2025) also appears in projected for continuity
     const lastHistIdx = isProjected.indexOf(true) - 1;
     if (lastHistIdx >= 0 && lastHistIdx < projectedData.length) {
       projectedData[lastHistIdx] = stocks[lastHistIdx];
     }
 
-    // Milestone markpoints
-    const markPoints = acMilestones
-      .filter(m => years.includes(m.year))
-      .map(m => ({
-        coord: [years.indexOf(m.year), stocks[years.indexOf(m.year)]],
-        name: m.label,
-        value: m.label,
-        symbol: 'pin',
-        symbolSize: 40,
-        label: {
-          show: true,
-          formatter: (p: any) => p.name,
-          fontSize: 9,
-          color: '#fff'
-        },
-        itemStyle: { color: '#3D6B6B' }
-      }));
+    // 2025 demarcation line index
+    const demarcationIdx = years.indexOf(2025);
+
+    // Milestones available in tooltip only (no visual pins)
 
     const option = {
       tooltip: {
@@ -93,7 +80,7 @@
           name: 'Historical',
           type: 'line',
           data: historicalData,
-          smooth: true,
+          smooth: 0.5,
           connectNulls: false,
           lineStyle: { width: 3, color: '#3D6B6B' },
           itemStyle: { color: '#3D6B6B' },
@@ -108,13 +95,20 @@
             }
           },
           symbol: 'circle',
-          symbolSize: 6
+          symbolSize: 5,
+          markLine: demarcationIdx >= 0 ? {
+            silent: true,
+            symbol: 'none',
+            data: [{ xAxis: demarcationIdx }],
+            lineStyle: { color: '#94a3b8', width: 1, type: 'dashed' },
+            label: { show: false }
+          } : undefined
         },
         {
           name: 'Projected (IEA Baseline)',
           type: 'line',
           data: projectedData,
-          smooth: true,
+          smooth: 0.5,
           connectNulls: false,
           lineStyle: { width: 3, color: '#E89B8C', type: 'dashed' },
           itemStyle: { color: '#E89B8C' },
@@ -129,11 +123,7 @@
             }
           },
           symbol: 'circle',
-          symbolSize: 6,
-          markPoint: {
-            data: markPoints,
-            label: { show: false }
-          }
+          symbolSize: 5
         }
       ],
       legend: {
@@ -173,7 +163,7 @@
   </div>
   <div class="chart-container" bind:this={chartContainer}></div>
   <div class="chart-source">
-    Sources: IEA Future of Cooling (2018); CCC Global Cooling Watch (2023)
+    Sources: <a href="https://www.iea.org/reports/the-future-of-cooling" target="_blank" rel="noopener noreferrer">IEA Future of Cooling (2018)</a>; <a href="https://www.cleancoolingcollaborative.org/report/global-cooling-watch-2023/" target="_blank" rel="noopener noreferrer">CCC Global Cooling Watch (2023)</a>
   </div>
 </div>
 
@@ -235,5 +225,17 @@
     text-align: right;
     margin-top: 0.5rem;
     font-style: italic;
+  }
+
+  .chart-source a {
+    color: #3D6B6B;
+    text-decoration: none;
+    border-bottom: 1px dotted rgba(61, 107, 107, 0.3);
+    transition: color 0.2s ease;
+  }
+
+  .chart-source a:hover {
+    color: #2D5252;
+    border-bottom-color: #2D5252;
   }
 </style>

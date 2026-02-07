@@ -15,7 +15,7 @@
   // Layout components
   import { Sidebar, Header, RightPanel } from '$lib/components/layout';
   // Pillar view components
-  import { OverviewPillar, EmissionsPillar, MepsPillar, KigaliPillar, AccessPillar, PolicyPillar } from '$lib/components/pillars';
+  import { OverviewPillar, EmissionsPillar, MepsPillar, KigaliPillar, AccessPillar, PolicyPillar, PartnersPillar } from '$lib/components/pillars';
   // Shared components
   import { PillarModal, VIEW_META, PILLAR_INFO,
     CLASP_SCENARIOS, CLASP_SCENARIO_NAMES, CLASP_APPLIANCES, CLASP_APPLIANCE_SHORT,
@@ -32,6 +32,9 @@
   let scopeDisabled = false;
   let headerHeadline = 'Why Cooling Matters';
   let headerSubhead = 'The Transition is Urgent. The Opportunity is Now.';
+  let headerMethodology = '';
+  let headerSources: { name: string; url: string }[] = [];
+  let headerVisible = true;
   let showPillarInfoBtn = false;
   let pillarModalVisible = false;
   let insightText = '';
@@ -6000,9 +6003,14 @@
             currentViewState = view;
             headerHeadline = viewMeta[view]?.headline ?? viewMeta.overview.headline;
             headerSubhead = viewMeta[view]?.subhead ?? viewMeta.overview.subhead;
+            headerMethodology = viewMeta[view]?.methodology ?? '';
+            headerSources = viewMeta[view]?.sources ?? [];
             insightText = viewMeta[view]?.insight ?? viewMeta.overview.insight;
             showPillarInfoBtn = !!pillarInfo[view];
-            scopeDisabled = view === 'policy' || view === 'access';
+            // Hide header story-box for pillar views (story is now inside each pillar card)
+            const pillarViews = ['emissions', 'meps', 'kigali', 'access', 'policy'];
+            headerVisible = !pillarViews.includes(view);
+            scopeDisabled = view === 'policy' || view === 'access' || view === 'partners';
 
             const container = document.querySelector<HTMLElement>('.main-container');
             if (container) {
@@ -6522,7 +6530,10 @@
                 } else {
                     setStatus(`Loaded ${data.countries.length} countries, ${data.access.length} access records`, 'success');
                 }
-                setText('last-updated', `Updated: ${new Date().toLocaleDateString()}`);
+                const updatedText = `Updated: ${new Date().toLocaleDateString()}`;
+                setText('last-updated', updatedText);
+                // Also fill all pillar story card updated labels
+                document.querySelectorAll('.last-updated-label').forEach(el => { el.textContent = updatedText; });
             } catch (error) {
                 const message = error instanceof Error ? error.message : String(error);
                 setStatus(`Error: ${message}`, 'error');
@@ -6611,17 +6622,21 @@
       <Header
         headline={headerHeadline}
         subhead={headerSubhead}
+        methodology={headerMethodology}
+        sources={headerSources}
+        visible={headerVisible}
         showPillarInfo={showPillarInfoBtn}
         onPillarInfoClick={handlePillarInfoClick}
       />
 
       <!-- Pillar Views (Components) -->
       <OverviewPillar active={currentViewState === 'overview'} onNavigate={handleViewChange} />
-      <MepsPillar active={currentViewState === 'meps'} />
-      <KigaliPillar active={currentViewState === 'kigali'} />
-      <AccessPillar active={currentViewState === 'access'} />
-      <PolicyPillar active={currentViewState === 'policy'} />
-      <EmissionsPillar active={currentViewState === 'emissions'} />
+      <EmissionsPillar active={currentViewState === 'emissions'} onPillarInfoClick={handlePillarInfoClick} />
+      <MepsPillar active={currentViewState === 'meps'} onPillarInfoClick={handlePillarInfoClick} />
+      <KigaliPillar active={currentViewState === 'kigali'} onPillarInfoClick={handlePillarInfoClick} />
+      <AccessPillar active={currentViewState === 'access'} onPillarInfoClick={handlePillarInfoClick} />
+      <PolicyPillar active={currentViewState === 'policy'} onPillarInfoClick={handlePillarInfoClick} />
+      <PartnersPillar active={currentViewState === 'partners'} />
     </main>
 
     <!-- Right Sidebar (Component) -->

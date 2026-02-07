@@ -1,11 +1,29 @@
 <script lang="ts">
+  import { VIEW_META } from '$lib/components/shared/config';
   export let active: boolean = false;
+  export let onPillarInfoClick: (() => void) | null = null;
+  const meta = VIEW_META.meps;
 </script>
 
 <section id="view-meps" class="view-section" class:active>
   <div class="pillar-stack">
-    <!-- KPI Cards Box with Title -->
-    <div class="card-panel kpi-box">
+    <!-- Unified Story + KPI Card -->
+    <div class="card-panel pillar-story-card">
+      <div class="pillar-story-header">
+        <div class="pillar-story-text">
+          <h1 class="pillar-headline">{meta.headline}</h1>
+          <p class="pillar-subhead">{meta.subhead}</p>
+        </div>
+        <div class="pillar-story-actions">
+          <span class="last-updated-label"></span>
+          {#if onPillarInfoClick}
+            <button class="pillar-info-btn" type="button" on:click={onPillarInfoClick}>
+              <i class="fa-solid fa-circle-info"></i> Pillar Information
+            </button>
+          {/if}
+        </div>
+      </div>
+
       <div class="kpi-box-header">
         <h3 id="meps-kpi-title"><i class="fa-solid fa-globe"></i> Global View</h3>
         <div class="kpi-box-meta">
@@ -35,6 +53,21 @@
           <div class="kpi-sublabel">Energy labels</div>
         </div>
       </div>
+
+      {#if meta.methodology}
+        <div class="story-methodology">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>{meta.methodology}</span>
+          {#if meta.sources.length > 0}
+            <span class="story-sources">
+              &mdash;
+              {#each meta.sources as src, i}
+                <a href={src.url} target="_blank" rel="noopener noreferrer">{src.name}</a>{#if i < meta.sources.length - 1},{/if}
+              {/each}
+            </span>
+          {/if}
+        </div>
+      {/if}
     </div>
 
     <!-- Map Card with Filters Inside -->
@@ -140,21 +173,6 @@
         </div>
         <div class="chart-card-body">
           <div id="chart-meps-equipment" class="chart-surface" style="height: 320px;"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Info Panel -->
-    <div class="card-panel info-panel-bottom" style="background: linear-gradient(135deg, #EBF4F4 0%, #D5E5E5 100%); border-left: 4px solid #3D6B6B; padding: 1rem 1.25rem;">
-      <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-        <i class="fa-solid fa-circle-info" style="color: #3D6B6B; font-size: 1.1rem; margin-top: 2px;"></i>
-        <div>
-          <div style="font-weight: 600; color: #2D5252; margin-bottom: 0.25rem;">About This Data</div>
-          <div style="font-size: 0.85rem; color: #3D6B6B; line-height: 1.5;">
-            <strong>Minimum Energy Performance Standards (MEPS) &amp; Labels</strong> set efficiency requirements for cooling appliances.
-            This data tracks MEPS and labeling policy adoption across countries for Air Conditioners, Domestic Refrigerators, and Fans.
-            <em>Source: CLASP Global Policy &amp; Regulatory Compliance Platform (cprc-clasp.ngo)</em>
-          </div>
         </div>
       </div>
     </div>

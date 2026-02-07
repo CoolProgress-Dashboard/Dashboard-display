@@ -74,7 +74,7 @@
 <section
   class="hero-section"
   class:revealed
-  style="background: linear-gradient(135deg, #7a00df 0%, #00b4d8 100%)"
+  style="background: linear-gradient(135deg, #0d3b4f 0%, #1a6b5a 50%, #0693e3 100%)"
   aria-label="Dashboard hero"
 >
   <!-- Animated background effects -->
@@ -195,7 +195,7 @@
   .hero-orb--1 {
     width: 300px;
     height: 300px;
-    background: rgba(0, 180, 216, 0.3);
+    background: rgba(6, 147, 227, 0.3);
     top: -120px;
     right: -60px;
     animation: orb-drift 18s ease-in-out infinite;
@@ -204,7 +204,7 @@
   .hero-orb--2 {
     width: 220px;
     height: 220px;
-    background: rgba(122, 0, 223, 0.25);
+    background: rgba(26, 107, 90, 0.3);
     bottom: -80px;
     left: 10%;
     animation: orb-drift 22s ease-in-out infinite reverse;
@@ -213,7 +213,7 @@
   .hero-orb--3 {
     width: 180px;
     height: 180px;
-    background: rgba(139, 195, 74, 0.15);
+    background: rgba(139, 195, 74, 0.18);
     top: 40%;
     right: 25%;
     animation: orb-drift 25s ease-in-out infinite;

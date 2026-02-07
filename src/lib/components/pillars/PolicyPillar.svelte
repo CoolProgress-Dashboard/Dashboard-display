@@ -1,11 +1,29 @@
 <script lang="ts">
+  import { VIEW_META } from '$lib/components/shared/config';
   export let active: boolean = false;
+  export let onPillarInfoClick: (() => void) | null = null;
+  const meta = VIEW_META.policy;
 </script>
 
 <section id="view-policy" class="view-section" class:active>
   <div class="pillar-stack">
-    <!-- KPI Cards Box with Title -->
-    <div class="card-panel kpi-box">
+    <!-- Unified Story + KPI Card -->
+    <div class="card-panel pillar-story-card">
+      <div class="pillar-story-header">
+        <div class="pillar-story-text">
+          <h1 class="pillar-headline">{meta.headline}</h1>
+          <p class="pillar-subhead">{meta.subhead}</p>
+        </div>
+        <div class="pillar-story-actions">
+          <span class="last-updated-label"></span>
+          {#if onPillarInfoClick}
+            <button class="pillar-info-btn" type="button" on:click={onPillarInfoClick}>
+              <i class="fa-solid fa-circle-info"></i> Pillar Information
+            </button>
+          {/if}
+        </div>
+      </div>
+
       <div class="kpi-box-header">
         <h3 id="policy-kpi-title"><i class="fa-solid fa-globe"></i> Global View</h3>
         <div class="kpi-box-meta">
@@ -34,6 +52,21 @@
           <div class="kpi-sublabel">National Cooling Action Plans</div>
         </div>
       </div>
+
+      {#if meta.methodology}
+        <div class="story-methodology">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>{meta.methodology}</span>
+          {#if meta.sources.length > 0}
+            <span class="story-sources">
+              &mdash;
+              {#each meta.sources as src, i}
+                <a href={src.url} target="_blank" rel="noopener noreferrer">{src.name}</a>{#if i < meta.sources.length - 1},{/if}
+              {/each}
+            </span>
+          {/if}
+        </div>
+      {/if}
     </div>
 
     <!-- Map Card with Tabs Inside -->
@@ -110,22 +143,6 @@
     <!-- Charts Section -->
     <div class="charts-section" style="background: #fafafa; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
       <div id="policy-charts-container"></div>
-    </div>
-
-    <!-- Info Panel -->
-    <div class="card-panel info-panel-bottom" style="background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); border-left: 4px solid #22c55e; padding: 1rem 1.25rem;">
-      <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-        <i class="fa-solid fa-circle-info" style="color: #166534; font-size: 1.1rem; margin-top: 2px;"></i>
-        <div>
-          <div style="font-weight: 600; color: #166534; margin-bottom: 0.25rem;">About Policy Frameworks</div>
-          <div style="font-size: 0.85rem; color: #15803d; line-height: 1.5;">
-            <strong>GCP:</strong> Global Cooling Pledge signatories committed to sustainable cooling.
-            <strong>NDC:</strong> Nationally Determined Contributions tracking cooling mentions under the Paris Agreement.
-            <strong>NCAP:</strong> National Cooling Action Plans for comprehensive cooling strategies.
-            <em>Sources: UNFCCC, Cool Coalition, K-CEP</em>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </section>

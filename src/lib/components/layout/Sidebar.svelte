@@ -9,7 +9,7 @@
 <aside class="sidebar-left">
   <div class="sidebar-logo">
     <div class="logo-mark">
-      <i class="fa-solid fa-snowflake"></i>
+      <i class="fa-solid fa-temperature-arrow-down"></i>
     </div>
     <div class="logo-text">COOL<span>PROGRESS</span></div>
   </div>
@@ -110,6 +110,19 @@
     >
       <span class="nav-icon"><i class="fa-solid fa-scale-balanced"></i></span>
       <span>5. Policy Framework</span>
+    </button>
+  </div>
+
+  <div class="nav-section nav-section-partners">
+    <button
+      class="nav-btn nav-item nav-item-partners"
+      class:active={currentView === 'partners'}
+      data-view="partners"
+      type="button"
+      on:click={() => onViewChange('partners')}
+    >
+      <span class="nav-icon"><i class="fa-solid fa-handshake"></i></span>
+      <span>Partner Ecosystem</span>
     </button>
   </div>
 </aside>

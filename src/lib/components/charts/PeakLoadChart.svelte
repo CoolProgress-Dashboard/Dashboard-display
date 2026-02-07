@@ -146,7 +146,7 @@
   </div>
   <div class="chart-container" bind:this={chartContainer}></div>
   <div class="chart-source">
-    Sources: IEA Future of Cooling (2018); Clean Cooling Collaborative
+    Sources: <a href="https://www.iea.org/reports/the-future-of-cooling" target="_blank" rel="noopener noreferrer">IEA Future of Cooling (2018)</a>; <a href="https://www.cleancoolingcollaborative.org/" target="_blank" rel="noopener noreferrer">Clean Cooling Collaborative</a>
   </div>
 </div>
 
@@ -190,5 +190,17 @@
     text-align: right;
     margin-top: 0.5rem;
     font-style: italic;
+  }
+
+  .chart-source a {
+    color: #3D6B6B;
+    text-decoration: none;
+    border-bottom: 1px dotted rgba(61, 107, 107, 0.3);
+    transition: color 0.2s ease;
+  }
+
+  .chart-source a:hover {
+    color: #2D5252;
+    border-bottom-color: #2D5252;
   }
 </style>

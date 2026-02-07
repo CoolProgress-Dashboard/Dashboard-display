@@ -145,6 +145,11 @@
     position: relative;
     text-align: center;
     padding: 1.25rem 1rem;
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 16px;

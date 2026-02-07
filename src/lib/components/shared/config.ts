@@ -7,13 +7,14 @@ export type ViewMeta = {
   headline: string;
   subhead: string;
   insight: string;
+  methodology?: string;
   sources: { name: string; url: string; logo?: string; logos?: string[]; logoLarge?: boolean }[];
 };
 
 export const VIEW_META: Record<string, ViewMeta> = {
   overview: {
-    headline: 'Why Cooling Matters',
-    subhead: 'The Transition is Urgent. The Opportunity is Now.',
+    headline: 'The planet is warming. Cooling must not make it worse.',
+    subhead: 'Tracking the global transition to sustainable, equitable cooling.',
     insight:
       'Cooling already accounts for roughly 10% of global electricity use. Efficiency, low-GWP refrigerants, and access planning can bend the curve by 2050.',
     sources: [
@@ -23,29 +24,32 @@ export const VIEW_META: Record<string, ViewMeta> = {
     ]
   },
   emissions: {
-    headline: 'Pillar 1: Emissions',
-    subhead: 'Total, Direct and Indirect Cooling Emissions',
+    headline: 'We\u2019re stuck in a vicious cycle',
+    subhead: 'Cooling produces 7% of global emissions and demand is set to triple. Bending the curve starts now.',
     insight:
       'Without intervention, cooling emissions could double by 2050. Efficiency and refrigerant transition can unlock 80% reductions.',
+    methodology: 'CLASP: Indirect emissions (energy-related CO\u2082) under efficiency scenarios. HEAT: Direct + indirect emissions with Kigali scenarios (GIZ collaboration).',
     sources: [
       { name: 'Mepsy by CLASP', url: 'https://www.clasp.ngo/tools/mepsy/', logo: '/images/clasp-logo.png' },
       { name: 'Green Cooling Initiative', url: 'https://www.green-cooling-initiative.org/country-data#!total-emissions/all-sectors/absolute', logos: ['/images/heat-logo.png', '/images/giz-logo.png'] }
     ]
   },
   meps: {
-    headline: 'Pillar 2: Product Efficiency',
-    subhead: 'Driving Performance via Minimum Energy Performance Standards (MEPS)',
+    headline: 'Efficiency is the cheapest clean energy',
+    subhead: 'The invisible climate solution hiding in plain sight.',
     insight:
       'MEPS adoption remains uneven, especially in fast-growing cooling markets. Harmonized standards can prevent dumping of low-efficiency units.',
+    methodology: 'MEPS & Labels set efficiency requirements for cooling appliances. Tracking policy adoption for ACs, Refrigerators, and Fans.',
     sources: [
       { name: 'CLASP Policy Resource Center (CPRC)', url: 'https://www.clasp.ngo/tools/clasp-policy-resource-center/', logo: '/images/clasp-logo.png' }
     ]
   },
   kigali: {
-    headline: 'Pillar 3: Refrigerant Transition',
-    subhead: 'Tracking Kigali Amendment Implementation',
+    headline: 'Defusing the invisible climate bomb',
+    subhead: 'The Kigali Amendment can prevent 0.5\u00B0C of warming by phasing down super-pollutant refrigerants.',
     insight:
       'Transition pathways vary by group. Early action on low-GWP refrigerants reduces lifetime climate impact.',
+    methodology: 'Kigali Amendment tracks HFC phase-down. Article 5 (developing) and Non-Article 5 (developed) parties have different schedules.',
     sources: [
       { name: 'Kigali Amendment Tracker', url: '#' },
       { name: 'MLF Project Reports', url: '#' },
@@ -53,23 +57,36 @@ export const VIEW_META: Record<string, ViewMeta> = {
     ]
   },
   access: {
-    headline: 'Pillar 4: Access & Vulnerability',
-    subhead: 'Tracking populations lacking access to cooling',
+    headline: '1.2 billion people are being left behind',
+    subhead: 'Cooling is a life-saving necessity, yet access remains a luxury of the few.',
     insight:
       'Over 1 billion people face high risk from inadequate cooling access. Urban poor (695M) and rural poor (309M) are most vulnerable. Sustainable cooling solutions require passive design, efficient equipment, and climate-friendly refrigerants.',
+    methodology: 'Tracking cooling access gaps across 77 countries. Risk levels based on income, infrastructure, and climate vulnerability.',
     sources: [
       { name: 'SEforALL Chilling Prospects 2025', url: 'https://www.seforall.org/data-stories/chilling-prospects-2025', logo: '/images/seforall-logo.jpg', logoLarge: true }
     ]
   },
   policy: {
-    headline: 'Pillar 5: Policy Framework',
-    subhead: 'Tracking National Commitments, Pledges and Action Plans',
+    headline: 'Promises mean nothing without enforcement',
+    subhead: 'Tracking the legal and political commitments that turn voluntary pledges into binding national law.',
     insight:
       'Global Cooling Pledge signatories are growing. NDC cooling mentions and National Cooling Action Plans (NCAPs) are critical for implementation.',
+    methodology: 'GCP signatories committed to sustainable cooling. NDC tracking for cooling mentions under the Paris Agreement. NCAPs for comprehensive national cooling strategies.',
     sources: [
       { name: 'Cool Coalition Pledge', url: 'https://coolcoalition.org/global-cooling-pledge/', logo: '/images/unep.png', logoLarge: true },
       { name: 'Net Zero Appliances NDC Toolkit', url: 'https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/', logo: '/images/clasp-logo.png' },
       { name: 'Find NCAPs at Climate Policy Radar', url: 'https://www.climatepolicyradar.org/', logo: '/images/climate-policy-radar-logo.jfif' }
+    ]
+  },
+  partners: {
+    headline: 'Partner Ecosystem',
+    subhead: 'Organizations driving the global transition to clean, efficient, and accessible cooling',
+    insight:
+      'The cooling transition requires coordinated action across data providers, policy shapers, implementers, funders, and researchers.',
+    sources: [
+      { name: 'Clean Cooling Collaborative', url: 'https://www.cleancoolingcollaborative.org/', logo: '/images/ccc-logo.png' },
+      { name: 'Cool Coalition', url: 'https://coolcoalition.org/', logo: '/images/cool-coalition.png' },
+      { name: 'CLASP', url: 'https://www.clasp.ngo/', logo: '/images/clasp-logo.png' }
     ]
   }
 };
