@@ -12,6 +12,53 @@
   } from '$lib/services/dashboard-data';
   import type { AccessFilters, Country, DashboardData, EmissionsFilters, Meps, NdcFilters } from '$lib/services/dashboard-types';
 
+  // Layout components
+  import { Sidebar, Header, RightPanel } from '$lib/components/layout';
+  // Pillar view components
+  import { OverviewPillar, EmissionsPillar, MepsPillar, KigaliPillar, AccessPillar, PolicyPillar } from '$lib/components/pillars';
+  // Shared components
+  import { PillarModal, VIEW_META, PILLAR_INFO,
+    CLASP_SCENARIOS, CLASP_SCENARIO_NAMES, CLASP_APPLIANCES, CLASP_APPLIANCE_SHORT,
+    HEAT_SCENARIOS, HEAT_SCENARIO_NAMES, HEAT_SUBSECTORS, HEAT_SUBSECTOR_SHORT,
+    EMISSIONS_YEARS, ACCESS_HISTORICAL_YEARS, ACCESS_FORECAST_YEARS, ACCESS_YEARS,
+    IMPACT_LEVELS, POPULATION_CATEGORIES, SCOPE_TO_APPLIANCE, APPLIANCE_TO_SCOPE,
+    SUPABASE_URL, SUPABASE_KEY
+  } from '$lib/components/shared';
+  import type { Indicator } from '$lib/components/shared/config';
+
+  // Reactive state for component props
+  let currentViewState = 'overview';
+  let activeScope = 'ac';
+  let scopeDisabled = false;
+  let headerHeadline = 'Why Cooling Matters';
+  let headerSubhead = 'The Transition is Urgent. The Opportunity is Now.';
+  let showPillarInfoBtn = false;
+  let pillarModalVisible = false;
+  let insightText = '';
+
+  function handleViewChange(view: string) {
+    // Delegate to the onMount switchView function if available
+    if (typeof (window as any).__dashboardSwitchView === 'function') {
+      (window as any).__dashboardSwitchView(view);
+    }
+    currentViewState = view;
+  }
+
+  function handleScopeChange(scope: string) {
+    if (typeof (window as any).__dashboardSetScope === 'function') {
+      (window as any).__dashboardSetScope(scope);
+    }
+    activeScope = scope;
+  }
+
+  function handlePillarInfoClick() {
+    pillarModalVisible = true;
+  }
+
+  function handlePillarModalClose() {
+    pillarModalVisible = false;
+  }
+
   onMount(async () => {
     const loadScript = (src: string) =>
       new Promise((resolve, reject) => {
@@ -40,10 +87,8 @@
     const echarts = await import('echarts');
 
     // =====================================================
-    // CONFIGURATION
+    // CONFIGURATION (imported from $lib/components/shared/config.ts)
     // =====================================================
-    const SUPABASE_URL = 'https://hcpmdkkavtadgugrqohl.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjcG1ka2thdnRhZGd1Z3Jxb2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyODcwMzAsImV4cCI6MjA3Nzg2MzAzMH0.hjYqzGqAQ_C7vVsAo-UcSICFEpzsKP5R5xGi8sh-etA';
 
     const byId = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
     const setText = (id: string, value: string | number) => {
@@ -54,7 +99,7 @@
         // Data storage
     let data: DashboardData = createDefaultData();
 
-        type Indicator = 'pledge' | 'kigali' | 'meps';
+        // Indicator type imported from config
 
         let currentView = 'overview';
         let currentIndicator: Indicator = 'pledge';
@@ -73,34 +118,7 @@
     let emissionsRegion = '';
     let emissionsType: 'total' | 'direct' | 'indirect' = 'total';
 
-    // CLASP scenarios and appliances
-    const CLASP_SCENARIOS = ['BAU', 'GB', 'NZH', 'BAT'];
-    const CLASP_SCENARIO_NAMES: Record<string, string> = {
-        'BAU': 'Business as Usual',
-        'GB': 'Green Buildings',
-        'NZH': 'Net Zero Homes',
-        'BAT': 'Best Available Tech'
-    };
-    const CLASP_APPLIANCES = ['Air Conditioning', 'Ceiling and Portable Fans', 'Refrigerator-Freezers'];
-    const CLASP_APPLIANCE_SHORT: Record<string, string> = {
-        'Air Conditioning': 'AC',
-        'Ceiling and Portable Fans': 'Fans',
-        'Refrigerator-Freezers': 'Refrigerators'
-    };
-
-    // HEAT modelling scenarios and subsectors (in collaboration with GIZ)
-    const HEAT_SCENARIOS = ['BAU', 'KIP'];
-    const HEAT_SCENARIO_NAMES: Record<string, string> = {
-        'BAU': 'Business as Usual',
-        'KIP': 'Kigali Implementation'
-    };
-    const HEAT_SUBSECTORS = ['Split residential air conditioners', 'Domestic refrigeration'];
-    const HEAT_SUBSECTOR_SHORT: Record<string, string> = {
-        'Split residential air conditioners': 'AC',
-        'Domestic refrigeration': 'Refrigeration'
-    };
-
-    const EMISSIONS_YEARS = Array.from({ length: 2045 - 2020 + 1 }, (_, i) => 2020 + i);
+    // CLASP/HEAT scenarios, appliances, emissions years: imported from config.ts
 
         // NDC Tracker filters
     let ndcType = 'NDC 3.0';
@@ -113,8 +131,7 @@
     let accessPopCategories: string[] = ['Rural Poor', 'Urban Poor', 'Lower-Middle Income', 'Middle-Income'];
     let accessRegionFilter = '';
 
-    const ACCESS_HISTORICAL_YEARS = Array.from({ length: 2024 - 2013 + 1 }, (_, i) => 2013 + i);
-    const ACCESS_FORECAST_YEARS = [2025, 2026, 2027, 2028, 2029, 2030];
+    // ACCESS_HISTORICAL_YEARS, ACCESS_FORECAST_YEARS: imported from config.ts
 
     // MEPS filters
     let mepsRegionFilter = '';
@@ -124,9 +141,7 @@
     let kigaliRegionFilter = '';
     let kigaliGroupTypes: string[] = [];
 
-    const ACCESS_YEARS = Array.from({ length: 2024 - 2013 + 1 }, (_, i) => 2013 + i);
-    const IMPACT_LEVELS = ['High', 'Medium', 'Low'];
-    const POPULATION_CATEGORIES = ['Rural Poor', 'Urban Poor', 'Lower-Middle Income', 'Middle-Income'];
+    // ACCESS_YEARS, IMPACT_LEVELS, POPULATION_CATEGORIES: imported from config.ts
 
     const getAccessFilters = (): AccessFilters => ({
       year: accessYear,
@@ -147,77 +162,75 @@
       category: ndcCategory
     });
 
-    const scopeToAppliance: Record<string, string> = {
-      ac: 'SplitAC',
-      fridge: 'DomRef',
-      fan: 'all'
-    };
-
-    const applianceToScope: Record<string, string> = {
-      SplitAC: 'ac',
-      DomRef: 'fridge',
-      all: 'fan'
-    };
+    // scopeToAppliance, applianceToScope: imported as SCOPE_TO_APPLIANCE, APPLIANCE_TO_SCOPE from config.ts
+    const scopeToAppliance = SCOPE_TO_APPLIANCE;
+    const applianceToScope = APPLIANCE_TO_SCOPE;
 
     const viewMeta: Record<
       string,
-      { headline: string; subhead: string; insight: string; sources: { name: string; url: string; logo?: string; logos?: string[]; logoLarge?: boolean }[] }
+      { headline: string; subhead: string; insight: string; entryStat?: string; sources: { name: string; url: string; logo?: string; logos?: string[]; logoLarge?: boolean }[] }
     > = {
       overview: {
-        headline: 'Why Cooling Matters',
-        subhead: 'The Transition is Urgent. The Opportunity is Now.',
+        headline: 'The planet is warming. Cooling must not make it worse.',
+        subhead: 'Tracking the global transition to sustainable, equitable cooling.',
         insight:
-          'Cooling already accounts for roughly 10% of global electricity use. Efficiency, low-GWP refrigerants, and access planning can bend the curve by 2050.',
+          'Cooling keeps food fresh, medicines viable, workers productive, and people alive during heat waves. Yet the way we cool today accelerates the very warming that makes cooling essential. By 2050, global cooling demand will triple. The choices we make now determine whether that growth locks in a climate disaster or powers a sustainable transition.',
+        entryStat: '10 ACs sold every second -- 3 billion more units by 2050',
         sources: [
-          { name: 'IEA Future of Cooling', url: '#' },
-          { name: 'Cool Coalition Data Hub', url: '#' },
-          { name: 'CLASP Policy Database', url: '#' }
+          { name: 'IEA Future of Cooling', url: 'https://www.iea.org/reports/the-future-of-cooling' },
+          { name: 'Cool Coalition Data Hub', url: 'https://coolcoalition.org/' },
+          { name: 'CLASP Policy Database', url: 'https://www.clasp.ngo/tools/clasp-policy-resource-center/' }
         ]
       },
       emissions: {
-        headline: 'Pillar 1: Emissions',
-        subhead: 'Total, Direct and Indirect Cooling Emissions',
+        headline: "We're stuck in a vicious cycle",
+        subhead: 'Cooling produces 7% of global emissions and demand is set to triple. Bending the curve starts now.',
         insight:
-          'Without intervention, cooling emissions could double by 2050. Efficiency and refrigerant transition can unlock 80% reductions.',
+          'Every air conditioner on a fossil-fueled grid adds CO\u2082. Every refrigerant leak releases gases thousands of times more potent. Without intervention, cooling emissions could double by 2040. Three simultaneous moves can bend the curve: ultra-low-GWP refrigerants, doubled efficiency, and grid decarbonization.',
+        entryStat: '7% of global GHG emissions -- set to double by 2040',
         sources: [
           { name: 'Mepsy by CLASP', url: 'https://www.clasp.ngo/tools/mepsy/', logo: '/images/clasp-logo.png' },
           { name: 'Green Cooling Initiative', url: 'https://www.green-cooling-initiative.org/country-data#!total-emissions/all-sectors/absolute', logos: ['/images/heat-logo.png', '/images/giz-logo.png'] }
         ]
       },
       meps: {
-        headline: 'Pillar 2: Product Efficiency',
-        subhead: 'Driving Performance via Minimum Energy Performance Standards (MEPS)',
+        headline: 'Efficiency is the cheapest clean energy',
+        subhead: 'The invisible climate solution hiding in plain sight.',
         insight:
-          'MEPS adoption remains uneven, especially in fast-growing cooling markets. Harmonized standards can prevent dumping of low-efficiency units.',
+          'Every year, millions of inefficient units flood markets with weak standards -- locking in 10-15 years of excess energy use. CLASP data shows best-available-technology MEPS could cut cooling energy consumption 40-50% by 2050, avoiding 1,300 TWh of annual electricity -- equivalent to India\'s total output.',
+        entryStat: '3x efficiency gap between best and worst products on sale today',
         sources: [
           { name: 'CLASP Policy Resource Center (CPRC)', url: 'https://www.clasp.ngo/tools/clasp-policy-resource-center/', logo: '/images/clasp-logo.png' }
         ]
       },
       kigali: {
-        headline: 'Pillar 3: Refrigerant Transition',
-        subhead: 'Tracking Kigali Amendment Implementation',
+        headline: 'The refrigerant revolution',
+        subhead: 'From HFCs to natural cooling -- the Kigali Amendment is rewriting the rules.',
         insight:
-          'Transition pathways vary by group. Early action on low-GWP refrigerants reduces lifetime climate impact.',
+          'HFCs like R-410A (GWP 2,088) are potent greenhouse gases. Left unchecked, HFC growth alone adds 0.5\u00B0C of warming by 2100. The Kigali Amendment created a legally binding pathway to phase down HFC consumption by over 80%. Natural refrigerants -- R-290 (GWP 3), R-600a (GWP 3), R-744 (GWP 1) -- are the endgame.',
+        entryStat: '157 parties ratified -- 95% of global HFC consumption covered',
         sources: [
-          { name: 'Kigali Amendment Tracker', url: '#' },
-          { name: 'MLF Project Reports', url: '#' },
-          { name: 'UNEP Ozone Secretariat', url: '#' }
+          { name: 'UNEP Ozone Secretariat', url: 'https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment-2016' },
+          { name: 'MLF Project Database', url: 'https://www.multilateralfund.org/OurWork/default.aspx' },
+          { name: 'Kigali Amendment Tracker', url: 'https://ozone.unep.org/' }
         ]
       },
       access: {
-        headline: 'Pillar 4: Access & Vulnerability',
-        subhead: 'Tracking populations lacking access to cooling',
+        headline: 'Cooling is an equity issue',
+        subhead: 'More than 1.2 billion people face dangerous heat without adequate cooling.',
         insight:
-          'Over 1 billion people face high risk from inadequate cooling access. Urban poor (695M) and rural poor (309M) are most vulnerable. Sustainable cooling solutions require passive design, efficient equipment, and climate-friendly refrigerants.',
+          'Heat waves kill tens of thousands each year. 420,000 people die annually from food spoiled by broken cold chains. The access gap hits hardest in low-income urban settlements and rural communities across Sub-Saharan Africa and South Asia. Passive cooling, solar cold chains, and community cooling centers offer sustainable pathways to close the gap.',
+        entryStat: '1.2 billion people at high risk -- 420,000 deaths/year from spoiled food',
         sources: [
           { name: 'SEforALL Chilling Prospects 2025', url: 'https://www.seforall.org/data-stories/chilling-prospects-2025', logo: '/images/seforall-logo.jpg', logoLarge: true }
         ]
       },
       policy: {
-        headline: 'Pillar 5: Policy Framework',
-        subhead: 'Tracking National Commitments, Pledges and Action Plans',
+        headline: 'From pledge to action',
+        subhead: '66+ countries signed the Global Cooling Pledge at COP28. Now comes the hard part.',
         insight:
-          'Global Cooling Pledge signatories are growing. NDC cooling mentions and National Cooling Action Plans (NCAPs) are critical for implementation.',
+          'The Global Cooling Pledge was the first time cooling received dedicated political attention at a UNFCCC COP. But fewer than 30% of NDCs explicitly mention cooling. Roughly 20 countries have NCAPs. Effective policy requires coherence: NDCs, NCAPs, Kigali compliance, MEPS, and finance mechanisms must reinforce each other.',
+        entryStat: '<30% of NDCs mention cooling -- only ~20 countries have action plans',
         sources: [
           { name: 'Cool Coalition Pledge', url: 'https://coolcoalition.org/global-cooling-pledge/', logo: '/images/unep.png', logoLarge: true },
           { name: 'Net Zero Appliances NDC Toolkit', url: 'https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/', logo: '/images/clasp-logo.png' },
@@ -230,6 +243,15 @@
       const meta = viewMeta[view] ?? viewMeta.overview;
       byId('page-headline').textContent = meta.headline;
       byId('page-subhead').textContent = meta.subhead;
+      const entryStatEl = byId('entry-stat');
+      if (entryStatEl) {
+        if (meta.entryStat) {
+          entryStatEl.textContent = meta.entryStat;
+          entryStatEl.style.display = '';
+        } else {
+          entryStatEl.style.display = 'none';
+        }
+      }
       byId('insight-text').textContent = meta.insight;
       byId('source-list').innerHTML = meta.sources
         .map(
@@ -5974,6 +5996,14 @@
             if (!view) return;
             console.log('Switching to view:', view);
             currentView = view;
+            // Sync reactive state for Svelte components
+            currentViewState = view;
+            headerHeadline = viewMeta[view]?.headline ?? viewMeta.overview.headline;
+            headerSubhead = viewMeta[view]?.subhead ?? viewMeta.overview.subhead;
+            insightText = viewMeta[view]?.insight ?? viewMeta.overview.insight;
+            showPillarInfoBtn = !!pillarInfo[view];
+            scopeDisabled = view === 'policy' || view === 'access';
+
             const container = document.querySelector<HTMLElement>('.main-container');
             if (container) {
                 container.classList.toggle('overview-only', view === 'overview');
@@ -5998,6 +6028,8 @@
             requestAnimationFrame(resizeCharts);
         }
 
+        // Window bridges are exposed in init() after all functions are defined
+
         function updateApplianceScopeState(view: string) {
             // Disable appliance scope for Policy Framework and Access & Vulnerability views
             const disableScope = view === 'policy' || view === 'access';
@@ -6020,39 +6052,8 @@
         // EVENT HANDLERS
         // =====================================================
         // Pillar information content
-        const pillarInfo: Record<string, { title: string; subtitle: string; body: string }> = {
-            emissions: {
-                title: 'Pillar 1: Emissions',
-                subtitle: 'Tracking Total, Direct, and Indirect emissions to monitor national progress toward net zero',
-                body: `<p>Pillar 1 tracks the sector\u2019s climate footprint by providing country-level data on Total, Direct, and Indirect emissions across three key appliance categories: Air Conditioners, Fans, and Refrigerators. This data distinguishes between direct emissions from high GWP refrigerant leaks and indirect emissions from electricity consumption. By analyzing these metrics at the national level, the dashboard enables targeted interventions to transition from high-GWP \u201Cbusiness as usual\u201D toward a sustainable cooling pathway.</p>
-<p class="pillar-modal-insight"><strong>Strategic Insight:</strong> Business-as-usual trajectories indicate a doubling of cooling emissions by 2050. Integrated interventions in appliance efficiency and refrigerant management provide a pathway to mitigate up to 80% of these projected emissions.</p>`
-            },
-            meps: {
-                title: 'Pillar 2: Product Efficiency',
-                subtitle: 'Shielding global energy grids by ensuring every unit sold is a high-efficiency model',
-                body: `<p>As the global cooling stock expands, Pillar 2 tracks the implementation of Minimum Energy Performance Standards (MEPS) and Energy Labels that act as the primary defense against runaway energy demand. By mandating that only high-efficiency units enter the market, MEPS eliminate the \u201Cenvironmental dumping\u201D of obsolete technology and shield global energy grids from overwhelming peak loads. This pillar monitors national progress in improving the average efficiency of air conditioners and refrigerators\u2014a critical step toward the Net Zero 2050 pathway that could save consumers over $800 billion in electricity costs by mid-century.</p>
-<p class="pillar-modal-insight"><strong>Strategic Insight:</strong> Uneven MEPS adoption in fast-growing markets allows for the \u2018environmental dumping\u2019 of obsolete technology. Harmonizing these standards is critical to stabilizing markets, protecting energy grids, and ensuring equitable access to high-efficiency cooling.</p>`
-            },
-            kigali: {
-                title: 'Pillar 3: Refrigerant Transition',
-                subtitle: 'Defusing the \u201Cinvisible climate bomb\u201D by phasing out high-GWP refrigerants',
-                body: `<p>Pillar 3 monitors global progress in defusing the \u201Cinvisible climate bomb\u201D by tracking the phase-down of high-GWP refrigerants. It focuses on the transition toward natural and low-GWP alternatives in alignment with the Kigali Amendment, providing critical data on refrigerant pathways for cooling appliances. Full implementation of the Kigali Amendment is estimated to prevent up to 0.5\u00B0C of global warming by 2100, while avoiding approximately 105 billion tonnes of CO\u2082 equivalent emissions by mid-century.</p>
-<p>In addition to phasing down high-GWP refrigerants as quickly as possible, comprehensive climate strategies increasingly emphasize the role of Lifecycle Refrigerant Management (LRM) as a powerful driver for both environmental protection and industrial growth.</p>
-<p class="pillar-modal-insight"><strong>Strategic Insight:</strong> Accelerating the transition to low-GWP refrigerants minimizes lifetime climate impact and prevents the long-term locking-in of potent greenhouse gas emissions.</p>
-<p class="pillar-modal-links"><strong>For more information:</strong><br/>Lifecycle Refrigerant Management \u2014 <a href="https://www.ccacoalition.org/resources/guidance-sustainable-cooling-approaches-enhanced-ndcs" target="_blank" rel="noopener noreferrer">CCAC Guidance on Sustainable Cooling</a><br/>The Kigali Amendment \u2014 <a href="https://kigalisim.org/" target="_blank" rel="noopener noreferrer">kigalisim.org</a></p>`
-            },
-            access: {
-                title: 'Pillar 4: Cooling Access & Vulnerability',
-                subtitle: 'Ensuring cooling for all as a fundamental human right and a life-saving necessity',
-                body: `<p>Pillar 4 provides a data-driven inventory of the \u201Ccooling gap\u201D based on the Sustainable Energy for All (SEforALL) Chilling Prospects publication. It tracks national and sub-national data for people globally at high risk due to a lack of basic cooling infrastructure for thermal safety, food security, and medical cold chains. By disaggregating populations into rural and urban poor and high/medium/low-risk groups, the dashboard identifies where heat exposure intersects with poverty and energy access gaps. This tracking serves as an evidence base for monitoring the scale of cooling vulnerability and assessing the progress of global efforts to provide life-saving cooling to the most exposed communities.</p>
-<p class="pillar-modal-insight"><strong>Strategic Insight:</strong> Cooling is a life-saving necessity, yet a over 1 billion-person \u2018access gap\u2019 persists, representing a critical threat to health and food security. Closing this gap is a matter of climate equity, requiring integrated solutions to protect the health and livelihoods of the most vulnerable.</p>`
-            },
-            policy: {
-                title: 'Pillar 5: Policy Framework',
-                subtitle: 'Tracking the legal and political commitments that turn promises into law',
-                body: `<p>Pillar 5 tracks the evolution of global cooling governance by monitoring the adoption and stringency of national and international commitments. It provides an inventory of the Global Cooling Pledge signatories and assesses the integration of cooling-specific targets into Nationally Determined Contributions (NDCs) and National Cooling Action Plans (NCAPs). This data identifies the transition of voluntary climate promises into binding domestic regulations and enforceable management standards.</p>`
-            }
-        };
+        // pillarInfo: imported as PILLAR_INFO from config.ts
+        const pillarInfo = PILLAR_INFO;
 
         function openPillarModal() {
             const info = pillarInfo[currentView];
@@ -6485,6 +6486,10 @@
         // =====================================================
         // INITIALIZATION
         // =====================================================
+        // Expose switchView and setApplianceScope to bridge with Svelte component handlers
+        (window as any).__dashboardSwitchView = switchView;
+        (window as any).__dashboardSetScope = setApplianceScope;
+
         async function init() {
             try {
                 setStatus('Loading data from Supabase...');
@@ -6591,1135 +6596,44 @@
 <div class="dashboard-body">
   <div id="status">Loading dashboard data...</div>
 
-  <div class="main-container">
-    <!-- Left Sidebar -->
-    <aside class="sidebar-left">
-      <div class="sidebar-logo">
-        <div class="logo-mark">
-          <i class="fa-solid fa-snowflake"></i>
-        </div>
-        <div class="logo-text">COOL<span>PROGRESS</span></div>
-      </div>
-
-      <div class="sidebar-filters">
-        <label class="filter-label" for="country-filter">Country Selected</label>
-        <select id="country-filter" class="filter-select">
-          <option value="">All Countries</option>
-        </select>
-
-        <label class="filter-label scope-label">Appliance Scope</label>
-        <div class="scope-toggle">
-          <button class="scope-btn active" data-scope="ac" type="button">ACs</button>
-          <button class="scope-btn" data-scope="fridge" type="button">Fridges</button>
-          <button class="scope-btn" data-scope="fan" type="button">Fans</button>
-        </div>
-      </div>
-
-      <div class="nav-section">
-        <h3>Navigation Pillars</h3>
-        <button class="nav-btn nav-item active" data-view="overview" type="button">
-          <span class="nav-icon"><i class="fa-solid fa-house"></i></span>
-          <span>Strategic Summary</span>
-        </button>
-        <button class="nav-btn nav-item" data-view="emissions" type="button">
-          <span class="nav-icon"><i class="fa-solid fa-smog"></i></span>
-          <span>1. Emissions</span>
-        </button>
-        <button class="nav-btn nav-item" data-view="meps" type="button">
-          <span class="nav-icon"><i class="fa-solid fa-bolt"></i></span>
-          <span>2. Product Efficiency</span>
-        </button>
-        <button class="nav-btn nav-item" data-view="kigali" type="button">
-          <span class="nav-icon"><i class="fa-solid fa-flask"></i></span>
-          <span>3. Refrigerant Transition</span>
-        </button>
-        <button class="nav-btn nav-item" data-view="access" type="button">
-          <span class="nav-icon"><i class="fa-solid fa-people-roof"></i></span>
-          <span>4. Access &amp; Vulnerability</span>
-        </button>
-        <button class="nav-btn nav-item" data-view="policy" type="button">
-          <span class="nav-icon"><i class="fa-solid fa-scale-balanced"></i></span>
-          <span>5. Policy Framework</span>
-        </button>
-      </div>
-
-    </aside>
+  <div class="main-container" class:overview-only={currentViewState === 'overview'}>
+    <!-- Left Sidebar (Component) -->
+    <Sidebar
+      currentView={currentViewState}
+      onViewChange={handleViewChange}
+      onScopeChange={handleScopeChange}
+      {scopeDisabled}
+      {activeScope}
+    />
 
     <!-- Main Content -->
     <main class="main-content">
-      <header class="main-header">
-        <div>
-          <h1 id="page-headline">Why Cooling Matters</h1>
-          <p id="page-subhead">The Transition is Urgent. The Opportunity is Now.</p>
-        </div>
-        <div class="header-actions">
-          <div id="last-updated">Loading...</div>
-          <button class="pillar-info-btn" type="button" id="pillar-info-btn">
-            <i class="fa-solid fa-circle-info"></i>
-            Pillar Information
-          </button>
-        </div>
-      </header>
-            <!-- Overview View -->
-            <section id="view-overview" class="view-section active">
-              <div class="overview-layout">
-                <div class="overview-main">
-                <!-- Modern Hero Banner with CCC styling -->
-                <div class="hero-banner-modern">
-                    <div class="hero-bg-effects">
-                        <div class="hero-orb hero-orb-1"></div>
-                        <div class="hero-orb hero-orb-2"></div>
-                    </div>
-                    <h2 class="hero-title">
-                        <span class="gradient-text-ccc">Accelerating</span> the Transition to
-                        <span class="highlight-green">Sustainable Cooling</span>
-                    </h2>
-                    <p class="hero-subtitle">One of the most significant yet overlooked drivers of climate change. The time to act is now.</p>
-                </div>
+      <Header
+        headline={headerHeadline}
+        subhead={headerSubhead}
+        showPillarInfo={showPillarInfoBtn}
+        onPillarInfoClick={handlePillarInfoClick}
+      />
 
-                <!-- Message Carousel - Primary Focus -->
-                <div class="overview-carousel-v2">
-                    <!-- Clickable Tab Navigation -->
-                    <div class="carousel-tabs">
-                        <button class="carousel-tab active" data-slide="0" type="button">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-                            <span>The Challenge</span>
-                        </button>
-                        <button class="carousel-tab" data-slide="1" type="button">
-                            <i class="fa-solid fa-smog"></i>
-                            <span>Emissions Crisis</span>
-                        </button>
-                        <button class="carousel-tab" data-slide="2" type="button">
-                            <i class="fa-solid fa-heart-pulse"></i>
-                            <span>Vulnerability Gap</span>
-                        </button>
-                        <button class="carousel-tab" data-slide="3" type="button">
-                            <i class="fa-solid fa-lightbulb"></i>
-                            <span>Path Forward</span>
-                        </button>
-                    </div>
+      <!-- Pillar Views (Components) -->
+      <OverviewPillar active={currentViewState === 'overview'} onNavigate={handleViewChange} />
+      <MepsPillar active={currentViewState === 'meps'} />
+      <KigaliPillar active={currentViewState === 'kigali'} />
+      <AccessPillar active={currentViewState === 'access'} />
+      <PolicyPillar active={currentViewState === 'policy'} />
+      <EmissionsPillar active={currentViewState === 'emissions'} />
+    </main>
 
-                    <!-- Slide Content -->
-                    <div class="carousel-content-area">
-                        <button class="carousel-arrow carousel-prev" type="button" id="carousel-prev">
-                            <i class="fa-solid fa-chevron-left"></i>
-                        </button>
+    <!-- Right Sidebar (Component) -->
+    <RightPanel {insightText} />
+  </div>
 
-                        <div class="carousel-viewport">
-                            <!-- Slide 1: The Challenge -->
-                            <div class="carousel-slide active" data-slide="0">
-                                <div class="slide-inner-v2 challenge-slide">
-                                    <div class="slide-header">
-                                        <div class="slide-icon-badge challenge-badge">
-                                            <i class="fa-solid fa-triangle-exclamation"></i>
-                                        </div>
-                                        <h3>The Challenge</h3>
-                                    </div>
-                                    <div class="slide-message">
-                                        <p>Cooling is one of the most significant yet overlooked drivers of climate change. It currently accounts for over <strong>10% of global greenhouse gas emissions</strong>, a figure expected to <strong>double by 2050</strong> as heatwaves become more frequent and populations grow.</p>
-                                        <p>This creates a double-edged impact where indirect emissions from high energy consumption and direct emissions from high-GWP refrigerant leaks fuel a vicious cycle of increased emissions and further warming that leaves <strong>1.2 billion people</strong> vulnerable to life-threatening heat.</p>
-                                        <p>According to the <a href="https://wedocs.unep.org/items/507e8c47-db6c-424a-9b76-7805a6e1d669" target="_blank" rel="noopener noreferrer"><strong>Global Cooling Watch 2025 report</strong></a> (released at COP30), global cooling demand is expected to more than <strong>triple by mid-century</strong>. A sustainable cooling transition is urgently required to decouple rising demand from escalating emissions.</p>
-                                    </div>
-                                </div>
-                            </div>
+  <div class="tooltip" id="tooltip"></div>
 
-                            <!-- Slide 2: Emissions Crisis -->
-                            <div class="carousel-slide" data-slide="1">
-                                <div class="slide-inner-v2 emissions-slide">
-                                    <div class="slide-header">
-                                        <div class="slide-icon-badge emissions-badge">
-                                            <i class="fa-solid fa-smog"></i>
-                                        </div>
-                                        <h3>Emissions Crisis</h3>
-                                    </div>
-                                    <div class="slide-message">
-                                        <p>Currently responsible for <strong>10% of global power demand</strong>, cooling emissions are accelerating on two fronts:</p>
-                                        <div class="slide-two-col">
-                                            <div class="slide-col">
-                                                <div class="col-label">Indirect Emissions</div>
-                                                <p>From inefficient appliances consuming massive amounts of electricity, driving up energy demand and carbon footprints worldwide.</p>
-                                            </div>
-                                            <div class="slide-col">
-                                                <div class="col-label">Direct Emissions</div>
-                                                <p>From "super-pollutant" refrigerants with global warming potentials thousands of times greater than CO<sub>2</sub>, leaking into the atmosphere.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Slide 3: Vulnerability Gap -->
-                            <div class="carousel-slide" data-slide="2">
-                                <div class="slide-inner-v2 vulnerability-slide">
-                                    <div class="slide-header">
-                                        <div class="slide-icon-badge vulnerability-badge">
-                                            <i class="fa-solid fa-heart-pulse"></i>
-                                        </div>
-                                        <h3>Vulnerability Gap</h3>
-                                    </div>
-                                    <div class="slide-message">
-                                        <p>Rising temperatures are driving a surge in heat-related deaths, yet access to cooling remains a luxury of the few. In the world's most heat-stressed regions, over <strong>1.2 billion people</strong> live on the front lines of the climate crisis without the basic cooling infrastructure needed to survive intensifying heatwaves.</p>
-                                        <div class="slide-stat-highlight">
-                                            <span class="stat-number">1.2B</span>
-                                            <span class="stat-text">people live without basic cooling infrastructure in heat-stressed regions, facing life-threatening conditions as temperatures rise.</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Slide 4: The Path Forward -->
-                            <div class="carousel-slide" data-slide="3">
-                                <div class="slide-inner-v2 solution-slide">
-                                    <div class="slide-header">
-                                        <div class="slide-icon-badge solution-badge">
-                                            <i class="fa-solid fa-lightbulb"></i>
-                                        </div>
-                                        <h3>The Path Forward</h3>
-                                    </div>
-                                    <div class="slide-message">
-                                        <p>A comprehensive transition could cut cooling-related emissions by up to <strong>80%</strong> through a unified strategy across three key pillars:</p>
-                                        <div class="slide-pillars-v2">
-                                            <div class="pillar-card tech">
-                                                <div class="pillar-icon"><i class="fa-solid fa-microchip"></i></div>
-                                                <div class="pillar-title">Technology</div>
-                                                <div class="pillar-desc">Rapid deployment of super-efficient appliances and low-GWP refrigerants in alignment with the Kigali Amendment.</div>
-                                            </div>
-                                            <div class="pillar-card equity">
-                                                <div class="pillar-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
-                                                <div class="pillar-title">Equity</div>
-                                                <div class="pillar-desc">Universal expanded access for heat-vulnerable populations to ensure health and productivity.</div>
-                                            </div>
-                                            <div class="pillar-card governance">
-                                                <div class="pillar-icon"><i class="fa-solid fa-landmark"></i></div>
-                                                <div class="pillar-title">Governance</div>
-                                                <div class="pillar-desc">Binding policy frameworks, such as NCAPs and enhanced NDC commitments that turn international pledges into enforceable domestic law.</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button class="carousel-arrow carousel-next" type="button" id="carousel-next">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Compact KPI Strip - Supporting Data -->
-                <div class="kpi-strip">
-                    <div class="kpi-strip-item">
-                        <i class="fa-solid fa-smog"></i>
-                        <div class="kpi-strip-data">
-                            <span class="kpi-strip-value" id="kpi-climate">&gt;10%</span>
-                            <span class="kpi-strip-label">of Global GHG Emissions</span>
-                        </div>
-                    </div>
-                    <div class="kpi-strip-divider"></div>
-                    <div class="kpi-strip-item">
-                        <i class="fa-solid fa-bolt"></i>
-                        <div class="kpi-strip-data">
-                            <span class="kpi-strip-value" id="kpi-capacity">3x</span>
-                            <span class="kpi-strip-label">Demand Increase by 2050</span>
-                        </div>
-                    </div>
-                    <div class="kpi-strip-divider"></div>
-                    <div class="kpi-strip-item">
-                        <i class="fa-solid fa-users"></i>
-                        <div class="kpi-strip-data">
-                            <span class="kpi-strip-value" id="kpi-access">1.2B</span>
-                            <span class="kpi-strip-label">People Without Cooling Access</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CTA -->
-                <div class="overview-cta compact-cta">
-                    <div class="cta-content">
-                        <h2>Explore the Pillars of Transition</h2>
-                        <p>Track global progress on emissions, efficiency, refrigerants, access, and policy frameworks.</p>
-                        <div class="cta-pointer">
-                            <i class="fa-solid fa-arrow-left"></i>
-                            <span>Use the navigation pane to explore each section</span>
-                        </div>
-                    </div>
-                </div>
-                </div><!-- end overview-main -->
-
-                <!-- Modern Partner Sidebar -->
-                <aside class="partner-sidebar-modern">
-                    <div class="partner-header-modern">
-                        <div class="partner-icon-wrap">
-                            <i class="fa-solid fa-handshake"></i>
-                        </div>
-                        <span class="partner-title-modern">Partners</span>
-                    </div>
-                    <div class="partner-logos-modern">
-                        <div class="logo-card"><img src="/images/ccc-logo.png" alt="Clean Cooling Collaborative" /></div>
-                        <div class="logo-card"><img src="/images/cool-coalition.png" alt="Cool Coalition" /></div>
-                        <div class="logo-card square"><img src="/images/u4e-logo.png" alt="United for Efficiency" /></div>
-                        <div class="logo-card square"><img src="/images/unep.png" alt="UNEP" /></div>
-                        <div class="logo-card"><img src="/images/iea-logo.png" alt="International Energy Agency" /></div>
-                        <div class="logo-card"><img src="/images/clasp-logo.png" alt="CLASP" /></div>
-                        <div class="logo-card square small"><img src="/images/seforall-logo.jpg" alt="SEforALL" /></div>
-                        <div class="logo-card"><img src="/images/heat-logo.png" alt="HEAT" /></div>
-                        <div class="logo-card"><img src="/images/giz-logo.png" alt="GIZ" /></div>
-                        <div class="logo-card"><img src="/images/climate-policy-radar-logo.png" alt="Climate Policy Radar" /></div>
-                    </div>
-                    <div class="partner-footer-modern">
-                        <span>Working together for climate action</span>
-                    </div>
-                </aside>
-              </div><!-- end overview-layout -->
-            </section>
-
-            <!-- MEPS View -->
-            <section id="view-meps" class="view-section">
-                <div class="pillar-stack">
-                    <!-- KPI Cards Box with Title -->
-                    <div class="card-panel kpi-box">
-                        <div class="kpi-box-header">
-                            <h3 id="meps-kpi-title"><i class="fa-solid fa-globe"></i> Global View</h3>
-                            <div class="kpi-box-meta">
-                                <span class="meta-pill" id="meps-meta-region"><i class="fa-solid fa-earth-americas"></i> All Regions</span>
-                                <span class="meta-pill" id="meps-meta-equipment"><i class="fa-solid fa-cogs"></i> All Equipment</span>
-                            </div>
-                        </div>
-                        <div class="kpi-grid policy-kpis" style="margin-top: 0.75rem;">
-                            <div class="kpi-card blue">
-                                <div class="kpi-value" id="meps-kpi-countries">-</div>
-                                <div class="kpi-label">Countries</div>
-                                <div class="kpi-sublabel">With MEPS or Labels</div>
-                            </div>
-                            <div class="kpi-card green">
-                                <div class="kpi-value" id="meps-kpi-policies">-</div>
-                                <div class="kpi-label">Total Policies</div>
-                                <div class="kpi-sublabel">MEPS &amp; Labels tracked</div>
-                            </div>
-                            <div class="kpi-card" style="border-left: 4px solid #4A7F7F;">
-                                <div class="kpi-value" id="meps-kpi-equipment" style="color:#4A7F7F">-</div>
-                                <div class="kpi-label">MEPS</div>
-                                <div class="kpi-sublabel">Performance standards</div>
-                            </div>
-                            <div class="kpi-card" style="border-left: 4px solid #f59e0b;">
-                                <div class="kpi-value" id="meps-kpi-regions" style="color:#f59e0b">-</div>
-                                <div class="kpi-label">Labels</div>
-                                <div class="kpi-sublabel">Energy labels</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Map Card with Filters Inside -->
-                    <div class="card-panel map-card">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fa-solid fa-bolt"></i>
-                                MEPS &amp; Labels Coverage
-                            </div>
-                            <span class="viewing-pill">Viewing: <strong id="meps-viewing">Global</strong></span>
-                        </div>
-                        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem; padding: 0 0.5rem;">
-                            Policy adoption status for cooling appliances. Click a country for detailed breakdown.
-                        </div>
-                        <div id="meps-map-container" class="map-surface"></div>
-                        <div class="legend legend-row">
-                            <span class="legend-label">Policy Status:</span>
-                            <div id="meps-legend" class="legend-items"></div>
-                        </div>
-                        <div class="progress-bar" id="meps-progress">
-                            <span class="progress-segment" id="meps-progress-both" title="MEPS & Labels" style="background:#166534"></span>
-                            <span class="progress-segment" id="meps-progress-meps" title="MEPS Only" style="background:#4A7F7F"></span>
-                            <span class="progress-segment" id="meps-progress-labels" title="Labels Only" style="background:#f59e0b"></span>
-                            <span class="progress-segment" id="meps-progress-critical" title="No Policies" style="background:#ef4444"></span>
-                        </div>
-
-                        <!-- Filters Inside Map Card -->
-                        <div class="map-filters" id="meps-filters-panel">
-                            <div class="filters-help" style="font-size: 0.8rem; color: #4A7F7F; margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; background: #F5FAFA; border-radius: 8px; border-left: 3px solid #8BC34A;">
-                                <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
-                                <strong>Customize your view:</strong> Filter by region and equipment type to explore MEPS and labeling policies for specific appliances across different regions.
-                            </div>
-                            <div class="filter-row" style="gap: 1rem; flex-wrap: wrap; align-items: flex-start;">
-                                <!-- Region Filter -->
-                                <div class="filter-group" style="flex: 1; min-width: 180px;">
-                                    <label class="filter-label">Region</label>
-                                    <select id="meps-region-filter" class="filter-select">
-                                        <option value="">All Regions</option>
-                                    </select>
-                                </div>
-
-                                <!-- Equipment Type Toggles -->
-                                <div class="filter-group" style="flex: 2; min-width: 300px;">
-                                    <label class="filter-label">Equipment Type</label>
-                                    <div class="toggle-group" id="meps-equipment-toggles">
-                                        <!-- Will be populated dynamically -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Country Detail Section (outside map card for attachment) -->
-                    <div class="country-card-inline" id="meps-country-detail">
-                        <div class="country-detail">
-                            <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
-                                <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #8BC34A; margin-bottom: 0.75rem; display: block;"></i>
-                                <h4 style="color: #3D6B6B; margin-bottom: 0.5rem;">Select a Country</h4>
-                                <p style="font-size: 0.85rem;">Click on any country in the map above to view MEPS and labeling policy details.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Filter Status Bar -->
-                    <div class="filter-status-bar" id="meps-filter-bar">
-                        <div class="status-title">
-                            <i class="fa-solid fa-chart-simple"></i>
-                            <span id="meps-status-title">Product Efficiency Analysis</span>
-                        </div>
-                        <div class="status-filters">
-                            <span class="filter-tag" id="meps-filter-region"><i class="fa-solid fa-earth-americas"></i> All Regions</span>
-                            <span class="filter-tag" id="meps-filter-equipment"><i class="fa-solid fa-cogs"></i> All Equipment</span>
-                        </div>
-                    </div>
-
-                    <!-- Charts Grid -->
-                    <div class="charts-section" style="background: #fafafa; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
-                            <div class="card-panel chart-card">
-                                <div class="chart-card-header">
-                                    <h3 id="meps-chart1-title"><i class="fa-solid fa-chart-bar" style="color: #8BC34A; margin-right: 0.5rem;"></i>MEPS & Labels by Region</h3>
-                                    <p class="chart-subtitle" id="meps-chart1-subtitle">Countries with MEPS vs Labels per region</p>
-                                </div>
-                                <div class="chart-card-body">
-                                    <div id="chart-meps-by-region" class="chart-surface" style="height: 280px;"></div>
-                                </div>
-                            </div>
-                            <div class="card-panel chart-card">
-                                <div class="chart-card-header">
-                                    <h3 id="meps-chart2-title"><i class="fa-solid fa-clock-rotate-left" style="color: #8BC34A; margin-right: 0.5rem;"></i>Policy Adoption Timeline</h3>
-                                    <p class="chart-subtitle" id="meps-chart2-subtitle">Cumulative MEPS & Labels adoption over time</p>
-                                </div>
-                                <div class="chart-card-body">
-                                    <div id="chart-meps-timeline" class="chart-surface" style="height: 280px;"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card-panel chart-card">
-                            <div class="chart-card-header">
-                                <h3 id="meps-chart3-title"><i class="fa-solid fa-cogs" style="color: #8BC34A; margin-right: 0.5rem;"></i>Equipment Type Coverage</h3>
-                                <p class="chart-subtitle" id="meps-chart3-subtitle">Countries with MEPS vs Labels by appliance</p>
-                            </div>
-                            <div class="chart-card-body">
-                                <div id="chart-meps-equipment" class="chart-surface" style="height: 320px;"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Info Panel (at bottom) -->
-                    <div class="card-panel info-panel-bottom" style="background: linear-gradient(135deg, #EBF4F4 0%, #D5E5E5 100%); border-left: 4px solid #3D6B6B; padding: 1rem 1.25rem;">
-                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                            <i class="fa-solid fa-circle-info" style="color: #3D6B6B; font-size: 1.1rem; margin-top: 2px;"></i>
-                            <div>
-                                <div style="font-weight: 600; color: #2D5252; margin-bottom: 0.25rem;">About This Data</div>
-                                <div style="font-size: 0.85rem; color: #3D6B6B; line-height: 1.5;">
-                                    <strong>Minimum Energy Performance Standards (MEPS) &amp; Labels</strong> set efficiency requirements for cooling appliances.
-                                    This data tracks MEPS and labeling policy adoption across countries for Air Conditioners, Domestic Refrigerators, and Fans.
-                                    <em>Source: CLASP Global Policy &amp; Regulatory Compliance Platform (cprc-clasp.ngo)</em>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Kigali View -->
-            <section id="view-kigali" class="view-section">
-                <div class="pillar-stack">
-                    <!-- Info Panel -->
-                    <div class="card-panel" style="background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); border-left: 4px solid #22c55e; padding: 1rem 1.25rem;">
-                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                            <i class="fa-solid fa-circle-info" style="color: #16a34a; font-size: 1.1rem; margin-top: 2px;"></i>
-                            <div>
-                                <div style="font-weight: 600; color: #166534; margin-bottom: 0.25rem;">About This Data</div>
-                                <div style="font-size: 0.85rem; color: #14532d; line-height: 1.5;">
-                                    The <strong>Kigali Amendment</strong> to the Montreal Protocol targets the phase-down of hydrofluorocarbons (HFCs) used in cooling.
-                                    Countries are grouped into <strong>Article 5</strong> (developing) and <strong>Non-Article 5</strong> (developed) parties with different phase-down schedules.
-                                    Data tracks ratification status and refrigerant transition progress.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- KPI Cards -->
-                    <div class="kpi-grid policy-kpis">
-                        <div class="kpi-card green">
-                            <div class="kpi-value" id="kigali-kpi-parties">-</div>
-                            <div class="kpi-label">Kigali Parties</div>
-                            <div class="kpi-sublabel">Ratified the amendment</div>
-                        </div>
-                        <div class="kpi-card blue">
-                            <div class="kpi-value" id="kigali-kpi-montreal">-</div>
-                            <div class="kpi-label">Montreal Protocol</div>
-                            <div class="kpi-sublabel">Protocol parties</div>
-                        </div>
-                        <div class="kpi-card amber">
-                            <div class="kpi-value" id="kigali-kpi-article5">-</div>
-                            <div class="kpi-label">Article 5 Countries</div>
-                            <div class="kpi-sublabel">Developing nations</div>
-                        </div>
-                        <div class="kpi-card teal">
-                            <div class="kpi-value" id="kigali-kpi-non-article5">-</div>
-                            <div class="kpi-label">Non-Article 5</div>
-                            <div class="kpi-sublabel">Developed nations</div>
-                        </div>
-                    </div>
-
-                    <!-- Filter Panel -->
-                    <div class="card-panel filter-panel" style="padding: 1rem 1.25rem;">
-                        <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: flex-end;">
-                            <!-- Region Filter -->
-                            <div class="filter-group" style="flex: 1; min-width: 180px;">
-                                <label class="filter-label">Region</label>
-                                <select id="kigali-region-filter" class="filter-select">
-                                    <option value="">All Regions</option>
-                                </select>
-                            </div>
-
-                            <!-- Group Type Toggles -->
-                            <div class="filter-group" style="flex: 2; min-width: 300px;">
-                                <label class="filter-label">Group Type
-                                    <button id="kigali-group-all" class="mini-btn" type="button">All</button>
-                                    <button id="kigali-group-none" class="mini-btn" type="button">None</button>
-                                </label>
-                                <div class="toggle-group" id="kigali-group-toggles">
-                                    <!-- Will be populated dynamically -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Map and Country Detail -->
-                    <div class="card-panel map-card">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fa-solid fa-flask"></i>
-                                Kigali Amendment Ratification Status
-                            </div>
-                            <span class="viewing-pill">Viewing: <strong id="kigali-viewing">Global</strong></span>
-                        </div>
-                        <div id="kigali-map-container" class="map-surface"></div>
-                        <div class="legend legend-row">
-                            <span class="legend-label">Status:</span>
-                            <div id="kigali-legend" class="legend-items"></div>
-                        </div>
-                        <div class="progress-bar" id="kigali-progress">
-                            <span class="progress-segment high" id="kigali-progress-high" title="Kigali Party"></span>
-                            <span class="progress-segment medium" id="kigali-progress-medium" title="Article 5"></span>
-                            <span class="progress-segment low" id="kigali-progress-low" title="Montreal Only"></span>
-                            <span class="progress-segment critical" id="kigali-progress-critical" title="Non-Party"></span>
-                        </div>
-                        <div id="kigali-country-detail" class="country-card-inline">
-                            <h3>Selected Country</h3>
-                            <div class="country-detail">
-                                <h4>Select a country</h4>
-                                <p class="side-muted">Click on a country in the map to see Kigali details.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Filter Status Bar -->
-                    <div class="filter-status-bar kigali-theme" id="kigali-filter-bar">
-                        <div class="status-title">
-                            <i class="fa-solid fa-snowflake"></i>
-                            <span id="kigali-status-title">Refrigerant Transition Analysis</span>
-                        </div>
-                        <div class="status-filters">
-                            <span class="filter-tag" id="kigali-filter-region"><i class="fa-solid fa-earth-americas"></i> All Regions</span>
-                            <span class="filter-tag" id="kigali-filter-groups"><i class="fa-solid fa-users"></i> All Groups</span>
-                        </div>
-                    </div>
-
-                    <!-- Charts Section -->
-                    <div class="charts-section" style="background: #fafafa; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
-                            <div class="card-panel chart-card">
-                                <div class="chart-card-header">
-                                    <h3><i class="fa-solid fa-chart-pie" style="color: #8BC34A; margin-right: 0.5rem;"></i>Kigali Status by Region</h3>
-                                    <p class="chart-subtitle">Party vs Non-Party breakdown</p>
-                                </div>
-                                <div class="chart-card-body">
-                                    <div id="chart-kigali-region" class="chart-surface" style="height: 280px;"></div>
-                                </div>
-                            </div>
-                            <div class="card-panel chart-card">
-                                <div class="chart-card-header">
-                                    <h3><i class="fa-solid fa-users-rectangle" style="color: #8BC34A; margin-right: 0.5rem;"></i>Group Type Distribution</h3>
-                                    <p class="chart-subtitle">Article 5 and Non-Article 5 countries</p>
-                                </div>
-                                <div class="chart-card-body">
-                                    <div id="chart-kigali-groups" class="chart-surface" style="height: 280px;"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Refrigerant GWP Chart -->
-                        <div class="card-panel chart-card" style="margin-bottom: 1.5rem;">
-                            <div class="chart-card-header">
-                                <h3><i class="fa-solid fa-temperature-arrow-up" style="color: #E85A4F; margin-right: 0.5rem;"></i>Refrigerant Global Warming Potential (GWP)</h3>
-                                <p class="chart-subtitle">100-year GWP values by refrigerant type (AR6)</p>
-                            </div>
-                            <div class="chart-card-body">
-                                <div id="chart-refrigerant-gwp" class="chart-surface" style="height: 350px;"></div>
-                                <div style="display: flex; gap: 1.5rem; margin-top: 0.75rem; flex-wrap: wrap; justify-content: center;">
-                                    <span style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem;">
-                                        <span style="width: 12px; height: 12px; background: #ef4444; border-radius: 2px;"></span>
-                                        HFC (High GWP)
-                                    </span>
-                                    <span style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem;">
-                                        <span style="width: 12px; height: 12px; background: #f59e0b; border-radius: 2px;"></span>
-                                        HCFC (Medium GWP)
-                                    </span>
-                                    <span style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem;">
-                                        <span style="width: 12px; height: 12px; background: #8BC34A; border-radius: 2px;"></span>
-                                        HFO (Low GWP)
-                                    </span>
-                                    <span style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem;">
-                                        <span style="width: 12px; height: 12px; background: #22c55e; border-radius: 2px;"></span>
-                                        Natural (Low GWP)
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card-panel chart-card">
-                            <div class="chart-card-header">
-                                <h3><i class="fa-solid fa-chart-area" style="color: #3D6B6B; margin-right: 0.5rem;"></i>Market Share: Refrigerant Transition (2020-2050)</h3>
-                                <p class="chart-subtitle">AC • Global</p>
-                            </div>
-                            <div class="chart-card-body">
-                                <div class="chart-container" style="height: 320px;">
-                                    <div id="chart-kigali-transition" class="chart-surface"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Access View -->
-            <section id="view-access" class="view-section">
-                <div class="pillar-stack">
-                    <!-- KPI Cards Box with Title -->
-                    <div class="card-panel kpi-box">
-                        <div class="kpi-box-header">
-                            <h3 id="access-kpi-title"><i class="fa-solid fa-globe"></i> Global View</h3>
-                            <div class="kpi-box-meta">
-                                <span class="meta-pill" id="access-meta-source"><i class="fa-solid fa-database"></i> Historical</span>
-                                <span class="meta-pill" id="access-meta-year"><i class="fa-solid fa-calendar"></i> 2024</span>
-                                <span class="meta-pill" id="access-meta-region"><i class="fa-solid fa-earth-americas"></i> All Regions</span>
-                            </div>
-                        </div>
-                        <div class="kpi-grid policy-kpis" style="margin-top: 0.75rem;">
-                            <div class="kpi-card red">
-                                <div class="kpi-value" id="access-kpi-total">-</div>
-                                <div class="kpi-label">People at Risk</div>
-                                <div class="kpi-sublabel">Without adequate cooling access</div>
-                            </div>
-                            <div class="kpi-card amber">
-                                <div class="kpi-value" id="access-kpi-high-impact">-</div>
-                                <div class="kpi-label">High-Risk Countries</div>
-                                <div class="kpi-sublabel">Facing severe cooling gaps</div>
-                            </div>
-                            <div class="kpi-card blue">
-                                <div class="kpi-value" id="access-kpi-countries">-</div>
-                                <div class="kpi-label">Countries Analyzed</div>
-                                <div class="kpi-sublabel">In current selection</div>
-                            </div>
-                            <div class="kpi-card green">
-                                <div class="kpi-value" id="access-kpi-regions">-</div>
-                                <div class="kpi-label">Regions Covered</div>
-                                <div class="kpi-sublabel">Geographic scope</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Map Card with Filters Inside -->
-                    <div class="card-panel map-card">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fa-solid fa-earth-americas"></i>
-                                Cooling Access Gap by Country
-                            </div>
-                            <span class="viewing-pill">Viewing: <strong id="access-viewing">Global</strong></span>
-                        </div>
-                        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem; padding: 0 0.5rem;">
-                            Population lacking sustainable cooling access (millions). Click a country for details.
-                        </div>
-                        <div id="access-map-container" class="map-surface"></div>
-                        <div class="legend legend-row">
-                            <span class="legend-label">Population at Risk:</span>
-                            <div id="access-legend" class="legend-items"></div>
-                        </div>
-                        <div class="progress-bar access-progress">
-                            <span class="progress-segment access-low" id="access-progress-low"></span>
-                            <span class="progress-segment access-medium" id="access-progress-medium"></span>
-                            <span class="progress-segment access-high" id="access-progress-high"></span>
-                            <span class="progress-segment access-critical" id="access-progress-critical"></span>
-                        </div>
-
-                        <!-- Filters Inside Map Card -->
-                        <div class="map-filters" id="access-filters-panel">
-                            <div class="filters-help" style="font-size: 0.8rem; color: #92400e; margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; background: #fef3c7; border-radius: 8px; border-left: 3px solid #f59e0b;">
-                                <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
-                                <strong>Customize your view:</strong> Filter by data source, year, risk levels, income groups, and regions to explore cooling access gaps across different populations.
-                            </div>
-                            <div class="filter-row" style="gap: 1rem; flex-wrap: wrap; align-items: flex-start;">
-                                <!-- Data Source Toggle -->
-                                <div class="filter-group">
-                                    <label class="filter-label">Source</label>
-                                    <div class="toggle-group" id="access-source-toggles">
-                                        <button class="toggle-btn active" data-source="historical" type="button" title="SEforALL data (2013-2024)">Historical</button>
-                                        <button class="toggle-btn" data-source="forecast" type="button" title="Forecast data (2025-2030)">Forecast</button>
-                                    </div>
-                                </div>
-
-                                <!-- Year Slider -->
-                                <div class="filter-group" style="flex: 2; min-width: 180px;">
-                                    <label class="filter-label">Year</label>
-                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <input type="range" id="access-year-slider" min="2013" max="2024" value="2024" style="flex: 1;" />
-                                        <span id="access-year-display" style="font-weight: 700; color: #3D6B6B; font-size: 0.85rem;">2024</span>
-                                    </div>
-                                </div>
-
-                                <!-- Risk Level Toggle -->
-                                <div class="filter-group">
-                                    <label class="filter-label">Risk Level</label>
-                                    <div class="toggle-group" id="access-impact-toggles">
-                                        <button class="toggle-btn active" data-impact="High" type="button" title="1+ billion lacking crucial cooling">High</button>
-                                        <button class="toggle-btn active" data-impact="Medium" type="button" title="Limited sustainable options">Medium</button>
-                                        <button class="toggle-btn active" data-impact="Low" type="button" title="Better access to cooling">Low</button>
-                                    </div>
-                                </div>
-
-                                <!-- Income Group Toggle -->
-                                <div class="filter-group" style="flex: 2; min-width: 250px;">
-                                    <label class="filter-label">Income Group</label>
-                                    <div class="toggle-group" id="access-pop-toggles">
-                                        <button class="toggle-btn active" data-category="Rural Poor" type="button" title="309M at high risk globally">Rural</button>
-                                        <button class="toggle-btn active" data-category="Urban Poor" type="button" title="695M at high risk globally">Urban</button>
-                                        <button class="toggle-btn active" data-category="Lower-Middle Income" type="button" title="Limited affordable options">Lower-Mid</button>
-                                        <button class="toggle-btn active" data-category="Middle-Income" type="button" title="Better access to solutions">Middle</button>
-                                    </div>
-                                </div>
-
-                                <!-- Region Dropdown -->
-                                <div class="filter-group">
-                                    <label class="filter-label">Region</label>
-                                    <select id="access-region-filter" class="filter-select">
-                                        <option value="">All Regions</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Country Detail Section (outside map card for attachment) -->
-                    <div class="country-card-inline" id="access-country-detail">
-                        <div class="country-detail">
-                            <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
-                                <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #f59e0b; margin-bottom: 0.75rem; display: block;"></i>
-                                <h4 style="color: #92400e; margin-bottom: 0.5rem;">Select a Country</h4>
-                                <p style="font-size: 0.85rem;">Click on any country in the map above to view cooling access gap details and population breakdown.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Filter Status Bar -->
-                    <div class="filter-status-bar access-theme" id="access-filter-bar">
-                        <div class="status-title">
-                            <i class="fa-solid fa-temperature-high"></i>
-                            <span id="access-status-title">Cooling Access Gap Analysis</span>
-                        </div>
-                        <div class="status-filters">
-                            <span class="filter-tag" id="access-filter-year"><i class="fa-solid fa-calendar"></i> 2023</span>
-                            <span class="filter-tag" id="access-filter-region"><i class="fa-solid fa-earth-americas"></i> All Regions</span>
-                            <span class="filter-tag" id="access-filter-risk"><i class="fa-solid fa-exclamation-triangle"></i> All Risk Levels</span>
-                        </div>
-                    </div>
-
-                    <!-- Charts Section -->
-                    <div class="charts-section" style="background: #fafafa; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
-                        <div id="access-charts-container"></div>
-                    </div>
-
-                    <!-- Info Panel (at bottom) -->
-                    <div class="card-panel info-panel-bottom" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 4px solid #f59e0b; padding: 1rem 1.25rem;">
-                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                            <i class="fa-solid fa-circle-info" style="color: #d97706; font-size: 1.1rem; margin-top: 2px;"></i>
-                            <div>
-                                <div style="font-weight: 600; color: #92400e; margin-bottom: 0.25rem;">About This Data</div>
-                                <div style="font-size: 0.85rem; color: #78350f; line-height: 1.5;">
-                                    This analysis tracks cooling access gaps across <strong>77 countries</strong> in the Global South.
-                                    "At risk" populations lack adequate cooling for <strong>thermal comfort</strong>, <strong>food preservation</strong>, and <strong>medical storage</strong>.
-                                    Risk levels are based on income, infrastructure access, and climate vulnerability.
-                                    <em>Source: SEforALL Chilling Prospects Report</em>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Policy Framework View - NDC Tracker, GCP, NCAP -->
-            <section id="view-policy" class="view-section">
-                <div class="pillar-stack">
-                    <!-- KPI Cards Box with Title -->
-                    <div class="card-panel kpi-box">
-                        <div class="kpi-box-header">
-                            <h3 id="policy-kpi-title"><i class="fa-solid fa-globe"></i> Global View</h3>
-                            <div class="kpi-box-meta">
-                                <span class="meta-pill" id="policy-meta-tab"><i class="fa-solid fa-file-contract"></i> Global Cooling Pledge</span>
-                            </div>
-                        </div>
-                        <div class="kpi-grid policy-kpis" style="margin-top: 0.75rem;">
-                            <div class="kpi-card green">
-                                <div class="kpi-value" id="policy-kpi-gcp">-</div>
-                                <div class="kpi-label">GCP Signatories</div>
-                                <div class="kpi-sublabel">Global Cooling Pledge</div>
-                            </div>
-                            <div class="kpi-card blue">
-                                <div class="kpi-value" id="policy-kpi-ndc">-</div>
-                                <div class="kpi-label">NDC 3.0 Submitted</div>
-                                <div class="kpi-sublabel">Countries with new NDCs</div>
-                            </div>
-                            <div class="kpi-card amber">
-                                <div class="kpi-value" id="policy-kpi-cooling">-</div>
-                                <div class="kpi-label">Cooling Mentioned</div>
-                                <div class="kpi-sublabel">In NDCs (Energy Efficiency)</div>
-                            </div>
-                            <div class="kpi-card purple">
-                                <div class="kpi-value" id="policy-kpi-NCAP">-</div>
-                                <div class="kpi-label">NCAPs Developed</div>
-                                <div class="kpi-sublabel">National Cooling Action Plans</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Map Card with Tabs Inside -->
-                    <div class="card-panel map-card">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fa-solid fa-scale-balanced"></i>
-                                Policy Framework Status by Country
-                            </div>
-                            <span class="viewing-pill">Viewing: <strong id="policy-viewing">Global</strong></span>
-                        </div>
-                        <div class="policy-tabs">
-                            <button class="tab-btn policy-map-tab active" data-map="gcp" type="button">Global Cooling Pledge</button>
-                            <button class="tab-btn policy-map-tab" data-map="ndc" type="button">NDC Cooling Mentions</button>
-                            <button class="tab-btn policy-map-tab" data-map="NCAP" type="button">NCAP</button>
-                        </div>
-                        <div class="filters-help" style="font-size: 0.8rem; color: #3D6B6B; margin: 0.75rem 0; padding: 0.5rem 0.75rem; background: #F5FAFA; border-radius: 8px; border-left: 3px solid #22c55e;">
-                            <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
-                            <strong>Switch tabs</strong> to explore different policy frameworks: GCP signatories, NDC cooling mentions, or National Cooling Action Plans.
-                        </div>
-                        <!-- NDC Filters (shown when NDC tab is active) -->
-                        <div class="policy-filters" id="policy-ndc-filters">
-                            <div class="filter-row" style="gap: 1rem;">
-                                <div class="filter-group">
-                                    <label class="filter-label" for="policy-ndc-type">NDC Version</label>
-                                    <select id="policy-ndc-type" class="filter-select">
-                                        <!-- Options populated dynamically -->
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <label class="filter-label" for="policy-ndc-category">Category</label>
-                                    <select id="policy-ndc-category" class="filter-select">
-                                        <!-- Options populated dynamically -->
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="ndc-map-container" class="map-surface"></div>
-                        <div class="legend legend-row">
-                            <span class="legend-label">Status:</span>
-                            <div id="ndc-legend" class="legend-items"></div>
-                        </div>
-                        <div class="progress-bar ndc-progress">
-                            <span class="progress-segment ndc-mentioned" id="ndc-progress-mentioned"></span>
-                            <span class="progress-segment ndc-not" id="ndc-progress-not"></span>
-                            <span class="progress-segment ndc-no-ndc" id="ndc-progress-no-ndc"></span>
-                            <span class="progress-segment ndc-no-data" id="ndc-progress-no-data"></span>
-                        </div>
-                    </div>
-
-                    <!-- Country Detail Section (outside map card for attachment) -->
-                    <div class="country-card-inline" id="policy-country-detail">
-                        <div class="country-detail">
-                            <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
-                                <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #22c55e; margin-bottom: 0.75rem; display: block;"></i>
-                                <h4 style="color: #166534; margin-bottom: 0.5rem;">Select a Country</h4>
-                                <p style="font-size: 0.85rem;">Click on any country in the map above to view policy framework details including GCP, NDC, and NCAP status.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Filter Status Bar -->
-                    <div class="filter-status-bar policy-theme" id="policy-filter-bar">
-                        <div class="status-title">
-                            <i class="fa-solid fa-file-signature"></i>
-                            <span id="policy-status-title">Policy Framework Analysis</span>
-                        </div>
-                        <div class="status-filters">
-                            <span class="filter-tag" id="policy-filter-tab"><i class="fa-solid fa-file-contract"></i> Global Cooling Pledge</span>
-                            <span class="filter-tag" id="policy-filter-region"><i class="fa-solid fa-earth-americas"></i> All Regions</span>
-                        </div>
-                    </div>
-
-                    <!-- Charts Section -->
-                    <div class="charts-section" style="background: #fafafa; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
-                        <div id="policy-charts-container"></div>
-                    </div>
-
-                    <!-- Info Panel (at bottom) -->
-                    <div class="card-panel info-panel-bottom" style="background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); border-left: 4px solid #22c55e; padding: 1rem 1.25rem;">
-                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                            <i class="fa-solid fa-circle-info" style="color: #166534; font-size: 1.1rem; margin-top: 2px;"></i>
-                            <div>
-                                <div style="font-weight: 600; color: #166534; margin-bottom: 0.25rem;">About Policy Frameworks</div>
-                                <div style="font-size: 0.85rem; color: #15803d; line-height: 1.5;">
-                                    <strong>GCP:</strong> Global Cooling Pledge signatories committed to sustainable cooling.
-                                    <strong>NDC:</strong> Nationally Determined Contributions tracking cooling mentions under the Paris Agreement.
-                                    <strong>NCAP:</strong> National Cooling Action Plans for comprehensive cooling strategies.
-                                    <em>Sources: UNFCCC, Cool Coalition, K-CEP</em>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Emissions View (Enhanced) -->
-            <section id="view-emissions" class="view-section">
-                <div class="pillar-stack">
-                    <!-- KPI Cards Box with Title -->
-                    <div class="card-panel kpi-box">
-                        <div class="kpi-box-header">
-                            <h3 id="emissions-kpi-title"><i class="fa-solid fa-globe"></i> Global View</h3>
-                            <div class="kpi-box-meta">
-                                <span class="meta-pill" id="emissions-meta-source"><i class="fa-solid fa-database"></i> CLASP</span>
-                                <span class="meta-pill" id="emissions-meta-year"><i class="fa-solid fa-calendar"></i> 2030</span>
-                                <span class="meta-pill" id="emissions-meta-scenario"><i class="fa-solid fa-chart-line"></i> BAU</span>
-                            </div>
-                        </div>
-                        <div class="kpi-grid policy-kpis" style="margin-top: 0.75rem;">
-                            <div class="kpi-card red">
-                                <div class="kpi-value" id="emissions-kpi-total">-</div>
-                                <div class="kpi-label">Total CO2 Emissions</div>
-                                <div class="kpi-sublabel">Mt CO2 equivalent</div>
-                            </div>
-                            <div class="kpi-card blue">
-                                <div class="kpi-value" id="emissions-kpi-ac">-</div>
-                                <div class="kpi-label">Air Conditioning</div>
-                                <div class="kpi-sublabel">Mt CO2</div>
-                            </div>
-                            <div class="kpi-card amber">
-                                <div class="kpi-value" id="emissions-kpi-fridge">-</div>
-                                <div class="kpi-label">Refrigeration</div>
-                                <div class="kpi-sublabel">Mt CO2</div>
-                            </div>
-                            <div class="kpi-card green">
-                                <div class="kpi-value" id="emissions-kpi-fans">-</div>
-                                <div class="kpi-label">Fans</div>
-                                <div class="kpi-sublabel">Mt CO2</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Map Card with Filters Inside -->
-                    <div class="card-panel map-card">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <i class="fa-solid fa-earth-americas"></i>
-                                CO2 Emissions by Country
-                            </div>
-                        </div>
-                        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem; padding: 0 0.5rem;">
-                            Cooling sector emissions in Mt CO2. Click a country for detailed breakdown.
-                        </div>
-                        <div id="emissions-map-container" class="map-surface"></div>
-                        <div class="legend legend-row">
-                            <span class="legend-label">Emissions (Mt CO2):</span>
-                            <div id="emissions-legend" class="legend-items"></div>
-                        </div>
-                        <div class="progress-bar" id="emissions-progress">
-                            <span class="progress-segment" id="emissions-progress-low" style="background: #8BC34A;"></span>
-                            <span class="progress-segment" id="emissions-progress-medium" style="background: #E89B8C;"></span>
-                            <span class="progress-segment" id="emissions-progress-high" style="background: #E85A4F;"></span>
-                            <span class="progress-segment" id="emissions-progress-critical" style="background: #D94539;"></span>
-                        </div>
-
-                        <!-- Filters Inside Map Card -->
-                        <div class="map-filters" id="emissions-filters-panel">
-                            <div class="filters-help" style="font-size: 0.8rem; color: #4A7F7F; margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; background: #F5FAFA; border-radius: 8px; border-left: 3px solid #8BC34A;">
-                                <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
-                                <strong>Customize your view:</strong> These filters control all data displayed on the map, charts, and KPIs above. Adjust the source, year, scenario, and appliances to explore different emission projections.
-                            </div>
-                            <div class="filter-row" style="gap: 1rem; flex-wrap: nowrap; align-items: flex-start;">
-                                <!-- Data Source Toggle -->
-                                <div class="filter-group">
-                                    <label class="filter-label">Source</label>
-                                    <div class="toggle-group" id="emissions-source-toggles">
-                                        <button class="toggle-btn active" data-source="clasp" type="button" title="Indirect emissions only (energy-related CO2) by appliance">CLASP</button>
-                                        <button class="toggle-btn" data-source="subcool" type="button" title="Direct and indirect emissions with Kigali scenarios (GIZ collaboration)">HEAT</button>
-                                    </div>
-                                </div>
-
-                                <!-- Year Slider -->
-                                <div class="filter-group" style="flex: 2; min-width: 200px;">
-                                    <label class="filter-label">Year</label>
-                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <input type="range" id="emissions-year-slider" min="2020" max="2045" value="2030" style="flex: 1;" />
-                                        <span id="emissions-year-display" style="font-weight: 700; color: #3D6B6B; font-size: 0.85rem;">2030</span>
-                                    </div>
-                                </div>
-
-                                <!-- Scenario Dropdown -->
-                                <div class="filter-group">
-                                    <label class="filter-label" for="emissions-scenario-select">Scenario</label>
-                                    <select id="emissions-scenario-select" class="filter-select" style="min-width: 120px;">
-                                        <option value="BAU">Business as Usual</option>
-                                        <option value="GB">Green Buildings</option>
-                                        <option value="NZH">Net Zero Homes</option>
-                                        <option value="BAT">Best Available Tech</option>
-                                    </select>
-                                </div>
-
-                                <!-- Appliance Toggles (for CLASP) -->
-                                <div class="filter-group" id="emissions-appliance-row">
-                                    <label class="filter-label">Appliances</label>
-                                    <div class="toggle-group" id="emissions-appliance-toggles">
-                                        <button class="toggle-btn active" data-appliance="Air Conditioning" type="button">AC</button>
-                                        <button class="toggle-btn active" data-appliance="Ceiling and Portable Fans" type="button">Fans</button>
-                                        <button class="toggle-btn active" data-appliance="Refrigerator-Freezers" type="button">Refrigerators</button>
-                                    </div>
-                                </div>
-
-                                <!-- Emission Type Toggles (for Subcool) - shown when HEAT selected -->
-                                <div class="filter-group" id="emissions-type-row" style="display: none;">
-                                    <label class="filter-label">Type</label>
-                                    <div class="toggle-group" id="emissions-type-toggles">
-                                        <button class="toggle-btn active" data-type="total" type="button">Total</button>
-                                        <button class="toggle-btn" data-type="direct" type="button">Direct</button>
-                                        <button class="toggle-btn" data-type="indirect" type="button">Indirect</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Charts Container (side by side) -->
-                    <div id="emissions-charts-container"></div>
-
-                    <!-- Country Detail Section (at bottom) -->
-                    <div class="country-card-inline" id="emissions-country-detail">
-                        <div class="country-detail">
-                            <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
-                                <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #8BC34A; margin-bottom: 0.75rem; display: block;"></i>
-                                <h4 style="color: #3D6B6B; margin-bottom: 0.5rem;">Select a Country</h4>
-                                <p style="font-size: 0.85rem;">Click on any country in the map above to view detailed emission breakdowns and projections.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Info Panel (at bottom) -->
-                    <div class="card-panel info-panel-bottom" style="background: linear-gradient(135deg, #EBF4F4 0%, #D5E5E5 100%); border-left: 4px solid #3D6B6B; padding: 1rem 1.25rem;">
-                        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                            <i class="fa-solid fa-circle-info" style="color: #3D6B6B; font-size: 1.1rem; margin-top: 2px;"></i>
-                            <div>
-                                <div style="font-weight: 600; color: #2D5252; margin-bottom: 0.25rem;">About This Data</div>
-                                <div style="font-size: 0.85rem; color: #3D6B6B; line-height: 1.5;">
-                                    <strong>CLASP Data:</strong> Indirect emissions only (energy-related CO2) from cooling appliances (AC, Fans, Refrigerators) under different efficiency scenarios.
-                                    <strong>HEAT Modelling:</strong> Direct (refrigerant) and indirect (energy) emissions from AC and refrigeration with Kigali Protocol scenarios. <em>Developed in collaboration with GIZ.</em>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <!-- Right Sidebar -->
-        <aside class="sidebar-right">
-            <div class="side-card insight-card">
-                <h3>
-                    <i class="fa-solid fa-lightbulb"></i>
-                    Strategic Insight
-                </h3>
-                <p id="insight-text" class="insight-text"></p>
-                <div class="summary-stats">
-                    <div class="stat-item">
-                        <span class="label" id="stat-label-1">Total Countries</span>
-                        <span id="stat-val-1">-</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="label" id="stat-label-2">GCP Coverage</span>
-                        <span id="stat-val-2">-</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="label" id="stat-label-3">Kigali Coverage</span>
-                        <span id="stat-val-3">-</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="label" id="stat-label-4">MEPS Coverage</span>
-                        <span id="stat-val-4">-</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="label">Data Updated</span>
-                        <span id="stat-updated">-</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="side-card" id="data-sources">
-                <h3>Authoritative Data Sources</h3>
-                <p class="side-muted">Access original datasets and policy trackers.</p>
-                <div class="source-list" id="source-list"></div>
-            </div>
-
-            <!-- Partner Logos Rotating Box -->
-            <div class="side-card partner-logos-card" style="margin-top: auto;">
-                <h3>Supported by</h3>
-                <div class="partner-logos-carousel">
-                    <div class="partner-logos-track">
-                        <img src="/images/ccc-logo.png" alt="Clean Cooling Collaborative" class="partner-logo" />
-                        <img src="/images/cool-coalition.png" alt="Cool Coalition" class="partner-logo" />
-                        <img src="/images/heat-logo.png" alt="HEAT" class="partner-logo" />
-                        <img src="/images/giz-logo.png" alt="GIZ" class="partner-logo" />
-                        <!-- Duplicate for seamless loop -->
-                        <img src="/images/ccc-logo.png" alt="Clean Cooling Collaborative" class="partner-logo" />
-                        <img src="/images/cool-coalition.png" alt="Cool Coalition" class="partner-logo" />
-                        <img src="/images/heat-logo.png" alt="HEAT" class="partner-logo" />
-                        <img src="/images/giz-logo.png" alt="GIZ" class="partner-logo" />
-                    </div>
-                </div>
-            </div>
-        </aside>
-    </div>
-
-    <div class="tooltip" id="tooltip"></div>
-
-    <!-- Pillar Information Modal -->
-    <div class="pillar-modal-overlay" id="pillar-modal-overlay">
-        <div class="pillar-modal">
-            <button class="pillar-modal-close" type="button" id="pillar-modal-close">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h2 id="pillar-modal-title"></h2>
-            <p class="pillar-modal-subtitle" id="pillar-modal-subtitle"></p>
-            <div class="pillar-modal-body" id="pillar-modal-body"></div>
-        </div>
-    </div>
+  <!-- Pillar Information Modal (Component) -->
+  <PillarModal
+    currentView={currentViewState}
+    visible={pillarModalVisible}
+    onClose={handlePillarModalClose}
+  />
 </div>

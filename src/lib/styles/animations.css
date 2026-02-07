@@ -1,0 +1,269 @@
+/* ================================
+   CCC Design System - Animations
+   Inspired by cleancoolingcollaborative.org
+   ================================ */
+
+/* ─── Counter Number Animation ─── */
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.counter-animate {
+  animation: countUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Text Reveal Animation (fade up with stagger) ─── */
+@keyframes textReveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.text-reveal {
+  opacity: 0;
+  animation: textReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.text-reveal-delay-1 { animation-delay: 0.1s; }
+.text-reveal-delay-2 { animation-delay: 0.2s; }
+.text-reveal-delay-3 { animation-delay: 0.3s; }
+.text-reveal-delay-4 { animation-delay: 0.4s; }
+.text-reveal-delay-5 { animation-delay: 0.5s; }
+
+/* ─── Card Entrance Animation (slide up + fade) ─── */
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.card-entrance {
+  opacity: 0;
+  animation: cardEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.card-entrance:nth-child(1) { animation-delay: 0.05s; }
+.card-entrance:nth-child(2) { animation-delay: 0.1s; }
+.card-entrance:nth-child(3) { animation-delay: 0.15s; }
+.card-entrance:nth-child(4) { animation-delay: 0.2s; }
+.card-entrance:nth-child(5) { animation-delay: 0.25s; }
+.card-entrance:nth-child(6) { animation-delay: 0.3s; }
+
+/* ─── Pulse Glow for Active Nav Items ─── */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(122, 0, 223, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 12px 2px rgba(122, 0, 223, 0.2);
+  }
+}
+
+.pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* ─── Gradient Shift for Hero Background ─── */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-shift {
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+}
+
+/* ─── Map Transition Animations ─── */
+@keyframes mapFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes mapRegionHighlight {
+  0% {
+    stroke-width: 1;
+    filter: brightness(1);
+  }
+  50% {
+    stroke-width: 2;
+    filter: brightness(1.15);
+  }
+  100% {
+    stroke-width: 1;
+    filter: brightness(1);
+  }
+}
+
+.map-fade-in {
+  animation: mapFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.map-region-highlight {
+  animation: mapRegionHighlight 1.2s ease-in-out;
+}
+
+/* ─── KPI Card Hover Lift Effect ─── */
+@keyframes kpiLift {
+  from {
+    transform: translateY(0);
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+  }
+  to {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(122, 0, 223, 0.12);
+  }
+}
+
+/* ─── Shimmer Loading Effect ─── */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(122, 0, 223, 0.04) 25%,
+    rgba(0, 180, 216, 0.08) 50%,
+    rgba(122, 0, 223, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* ─── Fade In from Below (general purpose) ─── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  opacity: 0;
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+/* ─── Scale In (for modals, tooltips) ─── */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.scale-in {
+  animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ─── Border Glow Animation ─── */
+@keyframes borderGlow {
+  0%, 100% {
+    border-color: rgba(122, 0, 223, 0.2);
+    box-shadow: 0 0 0 0 rgba(122, 0, 223, 0);
+  }
+  50% {
+    border-color: rgba(0, 180, 216, 0.4);
+    box-shadow: 0 0 16px 0 rgba(0, 180, 216, 0.1);
+  }
+}
+
+.border-glow {
+  animation: borderGlow 3s ease-in-out infinite;
+}
+
+/* ─── Number Tick (for counters) ─── */
+@keyframes numberTick {
+  0% { transform: translateY(100%); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.number-tick {
+  display: inline-block;
+  animation: numberTick 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ─── Stripe Accent Slide In ─── */
+@keyframes stripeSlideIn {
+  from {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  to {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+}
+
+.stripe-slide-in {
+  animation: stripeSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ─── Reduced Motion Support ─── */
+@media (prefers-reduced-motion: reduce) {
+  .counter-animate,
+  .text-reveal,
+  .card-entrance,
+  .pulse-glow,
+  .gradient-shift,
+  .map-fade-in,
+  .map-region-highlight,
+  .shimmer,
+  .fade-in-up,
+  .scale-in,
+  .border-glow,
+  .number-tick,
+  .stripe-slide-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
