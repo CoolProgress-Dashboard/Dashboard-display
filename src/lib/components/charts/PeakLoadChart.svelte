@@ -146,7 +146,7 @@
   </div>
   <div class="chart-container" bind:this={chartContainer}></div>
   <div class="chart-source">
-    Sources: <a href="https://www.iea.org/reports/the-future-of-cooling" target="_blank" rel="noopener noreferrer">IEA Future of Cooling (2018)</a>; <a href="https://www.cleancoolingcollaborative.org/" target="_blank" rel="noopener noreferrer">Clean Cooling Collaborative</a>
+    Sources: <a href="https://www.iea.org/reports/the-future-of-cooling" target="_blank" rel="noopener noreferrer">IEA Future of Cooling (2018)</a>; <a href="https://www.cleancoolingcollaborative.org/" target="_blank" rel="noopener noreferrer">Clean Cooling Collaborative</a>; <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH</a> | <a href="/methodology" style="font-weight: 600;">Methodology</a>
   </div>
 </div>
 

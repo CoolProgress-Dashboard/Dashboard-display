@@ -99,56 +99,82 @@
       <div class="map-filters" id="access-filters-panel">
         <div class="filters-help" style="font-size: 0.8rem; color: #92400e; margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; background: #fef3c7; border-radius: 8px; border-left: 3px solid #f59e0b;">
           <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
-          <strong>Customize your view:</strong> Filter by data source, year, risk levels, income groups, and regions to explore cooling access gaps across different populations.
+          <strong>Customize your view:</strong> Choose a data source and year to explore cooling access gaps. Use the advanced filters below to focus on specific populations.
         </div>
-        <div class="filter-row" style="gap: 1rem; flex-wrap: wrap; align-items: flex-start;">
+
+        <!-- Primary Filters (always visible) -->
+        <div class="filter-row" style="gap: 1rem; flex-wrap: wrap; align-items: flex-start; margin-bottom: 0.75rem;">
           <!-- Data Source Toggle -->
           <div class="filter-group">
-            <label class="filter-label">Source</label>
+            <label class="filter-label"><i class="fa-solid fa-database" style="margin-right: 0.3rem; opacity: 0.6;"></i>Data Source</label>
             <div class="toggle-group" id="access-source-toggles">
-              <button class="toggle-btn active" data-source="historical" type="button" title="SEforALL data (2013-2024)">Historical</button>
-              <button class="toggle-btn" data-source="forecast" type="button" title="Forecast data (2025-2030)">Forecast</button>
+              <button class="toggle-btn active" data-source="historical" type="button" title="SEforALL Chilling Prospects data (2013-2024)">
+                <i class="fa-solid fa-clock-rotate-left" style="margin-right: 0.25rem; font-size: 0.65rem;"></i>Historical
+              </button>
+              <button class="toggle-btn" data-source="forecast" type="button" title="Population forecast at risk (2025-2030)">
+                <i class="fa-solid fa-chart-line" style="margin-right: 0.25rem; font-size: 0.65rem;"></i>Forecast
+              </button>
             </div>
           </div>
 
           <!-- Year Slider -->
           <div class="filter-group" style="flex: 2; min-width: 180px;">
-            <label class="filter-label">Year</label>
+            <label class="filter-label"><i class="fa-solid fa-calendar" style="margin-right: 0.3rem; opacity: 0.6;"></i>Year</label>
             <div style="display: flex; align-items: center; gap: 0.5rem;">
               <input type="range" id="access-year-slider" min="2013" max="2024" value="2024" style="flex: 1;" />
               <span id="access-year-display" style="font-weight: 700; color: #3D6B6B; font-size: 0.85rem;">2024</span>
             </div>
           </div>
 
-          <!-- Risk Level Toggle -->
-          <div class="filter-group">
-            <label class="filter-label">Risk Level</label>
-            <div class="toggle-group" id="access-impact-toggles">
-              <button class="toggle-btn active" data-impact="High" type="button" title="1+ billion lacking crucial cooling">High</button>
-              <button class="toggle-btn active" data-impact="Medium" type="button" title="Limited sustainable options">Medium</button>
-              <button class="toggle-btn active" data-impact="Low" type="button" title="Better access to cooling">Low</button>
-            </div>
-          </div>
-
-          <!-- Income Group Toggle -->
-          <div class="filter-group" style="flex: 2; min-width: 250px;">
-            <label class="filter-label">Income Group</label>
-            <div class="toggle-group" id="access-pop-toggles">
-              <button class="toggle-btn active" data-category="Rural Poor" type="button" title="309M at high risk globally">Rural</button>
-              <button class="toggle-btn active" data-category="Urban Poor" type="button" title="695M at high risk globally">Urban</button>
-              <button class="toggle-btn active" data-category="Lower-Middle Income" type="button" title="Limited affordable options">Lower-Mid</button>
-              <button class="toggle-btn active" data-category="Middle-Income" type="button" title="Better access to solutions">Middle</button>
-            </div>
-          </div>
-
           <!-- Region Dropdown -->
           <div class="filter-group">
-            <label class="filter-label">Region</label>
+            <label class="filter-label"><i class="fa-solid fa-earth-americas" style="margin-right: 0.3rem; opacity: 0.6;"></i>Region</label>
             <select id="access-region-filter" class="filter-select">
               <option value="">All Regions</option>
             </select>
           </div>
         </div>
+
+        <!-- Advanced Filters (collapsible) -->
+        <details class="access-advanced-filters">
+          <summary class="advanced-toggle">
+            <i class="fa-solid fa-filter" style="margin-right: 0.3rem;"></i>
+            Advanced Filters
+            <span style="font-weight: 400; color: #94a3b8; margin-left: 0.25rem;">(risk level, income group)</span>
+          </summary>
+          <div class="filter-row" style="gap: 1rem; flex-wrap: wrap; align-items: flex-start; padding-top: 0.75rem;">
+            <!-- Risk Level Toggle -->
+            <div class="filter-group">
+              <label class="filter-label"><i class="fa-solid fa-triangle-exclamation" style="margin-right: 0.3rem; opacity: 0.6;"></i>Risk Level</label>
+              <div class="toggle-group" id="access-impact-toggles">
+                <button class="toggle-btn active" data-impact="High" type="button" title="1+ billion people lacking crucial cooling access">
+                  <span class="risk-dot" style="background: #ef4444;"></span>High
+                </button>
+                <button class="toggle-btn active" data-impact="Medium" type="button" title="Limited access to sustainable cooling options">
+                  <span class="risk-dot" style="background: #f59e0b;"></span>Medium
+                </button>
+                <button class="toggle-btn active" data-impact="Low" type="button" title="Better access but still below adequate">
+                  <span class="risk-dot" style="background: #22c55e;"></span>Low
+                </button>
+              </div>
+            </div>
+
+            <!-- Income Group Toggle -->
+            <div class="filter-group" style="flex: 2; min-width: 250px;">
+              <label class="filter-label"><i class="fa-solid fa-users" style="margin-right: 0.3rem; opacity: 0.6;"></i>Income Group</label>
+              <div class="toggle-group" id="access-pop-toggles">
+                <button class="toggle-btn active" data-category="Rural Poor" type="button" title="309 million at high risk globally">
+                  <i class="fa-solid fa-tree" style="font-size: 0.6rem; margin-right: 0.2rem;"></i>Rural
+                </button>
+                <button class="toggle-btn active" data-category="Urban Poor" type="button" title="695 million at high risk globally">
+                  <i class="fa-solid fa-city" style="font-size: 0.6rem; margin-right: 0.2rem;"></i>Urban
+                </button>
+                <button class="toggle-btn active" data-category="Lower-Middle Income" type="button" title="Limited affordable cooling options">Lower-Mid</button>
+                <button class="toggle-btn active" data-category="Middle-Income" type="button" title="Better access but gaps remain">Middle</button>
+              </div>
+            </div>
+          </div>
+        </details>
       </div>
     </div>
 
@@ -180,5 +206,65 @@
     <div class="charts-section" style="background: #fafafa; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
       <div id="access-charts-container"></div>
     </div>
+
+    <!-- Source Attribution -->
+    <div class="access-source" style="text-align: center; padding: 0.75rem; font-size: 0.7rem; color: #94a3b8;">
+      Sources:
+      <a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer" style="color: #64748b;">SEforALL Chilling Prospects</a>
+      &middot;
+      <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer" style="color: #64748b;">HEAT GmbH</a>
+      &middot;
+      <a href="/methodology" style="color: #3D6B6B; font-weight: 600;">Methodology</a>
+    </div>
   </div>
 </section>
+
+<style>
+  .access-advanced-filters {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 0.5rem;
+  }
+
+  .advanced-toggle {
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #64748b;
+    padding: 0.4rem 0;
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+  }
+
+  .advanced-toggle::-webkit-details-marker {
+    display: none;
+  }
+
+  .advanced-toggle::before {
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.55rem;
+    margin-right: 0.4rem;
+    transition: transform 0.2s ease;
+    color: #94a3b8;
+  }
+
+  .access-advanced-filters[open] > .advanced-toggle::before {
+    transform: rotate(180deg);
+  }
+
+  .advanced-toggle:hover {
+    color: #3D6B6B;
+  }
+
+  :global(.risk-dot) {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 0.2rem;
+    vertical-align: middle;
+  }
+</style>

@@ -106,7 +106,7 @@ export const countrySpotlights: CountrySpotlight[] = [
   },
   {
     id: 'africa',
-    name: 'Sub-Saharan Africa',
+    name: 'Africa',
     region: 'Africa',
     flagEmoji: 'AF',
     stats: [
@@ -128,7 +128,7 @@ export const countrySpotlights: CountrySpotlight[] = [
       },
     ],
     narrative:
-      'Sub-Saharan Africa faces the deepest cooling access crisis. With only 5% of households owning an AC and the largest share of the 1.2 billion people at high risk from heat, the region needs cooling solutions that work within severe electricity constraints. Vaccines degrade, food spoils, and heat waves grow deadlier.',
+      'Africa faces the deepest cooling access crisis. With only 5% of households owning an AC and the largest share of the 1.2 billion people at high risk from heat, the region needs cooling solutions that work within severe electricity constraints. Vaccines degrade, food spoils, and heat waves grow deadlier.',
     mepsStatus: 'minimal',
     dominantRefrigerant: 'R-22 (phasing out); R-410A',
     keyChallenge: 'Providing cooling access where electricity is absent or unreliable',

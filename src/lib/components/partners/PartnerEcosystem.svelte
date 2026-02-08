@@ -135,8 +135,25 @@
           <p>{partner.keyContribution}</p>
         </div>
 
-        <!-- Key Report (if available) -->
-        {#if partner.keyReport}
+        <!-- Resource Links -->
+        {#if partner.resources && partner.resources.length > 0}
+          <div class="partner-resources">
+            <span class="resources-label">Tools & Resources</span>
+            {#each partner.resources as resource}
+              <a
+                href={resource.url}
+                target={resource.url.startsWith('/') ? '_self' : '_blank'}
+                rel={resource.url.startsWith('/') ? undefined : 'noopener noreferrer'}
+                class="partner-resource-link"
+                title={resource.description}
+              >
+                <i class="fa-solid {resource.icon}"></i>
+                <span>{resource.label}</span>
+                <i class="fa-solid fa-arrow-up-right-from-square resource-external"></i>
+              </a>
+            {/each}
+          </div>
+        {:else if partner.keyReport}
           <a
             href={partner.keyReportUrl}
             target="_blank"
@@ -484,6 +501,64 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  /* Resource Links */
+  .partner-resources {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+  }
+
+  .resources-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted, #888);
+    margin-bottom: 0.15rem;
+  }
+
+  .partner-resource-link {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    color: var(--ccc-teal, #3D6B6B);
+    text-decoration: none;
+    padding: 0.3rem 0.5rem;
+    border-radius: var(--radius-sm, 6px);
+    transition: all 0.15s ease;
+    background: transparent;
+  }
+
+  .partner-resource-link:hover {
+    background: rgba(61, 107, 107, 0.06);
+    color: var(--ccc-teal-dark, #2D5252);
+  }
+
+  .partner-resource-link i:first-child {
+    font-size: 0.65rem;
+    opacity: 0.7;
+    width: 14px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .partner-resource-link span {
+    flex: 1;
+    font-weight: 500;
+  }
+
+  .resource-external {
+    font-size: 0.5rem !important;
+    opacity: 0.3;
+    transition: opacity 0.15s ease;
+  }
+
+  .partner-resource-link:hover .resource-external {
+    opacity: 0.7;
   }
 
   /* Key Report Link */

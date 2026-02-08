@@ -192,5 +192,17 @@
         </div>
       </div>
     </div>
+
+    <!-- Source Attribution -->
+    <div style="text-align: center; padding: 0.75rem; font-size: 0.7rem; color: #94a3b8;">
+      Sources:
+      <a href="https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment-2016" target="_blank" rel="noopener noreferrer" style="color: #64748b;">UNEP Ozone Secretariat</a>
+      &middot;
+      <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer" style="color: #64748b;">HEAT GmbH</a>
+      &middot;
+      <a href="https://www.multilateralfund.org/OurWork/default.aspx" target="_blank" rel="noopener noreferrer" style="color: #64748b;">MLF</a>
+      &middot;
+      <a href="/methodology" style="color: #3D6B6B; font-weight: 600;">Methodology</a>
+    </div>
   </div>
 </section>

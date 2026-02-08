@@ -144,5 +144,19 @@
     <div class="charts-section" style="background: #fafafa; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
       <div id="policy-charts-container"></div>
     </div>
+
+    <!-- Source Attribution -->
+    <div style="text-align: center; padding: 0.75rem; font-size: 0.7rem; color: #94a3b8;">
+      Sources:
+      <a href="https://coolcoalition.org/global-cooling-pledge/" target="_blank" rel="noopener noreferrer" style="color: #64748b;">Cool Coalition</a>
+      &middot;
+      <a href="https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/" target="_blank" rel="noopener noreferrer" style="color: #64748b;">CLASP NDC Toolkit</a>
+      &middot;
+      <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="color: #64748b;">Climate Policy Radar</a>
+      &middot;
+      <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer" style="color: #64748b;">HEAT GmbH</a>
+      &middot;
+      <a href="/methodology" style="color: #3D6B6B; font-weight: 600;">Methodology</a>
+    </div>
   </div>
 </section>

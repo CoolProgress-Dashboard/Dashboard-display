@@ -1,6 +1,13 @@
 // partner-data.ts - Partner Ecosystem for CoolProgress Dashboard
 // Sources compiled from official partner websites and publications
 
+export interface PartnerResource {
+  label: string;
+  url: string;
+  icon: string; // FontAwesome class
+  description?: string;
+}
+
 export interface Partner {
   id: string;
   name: string;
@@ -15,9 +22,32 @@ export interface Partner {
   keyReport?: string;
   keyReportUrl?: string;
   category: 'data' | 'policy' | 'implementation' | 'funding' | 'research';
+  resources?: PartnerResource[];
 }
 
 export const partners: Partner[] = [
+  {
+    id: 'heat',
+    name: 'HEAT GmbH',
+    fullName: 'HEAT GmbH - Climate Intelligence & Green Cooling',
+    tagline: 'Providing the analytical backbone for global cooling transition tracking',
+    website: 'https://www.heat-gmbh.de',
+    coolingUrl: 'https://www.green-cooling-initiative.org/',
+    logoPath: '/images/heat-logo.png',
+    logoPlaceholder: 'heat',
+    description:
+      'HEAT GmbH develops climate intelligence tools and models for the global cooling transition. As the developer of CoolProgress, HEAT integrates data from all partners into a unified tracking platform.',
+    keyContribution:
+      'Built the Global Cooling Model (global_model_subcool) with BAU/KIP/MIT scenarios. Developed the three-layer DECARB methodology combining efficiency, refrigerant, and grid decarbonization pathways.',
+    keyReport: 'CoolProgress Methodology',
+    keyReportUrl: '/methodology',
+    category: 'data',
+    resources: [
+      { label: 'Green Cooling Initiative', url: 'https://www.green-cooling-initiative.org/', icon: 'fa-leaf', description: 'Global cooling sector data and policy tracker' },
+      { label: 'CoolProgress Methodology', url: '/methodology', icon: 'fa-book', description: 'Three-layer DECARB pathway documentation' },
+      { label: 'HEAT Website', url: 'https://www.heat-gmbh.de', icon: 'fa-globe', description: 'Climate intelligence consulting' },
+    ],
+  },
   {
     id: 'clasp',
     name: 'CLASP',
@@ -34,6 +64,12 @@ export const partners: Partner[] = [
     keyReport: 'World\'s Best MEPS',
     keyReportUrl: 'https://www.clasp.ngo/tools/worlds-best-meps/',
     category: 'data',
+    resources: [
+      { label: 'World\'s Best MEPS', url: 'https://www.clasp.ngo/tools/worlds-best-meps/', icon: 'fa-bolt', description: 'Compare AC efficiency standards across countries' },
+      { label: 'Policy Resource Center (CPRC)', url: 'https://cprc-clasp.ngo/', icon: 'fa-database', description: 'Comprehensive policy database for cooling appliances' },
+      { label: 'Country Savings Calculator', url: 'https://cprc-clasp.ngo/tools/country-savings', icon: 'fa-calculator', description: 'Model energy savings from MEPS adoption' },
+      { label: 'NDC Appliance Toolkit', url: 'https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/', icon: 'fa-file-contract', description: 'Link appliance efficiency to NDC targets' },
+    ],
   },
   {
     id: 'cool-coalition',
@@ -52,6 +88,11 @@ export const partners: Partner[] = [
     keyReportUrl:
       'https://coolcoalition.org/wp-content/uploads/2024/11/2024-Global-Cooling-Pledge-Progress-Report.pdf',
     category: 'policy',
+    resources: [
+      { label: 'Global Cooling Pledge', url: 'https://coolcoalition.org/global-cooling-pledge/', icon: 'fa-earth-americas', description: '71 nations committed to cooling transition' },
+      { label: 'Pledge Progress Report 2024', url: 'https://coolcoalition.org/wp-content/uploads/2024/11/2024-Global-Cooling-Pledge-Progress-Report.pdf', icon: 'fa-file-pdf', description: 'Annual tracking of pledge implementation' },
+      { label: 'Cool Coalition Resources', url: 'https://coolcoalition.org/resources/', icon: 'fa-folder-open', description: 'Policy briefs, case studies, and guidance documents' },
+    ],
   },
   {
     id: 'u4e',
@@ -71,6 +112,11 @@ export const partners: Partner[] = [
     keyReportUrl:
       'https://united4efficiency.org/wp-content/uploads/2021/11/U4E_AC_Model-Regulation_EN_2021-11-08.pdf',
     category: 'policy',
+    resources: [
+      { label: 'Country Assessments', url: 'https://united4efficiency.org/countries/', icon: 'fa-map', description: 'Country-level efficiency transition assessments' },
+      { label: 'Model Regulation Guidelines', url: 'https://united4efficiency.org/resources/model-regulation-guidelines/', icon: 'fa-scale-balanced', description: 'Template MEPS regulations for developing countries' },
+      { label: 'Policy Guides & Tools', url: 'https://united4efficiency.org/resources/', icon: 'fa-toolbox', description: 'Full resource library for policy makers' },
+    ],
   },
   {
     id: 'iea',
@@ -88,6 +134,12 @@ export const partners: Partner[] = [
     keyReport: 'The Future of Cooling',
     keyReportUrl: 'https://www.iea.org/reports/the-future-of-cooling',
     category: 'research',
+    resources: [
+      { label: 'The Future of Cooling', url: 'https://www.iea.org/reports/the-future-of-cooling', icon: 'fa-chart-line', description: 'Definitive 2018 study on global cooling demand growth' },
+      { label: 'Space Cooling Tracker', url: 'https://www.iea.org/energy-system/buildings/space-cooling', icon: 'fa-temperature-low', description: 'Real-time tracking of cooling energy demand' },
+      { label: 'World Energy Outlook 2025', url: 'https://www.iea.org/reports/world-energy-outlook-2025', icon: 'fa-book-open', description: 'STEPS grid decarbonization projections used in DECARB' },
+      { label: 'Electricity 2025', url: 'https://www.iea.org/reports/electricity-2025', icon: 'fa-bolt', description: 'Grid emission intensity trends and projections' },
+    ],
   },
   {
     id: 'giz',
@@ -105,6 +157,10 @@ export const partners: Partner[] = [
     keyReport: 'Green Cooling Initiative',
     keyReportUrl: 'https://www.green-cooling-initiative.org/',
     category: 'implementation',
+    resources: [
+      { label: 'Green Cooling Initiative', url: 'https://www.green-cooling-initiative.org/', icon: 'fa-leaf', description: 'Country data, policy tracker, and technology guidance' },
+      { label: 'RAC Technician Training', url: 'https://www.giz.de/en/worldwide/71271.html', icon: 'fa-graduation-cap', description: '600,000+ technicians trained in natural refrigerants' },
+    ],
   },
   {
     id: 'se4all',
@@ -124,6 +180,11 @@ export const partners: Partner[] = [
     keyReportUrl:
       'https://www.seforall.org/data-stories/chilling-prospects-2025',
     category: 'data',
+    resources: [
+      { label: 'Chilling Prospects 2025', url: 'https://www.seforall.org/data-stories/chilling-prospects-2025', icon: 'fa-temperature-high', description: '1.2 billion people at risk from lack of cooling' },
+      { label: 'Cooling for All', url: 'https://www.seforall.org/cooling-for-all', icon: 'fa-people-group', description: 'Solutions for sustainable cooling access' },
+      { label: 'Data Portal', url: 'https://www.seforall.org/data-and-evidence', icon: 'fa-database', description: 'Energy access and cooling data downloads' },
+    ],
   },
   {
     id: 'ccc',
@@ -142,6 +203,10 @@ export const partners: Partner[] = [
     keyReportUrl:
       'https://www.cleancoolingcollaborative.org/report/global-cooling-watch-2023/',
     category: 'funding',
+    resources: [
+      { label: 'Global Cooling Watch', url: 'https://www.cleancoolingcollaborative.org/report/global-cooling-watch-2023/', icon: 'fa-chart-pie', description: 'Sector-wide progress tracker with 20 indicators' },
+      { label: 'The Challenge', url: 'https://www.cleancoolingcollaborative.org/the-challenge/', icon: 'fa-exclamation-circle', description: 'Why cooling matters for climate and equity' },
+    ],
   },
   {
     id: 'climate-policy-radar',
@@ -159,6 +224,10 @@ export const partners: Partner[] = [
     keyReport: 'Climate Law and Policy Search',
     keyReportUrl: 'https://app.climatepolicyradar.org/search',
     category: 'research',
+    resources: [
+      { label: 'Climate Law Search', url: 'https://app.climatepolicyradar.org/search', icon: 'fa-magnifying-glass', description: 'AI-powered search across 30,000+ climate laws' },
+      { label: 'NCAP Finder', url: 'https://app.climatepolicyradar.org/search?q=national+cooling+action+plan', icon: 'fa-file-circle-check', description: 'Find National Cooling Action Plans by country' },
+    ],
   },
 ];
 

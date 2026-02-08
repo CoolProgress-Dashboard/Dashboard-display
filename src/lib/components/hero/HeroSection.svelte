@@ -32,10 +32,10 @@
   // Map heroStats from pillar-content to counter data, enriching with
   // extended descriptions from hero-stats.ts where available
   const statIdMap: Record<string, string> = {
-    'of global GHG emissions': 'ghg-share',
+    'Mt CO\u2082e today (2025)': 'ghg-share',
+    'reduction achievable by 2050': 'co2-savings',
     'people lack adequate cooling': 'people-at-risk',
-    'demand growth by 2050': 'demand-tripling',
-    'Global Cooling Pledge signatories': 'co2-savings'
+    'Global Cooling Pledge nations': 'co2-savings'
   };
 
   const counterData = overview.heroStats.map((hs) => {
@@ -131,17 +131,17 @@
     <!-- Attribution -->
     <p class="hero-attribution">
       Data:
-      <a href="https://www.iea.org/reports/the-future-of-cooling" target="_blank" rel="noreferrer"
-        >IEA</a
-      >
+      <a href="https://www.heat-gmbh.de" target="_blank" rel="noreferrer">HEAT</a>
+      &middot;
+      <a href="https://www.clasp.ngo/" target="_blank" rel="noreferrer">CLASP</a>
+      &middot;
+      <a href="https://www.iea.org/reports/the-future-of-cooling" target="_blank" rel="noreferrer">IEA</a>
       &middot;
       <a href="https://cleancoolingcollaborative.org" target="_blank" rel="noreferrer">CCC</a>
       &middot;
-      <a
-        href="https://www.seforall.org/data-stories/chilling-prospects-2025"
-        target="_blank"
-        rel="noreferrer">SE4ALL</a
-      >
+      <a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noreferrer">SE4ALL</a>
+      &middot;
+      <a href="/methodology" style="font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.3);">Methodology</a>
     </p>
   </div>
 </section>

@@ -5,7 +5,7 @@
   import HeroSection from '$lib/components/hero/HeroSection.svelte';
   import CountrySpotlight from '$lib/components/charts/CountrySpotlight.svelte';
   import PeakLoadChart from '$lib/components/charts/PeakLoadChart.svelte';
-  import AcGrowthChart from '$lib/components/charts/AcGrowthChart.svelte';
+  import ApplianceGrowthChart from '$lib/components/charts/ApplianceGrowthChart.svelte';
   import { partners } from '$lib/data/partner-data';
 </script>
 
@@ -14,8 +14,8 @@
     <!-- Animated Hero Banner -->
     <HeroSection on:navigate={(e) => onNavigate(e.detail)} />
 
-    <!-- AC Growth Chart -->
-    <AcGrowthChart />
+    <!-- Appliance Growth Chart (multi-toggle: AC, DomRef, Fans) -->
+    <ApplianceGrowthChart />
 
     <!-- Peak Electricity Load Chart -->
     <PeakLoadChart />

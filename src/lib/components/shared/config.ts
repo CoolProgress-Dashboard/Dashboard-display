@@ -13,77 +13,80 @@ export type ViewMeta = {
 
 export const VIEW_META: Record<string, ViewMeta> = {
   overview: {
-    headline: 'The planet is warming. Cooling must not make it worse.',
-    subhead: 'Tracking the global transition to sustainable, equitable cooling.',
+    headline: 'Cooling emissions could triple by 2050. Or we cut them 73%.',
+    subhead: 'The CoolProgress Dashboard tracks whether the world is on the sustainable cooling pathway.',
     insight:
-      'Cooling already accounts for roughly 10% of global electricity use. Efficiency, low-GWP refrigerants, and access planning can bend the curve by 2050.',
+      'Today: 2,401 Mt CO\u2082e from cooling. BAU 2050: 6,009 Mt. DECARB 2050: 1,554 Mt. The gap between disaster and solution is efficiency + Kigali + clean grids.',
     sources: [
-      { name: 'IEA Future of Cooling', url: '#' },
-      { name: 'Cool Coalition Data Hub', url: '#' },
-      { name: 'CLASP Policy Database', url: '#' }
+      { name: 'HEAT GmbH', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' },
+      { name: 'CLASP', url: 'https://www.clasp.ngo/', logo: '/images/clasp-logo.png' },
+      { name: 'IEA', url: 'https://www.iea.org/reports/the-future-of-cooling', logo: '/images/iea-logo.png' }
     ]
   },
   emissions: {
-    headline: 'We\u2019re stuck in a vicious cycle',
-    subhead: 'Cooling produces 7% of global emissions and demand is set to triple. Bending the curve starts now.',
+    headline: 'Cooling emissions will triple by 2050 \u2014 unless we act now',
+    subhead: 'AC alone will emit more than global aviation by 2035. Three interventions can cut 73% by mid-century.',
     insight:
-      'Without intervention, cooling emissions could double by 2050. Efficiency and refrigerant transition can unlock 80% reductions.',
-    methodology: 'CLASP: Indirect emissions (energy-related CO\u2082) under efficiency scenarios. HEAT: Direct + indirect emissions with Kigali scenarios (GIZ collaboration).',
+      'BAU 2050: 6,009 Mt CO\u2082e. DECARB 2050: 1,554 Mt. The three-layer approach \u2014 efficient appliances, low-GWP refrigerants, and clean grids \u2014 achieves 4,455 Mt of annual savings.',
+    methodology: 'Three-layer DECARB: HEAT GmbH (direct emissions, Kigali phase-down) + CLASP (efficiency scenarios) + IEA STEPS (grid decarbonization). See /methodology for details.',
     sources: [
+      { name: 'HEAT GmbH', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' },
       { name: 'Mepsy by CLASP', url: 'https://www.clasp.ngo/tools/mepsy/', logo: '/images/clasp-logo.png' },
-      { name: 'Green Cooling Initiative', url: 'https://www.green-cooling-initiative.org/country-data#!total-emissions/all-sectors/absolute', logos: ['/images/heat-logo.png', '/images/giz-logo.png'] }
+      { name: 'IEA STEPS', url: 'https://www.iea.org/reports/world-energy-outlook-2025' }
     ]
   },
   meps: {
-    headline: 'Efficiency is the cheapest clean energy',
-    subhead: 'The invisible climate solution hiding in plain sight.',
+    headline: 'The 3x efficiency gap is the cheapest climate solution we are ignoring',
+    subhead: 'Best-in-class ACs are 3x more efficient than the worst on sale today. MEPS can close this gap \u2014 saving 1,300 TWh per year.',
     insight:
-      'MEPS adoption remains uneven, especially in fast-growing cooling markets. Harmonized standards can prevent dumping of low-efficiency units.',
-    methodology: 'MEPS & Labels set efficiency requirements for cooling appliances. Tracking policy adoption for ACs, Refrigerators, and Fans.',
+      'If every country adopted MEPS at today\u2019s best-available-technology level, cooling energy demand drops 40\u201350% by 2050. That is roughly India\u2019s entire electricity output.',
+    methodology: 'MEPS & Labels data: CLASP Policy Resource Center (CPRC). Efficiency metrics: CSPF, EER, AEC. Coverage: AC, Refrigerators, Fans across 80+ countries.',
     sources: [
-      { name: 'CLASP Policy Resource Center (CPRC)', url: 'https://www.clasp.ngo/tools/clasp-policy-resource-center/', logo: '/images/clasp-logo.png' }
+      { name: 'CLASP Policy Resource Center', url: 'https://cprc-clasp.ngo/', logo: '/images/clasp-logo.png' },
+      { name: 'HEAT GmbH (integration)', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' }
     ]
   },
   kigali: {
-    headline: 'Defusing the invisible climate bomb',
-    subhead: 'The Kigali Amendment can prevent 0.5\u00B0C of warming by phasing down super-pollutant refrigerants.',
+    headline: '157 countries ratified Kigali. But ratification is not implementation.',
+    subhead: 'The Kigali Amendment can prevent 0.5\u00B0C of warming \u2014 if countries convert commitments into refrigerant transitions on the ground.',
     insight:
-      'Transition pathways vary by group. Early action on low-GWP refrigerants reduces lifetime climate impact.',
-    methodology: 'Kigali Amendment tracks HFC phase-down. Article 5 (developing) and Non-Article 5 (developed) parties have different schedules.',
+      '157 parties have ratified, covering 95% of HFC consumption. Non-A5 countries must reach 15% of baseline by 2036. The real test: manufacturing conversion, technician training, and F-gas recovery infrastructure.',
+    methodology: 'Kigali ratification and implementation data: UNEP Ozone Secretariat. HFC baselines and allowable emissions: KIP database. GWP values: IPCC AR6.',
     sources: [
-      { name: 'Kigali Amendment Tracker', url: '#' },
-      { name: 'MLF Project Reports', url: '#' },
-      { name: 'UNEP Ozone Secretariat', url: '#' }
+      { name: 'UNEP Ozone Secretariat', url: 'https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment', logo: '/images/unep.png', logoLarge: true },
+      { name: 'HEAT GmbH (integration)', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' }
     ]
   },
   access: {
-    headline: '1.2 billion people are being left behind',
-    subhead: 'Cooling is a life-saving necessity, yet access remains a luxury of the few.',
+    headline: '1.2 billion people face dangerous heat without cooling',
+    subhead: 'Cooling is health infrastructure. 420,000 die annually from food spoiled by broken cold chains. The access gap is a matter of climate equity.',
     insight:
-      'Over 1 billion people face high risk from inadequate cooling access. Urban poor (695M) and rural poor (309M) are most vulnerable. Sustainable cooling solutions require passive design, efficient equipment, and climate-friendly refrigerants.',
-    methodology: 'Tracking cooling access gaps across 77 countries. Risk levels based on income, infrastructure, and climate vulnerability.',
+      'Urban poor (695M) and rural poor (309M) are most at risk. In Africa, only 5% of households own an AC. Passive cooling, solar cold chains, and community centers can close the gap sustainably.',
+    methodology: 'Cooling access data: SEforALL Chilling Prospects 2025. Risk levels by income group, region, and infrastructure. Dashboard integration: HEAT GmbH.',
     sources: [
-      { name: 'SEforALL Chilling Prospects 2025', url: 'https://www.seforall.org/data-stories/chilling-prospects-2025', logo: '/images/seforall-logo.jpg', logoLarge: true }
+      { name: 'SEforALL Chilling Prospects 2025', url: 'https://www.seforall.org/data-stories/chilling-prospects-2025', logo: '/images/seforall-logo.jpg', logoLarge: true },
+      { name: 'HEAT GmbH (integration)', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' }
     ]
   },
   policy: {
-    headline: 'Promises mean nothing without enforcement',
-    subhead: 'Tracking the legal and political commitments that turn voluntary pledges into binding national law.',
+    headline: '71 countries pledged. Fewer than 30% of NDCs mention cooling.',
+    subhead: 'The gap between political commitment and policy implementation is the central challenge of cooling governance.',
     insight:
-      'Global Cooling Pledge signatories are growing. NDC cooling mentions and National Cooling Action Plans (NCAPs) are critical for implementation.',
-    methodology: 'GCP signatories committed to sustainable cooling. NDC tracking for cooling mentions under the Paris Agreement. NCAPs for comprehensive national cooling strategies.',
+      '71 nations signed the Global Cooling Pledge at COP28. Yet fewer than 30% of NDCs mention cooling, and only ~20 countries have completed National Cooling Action Plans. The most effective NCAPs link to NDC targets with funded timelines.',
+    methodology: 'GCP signatories: Cool Coalition. NDC analysis: CLASP NDC Toolkit. NCAPs: Climate Policy Radar. Dashboard integration: HEAT GmbH.',
     sources: [
       { name: 'Cool Coalition Pledge', url: 'https://coolcoalition.org/global-cooling-pledge/', logo: '/images/unep.png', logoLarge: true },
-      { name: 'Net Zero Appliances NDC Toolkit', url: 'https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/', logo: '/images/clasp-logo.png' },
-      { name: 'Find NCAPs at Climate Policy Radar', url: 'https://www.climatepolicyradar.org/', logo: '/images/climate-policy-radar-logo.jfif' }
+      { name: 'CLASP NDC Toolkit', url: 'https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/', logo: '/images/clasp-logo.png' },
+      { name: 'Climate Policy Radar', url: 'https://www.climatepolicyradar.org/', logo: '/images/climate-policy-radar-logo.jfif' }
     ]
   },
   partners: {
     headline: 'Partner Ecosystem',
     subhead: 'Organizations driving the global transition to clean, efficient, and accessible cooling',
     insight:
-      'The cooling transition requires coordinated action across data providers, policy shapers, implementers, funders, and researchers.',
+      'CoolProgress integrates authoritative data from leading global partners. HEAT GmbH provides the analytical backbone, CLASP the efficiency data, IEA the energy projections, and SEforALL the access tracking.',
     sources: [
+      { name: 'HEAT GmbH', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' },
       { name: 'Clean Cooling Collaborative', url: 'https://www.cleancoolingcollaborative.org/', logo: '/images/ccc-logo.png' },
       { name: 'Cool Coalition', url: 'https://coolcoalition.org/', logo: '/images/cool-coalition.png' },
       { name: 'CLASP', url: 'https://www.clasp.ngo/', logo: '/images/clasp-logo.png' }

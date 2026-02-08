@@ -171,73 +171,80 @@
 
     const viewMeta: Record<
       string,
-      { headline: string; subhead: string; insight: string; entryStat?: string; sources: { name: string; url: string; logo?: string; logos?: string[]; logoLarge?: boolean }[] }
+      { headline: string; subhead: string; insight: string; entryStat?: string; methodology?: string; sources: { name: string; url: string; logo?: string; logos?: string[]; logoLarge?: boolean }[] }
     > = {
       overview: {
-        headline: 'The planet is warming. Cooling must not make it worse.',
-        subhead: 'Tracking the global transition to sustainable, equitable cooling.',
+        headline: 'Cooling emissions could triple by 2050. Or we cut them 73%.',
+        subhead: 'The CoolProgress Dashboard tracks whether the world is on the sustainable cooling pathway.',
         insight:
-          'Cooling keeps food fresh, medicines viable, workers productive, and people alive during heat waves. Yet the way we cool today accelerates the very warming that makes cooling essential. By 2050, global cooling demand will triple. The choices we make now determine whether that growth locks in a climate disaster or powers a sustainable transition.',
-        entryStat: '10 ACs sold every second -- 3 billion more units by 2050',
+          'Today, cooling produces over 2,400 Mt CO\u2082e annually from AC, refrigerators, and fans combined. Under business-as-usual, this triples to over 6,000 Mt by 2050. But with efficiency standards, the Kigali refrigerant phase-down, and grid decarbonization working together, emissions can peak before 2035 and decline to 1,554 Mt by 2050 \u2014 a 73% reduction from BAU.',
+        entryStat: '2,401 Mt CO\u2082e today -- 73% reduction achievable by 2050',
         sources: [
-          { name: 'IEA Future of Cooling', url: 'https://www.iea.org/reports/the-future-of-cooling' },
-          { name: 'Cool Coalition Data Hub', url: 'https://coolcoalition.org/' },
-          { name: 'CLASP Policy Database', url: 'https://www.clasp.ngo/tools/clasp-policy-resource-center/' }
+          { name: 'HEAT GmbH', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' },
+          { name: 'CLASP', url: 'https://www.clasp.ngo/', logo: '/images/clasp-logo.png' },
+          { name: 'IEA', url: 'https://www.iea.org/reports/the-future-of-cooling', logo: '/images/iea-logo.png' }
         ]
       },
       emissions: {
-        headline: "We're stuck in a vicious cycle",
-        subhead: 'Cooling produces 7% of global emissions and demand is set to triple. Bending the curve starts now.',
+        headline: 'Cooling emissions will triple by 2050 \u2014 unless we act now',
+        subhead: 'AC alone will emit more than global aviation by 2035. Three interventions can cut 73% by mid-century.',
         insight:
-          'Every air conditioner on a fossil-fueled grid adds CO\u2082. Every refrigerant leak releases gases thousands of times more potent. Without intervention, cooling emissions could double by 2040. Three simultaneous moves can bend the curve: ultra-low-GWP refrigerants, doubled efficiency, and grid decarbonization.',
-        entryStat: '7% of global GHG emissions -- set to double by 2040',
+          'BAU 2050: 6,009 Mt CO\u2082e. DECARB 2050: 1,554 Mt. The three-layer approach \u2014 efficient appliances, low-GWP refrigerants, and clean grids \u2014 achieves 4,455 Mt of annual savings by 2050.',
+        entryStat: '6,009 Mt BAU vs 1,554 Mt DECARB by 2050 -- 73% reduction',
+        methodology: 'Three-layer DECARB: HEAT GmbH (direct emissions, Kigali phase-down) + CLASP (efficiency scenarios) + IEA STEPS (grid decarbonization). See /methodology for details.',
         sources: [
+          { name: 'HEAT GmbH', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' },
           { name: 'Mepsy by CLASP', url: 'https://www.clasp.ngo/tools/mepsy/', logo: '/images/clasp-logo.png' },
-          { name: 'Green Cooling Initiative', url: 'https://www.green-cooling-initiative.org/country-data#!total-emissions/all-sectors/absolute', logos: ['/images/heat-logo.png', '/images/giz-logo.png'] }
+          { name: 'IEA STEPS', url: 'https://www.iea.org/reports/world-energy-outlook-2025' }
         ]
       },
       meps: {
-        headline: 'Efficiency is the cheapest clean energy',
-        subhead: 'The invisible climate solution hiding in plain sight.',
+        headline: 'The 3x efficiency gap is the cheapest climate solution we are ignoring',
+        subhead: 'Best-in-class ACs are 3x more efficient than the worst on sale today. MEPS can close this gap.',
         insight:
-          'Every year, millions of inefficient units flood markets with weak standards -- locking in 10-15 years of excess energy use. CLASP data shows best-available-technology MEPS could cut cooling energy consumption 40-50% by 2050, avoiding 1,300 TWh of annual electricity -- equivalent to India\'s total output.',
-        entryStat: '3x efficiency gap between best and worst products on sale today',
+          'If every country adopted MEPS at today\u2019s best-available-technology level, cooling energy demand drops 40\u201350% by 2050. That is roughly India\u2019s entire electricity output.',
+        entryStat: '1,300 TWh per year -- potential savings from global MEPS harmonization',
+        methodology: 'MEPS & Labels data: CLASP Policy Resource Center (CPRC). Efficiency metrics: CSPF, EER, AEC. Dashboard integration: HEAT GmbH.',
         sources: [
-          { name: 'CLASP Policy Resource Center (CPRC)', url: 'https://www.clasp.ngo/tools/clasp-policy-resource-center/', logo: '/images/clasp-logo.png' }
+          { name: 'CLASP Policy Resource Center', url: 'https://cprc-clasp.ngo/', logo: '/images/clasp-logo.png' },
+          { name: 'HEAT GmbH', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' }
         ]
       },
       kigali: {
-        headline: 'The refrigerant revolution',
-        subhead: 'From HFCs to natural cooling -- the Kigali Amendment is rewriting the rules.',
+        headline: '157 countries ratified Kigali. But ratification is not implementation.',
+        subhead: 'The Kigali Amendment can prevent 0.5\u00B0C of warming \u2014 if commitments become refrigerant transitions on the ground.',
         insight:
-          'HFCs like R-410A (GWP 2,088) are potent greenhouse gases. Left unchecked, HFC growth alone adds 0.5\u00B0C of warming by 2100. The Kigali Amendment created a legally binding pathway to phase down HFC consumption by over 80%. Natural refrigerants -- R-290 (GWP 3), R-600a (GWP 3), R-744 (GWP 1) -- are the endgame.',
+          '157 parties have ratified, covering 95% of HFC consumption. Non-A5 must reach 15% of baseline by 2036. The transition: R-410A (GWP 2,088) \u2192 R-290 propane (GWP 3). China and India already manufacture R-290 ACs at scale.',
         entryStat: '157 parties ratified -- 95% of global HFC consumption covered',
+        methodology: 'Kigali ratification and implementation data: UNEP Ozone Secretariat. HFC baselines: KIP database. GWP values: IPCC AR6. Integration: HEAT GmbH.',
         sources: [
-          { name: 'UNEP Ozone Secretariat', url: 'https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment-2016' },
-          { name: 'MLF Project Database', url: 'https://www.multilateralfund.org/OurWork/default.aspx' },
-          { name: 'Kigali Amendment Tracker', url: 'https://ozone.unep.org/' }
+          { name: 'UNEP Ozone Secretariat', url: 'https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment-2016', logo: '/images/unep.png', logoLarge: true },
+          { name: 'HEAT GmbH', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' }
         ]
       },
       access: {
-        headline: 'Cooling is an equity issue',
-        subhead: 'More than 1.2 billion people face dangerous heat without adequate cooling.',
+        headline: '1.2 billion people face dangerous heat without cooling',
+        subhead: 'Cooling is health infrastructure. 420,000 die annually from food spoiled by broken cold chains.',
         insight:
-          'Heat waves kill tens of thousands each year. 420,000 people die annually from food spoiled by broken cold chains. The access gap hits hardest in low-income urban settlements and rural communities across Sub-Saharan Africa and South Asia. Passive cooling, solar cold chains, and community cooling centers offer sustainable pathways to close the gap.',
+          'Urban poor (695M) and rural poor (309M) are most at risk. In Africa, only 5% of households own an AC. 40% of food production in Africa is lost post-harvest. Passive cooling, solar cold chains, and community centers can close the gap sustainably.',
         entryStat: '1.2 billion people at high risk -- 420,000 deaths/year from spoiled food',
+        methodology: 'Cooling access data: SEforALL Chilling Prospects 2025. Risk levels by income group, region, infrastructure. Dashboard integration: HEAT GmbH.',
         sources: [
-          { name: 'SEforALL Chilling Prospects 2025', url: 'https://www.seforall.org/data-stories/chilling-prospects-2025', logo: '/images/seforall-logo.jpg', logoLarge: true }
+          { name: 'SEforALL Chilling Prospects 2025', url: 'https://www.seforall.org/data-stories/chilling-prospects-2025', logo: '/images/seforall-logo.jpg', logoLarge: true },
+          { name: 'HEAT GmbH', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' }
         ]
       },
       policy: {
-        headline: 'From pledge to action',
-        subhead: '66+ countries signed the Global Cooling Pledge at COP28. Now comes the hard part.',
+        headline: '71 countries pledged. Fewer than 30% of NDCs mention cooling.',
+        subhead: 'The gap between political commitment and policy implementation is the central challenge of cooling governance.',
         insight:
-          'The Global Cooling Pledge was the first time cooling received dedicated political attention at a UNFCCC COP. But fewer than 30% of NDCs explicitly mention cooling. Roughly 20 countries have NCAPs. Effective policy requires coherence: NDCs, NCAPs, Kigali compliance, MEPS, and finance mechanisms must reinforce each other.',
-        entryStat: '<30% of NDCs mention cooling -- only ~20 countries have action plans',
+          '71 nations signed the Global Cooling Pledge at COP28. 49 have MEPS, 37 include cooling in NDCs, 40 have building codes. Yet fewer than 30% of NDCs explicitly mention cooling, and only ~20 countries have NCAPs.',
+        entryStat: '71 GCP signatories -- <30% of NDCs mention cooling -- ~20 NCAPs completed',
+        methodology: 'GCP signatories: Cool Coalition. NDC analysis: CLASP NDC Toolkit. NCAPs: Climate Policy Radar. Integration: HEAT GmbH.',
         sources: [
           { name: 'Cool Coalition Pledge', url: 'https://coolcoalition.org/global-cooling-pledge/', logo: '/images/unep.png', logoLarge: true },
-          { name: 'Net Zero Appliances NDC Toolkit', url: 'https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/', logo: '/images/clasp-logo.png' },
-          { name: 'Find NCAPs at Climate Policy Radar', url: 'https://www.climatepolicyradar.org/', logo: '/images/climate-policy-radar-logo.jfif' }
+          { name: 'CLASP NDC Toolkit', url: 'https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/', logo: '/images/clasp-logo.png' },
+          { name: 'Climate Policy Radar', url: 'https://www.climatepolicyradar.org/', logo: '/images/climate-policy-radar-logo.jfif' }
         ]
       }
     };
@@ -4383,7 +4390,7 @@
             const regionAbbrev: Record<string, string> = {
                 'Asia and Middle East': 'Asia & ME',
                 'Latin America and the Caribbean': 'LAC',
-                'Sub-Saharan Africa': 'SSA',
+                'Africa': 'Africa',
                 'North Africa': 'N. Africa',
                 'Pacific': 'Pacific'
             };

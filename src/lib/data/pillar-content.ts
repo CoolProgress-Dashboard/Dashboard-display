@@ -45,32 +45,34 @@ export interface PillarContentMap {
 
 export const pillarContent: PillarContentMap = {
 	overview: {
-		headline: 'The planet is warming. Cooling must not make it worse.',
-		subhead: 'Tracking the global transition to sustainable, equitable cooling',
+		headline: 'Cooling emissions could triple by 2050. Or we cut them 73%.',
+		subhead: 'The CoolProgress Dashboard tracks whether the world is on the sustainable cooling pathway.',
 		storyHook:
-			'Cooling keeps food fresh, medicines viable, workers productive, and people alive during heat waves. ' +
-			'Yet the way we cool today accelerates the very warming that makes cooling essential. ' +
-			'By 2050, global cooling demand will triple. The choices we make now determine whether that growth locks in a climate disaster or powers a sustainable transition.',
+			'Today, cooling produces over 2,400 Mt CO\u2082e annually from AC, refrigerators, and fans combined. ' +
+			'Under business-as-usual, this triples to over 6,000 Mt by 2050. ' +
+			'But with efficiency standards, the Kigali refrigerant phase-down, and grid decarbonization working together, ' +
+			'emissions can peak before 2035 and decline to 1,554 Mt by 2050 \u2014 a 73% reduction from BAU. ' +
+			'The choices made in the next five years determine which pathway we follow.',
 		heroStats: [
 			{
-				value: '7%',
-				label: 'of global GHG emissions',
-				context: 'Cooling accounts for roughly 7% of global greenhouse gas emissions through energy use and refrigerant leaks'
+				value: '2,401',
+				label: 'Mt CO\u2082e today (2025)',
+				context: 'Total cooling emissions in 2025: AC (1,741), Refrigerators (440), Fans (220). Source: HEAT + CLASP models.'
+			},
+			{
+				value: '73%',
+				label: 'reduction achievable by 2050',
+				context: 'DECARB pathway: efficiency (CLASP GB) + Kigali (HEAT MIT) + grid decarbonization (IEA STEPS) = 1,554 vs 6,009 Mt BAU'
 			},
 			{
 				value: '1.2B',
 				label: 'people lack adequate cooling',
-				context: 'More than 1.2 billion people in low- and middle-income countries face dangerous heat without access to cooling'
+				context: 'More than 1.2 billion people in low- and middle-income countries face dangerous heat without access to cooling. Source: SEforALL.'
 			},
 			{
-				value: '3x',
-				label: 'demand growth by 2050',
-				context: 'Global cooling energy demand is projected to triple by mid-century under business-as-usual scenarios'
-			},
-			{
-				value: '66+',
-				label: 'Global Cooling Pledge signatories',
-				context: 'Over 66 countries committed to the Global Cooling Pledge at COP28 in Dubai, signaling political momentum'
+				value: '71',
+				label: 'Global Cooling Pledge nations',
+				context: '71 countries committed to the Global Cooling Pledge at COP28 in Dubai. 49 have MEPS, 37 include cooling in NDCs.'
 			}
 		]
 	},
@@ -91,7 +93,7 @@ export const pillarContent: PillarContentMap = {
 			'equipment globally. The indirect side depends on grid decarbonization and appliance efficiency. The direct side depends on the refrigerant ' +
 			'transition underway through the Kigali Amendment. Both matter. Tackling one without the other solves only half the problem. ' +
 			'Air conditioning alone accounts for roughly 1 GtCO2e per year today. Residential and commercial refrigeration add another significant share. ' +
-			'In regions where cooling demand is growing fastest -- South Asia, Sub-Saharan Africa, Southeast Asia -- the grid is often the dirtiest, ' +
+			'In regions where cooling demand is growing fastest -- South Asia, Africa, Southeast Asia -- the grid is often the dirtiest, ' +
 			'making efficiency gains even more consequential.',
 		callToInsight:
 			'Bending the emissions curve requires three simultaneous moves: shift to ultra-low-GWP refrigerants, double the energy efficiency of new equipment, ' +
@@ -158,10 +160,10 @@ export const pillarContent: PillarContentMap = {
 			'In 2023, heat waves killed tens of thousands of people across South Asia, the Sahel, and Southern Europe. ' +
 			'The vast majority of victims lacked access to even basic cooling. Sustainable Energy for All\'s Chilling Prospects report ' +
 			'identifies 1.2 billion people at high risk -- concentrated in low-income urban settlements and rural communities ' +
-			'across Sub-Saharan Africa, South Asia, and Southeast Asia. For these populations, cooling is not a luxury. It is health infrastructure.',
+			'across Africa, South Asia, and Southeast Asia. For these populations, cooling is not a luxury. It is health infrastructure.',
 		keyNarrative:
 			'The access gap has multiple dimensions. In rural areas, cooling preserves harvests, vaccines, and medicines -- without it, ' +
-			'up to 40% of food production in Sub-Saharan Africa is lost post-harvest and vaccine cold chains break down. In urban areas, ' +
+			'up to 40% of food production in Africa is lost post-harvest and vaccine cold chains break down. In urban areas, ' +
 			'dense informal settlements trap heat, and residents who work outdoors face occupational heat stress that cuts labor productivity. ' +
 			'Gender compounds the vulnerability: women in many contexts spend more hours in poorly ventilated indoor spaces and have less ' +
 			'economic agency to invest in cooling solutions. Children under five and adults over 65 face disproportionate health risks. ' +
