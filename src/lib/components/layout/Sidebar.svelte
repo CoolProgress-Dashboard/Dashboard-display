@@ -213,8 +213,8 @@
 <style>
   /* Latest News - Sidebar Section */
   .sidebar-news {
+    margin-top: 0.5rem;
     border-top: 1px solid #f1f5f9;
-    margin-top: auto;
   }
 
   .news-toggle {
@@ -222,12 +222,12 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 0.75rem 1.5rem;
+    padding: 0.4rem 1.25rem;
     background: transparent;
     border: none;
     cursor: pointer;
     color: #475569;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-weight: 600;
     transition: background 0.15s ease, color 0.15s ease;
   }
@@ -244,7 +244,7 @@
   }
 
   .news-toggle-left > i {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: #1a6b5a;
   }
 
