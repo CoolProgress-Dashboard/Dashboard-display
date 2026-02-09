@@ -156,7 +156,7 @@
     position: relative;
     width: 100%;
     border-radius: 16px;
-    overflow: hidden;
+    overflow: visible;
     padding: 2.5rem 2rem 2rem;
     margin-bottom: 1rem;
   }
@@ -304,6 +304,8 @@
     gap: 0.75rem;
     margin: 0 auto 1.25rem;
     max-width: 800px;
+    position: relative;
+    z-index: 2;
   }
 
   .counter-wrapper {

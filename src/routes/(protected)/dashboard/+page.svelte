@@ -4475,21 +4475,19 @@
             const allYears = Array.from(new Set(data.subcool.map((r: any) => r.year))).sort() as number[];
             const years = allYears.filter((y: number) => y % 5 === 0 || y === allYears[0] || y === allYears[allYears.length - 1]);
 
-            const scenarios = ['BAU', 'KIP', 'KIP_PLUS', 'MIT'];
+            const scenarios = ['BAU', 'KIP', 'KIP_PLUS'];
             const scenarioColors: Record<string, string> = {
                 'BAU': '#E85A4F',
                 'KIP': '#f59e0b',
-                'KIP_PLUS': '#16a34a',
-                'MIT': '#22c55e'
+                'KIP_PLUS': '#16a34a'
             };
             const scenarioNames: Record<string, string> = {
                 'BAU': 'Business as Usual',
                 'KIP': 'Kigali Implementation',
-                'KIP_PLUS': 'Kigali+',
-                'MIT': 'Maximum Intervention'
+                'KIP_PLUS': 'Kigali+'
             };
 
-            const seriesData: Record<string, number[]> = {};
+            const seriesData: Record<string, (number | null)[]> = {};
             scenarios.forEach(s => { seriesData[s] = []; });
 
             years.forEach((y: number) => {
@@ -4499,7 +4497,12 @@
                     );
                     const totalDirect = yearScenario.reduce((sum: number, r: any) =>
                         sum + (r.direct_emission_mt || 0), 0);
-                    seriesData[s].push(Math.round(totalDirect * 10) / 10);
+                    // KIP_PLUS only starts in 2025 — use null for earlier years
+                    if (s === 'KIP_PLUS' && (y < 2025 || yearScenario.length === 0)) {
+                        seriesData[s].push(null);
+                    } else {
+                        seriesData[s].push(Math.round(totalDirect * 10) / 10);
+                    }
                 });
             });
 
@@ -4513,6 +4516,7 @@
                         let result = `<strong>${params[0].axisValue}</strong><br/>`;
                         const bauVal = params.find((p: any) => p.seriesName === 'Business as Usual')?.value || 0;
                         params.forEach((p: any) => {
+                            if (p.value == null) return;
                             const pct = bauVal > 0 && p.seriesName !== 'Business as Usual'
                                 ? ` (${((1 - p.value / bauVal) * 100).toFixed(0)}% reduction)`
                                 : '';
@@ -4545,12 +4549,12 @@
                     type: 'line',
                     data: seriesData[s],
                     smooth: true,
+                    connectNulls: false,
                     symbol: 'circle',
                     symbolSize: 5,
                     lineStyle: {
                         width: s === 'KIP_PLUS' ? 3.5 : 2.5,
-                        color: scenarioColors[s],
-                        type: s === 'KIP_PLUS' ? 'solid' : 'solid'
+                        color: scenarioColors[s]
                     },
                     itemStyle: { color: scenarioColors[s] },
                     areaStyle: s === 'BAU' ? { color: `${scenarioColors[s]}15` } :
@@ -4576,24 +4580,19 @@
             const groupType = kigaliRecord?.group_type || 'Unknown';
             const montrealStatus = kigaliRecord?.montreal_protocol_party === 1 ? 'Yes' : 'No';
 
-            // Get Subcool data for country (2030 BAU vs KIP)
+            // Get Subcool data for country (2030 BAU vs KIP vs KIP_PLUS)
             const subcool2030BAU = data.subcool.filter((r: any) =>
                 r.country_code === code && r.year === 2030 && r.scenario_name === 'BAU'
             );
             const subcool2030KIP = data.subcool.filter((r: any) =>
                 r.country_code === code && r.year === 2030 && r.scenario_name === 'KIP'
             );
-            const subcool2030MIT = data.subcool.filter((r: any) =>
-                r.country_code === code && r.year === 2030 && r.scenario_name === 'MIT'
-            );
 
             const bauDirect = subcool2030BAU.reduce((s: number, r: any) => s + (r.direct_emission_mt || 0), 0);
             const kipDirect = subcool2030KIP.reduce((s: number, r: any) => s + (r.direct_emission_mt || 0), 0);
-            const mitDirect = subcool2030MIT.reduce((s: number, r: any) => s + (r.direct_emission_mt || 0), 0);
             const bauIndirect = subcool2030BAU.reduce((s: number, r: any) => s + (r.indirect_emission_mt || 0), 0);
 
             const kipSavings = bauDirect > 0 ? ((bauDirect - kipDirect) / bauDirect * 100).toFixed(1) : '0';
-            const mitSavings = bauDirect > 0 ? ((bauDirect - mitDirect) / bauDirect * 100).toFixed(1) : '0';
 
             // Determine phase-down timeline based on group type (Kigali Amendment schedule)
             let timeline = '';
@@ -4628,7 +4627,7 @@
                 ${bauDirect > 0 ? `
                 <div style="margin-bottom:0.75rem;">
                     <div style="font-size:0.75rem; font-weight:700; color:#3D6B6B; margin-bottom:0.4rem;"><i class="fa-solid fa-chart-line" style="margin-right:0.3rem;"></i>Direct Emissions (2030 Projections)</div>
-                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0.4rem;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.4rem;">
                         <div style="text-align:center; background:#fef2f2; border-radius:6px; padding:0.4rem;">
                             <div style="font-size:0.65rem; color:#dc2626;">BAU</div>
                             <div style="font-size:0.85rem; font-weight:700; color:#991b1b;">${bauDirect.toFixed(2)} Mt</div>
@@ -4642,11 +4641,6 @@
                             <div style="font-size:0.65rem; color:#16a34a; font-weight:600;">Kigali+</div>
                             <div style="font-size:0.85rem; font-weight:700; color:#166534;">${kippDirect.toFixed(2)} Mt</div>
                             <div style="font-size:0.6rem; color:#16a34a; font-weight:600;">-${kippSavings}%</div>
-                        </div>
-                        <div style="text-align:center; background:#f0fdf4; border-radius:6px; padding:0.4rem;">
-                            <div style="font-size:0.65rem; color:#15803d;">Mitigation</div>
-                            <div style="font-size:0.85rem; font-weight:700; color:#166534;">${mitDirect.toFixed(2)} Mt</div>
-                            <div style="font-size:0.6rem; color:#16a34a;">-${mitSavings}%</div>
                         </div>
                     </div>
                 </div>
@@ -6240,7 +6234,19 @@
                 `;
                 // Wait for grid layout to fully compute, then render charts
                 waitForPolicyLayout().then(ready => {
-                    if (!ready) return;
+                    console.log('[GCP] waitForPolicyLayout resolved:', ready);
+                    if (!ready) {
+                        // Fallback: try rendering after a delay even if layout check failed
+                        setTimeout(() => {
+                            const section = container.closest('.view-section');
+                            if (section?.classList.contains('active')) {
+                                console.log('[GCP] Fallback render triggered');
+                                renderGCPProgressCharts();
+                                forceResizeViewCharts('policy');
+                            }
+                        }, 500);
+                        return;
+                    }
                     renderGCPProgressCharts();
                     setTimeout(() => forceResizeViewCharts('policy'), 100);
                     setTimeout(() => forceResizeViewCharts('policy'), 500);
@@ -6849,7 +6855,9 @@
                 if (view === 'access') renderAccessTimeline();
                 if (view === 'policy') {
                     const activeTab = document.querySelector<HTMLButtonElement>('.policy-map-tab.active');
-                    updatePolicyChartsForMapType(activeTab?.dataset.map ?? 'kigali');
+                    const mapType = activeTab?.dataset.map ?? 'gcp';
+                    console.log('[Policy] switchView reinit - activeTab:', activeTab?.textContent, 'mapType:', mapType);
+                    updatePolicyChartsForMapType(mapType);
                 }
                 forceReinitCharts = false;
                 // Explicit pixel resize for all charts in this view
@@ -7336,23 +7344,23 @@
             showGlobalMepsDetail();
 
             // Initialize Refrigerant Transition (Kigali)
-            initKigaliFilters();
-            updateKigaliView();
-            showGlobalKigaliDetail();
+            try { initKigaliFilters(); } catch (e) { console.error('initKigaliFilters error:', e); }
+            try { updateKigaliView(); } catch (e) { console.error('updateKigaliView error:', e); }
+            try { showGlobalKigaliDetail(); } catch (e) { console.error('showGlobalKigaliDetail error:', e); }
 
-            initCharts();
+            try { initCharts(); } catch (e) { console.error('initCharts error:', e); }
 
             // Initialize emissions (enhanced)
-            populateEmissionsRegionFilter();
-            await initEmissionsMap();
-            updateEmissionsView();
+            try { populateEmissionsRegionFilter(); } catch (e) { console.error('populateEmissionsRegionFilter error:', e); }
+            try { await initEmissionsMap(); } catch (e) { console.error('initEmissionsMap error:', e); }
+            try { updateEmissionsView(); } catch (e) { console.error('updateEmissionsView error:', e); }
 
             // Initialize NDC Tracker
-            await initNDCMap();
-            populatePolicyNDCFilters();
-            initNDCCharts();
-            updateNDCKPIs();
-            showGlobalPolicyDetail();
+            try { await initNDCMap(); } catch (e) { console.error('initNDCMap error:', e); }
+            try { populatePolicyNDCFilters(); } catch (e) { console.error('populatePolicyNDCFilters error:', e); }
+            try { initNDCCharts(); } catch (e) { console.error('initNDCCharts error:', e); }
+            try { updateNDCKPIs(); } catch (e) { console.error('updateNDCKPIs error:', e); }
+            try { showGlobalPolicyDetail(); } catch (e) { console.error('showGlobalPolicyDetail error:', e); }
 
             setupEventHandlers();
             setApplianceScope('ac');

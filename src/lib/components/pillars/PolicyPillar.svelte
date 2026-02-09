@@ -386,7 +386,7 @@
 
   .policy-counters :global(.counter-display) { font-size: 1.8rem; color: #166534; }
   .policy-counters :global(.counter-label) { font-size: 0.72rem; color: #15803d; }
-  .policy-counters :global(.counter-tooltip) { background: #0f172a; z-index: 99999; box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.2); }
+  .policy-counters :global(.counter-tooltip) { background: #0f172a !important; color: #ffffff !important; z-index: 99999; box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,0,0,0.3); opacity: 1 !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 
   /* Narrative */
   .policy-narrative {

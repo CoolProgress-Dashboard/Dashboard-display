@@ -220,7 +220,7 @@
 
         // DECARB Indirect
         series.push({
-          name: 'MIT Indirect',
+          name: 'Kigali+ Indirect',
           type: 'bar',
           stack: 'decarb',
           data: years.map(y => {
@@ -235,7 +235,7 @@
 
         // DECARB Direct
         series.push({
-          name: 'MIT Direct',
+          name: 'Kigali+ Direct',
           type: 'bar',
           stack: 'decarb',
           data: years.map(y => {
@@ -249,7 +249,7 @@
 
         // DECARB total line overlay
         series.push({
-          name: 'MIT Total',
+          name: 'Kigali+ Total',
           type: 'line',
           data: years.map(y => {
             const pt = decarbData.find(d => d.year === y);
@@ -395,7 +395,7 @@
               const dEntry = decarbData.find(d => d.year === year);
               if (dEntry) {
                 const reduction = Math.round((1 - dEntry.totalEmissionMt / entry.totalEmissionMt) * 100);
-                html += `<br/><span style="color:#689F38;font-size:0.85em;font-weight:600">MIT Total: ${dEntry.totalEmissionMt.toLocaleString()} Mt (${reduction > 0 ? '-' : '+'}${Math.abs(reduction)}%)</span>`;
+                html += `<br/><span style="color:#689F38;font-size:0.85em;font-weight:600">Kigali+ Total: ${dEntry.totalEmissionMt.toLocaleString()} Mt (${reduction > 0 ? '-' : '+'}${Math.abs(reduction)}%)</span>`;
               }
             }
           }
