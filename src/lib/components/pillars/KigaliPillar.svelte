@@ -227,12 +227,12 @@
       </div>
     </div>
 
-    <!-- Direct Emissions Trend (Subcool BAU vs KIP vs KIP+ vs MIT) -->
+    <!-- Direct Emissions Trend (Subcool BAU vs KIP vs KIP+) -->
     <div class="card-panel chart-card">
       <div class="chart-card-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
         <div>
           <h3><i class="fa-solid fa-chart-line" style="color: #4A7F7F; margin-right: 0.5rem;"></i>Direct Refrigerant Emissions by Scenario</h3>
-          <p class="chart-subtitle">Global direct (refrigerant) emissions: BAU vs Kigali vs Kigali+ vs Mitigation</p>
+          <p class="chart-subtitle">Global direct (refrigerant) emissions: BAU vs Kigali Implementation vs Kigali+</p>
         </div>
         <a href="/methodology#direct-emissions" style="font-size: 0.68rem; color: #3D6B6B; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; white-space: nowrap;">
           <i class="fa-solid fa-book-open" style="font-size: 0.6rem;"></i> Methodology
@@ -463,9 +463,13 @@
   }
 
   .kigali-counters :global(.counter-tooltip) {
-    background: #0f172a;
+    background: #0f172a !important;
+    color: #ffffff !important;
     z-index: 99999;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.2);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,0,0,0.3);
+    opacity: 1 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
   }
 
   /* ===========================

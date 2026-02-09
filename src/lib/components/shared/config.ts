@@ -144,12 +144,11 @@ export const CLASP_APPLIANCE_SHORT: Record<string, string> = {
 };
 
 // HEAT modelling scenarios and subsectors (in collaboration with GIZ)
-export const HEAT_SCENARIOS = ['BAU', 'KIP', 'KIP_PLUS', 'MIT'];
+export const HEAT_SCENARIOS = ['BAU', 'KIP', 'KIP_PLUS'];
 export const HEAT_SCENARIO_NAMES: Record<string, string> = {
   BAU: 'Business as Usual',
   KIP: 'Kigali Implementation',
-  KIP_PLUS: 'Kigali+',
-  MIT: 'Maximum Intervention'
+  KIP_PLUS: 'Kigali+'
 };
 export const HEAT_SUBSECTORS = ['Split residential air conditioners', 'Domestic refrigeration'];
 export const HEAT_SUBSECTOR_SHORT: Record<string, string> = {

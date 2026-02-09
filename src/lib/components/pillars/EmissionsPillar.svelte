@@ -467,9 +467,13 @@
   }
 
   .emissions-counters :global(.counter-tooltip) {
-    background: #0f172a;
+    background: #0f172a !important;
+    color: #ffffff !important;
     z-index: 99999;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.2);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,0,0,0.3);
+    opacity: 1 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
   }
 
   /* ===========================

@@ -173,6 +173,7 @@
   .counter-card:hover {
     background: rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
+    z-index: 100;
   }
 
   .counter-display {
@@ -198,20 +199,24 @@
     bottom: calc(100% + 10px);
     left: 50%;
     transform: translateX(-50%);
-    background: #0f172a;
-    color: #f1f5f9;
-    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: #0f172a !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(148, 163, 184, 0.4);
     border-radius: 10px;
     padding: 0.85rem 1.1rem;
-    font-size: 0.82rem;
+    font-size: 0.85rem;
+    font-weight: 500;
     line-height: 1.6;
     width: 280px;
     max-width: 90vw;
     z-index: 99999;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 0, 0, 0.3);
     pointer-events: auto;
     animation: tooltip-fade-in 0.15s ease-out;
     isolation: isolate;
+    opacity: 1 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
   }
 
   .counter-tooltip::before {
@@ -231,21 +236,19 @@
 
   .counter-tooltip p {
     margin: 0;
+    color: #ffffff !important;
   }
 
   .tooltip-source {
     margin-top: 0.4rem !important;
-    font-size: 0.65rem;
-    color: #64748b;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.85) !important;
   }
 
   .tooltip-source a {
-    color: #3D6B6B;
+    color: #8BC34A;
     text-decoration: none;
-  }
-
-  .tooltip-source a:hover {
-    text-decoration: underline;
+    font-weight: 600;
   }
 
   @media (max-width: 768px) {
