@@ -1325,19 +1325,19 @@ select {
 }
 
 .progress-segment.access-low {
-  background: #22c55e;
+  background: #FFF59D;
 }
 
 .progress-segment.access-medium {
-  background: #f97316;
+  background: #FFB74D;
 }
 
 .progress-segment.access-high {
-  background: #dc2626;
+  background: #E53935;
 }
 
 .progress-segment.access-critical {
-  background: #991b1b;
+  background: #B71C1C;
 }
 
 .progress-segment.ndc-mentioned {

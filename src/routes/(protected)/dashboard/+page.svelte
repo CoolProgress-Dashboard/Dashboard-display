@@ -4572,8 +4572,8 @@
 
         // 7-tier threshold-based color scale
         const ACCESS_THRESHOLDS = [1e6, 5e6, 20e6, 50e6, 200e6, 500e6];
-        // CCC Palette - consistent 4-tier scale: green -> coral -> orange-red -> dark red
-        const ACCESS_COLORS = ['#8BC34A', '#8BC34A', '#E89B8C', '#E89B8C', '#E85A4F', '#D94539', '#D94539'];
+        // Yellow to Red gradient - population at risk scale
+        const ACCESS_COLORS = ['#FFFDE7', '#FFF59D', '#FFE082', '#FFB74D', '#FF7043', '#E53935', '#B71C1C'];
         const ACCESS_LABELS = ['<1M', '1-5M', '5-20M', '20-50M', '50-200M', '200-500M', '>500M'];
 
         function getAccessTotalsFiltered(): Record<string, number> {
