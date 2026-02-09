@@ -1581,11 +1581,23 @@
                 void el.offsetWidth; // force reflow
             }
             if (needsInit) {
-                const section = el.closest('.view-section');
+                const section = el.closest('.view-section') as HTMLElement | null;
                 const sectionActive = section?.classList.contains('active');
-                if (sectionActive && el.clientWidth > 50) {
-                    // View is visible and element has CSS-computed width — let ECharts auto-detect
-                    charts[id] = echarts.init(el);
+                // Compute max allowed width from view-section to prevent overflow
+                let sectionMaxW = 0;
+                if (section) {
+                    const sStyle = getComputedStyle(section);
+                    sectionMaxW = section.clientWidth - (parseFloat(sStyle.paddingLeft) || 0) - (parseFloat(sStyle.paddingRight) || 0);
+                }
+                const elWidth = el.clientWidth;
+                if (sectionActive && elWidth > 50) {
+                    // If element width exceeds section width, use explicit capped dimensions
+                    if (sectionMaxW > 50 && elWidth > sectionMaxW - 40) {
+                        charts[id] = echarts.init(el, null, { width: Math.floor(sectionMaxW - 40), height: el.clientHeight || 280 });
+                    } else {
+                        // View is visible and element fits — let ECharts auto-detect
+                        charts[id] = echarts.init(el);
+                    }
                 } else {
                     // View is hidden or element has no layout — use explicit computed dimensions
                     const rect = el.getBoundingClientRect();
@@ -1607,6 +1619,13 @@
             // Resize with parent-based pixel dimensions after browser paints
             requestAnimationFrame(() => {
                 if (!charts[id] || !charts[id].resize) return;
+                // Cap width using view-section as the authoritative container
+                const section = el.closest('.view-section') as HTMLElement | null;
+                let maxW = Infinity;
+                if (section) {
+                    const sStyle = getComputedStyle(section);
+                    maxW = section.clientWidth - (parseFloat(sStyle.paddingLeft) || 0) - (parseFloat(sStyle.paddingRight) || 0);
+                }
                 // Read from parent to avoid ECharts inline style interference
                 let rw = 0;
                 const parent = el.parentElement;
@@ -1617,6 +1636,8 @@
                 }
                 if (rw < 50) rw = el.getBoundingClientRect().width;
                 if (rw < 50) { rw = findParentWidth(el); if (rw > 50) rw -= 40; }
+                // Clamp to view-section width minus nesting padding (~80px for card borders/padding)
+                if (rw > maxW - 40) rw = maxW - 40;
                 const rh = el.clientHeight || parseInt(el.style.minHeight) || 280;
                 if (rw > 50) {
                     charts[id].resize({ width: Math.floor(rw), height: Math.floor(rh) });
