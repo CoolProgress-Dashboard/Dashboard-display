@@ -93,9 +93,31 @@
   border-right: 1px solid var(--border-light);
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.03);
+  position: sticky;
+  top: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.sidebar-left::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar-left::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-left::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.sidebar-left::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .sidebar-logo {
@@ -1303,19 +1325,19 @@ select {
 }
 
 .progress-segment.access-low {
-  background: #22c55e;
+  background: #FFF59D;
 }
 
 .progress-segment.access-medium {
-  background: #f97316;
+  background: #FFB74D;
 }
 
 .progress-segment.access-high {
-  background: #dc2626;
+  background: #E53935;
 }
 
 .progress-segment.access-critical {
-  background: #991b1b;
+  background: #B71C1C;
 }
 
 .progress-segment.ndc-mentioned {
@@ -3129,8 +3151,9 @@ select {
 /* Tooltip */
 .tooltip {
   position: absolute;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: #ffffff;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
   padding: 10px 15px;
   border-radius: 8px;
   pointer-events: none;
@@ -3138,6 +3161,7 @@ select {
   transition: opacity 0.2s;
   z-index: 1000;
   max-width: 250px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 /* View Sections */

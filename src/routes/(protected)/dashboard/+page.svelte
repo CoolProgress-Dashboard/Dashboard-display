@@ -1477,218 +1477,53 @@
             }, 100);
         }
 
-        // Show global aggregated emissions when no country is selected
+        // Show placeholder when no country is selected - prompts user to select a country
         function showGlobalEmissionsDetail() {
             const emissionsDetail = document.querySelector('#emissions-country-detail .country-detail') as HTMLElement;
             if (!emissionsDetail) return;
 
-            const dataSourceLabel = emissionsDataSource === 'clasp' ? 'CLASP' : 'HEAT Modelling';
+            // Dispose any existing charts
+            if (emissionsCountryPieChart) {
+                emissionsCountryPieChart.dispose();
+                emissionsCountryPieChart = null;
+            }
+            if (emissionsCountryLineChart) {
+                emissionsCountryLineChart.dispose();
+                emissionsCountryLineChart = null;
+            }
+
             const scenarioLabel = emissionsDataSource === 'clasp'
                 ? CLASP_SCENARIO_NAMES[emissionsScenario] || emissionsScenario
                 : HEAT_SCENARIO_NAMES[emissionsScenario] || emissionsScenario;
 
-            // Get global totals
+            // Get global total for display
             const totals = getEmissionsTotals();
             let globalTotal = 0;
-            let globalBreakdown: { name: string; value: number; color: string }[] = [];
-
-            const applianceColors: Record<string, string> = {
-                'Air Conditioning': '#3D6B6B',
-                'Ceiling and Portable Fans': '#8BC34A',
-                'Refrigerator-Freezers': '#E89B8C',
-                'AC': '#3D6B6B',
-                'Fans': '#8BC34A',
-                'Refrigerators': '#E89B8C'
-            };
-
             if (emissionsDataSource === 'clasp') {
-                const t = totals as { total: number; byAppliance: Record<string, number>; countriesCount: number };
-                globalTotal = t.total;
-                Object.entries(t.byAppliance).forEach(([app, val]) => {
-                    if (val > 0) {
-                        const shortName = CLASP_APPLIANCE_SHORT[app] || app;
-                        globalBreakdown.push({
-                            name: shortName,
-                            value: val,
-                            color: applianceColors[shortName] || applianceColors[app] || '#64748b'
-                        });
-                    }
-                });
+                globalTotal = (totals as { total: number }).total;
             } else {
-                const t = totals as { total: number; direct: number; indirect: number; countriesCount: number };
+                const t = totals as { total: number; direct: number; indirect: number };
                 globalTotal = t.total;
-                if (t.direct > 0) globalBreakdown.push({ name: 'Direct', value: t.direct, color: '#E85A4F' });
-                if (t.indirect > 0) globalBreakdown.push({ name: 'Indirect', value: t.indirect, color: '#3D6B6B' });
-            }
-
-            const topSource = globalBreakdown.length > 0
-                ? globalBreakdown.reduce((a, b) => a.value > b.value ? a : b)
-                : null;
-
-            const lineChartTitle = emissionsDataSource === 'clasp'
-                ? 'Global Emissions by Appliance'
-                : 'Global Direct vs Indirect Emissions';
-
-            // Compute BAU comparison for non-BAU HEAT scenarios
-            let bauComparisonHtml = '';
-            if (emissionsDataSource === 'subcool' && emissionsScenario !== 'BAU') {
-                const bauRecords = data.subcool.filter((r: any) =>
-                    r.scenario_name === 'BAU' && r.year === emissionsYear
-                );
-                let bauTotal = 0, bauDirect = 0;
-                bauRecords.forEach((r: any) => {
-                    bauDirect += r.direct_emission_mt || 0;
-                    bauTotal += (r.direct_emission_mt || 0) + (r.indirect_emission_mt || 0);
-                });
-                const currentDirect = globalBreakdown.find(b => b.name === 'Direct')?.value || 0;
-                const reduction = bauTotal > 0 ? ((bauTotal - globalTotal) / bauTotal * 100) : 0;
-                const directReduction = bauDirect > 0 ? ((bauDirect - currentDirect) / bauDirect * 100) : 0;
-                const savings = bauTotal - globalTotal;
-
-                const accentColor = emissionsScenario === 'KIP_PLUS' ? '#16a34a' : emissionsScenario === 'KIP' ? '#3D6B6B' : '#f59e0b';
-                bauComparisonHtml = `
-                    <div style="background: linear-gradient(135deg, ${accentColor}12 0%, ${accentColor}08 100%); border: 1px solid ${accentColor}30; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <i class="fa-solid fa-arrow-trend-down" style="color: ${accentColor}; font-size: 1.1rem;"></i>
-                            <span style="font-size: 0.8rem; font-weight: 700; color: ${accentColor};">vs BAU</span>
-                        </div>
-                        <div style="display: flex; gap: 1.25rem; flex-wrap: wrap;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 1.3rem; font-weight: 800; color: ${accentColor};">${reduction.toFixed(1)}%</div>
-                                <div style="font-size: 0.65rem; color: #64748b;">Total Reduction</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-size: 1.3rem; font-weight: 800; color: ${accentColor};">${savings.toFixed(0)}</div>
-                                <div style="font-size: 0.65rem; color: #64748b;">Mt CO2 Saved</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-size: 1.3rem; font-weight: 800; color: ${accentColor};">${directReduction.toFixed(0)}%</div>
-                                <div style="font-size: 0.65rem; color: #64748b;">Direct Emissions Cut</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-size: 1rem; font-weight: 600; color: #94a3b8;">${bauTotal.toFixed(0)}</div>
-                                <div style="font-size: 0.65rem; color: #94a3b8;">BAU (Mt CO2)</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
             }
 
             emissionsDetail.innerHTML = `
-                <div class="year-indicator" style="background: linear-gradient(135deg, #3D6B6B 0%, #4A7F7F 100%); color: white; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fa-solid fa-calendar-day" style="font-size: 1.1rem;"></i>
-                        <span style="font-size: 1.25rem; font-weight: 700;">${emissionsYear}</span>
-                        <span style="font-size: 0.75rem; opacity: 0.9;">• ${scenarioLabel}</span>
-                    </div>
-                    <span style="font-size: 0.7rem; opacity: 0.85;"><i class="fa-solid fa-sliders" style="margin-right: 0.3rem;"></i>Use the year slider above to explore different projections</span>
-                </div>
-                ${bauComparisonHtml}
-                <div class="country-header" style="margin-bottom: 1rem;">
-                    <h4 style="color: #3D6B6B; font-size: 1.1rem; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fa-solid fa-globe" style="color: #8BC34A;"></i>
-                        Global Overview
-                    </h4>
-                    <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
-                        <span style="font-size: 0.8rem; color: #E85A4F; font-weight: 600;">
-                            <i class="fa-solid fa-cloud" style="margin-right: 0.25rem;"></i>
-                            ${globalTotal.toFixed(1)} Mt CO2
-                        </span>
-                    </div>
-                </div>
-                <div class="country-charts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1rem;">
-                    <div class="chart-box" style="background: #fafafa; border-radius: 8px; padding: 0.75rem;">
-                        <div style="font-size: 0.75rem; font-weight: 600; color: #3D6B6B; margin-bottom: 0.5rem;">
-                            <i class="fa-solid fa-chart-pie" style="margin-right: 0.3rem; color: #8BC34A;"></i>
-                            ${emissionsYear} Breakdown
-                        </div>
-                        <div class="emissions-pie-chart" style="width: 100%; height: 200px;"></div>
-                    </div>
-                    <div class="chart-box" style="background: #fafafa; border-radius: 8px; padding: 0.75rem;">
-                        <div style="font-size: 0.75rem; font-weight: 600; color: #3D6B6B; margin-bottom: 0.5rem;">
-                            <i class="fa-solid fa-ranking-star" style="margin-right: 0.3rem; color: #8BC34A;"></i>
-                            Top Emitting Countries
-                        </div>
-                        <div class="emissions-bar-chart" style="width: 100%; height: 200px;"></div>
-                    </div>
-                </div>
-                <div class="country-insight" style="background: linear-gradient(135deg, #EBF4F4 0%, #F5FAFA 100%); border-radius: 8px; padding: 1rem; border-left: 3px solid #8BC34A;">
-                    <div style="font-size: 0.8rem; font-weight: 600; color: #2D5252; margin-bottom: 0.5rem;">
-                        <i class="fa-solid fa-lightbulb" style="color: #8BC34A; margin-right: 0.35rem;"></i>
-                        Global Analysis
-                    </div>
-                    <p style="font-size: 0.85rem; color: #3D6B6B; line-height: 1.6; margin: 0;">
-                        Global cooling emissions total ${globalTotal.toFixed(1)} Mt CO2 in ${emissionsYear} under the ${scenarioLabel} scenario.
-                        ${topSource ? `${topSource.name} accounts for the largest share at ${((topSource.value / globalTotal) * 100).toFixed(0)}% (${topSource.value.toFixed(1)} Mt CO2).` : ''}
-                        <span style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #64748b;">
-                            <em>Data source: ${dataSourceLabel} • Scenario: ${scenarioLabel} • Click a country on the map for detailed breakdown</em>
-                        </span>
+                <div class="country-placeholder" style="text-align: center; padding: 2.5rem 1.5rem;">
+                    <i class="fa-solid fa-map-location-dot" style="font-size: 3rem; color: #8BC34A; margin-bottom: 1rem; display: block;"></i>
+                    <h4 style="color: #3D6B6B; margin-bottom: 0.75rem; font-size: 1.1rem;">Select a Country</h4>
+                    <p style="font-size: 0.9rem; color: #64748b; line-height: 1.5; max-width: 280px; margin: 0 auto 1.25rem;">
+                        Click on any country in the map above to view detailed emissions breakdown and trends.
                     </p>
+                    <div style="background: linear-gradient(135deg, #EBF4F4 0%, #F5FAFA 100%); border-radius: 10px; padding: 1rem; border-left: 3px solid #8BC34A;">
+                        <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">
+                            <i class="fa-solid fa-globe" style="margin-right: 0.35rem;"></i>
+                            Global Total (${emissionsYear} • ${scenarioLabel})
+                        </div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #3D6B6B;">
+                            ${globalTotal.toFixed(1)} Mt CO<sub>2</sub>
+                        </div>
+                    </div>
                 </div>
             `;
-
-            // Render charts after DOM update
-            setTimeout(() => {
-                const pieContainer = emissionsDetail.querySelector('.emissions-pie-chart') as HTMLElement;
-                const barContainer = emissionsDetail.querySelector('.emissions-bar-chart') as HTMLElement;
-
-                // Dispose existing charts
-                if (emissionsCountryPieChart) {
-                    emissionsCountryPieChart.dispose();
-                    emissionsCountryPieChart = null;
-                }
-                if (emissionsCountryLineChart) {
-                    emissionsCountryLineChart.dispose();
-                    emissionsCountryLineChart = null;
-                }
-
-                // Render pie chart
-                if (pieContainer && globalBreakdown.length > 0) {
-                    emissionsCountryPieChart = echarts.init(pieContainer);
-                    emissionsCountryPieChart.setOption({
-                        tooltip: { trigger: 'item', formatter: (params: any) => `${params.name}: ${params.value.toFixed(1)} Mt (${params.percent}%)` },
-                        series: [{
-                            type: 'pie',
-                            radius: ['35%', '65%'],
-                            center: ['50%', '50%'],
-                            itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 },
-                            label: { show: true, fontSize: 11, fontWeight: 500, color: '#475569', formatter: (p: any) => `${p.name}\n${p.percent}%` },
-                            data: globalBreakdown.map(c => ({ name: c.name, value: c.value, itemStyle: { color: c.color } }))
-                        }]
-                    });
-                }
-
-                // Render top countries bar chart
-                if (barContainer) {
-                    let countryData: { name: string; value: number }[] = [];
-                    if (emissionsDataSource === 'clasp') {
-                        const byCountry = getClaspEmissionsByCountry();
-                        countryData = Object.entries(byCountry)
-                            .map(([code, data]) => ({ name: data.name || code, value: data.total }))
-                            .sort((a, b) => b.value - a.value)
-                            .slice(0, 8);
-                    } else {
-                        const byCountry = getSubcoolEmissionsByCountry();
-                        countryData = Object.entries(byCountry)
-                            .map(([code, data]) => ({ name: data.name || code, value: data.total }))
-                            .sort((a, b) => b.value - a.value)
-                            .slice(0, 8);
-                    }
-
-                    emissionsCountryLineChart = echarts.init(barContainer);
-                    emissionsCountryLineChart.setOption({
-                        tooltip: { trigger: 'axis', formatter: '{b}: {c} Mt' },
-                        grid: { left: '3%', right: '8%', bottom: '3%', top: '3%', containLabel: true },
-                        xAxis: { type: 'value', axisLabel: { fontSize: 10 } },
-                        yAxis: { type: 'category', data: countryData.map(d => d.name).reverse(), axisLabel: { fontSize: 10 } },
-                        series: [{
-                            type: 'bar',
-                            data: countryData.map(d => d.value).reverse(),
-                            itemStyle: { color: '#3D6B6B', borderRadius: [0, 4, 4, 0] }
-                        }]
-                    });
-                }
-            }, 100);
         }
 
         // =====================================================
@@ -1840,6 +1675,12 @@
                     charts[chartId].resize({ width: Math.floor(w), height: Math.floor(h) });
                 }
             });
+
+            // Also resize Global Overview charts for emissions view
+            if (view === 'emissions') {
+                if (emissionsCountryPieChart) emissionsCountryPieChart.resize();
+                if (emissionsCountryLineChart) emissionsCountryLineChart.resize();
+            }
         };
 
         const baseGrid = {
@@ -2963,7 +2804,7 @@
                         return `${item.name}: ${Math.abs(item.value).toFixed(0)} Mt CO₂`;
                     }
                 },
-                grid: { left: '3%', right: '5%', bottom: '12%', top: '8%', containLabel: true },
+                grid: { left: '3%', right: '5%', bottom: '15%', top: '18%', containLabel: true },
                 xAxis: {
                     type: 'category',
                     data: ['BAU', 'MEPS &\nLabels', 'Deep\nEfficiency', 'Best\nAvailable', 'Grid\nDecarb', 'Net\nEmissions'],
@@ -2972,6 +2813,9 @@
                 yAxis: {
                     type: 'value',
                     name: 'Mt CO₂',
+                    nameLocation: 'middle',
+                    nameGap: 40,
+                    nameTextStyle: { fontSize: 11, fontWeight: 'bold', color: '#475569' },
                     axisLabel: { fontSize: 10 }
                 },
                 series: [
@@ -3000,11 +2844,12 @@
                             position: 'top',
                             formatter: (params: any) => {
                                 const v = Math.abs(params.value);
-                                if (v < 1) return '';
-                                return v > 10 ? `${v.toFixed(0)}` : `${v.toFixed(1)}`;
+                                if (v < 0.1) return '';
+                                return v >= 10 ? `${v.toFixed(0)}` : `${v.toFixed(1)}`;
                             },
                             fontSize: 10,
-                            fontWeight: 'bold'
+                            fontWeight: 'bold',
+                            color: '#333'
                         }
                     }
                 ]
@@ -3487,7 +3332,14 @@
                 return;
             }
 
-            let html = `<h4>${country.country_name}</h4>`;
+            let html = `
+                <div style="background: linear-gradient(135deg, #3D6B6B 0%, #4A7F7F 100%); color: white; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 0.5rem;">
+                    <h4 style="margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-location-dot" style="color: #8BC34A;"></i>
+                        ${country.country_name}
+                    </h4>
+                </div>
+            `;
 
             container.innerHTML = html;
 
@@ -3504,9 +3356,17 @@
 
             // Update chart titles for country view
             const setTitle = (id: string, text: string) => { const el = document.getElementById(id); if (el) el.textContent = text; };
-            setTitle('meps-chart2-title', `${countryName}: Policy Timeline`);
+            // Update chart 2 title with highlighted country name
+            const chart2Title = document.getElementById('meps-chart2-title');
+            if (chart2Title) {
+                chart2Title.innerHTML = `<span style="background: linear-gradient(135deg, #3D6B6B, #4A7F7F); color: white; padding: 0.25rem 0.6rem; border-radius: 4px; margin-right: 0.4rem;">${countryName}</span> Policy Timeline`;
+            }
             setTitle('meps-chart2-subtitle', 'When MEPS and Labels were introduced');
-            setTitle('meps-chart3-title', `${countryName}: Policy Details`);
+            // Update chart 3 title with highlighted country name
+            const chart3Title = document.getElementById('meps-chart3-title');
+            if (chart3Title) {
+                chart3Title.innerHTML = `<span style="background: linear-gradient(135deg, #3D6B6B, #4A7F7F); color: white; padding: 0.25rem 0.6rem; border-radius: 4px; margin-right: 0.4rem;">${countryName}</span> Policy Details`;
+            }
             setTitle('meps-chart3-subtitle', 'Complete breakdown by appliance, instrument and status');
 
             // Hide chart 1 container (Region chart) in country view — timeline takes full width
@@ -4706,8 +4566,8 @@
 
         // 7-tier threshold-based color scale
         const ACCESS_THRESHOLDS = [1e6, 5e6, 20e6, 50e6, 200e6, 500e6];
-        // CCC Palette - consistent 4-tier scale: green -> coral -> orange-red -> dark red
-        const ACCESS_COLORS = ['#8BC34A', '#8BC34A', '#E89B8C', '#E89B8C', '#E85A4F', '#D94539', '#D94539'];
+        // Yellow to Red gradient - population at risk scale
+        const ACCESS_COLORS = ['#FFFDE7', '#FFF59D', '#FFE082', '#FFB74D', '#FF7043', '#E53935', '#B71C1C'];
         const ACCESS_LABELS = ['<1M', '1-5M', '5-20M', '20-50M', '50-200M', '200-500M', '>500M'];
 
         function getAccessTotalsFiltered(): Record<string, number> {
@@ -6850,7 +6710,14 @@
                 if (viewSection) void viewSection.offsetHeight;
                 forceReinitCharts = true;
                 if (view === 'meps') updateMepsCharts();
-                if (view === 'emissions') { updateEmissionsCharts(); updateEmissionsSavingsCharts(); }
+                if (view === 'emissions') {
+                    updateEmissionsCharts();
+                    updateEmissionsSavingsCharts();
+                    // Reinit Global Overview charts if no country selected
+                    if (!selectedCountry) {
+                        showGlobalEmissionsDetail();
+                    }
+                }
                 if (view === 'kigali') updateKigaliCharts();
                 if (view === 'access') renderAccessTimeline();
                 if (view === 'policy') {
