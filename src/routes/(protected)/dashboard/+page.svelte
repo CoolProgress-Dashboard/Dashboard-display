@@ -6092,7 +6092,7 @@
                         </div>
                     </div>
                 `;
-                // Render Kigali charts: try immediately, then retry with delays
+                // Render Kigali charts with escalating retries
                 const tryRenderKigali = () => {
                     const section = container.closest('.view-section');
                     if (!section?.classList.contains('active')) return false;
@@ -6100,15 +6100,13 @@
                     forceResizeViewCharts('policy');
                     return true;
                 };
-                requestAnimationFrame(() => {
-                    if (!tryRenderKigali()) {
-                        setTimeout(tryRenderKigali, 300);
-                        setTimeout(tryRenderKigali, 800);
-                    } else {
-                        setTimeout(() => forceResizeViewCharts('policy'), 200);
-                        setTimeout(() => forceResizeViewCharts('policy'), 500);
-                    }
-                });
+                // Try synchronously first, then escalating timeouts
+                if (!tryRenderKigali()) {
+                    setTimeout(() => { if (!tryRenderKigali()) setTimeout(tryRenderKigali, 200); }, 50);
+                    setTimeout(tryRenderKigali, 500);
+                } else {
+                    setTimeout(() => forceResizeViewCharts('policy'), 200);
+                }
             } else if (mapType === 'gcp') {
                 // Create GCP progress chart structure
                 container.innerHTML = `
@@ -6153,7 +6151,7 @@
                         </div>
                     </div>
                 `;
-                // Render GCP charts: try immediately, then retry with delays
+                // Render GCP charts with escalating retries
                 const tryRenderGCP = () => {
                     const section = container.closest('.view-section');
                     if (!section?.classList.contains('active')) return false;
@@ -6161,18 +6159,13 @@
                     forceResizeViewCharts('policy');
                     return true;
                 };
-                // Immediate attempt (works if section already visible)
-                requestAnimationFrame(() => {
-                    if (!tryRenderGCP()) {
-                        // Deferred attempts for hidden-at-init or slow layout
-                        setTimeout(tryRenderGCP, 300);
-                        setTimeout(tryRenderGCP, 800);
-                    } else {
-                        // Resize passes
-                        setTimeout(() => forceResizeViewCharts('policy'), 200);
-                        setTimeout(() => forceResizeViewCharts('policy'), 500);
-                    }
-                });
+                // Try synchronously first, then escalating timeouts
+                if (!tryRenderGCP()) {
+                    setTimeout(() => { if (!tryRenderGCP()) setTimeout(tryRenderGCP, 200); }, 50);
+                    setTimeout(tryRenderGCP, 500);
+                } else {
+                    setTimeout(() => forceResizeViewCharts('policy'), 200);
+                }
 
             } else if (mapType === 'ndc') {
                 // Create NDC chart structure
@@ -6218,7 +6211,7 @@
                         </div>
                     </div>
                 `;
-                // Render NDC charts: try immediately, then retry with delays
+                // Render NDC charts with escalating retries
                 const tryRenderNDC = () => {
                     const section = container.closest('.view-section');
                     if (!section?.classList.contains('active')) return false;
@@ -6226,15 +6219,12 @@
                     forceResizeViewCharts('policy');
                     return true;
                 };
-                requestAnimationFrame(() => {
-                    if (!tryRenderNDC()) {
-                        setTimeout(tryRenderNDC, 300);
-                        setTimeout(tryRenderNDC, 800);
-                    } else {
-                        setTimeout(() => forceResizeViewCharts('policy'), 200);
-                        setTimeout(() => forceResizeViewCharts('policy'), 500);
-                    }
-                });
+                if (!tryRenderNDC()) {
+                    setTimeout(() => { if (!tryRenderNDC()) setTimeout(tryRenderNDC, 200); }, 50);
+                    setTimeout(tryRenderNDC, 500);
+                } else {
+                    setTimeout(() => forceResizeViewCharts('policy'), 200);
+                }
 
             } else if (mapType === 'NCAP') {
                 // Create NCAP charts
@@ -6269,7 +6259,7 @@
                         </div>
                     </div>
                 `;
-                // Render NCAP charts: try immediately, then retry with delays
+                // Render NCAP charts with escalating retries
                 const tryRenderNCAP = () => {
                     const section = container.closest('.view-section');
                     if (!section?.classList.contains('active')) return false;
@@ -6277,15 +6267,12 @@
                     forceResizeViewCharts('policy');
                     return true;
                 };
-                requestAnimationFrame(() => {
-                    if (!tryRenderNCAP()) {
-                        setTimeout(tryRenderNCAP, 300);
-                        setTimeout(tryRenderNCAP, 800);
-                    } else {
-                        setTimeout(() => forceResizeViewCharts('policy'), 200);
-                        setTimeout(() => forceResizeViewCharts('policy'), 500);
-                    }
-                });
+                if (!tryRenderNCAP()) {
+                    setTimeout(() => { if (!tryRenderNCAP()) setTimeout(tryRenderNCAP, 200); }, 50);
+                    setTimeout(tryRenderNCAP, 500);
+                } else {
+                    setTimeout(() => forceResizeViewCharts('policy'), 200);
+                }
             }
         }
 
@@ -6817,11 +6804,23 @@
             };
             // Wait for layout to settle, then reinit
             requestAnimationFrame(() => {
-                setTimeout(reinitViewCharts, 200);
+                setTimeout(reinitViewCharts, 100);
                 // Additional resize passes
-                setTimeout(() => forceResizeViewCharts(view), 500);
-                setTimeout(() => forceResizeViewCharts(view), 1000);
+                setTimeout(() => forceResizeViewCharts(view), 400);
+                setTimeout(() => forceResizeViewCharts(view), 800);
             });
+            // Fallback: ensure policy charts render even if the RAF chain timing is off
+            if (view === 'policy') {
+                setTimeout(() => {
+                    const activeTab = document.querySelector<HTMLButtonElement>('.policy-map-tab.active');
+                    const mapType = activeTab?.dataset.map ?? 'gcp';
+                    const hasCharts = document.querySelector('#policy-charts-container .chart-surface canvas');
+                    if (!hasCharts) {
+                        console.log('[Policy] Fallback render triggered');
+                        updatePolicyChartsForMapType(mapType);
+                    }
+                }, 600);
+            }
         }
 
         // Window bridges are exposed in init() after all functions are defined
