@@ -5582,9 +5582,9 @@
             tooltip.style.top = (event.pageY + 10) + 'px';
         }
 
-        // NDC categories to display (excluding Kigali Amendment per user request)
-        const ndcCategories = ['Energy Efficiency', 'Air Conditioners', 'Refrigerators & freezers',
-                               'Appliance MEPS', 'Appliance Labels', 'Doubling EE'];
+        // NDC categories to display in charts
+        const ndcCategories = ['Energy Efficiency', 'Kigali Amendment', 'Doubling EE',
+                               'Refrigerators & freezers', 'Air Conditioners', 'MEPS & Labels'];
 
         // NDC type options (from database)
         const ndcTypeOptions = ['NDC 3.0', 'Other'];
@@ -6483,20 +6483,23 @@
             });
 
             // 3. NDC Cooling Integration Evolution: 2.0 vs 3.0
-            const ndcCategories = [...new Set(data.ndcTracker.map(n => n.category).filter(Boolean))] as string[];
+            // Only show specific categories as requested
+            const ndcEvolutionCategories = ['Energy Efficiency', 'Kigali Amendment', 'Doubling EE',
+                                            'Refrigerators & freezers', 'Air Conditioners', 'Appliance MEPS', 'Appliance Labels'];
             const categoryAbbrev: Record<string, string> = {
                 'Energy Efficiency': 'Energy Eff.',
-                'Refrigerant Management': 'Refrigerants',
-                'Thermal Comfort': 'Thermal',
-                'Cold Chain': 'Cold Chain',
-                'Passive Cooling': 'Passive',
-                'District Cooling': 'District'
+                'Kigali Amendment': 'Kigali',
+                'Doubling EE': 'Doubling EE',
+                'Refrigerators & freezers': 'Refrigerators',
+                'Air Conditioners': 'ACs',
+                'Appliance MEPS': 'MEPS',
+                'Appliance Labels': 'Labels'
             };
 
-            const ndc20Mentions = ndcCategories.map(cat =>
+            const ndc20Mentions = ndcEvolutionCategories.map(cat =>
                 new Set(data.ndcTracker.filter(n => n.ndc_type === 'NDC 2.0' && n.category === cat && n.mention_value === 1).map(n => n.country_code)).size
             );
-            const ndc30Mentions = ndcCategories.map(cat =>
+            const ndc30Mentions = ndcEvolutionCategories.map(cat =>
                 new Set(data.ndcTracker.filter(n => n.ndc_type === 'NDC 3.0' && n.category === cat && n.mention_value === 1).map(n => n.country_code)).size
             );
 
@@ -6509,7 +6512,7 @@
                 grid: { left: '3%', right: '4%', bottom: '15%', top: '10%', containLabel: true },
                 xAxis: {
                     type: 'category',
-                    data: ndcCategories.map(c => categoryAbbrev[c] || c),
+                    data: ndcEvolutionCategories.map(c => categoryAbbrev[c] || c),
                     axisLabel: { color: '#475569', fontSize: 9, rotate: 25, interval: 0 }
                 },
                 yAxis: {
