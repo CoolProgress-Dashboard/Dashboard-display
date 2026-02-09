@@ -4521,11 +4521,38 @@
             const country = data.countries.find(c => c.country_code === code);
 
             if (!country) {
-                container.innerHTML = `<h4>Unknown Country</h4><p class="side-muted">No data available for ${code}</p>`;
+                container.innerHTML = `<p class="side-muted">No data available for ${code}</p>`;
                 return;
             }
 
-            container.innerHTML = `<h4>${country.country_name}</h4>`;
+            // Get policy data for the country
+            const pledgeRec = data.pledge.find(p => p.country_code === code);
+            const kigaliRec = data.kigali.find(k => k.country_code === code);
+            const ndcRec = getNdcRecord(data, code, getNdcFilters());
+
+            const hasGCP = pledgeRec && pledgeRec.signatory === 1;
+            const hasKigali = kigaliRec && kigaliRec.kigali_party === 1;
+            const ndcStatus = ndcRec?.mention_status ?? 'No data';
+
+            container.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+                    <div style="text-align: center; padding: 0.75rem; background: ${hasKigali ? '#f0fdf4' : '#fef2f2'}; border-radius: 8px; border: 1px solid ${hasKigali ? '#86efac' : '#fecaca'};">
+                        <i class="fa-solid fa-flask" style="font-size: 1.25rem; color: ${hasKigali ? '#22c55e' : '#ef4444'}; margin-bottom: 0.25rem; display: block;"></i>
+                        <div style="font-size: 0.7rem; font-weight: 700; color: ${hasKigali ? '#166534' : '#b91c1c'};">Kigali</div>
+                        <div style="font-size: 0.65rem; color: #64748b;">${hasKigali ? 'Party' : 'Non-party'}</div>
+                    </div>
+                    <div style="text-align: center; padding: 0.75rem; background: ${hasGCP ? '#f0fdf4' : '#fef2f2'}; border-radius: 8px; border: 1px solid ${hasGCP ? '#86efac' : '#fecaca'};">
+                        <i class="fa-solid fa-handshake" style="font-size: 1.25rem; color: ${hasGCP ? '#22c55e' : '#ef4444'}; margin-bottom: 0.25rem; display: block;"></i>
+                        <div style="font-size: 0.7rem; font-weight: 700; color: ${hasGCP ? '#166534' : '#b91c1c'};">GCP</div>
+                        <div style="font-size: 0.65rem; color: #64748b;">${hasGCP ? 'Signatory' : 'Non-signatory'}</div>
+                    </div>
+                    <div style="text-align: center; padding: 0.75rem; background: ${ndcStatus === 'Mentioned' ? '#f0fdf4' : ndcStatus === 'Not mentioned' ? '#fef2f2' : '#f8fafc'}; border-radius: 8px; border: 1px solid ${ndcStatus === 'Mentioned' ? '#86efac' : ndcStatus === 'Not mentioned' ? '#fecaca' : '#e2e8f0'};">
+                        <i class="fa-solid fa-file-lines" style="font-size: 1.25rem; color: ${ndcStatus === 'Mentioned' ? '#22c55e' : ndcStatus === 'Not mentioned' ? '#ef4444' : '#94a3b8'}; margin-bottom: 0.25rem; display: block;"></i>
+                        <div style="font-size: 0.7rem; font-weight: 700; color: ${ndcStatus === 'Mentioned' ? '#166534' : ndcStatus === 'Not mentioned' ? '#b91c1c' : '#64748b'};">NDC</div>
+                        <div style="font-size: 0.65rem; color: #64748b;">${ndcStatus}</div>
+                    </div>
+                </div>
+            `;
         }
 
         function showGlobalKigaliDetail() {
