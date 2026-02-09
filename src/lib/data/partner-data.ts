@@ -27,28 +27,6 @@ export interface Partner {
 
 export const partners: Partner[] = [
   {
-    id: 'heat',
-    name: 'HEAT GmbH',
-    fullName: 'HEAT GmbH - Climate Intelligence & Green Cooling',
-    tagline: 'Providing the analytical backbone for global cooling transition tracking',
-    website: 'https://www.heat-gmbh.de',
-    coolingUrl: 'https://www.green-cooling-initiative.org/',
-    logoPath: '/images/heat-logo.png',
-    logoPlaceholder: 'heat',
-    description:
-      'HEAT GmbH develops climate intelligence tools and models for the global cooling transition. As the developer of CoolProgress, HEAT integrates data from all partners into a unified tracking platform.',
-    keyContribution:
-      'Built the Global Cooling Model (global_model_subcool) with BAU/KIP/MIT scenarios. Developed the three-layer DECARB methodology combining efficiency, refrigerant, and grid decarbonization pathways.',
-    keyReport: 'CoolProgress Methodology',
-    keyReportUrl: '/methodology',
-    category: 'data',
-    resources: [
-      { label: 'Green Cooling Initiative', url: 'https://www.green-cooling-initiative.org/', icon: 'fa-leaf', description: 'Global cooling sector data and policy tracker' },
-      { label: 'CoolProgress Methodology', url: '/methodology', icon: 'fa-book', description: 'Three-layer DECARB pathway documentation' },
-      { label: 'HEAT Website', url: 'https://www.heat-gmbh.de', icon: 'fa-globe', description: 'Climate intelligence consulting' },
-    ],
-  },
-  {
     id: 'clasp',
     name: 'CLASP',
     fullName: 'Collaborative Labeling and Appliance Standards Program',
@@ -209,6 +187,28 @@ export const partners: Partner[] = [
     ],
   },
   {
+    id: 'unep-ozone',
+    name: 'UNEP Ozone',
+    fullName: 'UNEP Ozone Secretariat',
+    tagline: 'Protecting the ozone layer and phasing down climate-warming HFCs',
+    website: 'https://ozone.unep.org',
+    coolingUrl: 'https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment-2016',
+    logoPath: '/images/unep.png',
+    logoPlaceholder: 'unep-ozone',
+    description:
+      'The UNEP Ozone Secretariat administers the Montreal Protocol and its Kigali Amendment, tracking ratification, compliance, and HFC phase-down progress for 198 parties.',
+    keyContribution:
+      'Maintains the definitive database on Kigali Amendment ratification, HFC baselines, and Article 7 consumption data for all parties.',
+    keyReport: 'Kigali Amendment Status',
+    keyReportUrl: 'https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment-2016',
+    category: 'policy',
+    resources: [
+      { label: 'Kigali Amendment', url: 'https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment-2016', icon: 'fa-file-contract', description: 'Official amendment text and ratification status' },
+      { label: 'OzonAction', url: 'https://www.unep.org/ozonaction/', icon: 'fa-leaf', description: 'Compliance assistance for developing countries' },
+      { label: 'Country Profiles', url: 'https://ozone.unep.org/countries', icon: 'fa-earth-americas', description: 'Per-country ODS and HFC consumption data' },
+    ],
+  },
+  {
     id: 'climate-policy-radar',
     name: 'Climate Policy Radar',
     fullName: 'Climate Policy Radar',
@@ -227,6 +227,27 @@ export const partners: Partner[] = [
     resources: [
       { label: 'Climate Law Search', url: 'https://app.climatepolicyradar.org/search', icon: 'fa-magnifying-glass', description: 'AI-powered search across 30,000+ climate laws' },
       { label: 'NCAP Finder', url: 'https://app.climatepolicyradar.org/search?q=national+cooling+action+plan', icon: 'fa-file-circle-check', description: 'Find National Cooling Action Plans by country' },
+    ],
+  },
+  {
+    id: 'heat',
+    name: 'HEAT GmbH',
+    fullName: 'HEAT GmbH - Climate Intelligence & Green Cooling',
+    tagline: 'Developer of the CoolProgress Dashboard',
+    website: 'https://www.heat-gmbh.de',
+    coolingUrl: 'https://www.green-cooling-initiative.org/',
+    logoPath: '/images/heat-logo.png',
+    logoPlaceholder: 'heat',
+    description:
+      'HEAT GmbH develops climate intelligence tools and models for the global cooling transition. As the developer of CoolProgress, HEAT integrates data from all partners into a unified tracking platform.',
+    keyContribution:
+      'Built and maintains the CoolProgress Dashboard, integrating data from all partners into a unified global cooling transition tracking platform.',
+    keyReport: 'CoolProgress Methodology',
+    keyReportUrl: '/methodology',
+    category: 'data',
+    resources: [
+      { label: 'CoolProgress Methodology', url: '/methodology', icon: 'fa-book', description: 'Three-layer DECARB pathway documentation' },
+      { label: 'Green Cooling Initiative', url: 'https://www.green-cooling-initiative.org/', icon: 'fa-leaf', description: 'Global cooling sector data and policy tracker' },
     ],
   },
 ];

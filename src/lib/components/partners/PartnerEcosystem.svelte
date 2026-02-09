@@ -12,10 +12,65 @@
     { value: 'research', label: 'Research & Analysis', icon: 'fa-magnifying-glass-chart' },
   ];
 
+  // Separate HEAT (dashboard author) from data partners
+  $: dataPartners = partners.filter(p => p.id !== 'heat');
+  $: heatPartner = partners.find(p => p.id === 'heat');
   $: filteredPartners =
     activeCategory === 'all'
-      ? partners
-      : partners.filter((p) => p.category === activeCategory);
+      ? dataPartners
+      : dataPartners.filter((p) => p.category === activeCategory);
+
+  // Recent partner ecosystem news (curated)
+  const partnerNews = [
+    {
+      date: '2025',
+      source: 'Clean Cooling Collaborative',
+      title: 'CCC receives $30M from MacKenzie Scott to expand clean cooling access',
+      url: 'https://www.cleancoolingcollaborative.org/blog/clean-cooling-collaborative-receives-30-million-gift-to-expand-access-to-efficient-climate-friendly-cooling/',
+      icon: 'fa-hand-holding-dollar',
+      color: '#E85A4F'
+    },
+    {
+      date: '2025',
+      source: 'Cool Coalition',
+      title: 'Steering Committee shifts from commitments to action for 2025-2026',
+      url: 'https://coolcoalition.org/news/commitments-action-cool-coalition-steering-committee-sets-path-2025-2026',
+      icon: 'fa-gears',
+      color: '#3D6B6B'
+    },
+    {
+      date: '2025',
+      source: 'UNEP',
+      title: 'New guide helps governments integrate sustainable cooling into NDCs',
+      url: 'https://www.coolingpost.com/world-news/unep-support-for-governments-ndcs/',
+      icon: 'fa-file-contract',
+      color: '#8BC34A'
+    },
+    {
+      date: '2025',
+      source: 'CLASP',
+      title: 'World\'s Best MEPS framework benchmarks efficiency across 10 major economies',
+      url: 'https://www.clasp.ngo/tools/worlds-best-meps/',
+      icon: 'fa-bolt',
+      color: '#4A7F7F'
+    },
+    {
+      date: '2025',
+      source: 'CCC & ASEAN',
+      title: 'Cooling commitments reinforced at ASEAN 2nd Regional Workshop in Manila',
+      url: 'https://united4efficiency.org/cooling-commitments-reinforced-at-aseans-2nd-regional-workshop-in-manila/',
+      icon: 'fa-earth-asia',
+      color: '#f59e0b'
+    },
+    {
+      date: '2024',
+      source: 'CCC',
+      title: 'Mid-program impact report shows gigaton-scale savings on track',
+      url: 'https://heathealth.info/resources/ccc-mid-program-impact-report/',
+      icon: 'fa-chart-line',
+      color: '#22c55e'
+    }
+  ];
 
   function getCategoryColor(cat: Partner['category']): string {
     switch (cat) {
@@ -177,6 +232,45 @@
       </div>
     {/each}
   </div>
+
+  <!-- Partner Ecosystem News -->
+  <div class="pe-news-section">
+    <div class="pe-news-header">
+      <i class="fa-solid fa-newspaper"></i>
+      <h3>Partner Ecosystem News</h3>
+    </div>
+    <div class="pe-news-grid">
+      {#each partnerNews as item}
+        <a href={item.url} target="_blank" rel="noopener noreferrer" class="pe-news-card">
+          <div class="news-icon" style="background: {item.color}15; color: {item.color}">
+            <i class="fa-solid {item.icon}"></i>
+          </div>
+          <div class="news-content">
+            <span class="news-source">{item.source} &middot; {item.date}</span>
+            <p class="news-title">{item.title}</p>
+          </div>
+          <i class="fa-solid fa-arrow-up-right-from-square news-external"></i>
+        </a>
+      {/each}
+    </div>
+  </div>
+
+  <!-- Built by HEAT (subtle credit) -->
+  {#if heatPartner}
+    <div class="pe-built-by">
+      <div class="built-by-inner">
+        <img src={heatPartner.logoPath} alt="HEAT GmbH" class="built-by-logo" />
+        <div class="built-by-text">
+          <span class="built-by-label">Built & maintained by</span>
+          <a href={heatPartner.website} target="_blank" rel="noopener noreferrer" class="built-by-name">
+            HEAT GmbH
+          </a>
+          <span class="built-by-desc">&middot; Climate Intelligence & Green Cooling</span>
+        </div>
+        <a href="/methodology" class="built-by-link">Methodology <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+  {/if}
 
   <!-- Footer -->
   <div class="pe-footer">
@@ -609,6 +703,179 @@
     transform: translateX(3px);
   }
 
+  /* --- News Section --- */
+  .pe-news-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border-light, #F1F5F9);
+  }
+
+  .pe-news-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .pe-news-header i {
+    color: var(--ccc-teal, #3D6B6B);
+    font-size: 1rem;
+  }
+
+  .pe-news-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text-primary, #333);
+    margin: 0;
+  }
+
+  .pe-news-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .pe-news-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: #fff;
+    border: 1px solid var(--color-border, #E2E8F0);
+    border-radius: var(--radius-md, 12px);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .pe-news-card:hover {
+    border-color: var(--ccc-teal, #3D6B6B);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+  }
+
+  .news-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .news-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .news-source {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--color-text-muted, #888);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .news-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-text-primary, #333);
+    margin: 0.15rem 0 0;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .news-external {
+    font-size: 0.55rem;
+    color: var(--color-text-muted, #888);
+    opacity: 0.4;
+    flex-shrink: 0;
+  }
+
+  .pe-news-card:hover .news-external {
+    opacity: 0.8;
+    color: var(--ccc-teal, #3D6B6B);
+  }
+
+  /* --- Built By (subtle HEAT credit) --- */
+  .pe-built-by {
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: var(--color-bg-secondary, #F8FAFC);
+    border-radius: var(--radius-md, 12px);
+    border: 1px solid var(--color-border-light, #F1F5F9);
+  }
+
+  .built-by-inner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .built-by-logo {
+    height: 22px;
+    opacity: 0.6;
+    flex-shrink: 0;
+  }
+
+  .built-by-text {
+    flex: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  .built-by-label {
+    font-size: 0.68rem;
+    color: var(--color-text-muted, #888);
+    font-weight: 500;
+  }
+
+  .built-by-name {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--color-text-secondary, #555);
+    text-decoration: none;
+  }
+
+  .built-by-name:hover {
+    color: var(--ccc-teal, #3D6B6B);
+  }
+
+  .built-by-desc {
+    font-size: 0.65rem;
+    color: var(--color-text-muted, #888);
+  }
+
+  .built-by-link {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--ccc-teal, #3D6B6B);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    flex-shrink: 0;
+  }
+
+  .built-by-link:hover {
+    color: var(--ccc-teal-dark, #2D5252);
+  }
+
+  .built-by-link i {
+    font-size: 0.55rem;
+    transition: transform 0.2s ease;
+  }
+
+  .built-by-link:hover i {
+    transform: translateX(2px);
+  }
+
   /* --- Footer --- */
   .pe-footer {
     margin-top: 1.5rem;
@@ -662,6 +929,16 @@
 
     .partner-grid {
       grid-template-columns: 1fr;
+    }
+
+    .pe-news-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .built-by-inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
     }
 
     .partner-card:hover {

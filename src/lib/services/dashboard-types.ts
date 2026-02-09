@@ -146,6 +146,9 @@ export type ClaspEnergyRecord = {
   bat_co2_mt?: number | null;
   bat_annual_co2_red_mt?: number | null;
   bat_cumul_co2_red_mt?: number | null;
+  // Net-zero grid variants (true grid decarbonization)
+  bat_co2_nzg_mt?: number | null;
+  bat_cumul_co2_red_nzg_mt?: number | null;
   // Stock info
   appliance_units_in_use?: number | null;
   appliance_ownership_rate?: number | null;

@@ -195,19 +195,37 @@
 
   .counter-tooltip {
     position: absolute;
-    bottom: calc(100% + 8px);
+    bottom: calc(100% + 10px);
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(15, 23, 42, 0.95);
-    color: #e2e8f0;
+    background: rgba(15, 23, 42, 0.97);
+    color: #f1f5f9;
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 10px;
     padding: 0.75rem 1rem;
-    font-size: 0.75rem;
-    line-height: 1.5;
-    width: 240px;
-    z-index: 100;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    font-size: 0.78rem;
+    line-height: 1.55;
+    width: 260px;
+    max-width: 90vw;
+    z-index: 1000;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
     pointer-events: auto;
+    animation: tooltip-fade-in 0.15s ease-out;
+  }
+
+  .counter-tooltip::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(15, 23, 42, 0.97);
+  }
+
+  @keyframes tooltip-fade-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
   }
 
   .counter-tooltip p {
@@ -235,7 +253,8 @@
     }
 
     .counter-tooltip {
-      width: 200px;
+      width: 220px;
+      font-size: 0.72rem;
     }
   }
 </style>

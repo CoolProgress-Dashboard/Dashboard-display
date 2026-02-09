@@ -121,7 +121,7 @@ export const loadDashboardData = async (
         'access_to_cooling_forecast',
         'id,country_code,country_name,region,impact_category,population_category,impact_level,gender_type,year,population_without_cooling',
         '',
-        5000
+        10000
       ),
       safeFetch(
         url,
@@ -149,7 +149,7 @@ export const loadDashboardData = async (
         url,
         key,
         'clasp_energy_consumption',
-        'id,country_code,country_name,year,appliance,bau_final_energy_twh,bau_co2_mt,gb_final_energy_twh,gb_co2_mt,gb_annual_co2_red_mt,nzh_final_energy_twh,nzh_co2_mt,nzh_annual_co2_red_mt,bat_final_energy_twh,bat_co2_mt,bat_annual_co2_red_mt,appliance_units_in_use,appliance_ownership_rate',
+        'id,country_code,country_name,year,appliance,bau_final_energy_twh,bau_co2_mt,gb_final_energy_twh,gb_co2_mt,gb_annual_co2_red_mt,gb_cumul_co2_red_mt,nzh_final_energy_twh,nzh_co2_mt,nzh_annual_co2_red_mt,nzh_cumul_co2_red_mt,bat_final_energy_twh,bat_co2_mt,bat_annual_co2_red_mt,bat_cumul_co2_red_mt,bat_co2_nzg_mt,bat_cumul_co2_red_nzg_mt,appliance_units_in_use,appliance_ownership_rate',
         '',
         50000
       ),

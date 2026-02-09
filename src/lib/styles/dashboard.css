@@ -81,18 +81,10 @@
 /* Main Layout */
 .main-container {
   display: grid;
-  grid-template-columns: 260px 1fr 280px;
+  grid-template-columns: 260px 1fr;
   min-height: 100vh;
   max-width: 1800px;
   margin: 0 auto;
-}
-
-.main-container.overview-only {
-  grid-template-columns: 260px 1fr;
-}
-
-.main-container.overview-only .sidebar-right {
-  display: none;
 }
 
 /* Left Sidebar */
@@ -341,10 +333,13 @@ select {
   background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
   display: flex;
   flex-direction: column;
+  min-width: 0; /* Prevent flex item from overflowing grid parent */
 }
 
 .main-content .view-section {
   padding: 1rem 1.5rem 1.5rem;
+  min-width: 0; /* Ensure grid children compute width correctly */
+  width: 100%;
 }
 
 /* View sections fill available space */
@@ -1161,6 +1156,8 @@ select {
 .chart-card-body {
   padding: 1rem 1.25rem;
   background: #fafafa;
+  width: 100%;
+  overflow: hidden;
 }
 
 .chart-card-body .chart-surface,
@@ -2727,6 +2724,12 @@ select {
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
   margin-bottom: 1rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.charts-grid-2col > * {
+  min-width: 0; /* Prevent grid children from overflowing */
 }
 
 /* Policy Tabs */
@@ -2904,14 +2907,23 @@ select {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.charts-grid > * {
+  min-width: 0;
 }
 
 .chart-container {
   height: 250px;
+  width: 100%;
+  position: relative;
 }
 
+
 .chart-surface {
-  width: 100%;
+  width: 100% !important;
   height: 100%;
 }
 

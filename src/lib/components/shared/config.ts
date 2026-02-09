@@ -16,7 +16,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
     headline: 'Cooling emissions could triple by 2050. Or we cut them 73%.',
     subhead: 'The CoolProgress Dashboard tracks whether the world is on the sustainable cooling pathway.',
     insight:
-      'Today: 2,401 Mt CO\u2082e from cooling. BAU 2050: 6,009 Mt. DECARB 2050: 1,554 Mt. The gap between disaster and solution is efficiency + Kigali + clean grids.',
+      'Ten air conditioners are sold every second. Most are the least efficient models available. This creates a vicious cycle: rising heat drives demand, inefficient units strain power grids, grid stress increases emissions, and emissions drive more heat. By 2050, cooling could consume more electricity than China uses today \u2014 or we cut 73% through efficiency, Kigali, and clean grids.',
     sources: [
       { name: 'HEAT GmbH', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' },
       { name: 'CLASP', url: 'https://www.clasp.ngo/', logo: '/images/clasp-logo.png' },
@@ -27,7 +27,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
     headline: 'Cooling emissions will triple by 2050 \u2014 unless we act now',
     subhead: 'AC alone will emit more than global aviation by 2035. Three interventions can cut 73% by mid-century.',
     insight:
-      'BAU 2050: 6,009 Mt CO\u2082e. DECARB 2050: 1,554 Mt. The three-layer approach \u2014 efficient appliances, low-GWP refrigerants, and clean grids \u2014 achieves 4,455 Mt of annual savings.',
+      'Today\u2019s cooling sector emits 2,401 Mt CO\u2082e annually \u2014 more than the entire EU. On the current trajectory, that triples to 6,009 Mt by 2050. But three proven interventions \u2014 efficient appliances, low-GWP refrigerants, and clean grids \u2014 can cut 4,455 Mt per year. That is like taking every car in Europe and North America off the road.',
     methodology: 'Three-layer DECARB: HEAT GmbH (direct emissions, Kigali phase-down) + CLASP (efficiency scenarios) + IEA STEPS (grid decarbonization). See /methodology for details.',
     sources: [
       { name: 'HEAT GmbH', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' },
@@ -39,7 +39,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
     headline: 'The 3x efficiency gap is the cheapest climate solution we are ignoring',
     subhead: 'Best-in-class ACs are 3x more efficient than the worst on sale today. MEPS can close this gap \u2014 saving 1,300 TWh per year.',
     insight:
-      'If every country adopted MEPS at today\u2019s best-available-technology level, cooling energy demand drops 40\u201350% by 2050. That is roughly India\u2019s entire electricity output.',
+      'The cheapest air conditioner in Lagos consumes three times the electricity of the best unit in Tokyo \u2014 for the same cooling. Without binding standards, manufacturers dump their least efficient models in the fastest-growing markets. Closing this gap saves 1,300 TWh annually: enough to power all of Africa. The tool already exists. It is called MEPS.',
     methodology: 'MEPS & Labels data: CLASP Policy Resource Center (CPRC). Efficiency metrics: CSPF, EER, AEC. Coverage: AC, Refrigerators, Fans across 80+ countries.',
     sources: [
       { name: 'CLASP Policy Resource Center', url: 'https://cprc-clasp.ngo/', logo: '/images/clasp-logo.png' },
@@ -50,7 +50,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
     headline: '157 countries ratified Kigali. But ratification is not implementation.',
     subhead: 'The Kigali Amendment can prevent 0.5\u00B0C of warming \u2014 if countries convert commitments into refrigerant transitions on the ground.',
     insight:
-      '157 parties have ratified, covering 95% of HFC consumption. Non-A5 countries must reach 15% of baseline by 2036. The real test: manufacturing conversion, technician training, and F-gas recovery infrastructure.',
+      'HFCs are invisible, odorless \u2014 and thousands of times more potent than CO\u2082. A single service van leak can release the equivalent of driving a car for a year. 157 nations have signed the Kigali Amendment, but the real test is on the factory floor: converting production lines, training 15 million technicians, and building recovery infrastructure from scratch.',
     methodology: 'Kigali ratification and implementation data: UNEP Ozone Secretariat. HFC baselines and allowable emissions: KIP database. GWP values: IPCC AR6.',
     sources: [
       { name: 'UNEP Ozone Secretariat', url: 'https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment', logo: '/images/unep.png', logoLarge: true },
@@ -61,7 +61,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
     headline: '1.2 billion people face dangerous heat without cooling',
     subhead: 'Cooling is health infrastructure. 420,000 die annually from food spoiled by broken cold chains. The access gap is a matter of climate equity.',
     insight:
-      'Urban poor (695M) and rural poor (309M) are most at risk. In Africa, only 5% of households own an AC. Passive cooling, solar cold chains, and community centers can close the gap sustainably.',
+      'A farmer in Senegal loses 40% of her harvest to heat spoilage. A hospital in Bihar stores vaccines in a room that hits 45\u00B0C. 1.2 billion people lack access to basic cooling \u2014 not luxury, but survival. The cruel irony: those most exposed to rising heat are the least able to afford protection. Closing this gap is the defining equity challenge of the climate crisis.',
     methodology: 'Cooling access data: SEforALL Chilling Prospects 2025. Risk levels by income group, region, and infrastructure. Dashboard integration: HEAT GmbH.',
     sources: [
       { name: 'SEforALL Chilling Prospects 2025', url: 'https://www.seforall.org/data-stories/chilling-prospects-2025', logo: '/images/seforall-logo.jpg', logoLarge: true },
@@ -72,7 +72,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
     headline: '71 countries pledged. Fewer than 30% of NDCs mention cooling.',
     subhead: 'The gap between political commitment and policy implementation is the central challenge of cooling governance.',
     insight:
-      '71 nations signed the Global Cooling Pledge at COP28. Yet fewer than 30% of NDCs mention cooling, and only ~20 countries have completed National Cooling Action Plans. The most effective NCAPs link to NDC targets with funded timelines.',
+      'At COP28, 71 nations signed the Global Cooling Pledge. Eighteen months later, fewer than 30% of NDCs even mention cooling. Only 20 countries have completed National Cooling Action Plans. The gap between a signature in Dubai and a regulation in Delhi is where climate ambition goes to die \u2014 unless we track it, fund it, and enforce it.',
     methodology: 'GCP signatories: Cool Coalition. NDC analysis: CLASP NDC Toolkit. NCAPs: Climate Policy Radar. Dashboard integration: HEAT GmbH.',
     sources: [
       { name: 'Cool Coalition Pledge', url: 'https://coolcoalition.org/global-cooling-pledge/', logo: '/images/unep.png', logoLarge: true },
@@ -144,10 +144,12 @@ export const CLASP_APPLIANCE_SHORT: Record<string, string> = {
 };
 
 // HEAT modelling scenarios and subsectors (in collaboration with GIZ)
-export const HEAT_SCENARIOS = ['BAU', 'KIP'];
+export const HEAT_SCENARIOS = ['BAU', 'KIP', 'KIP_PLUS', 'MIT'];
 export const HEAT_SCENARIO_NAMES: Record<string, string> = {
   BAU: 'Business as Usual',
-  KIP: 'Kigali Implementation'
+  KIP: 'Kigali Implementation',
+  KIP_PLUS: 'Kigali+',
+  MIT: 'Maximum Intervention'
 };
 export const HEAT_SUBSECTORS = ['Split residential air conditioners', 'Domestic refrigeration'];
 export const HEAT_SUBSECTOR_SHORT: Record<string, string> = {
@@ -155,11 +157,12 @@ export const HEAT_SUBSECTOR_SHORT: Record<string, string> = {
   'Domestic refrigeration': 'Refrigeration'
 };
 
-export const EMISSIONS_YEARS = Array.from({ length: 2045 - 2020 + 1 }, (_, i) => 2020 + i);
+export const EMISSIONS_YEARS = Array.from({ length: 2050 - 2020 + 1 }, (_, i) => 2020 + i);
 
 export const ACCESS_HISTORICAL_YEARS = Array.from({ length: 2024 - 2013 + 1 }, (_, i) => 2013 + i);
-export const ACCESS_FORECAST_YEARS = [2025, 2026, 2027, 2028, 2029, 2030];
+export const ACCESS_FORECAST_YEARS = Array.from({ length: 2050 - 2025 + 1 }, (_, i) => 2025 + i);
 export const ACCESS_YEARS = Array.from({ length: 2024 - 2013 + 1 }, (_, i) => 2013 + i);
+export const ACCESS_ALL_YEARS = Array.from({ length: 2050 - 2013 + 1 }, (_, i) => 2013 + i);
 export const IMPACT_LEVELS = ['High', 'Medium', 'Low'];
 export const POPULATION_CATEGORIES = ['Rural Poor', 'Urban Poor', 'Lower-Middle Income', 'Middle-Income'];
 

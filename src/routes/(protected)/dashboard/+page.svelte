@@ -13,14 +13,14 @@
   import type { AccessFilters, Country, DashboardData, EmissionsFilters, Meps, NdcFilters } from '$lib/services/dashboard-types';
 
   // Layout components
-  import { Sidebar, Header, RightPanel } from '$lib/components/layout';
+  import { Sidebar, Header } from '$lib/components/layout';
   // Pillar view components
   import { OverviewPillar, EmissionsPillar, MepsPillar, KigaliPillar, AccessPillar, PolicyPillar, PartnersPillar } from '$lib/components/pillars';
   // Shared components
   import { PillarModal, VIEW_META, PILLAR_INFO,
     CLASP_SCENARIOS, CLASP_SCENARIO_NAMES, CLASP_APPLIANCES, CLASP_APPLIANCE_SHORT,
     HEAT_SCENARIOS, HEAT_SCENARIO_NAMES, HEAT_SUBSECTORS, HEAT_SUBSECTOR_SHORT,
-    EMISSIONS_YEARS, ACCESS_HISTORICAL_YEARS, ACCESS_FORECAST_YEARS, ACCESS_YEARS,
+    EMISSIONS_YEARS, ACCESS_HISTORICAL_YEARS, ACCESS_FORECAST_YEARS, ACCESS_YEARS, ACCESS_ALL_YEARS,
     IMPACT_LEVELS, POPULATION_CATEGORIES, SCOPE_TO_APPLIANCE, APPLIANCE_TO_SCOPE,
     SUPABASE_URL, SUPABASE_KEY
   } from '$lib/components/shared';
@@ -133,6 +133,7 @@
     let accessImpactLevels: string[] = ['High', 'Medium', 'Low'];
     let accessPopCategories: string[] = ['Rural Poor', 'Urban Poor', 'Lower-Middle Income', 'Middle-Income'];
     let accessRegionFilter = '';
+    let accessRegions: string[] = ['Africa', 'Asia and the Middle East', 'Latin America and the Caribbean', 'Oceania'];
 
     // ACCESS_HISTORICAL_YEARS, ACCESS_FORECAST_YEARS: imported from config.ts
 
@@ -856,8 +857,8 @@
             const accessDetail = document.querySelector('#access-country-detail .country-detail') as HTMLElement;
             if (!accessDetail) return;
 
-            // Get all years of data for this country
-            const countryData = data.access.filter(r => r.country_code === code);
+            // Get all years of data for this country (unified historical + forecast)
+            const countryData = [...data.access, ...data.accessForecast].filter(r => r.country_code === code);
 
             // CCC Palette colors for population categories
             const categoryColors: Record<string, string> = {
@@ -867,11 +868,11 @@
                 'Middle-Income': '#3D6B6B'
             };
 
-            // Build stacked data by category over time
+            // Build stacked data by category over full 2013-2050 timeline
             const stackedData = POPULATION_CATEGORIES.map(cat => {
                 return {
                     name: cat,
-                    data: ACCESS_YEARS.map(year => {
+                    data: ACCESS_ALL_YEARS.map(year => {
                         const yearCatData = countryData.filter(r => r.year === year && r.population_category === cat);
                         return yearCatData.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
                     }),
@@ -879,8 +880,8 @@
                 };
             });
 
-            // Current year data with breakdown by category (for pie chart)
-            const currentYearData = countryData.filter(r => r.year === accessYear);
+            // 2024 data with breakdown by category (for pie chart)
+            const currentYearData = countryData.filter(r => r.year === 2024);
             const categoryBreakdown = POPULATION_CATEGORIES.map(cat => {
                 const catTotal = currentYearData
                     .filter(r => r.population_category === cat)
@@ -890,7 +891,7 @@
 
             // Calculate totals for stats
             const currentYearTotal = currentYearData.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
-            const baselineYear = ACCESS_YEARS[0];
+            const baselineYear = 2013;
             const baselineData = countryData.filter(r => r.year === baselineYear);
             const baselineTotal = baselineData.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
             const changePercent = baselineTotal > 0 ? ((currentYearTotal - baselineTotal) / baselineTotal * 100).toFixed(1) : '0';
@@ -936,7 +937,7 @@
                     <div class="chart-box" style="background: #fafafa; border-radius: 8px; padding: 0.75rem;">
                         <div style="font-size: 0.75rem; font-weight: 600; color: #92400e; margin-bottom: 0.5rem;">
                             <i class="fa-solid fa-chart-pie" style="margin-right: 0.3rem; color: #f59e0b;"></i>
-                            ${accessYear} Category Breakdown
+                            2024 Category Breakdown
                         </div>
                         <div class="access-pie-chart" style="width: 100%; height: 200px;"></div>
                     </div>
@@ -949,7 +950,7 @@
                     <p style="font-size: 0.85rem; color: #78350f; line-height: 1.6; margin: 0;">
                         ${trendDescription} ${breakdownDescription}
                         <span style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #64748b;">
-                            <em>Data source: SEforALL Chilling Prospects • Year: ${accessYear}</em>
+                            <em>Data: SEforALL Chilling Prospects (historical) • HEAT projection (2025-2050)</em>
                         </span>
                     </p>
                 </div>
@@ -986,8 +987,8 @@
                         },
                         xAxis: {
                             type: 'category',
-                            data: ACCESS_YEARS.map(String),
-                            axisLabel: { fontSize: 11, interval: 'auto', fontWeight: 500, color: '#475569' },
+                            data: ACCESS_ALL_YEARS.map(String),
+                            axisLabel: { fontSize: 10, interval: 4, fontWeight: 500, color: '#475569' },
                             axisLine: { lineStyle: { color: '#cbd5e1' } },
                             axisTick: { show: false },
                             boundaryGap: false
@@ -1018,7 +1019,14 @@
                                 color: cat.color
                             },
                             emphasis: { focus: 'series' },
-                            data: cat.data
+                            data: cat.data,
+                            ...(idx === 0 ? {
+                                markLine: {
+                                    silent: true,
+                                    symbol: 'none',
+                                    data: [{ xAxis: '2024', lineStyle: { color: '#94a3b8', type: 'dashed', width: 1 }, label: { show: false } }]
+                                }
+                            } : {})
                         })),
                         tooltip: {
                             trigger: 'axis',
@@ -1521,8 +1529,53 @@
                 ? 'Global Emissions by Appliance'
                 : 'Global Direct vs Indirect Emissions';
 
+            // Compute BAU comparison for non-BAU HEAT scenarios
+            let bauComparisonHtml = '';
+            if (emissionsDataSource === 'subcool' && emissionsScenario !== 'BAU') {
+                const bauRecords = data.subcool.filter((r: any) =>
+                    r.scenario_name === 'BAU' && r.year === emissionsYear
+                );
+                let bauTotal = 0, bauDirect = 0;
+                bauRecords.forEach((r: any) => {
+                    bauDirect += r.direct_emission_mt || 0;
+                    bauTotal += (r.direct_emission_mt || 0) + (r.indirect_emission_mt || 0);
+                });
+                const currentDirect = globalBreakdown.find(b => b.name === 'Direct')?.value || 0;
+                const reduction = bauTotal > 0 ? ((bauTotal - globalTotal) / bauTotal * 100) : 0;
+                const directReduction = bauDirect > 0 ? ((bauDirect - currentDirect) / bauDirect * 100) : 0;
+                const savings = bauTotal - globalTotal;
+
+                const accentColor = emissionsScenario === 'KIP_PLUS' ? '#16a34a' : emissionsScenario === 'KIP' ? '#3D6B6B' : '#f59e0b';
+                bauComparisonHtml = `
+                    <div style="background: linear-gradient(135deg, ${accentColor}12 0%, ${accentColor}08 100%); border: 1px solid ${accentColor}30; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fa-solid fa-arrow-trend-down" style="color: ${accentColor}; font-size: 1.1rem;"></i>
+                            <span style="font-size: 0.8rem; font-weight: 700; color: ${accentColor};">vs BAU</span>
+                        </div>
+                        <div style="display: flex; gap: 1.25rem; flex-wrap: wrap;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.3rem; font-weight: 800; color: ${accentColor};">${reduction.toFixed(1)}%</div>
+                                <div style="font-size: 0.65rem; color: #64748b;">Total Reduction</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.3rem; font-weight: 800; color: ${accentColor};">${savings.toFixed(0)}</div>
+                                <div style="font-size: 0.65rem; color: #64748b;">Mt CO2 Saved</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.3rem; font-weight: 800; color: ${accentColor};">${directReduction.toFixed(0)}%</div>
+                                <div style="font-size: 0.65rem; color: #64748b;">Direct Emissions Cut</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1rem; font-weight: 600; color: #94a3b8;">${bauTotal.toFixed(0)}</div>
+                                <div style="font-size: 0.65rem; color: #94a3b8;">BAU (Mt CO2)</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
             emissionsDetail.innerHTML = `
-                <div class="year-indicator" style="background: linear-gradient(135deg, #3D6B6B 0%, #4A7F7F 100%); color: white; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                <div class="year-indicator" style="background: linear-gradient(135deg, #3D6B6B 0%, #4A7F7F 100%); color: white; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <i class="fa-solid fa-calendar-day" style="font-size: 1.1rem;"></i>
                         <span style="font-size: 1.25rem; font-weight: 700;">${emissionsYear}</span>
@@ -1530,6 +1583,7 @@
                     </div>
                     <span style="font-size: 0.7rem; opacity: 0.85;"><i class="fa-solid fa-sliders" style="margin-right: 0.3rem;"></i>Use the year slider above to explore different projections</span>
                 </div>
+                ${bauComparisonHtml}
                 <div class="country-header" style="margin-bottom: 1rem;">
                     <h4 style="color: #3D6B6B; font-size: 1.1rem; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
                         <i class="fa-solid fa-globe" style="color: #8BC34A;"></i>
@@ -1655,25 +1709,137 @@
             return echarts.init(el);
         };
 
+        // Track charts that need forced re-init (initialized while container was hidden)
+        let forceReinitCharts = false;
+
+        // Walk up DOM to find first ancestor with non-zero width
+        const findParentWidth = (el: HTMLElement): number => {
+            let node: HTMLElement | null = el;
+            while (node) {
+                const rect = node.getBoundingClientRect();
+                if (rect.width > 50) return rect.width;
+                node = node.parentElement;
+            }
+            return 0;
+        };
+
         const setChart = (id: string, option: any) => {
             const el = getChartEl(id);
             if (!el) return;
-            if (!charts[id]) {
-                charts[id] = echarts.init(el);
-            } else if (charts[id].getDom && charts[id].getDom() !== el) {
+            let needsInit = !charts[id];
+            if (!needsInit && charts[id].getDom && charts[id].getDom() !== el) {
                 charts[id].dispose();
-                charts[id] = echarts.init(el);
+                needsInit = true;
+            }
+            // Force re-init when switching views (dispose stale 0-width instances)
+            if (!needsInit && forceReinitCharts) {
+                charts[id].dispose();
+                delete charts[id];
+                needsInit = true;
+                // Clear ECharts artifacts and force CSS to take effect
+                el.removeAttribute('_echarts_instance_');
+                el.innerHTML = '';
+                // Preserve original inline styles but clear any ECharts-added ones
+                // Keep width/height/min-height from template, clear position/overflow
+                el.style.position = '';
+                el.style.overflow = '';
+                void el.offsetWidth; // force reflow
+            }
+            if (needsInit) {
+                const section = el.closest('.view-section');
+                const sectionActive = section?.classList.contains('active');
+                if (sectionActive && el.clientWidth > 50) {
+                    // View is visible and element has CSS-computed width — let ECharts auto-detect
+                    charts[id] = echarts.init(el);
+                } else {
+                    // View is hidden or element has no layout — use explicit computed dimensions
+                    const rect = el.getBoundingClientRect();
+                    let w = rect.width;
+                    let h = rect.height || el.clientHeight || el.offsetHeight || 0;
+                    if (w < 50) {
+                        w = findParentWidth(el);
+                        if (w > 50) w = w - 40;
+                    }
+                    if (w < 50 && section) {
+                        w = (section as HTMLElement).clientWidth - 80;
+                    }
+                    if (w < 50) w = 600;
+                    if (h < 50) h = parseInt(el.style.minHeight) || parseInt(el.getAttribute('style')?.match(/min-height:\s*(\d+)/)?.[1] || '') || 280;
+                    charts[id] = echarts.init(el, null, { width: Math.floor(w), height: Math.floor(h) });
+                }
             }
             charts[id].setOption(option, true);
+            // Resize with parent-based pixel dimensions after browser paints
+            requestAnimationFrame(() => {
+                if (!charts[id] || !charts[id].resize) return;
+                // Read from parent to avoid ECharts inline style interference
+                let rw = 0;
+                const parent = el.parentElement;
+                if (parent) {
+                    const pRect = parent.getBoundingClientRect();
+                    const pStyle = getComputedStyle(parent);
+                    rw = pRect.width - (parseFloat(pStyle.paddingLeft) || 0) - (parseFloat(pStyle.paddingRight) || 0);
+                }
+                if (rw < 50) rw = el.getBoundingClientRect().width;
+                if (rw < 50) { rw = findParentWidth(el); if (rw > 50) rw -= 40; }
+                const rh = el.clientHeight || parseInt(el.style.minHeight) || 280;
+                if (rw > 50) {
+                    charts[id].resize({ width: Math.floor(rw), height: Math.floor(rh) });
+                }
+            });
         };
 
         const resizeCharts = () => {
-            Object.values(charts).forEach((chart) => chart && chart.resize && chart.resize());
+            // Only resize charts whose DOM elements are in a visible (active) view section
+            Object.entries(charts).forEach(([id, chart]) => {
+                if (!chart || !chart.resize) return;
+                const dom = chart.getDom ? chart.getDom() : null;
+                if (dom) {
+                    const section = dom.closest('.view-section');
+                    if (section && !section.classList.contains('active')) return; // skip hidden charts
+                }
+                chart.resize();
+            });
             if (accessCountryChart) accessCountryChart.resize();
             if (accessCountryStackedChart) accessCountryStackedChart.resize();
             if (accessCountryPieChart) accessCountryPieChart.resize();
             if (emissionsCountryLineChart) emissionsCountryLineChart.resize();
             if (emissionsCountryPieChart) emissionsCountryPieChart.resize();
+        };
+
+        // Force resize all chart-surface elements in a specific view with explicit pixel dimensions.
+        // Reads width from the PARENT container (chart-card-body) minus its padding,
+        // because ECharts may have modified the chart element's own inline width.
+        const forceResizeViewCharts = (view: string) => {
+            const section = document.getElementById(`view-${view}`);
+            if (!section) return;
+            const surfaces = section.querySelectorAll<HTMLElement>('.chart-surface');
+            surfaces.forEach(el => {
+                const chartId = el.id;
+                if (!chartId || !charts[chartId]) return;
+                // Read width from parent container (avoids ECharts inline style interference)
+                let w = 0;
+                const parent = el.parentElement;
+                if (parent) {
+                    const parentRect = parent.getBoundingClientRect();
+                    const parentStyle = getComputedStyle(parent);
+                    const padL = parseFloat(parentStyle.paddingLeft) || 0;
+                    const padR = parseFloat(parentStyle.paddingRight) || 0;
+                    w = parentRect.width - padL - padR;
+                }
+                // Fallback: try reading from the element itself or walking up DOM
+                if (w < 50) {
+                    w = el.getBoundingClientRect().width;
+                }
+                if (w < 50) {
+                    w = findParentWidth(el);
+                    if (w > 50) w -= 40;
+                }
+                const h = el.clientHeight || parseInt(el.style.minHeight) || 280;
+                if (w > 50 && h > 50) {
+                    charts[chartId].resize({ width: Math.floor(w), height: Math.floor(h) });
+                }
+            });
         };
 
         const baseGrid = {
@@ -2075,25 +2241,7 @@
 
         // Update emissions KPIs with new data
         function updateNewEmissionsKPIs() {
-            const totals = getEmissionsTotals();
-
-            if (emissionsDataSource === 'clasp') {
-                const t = totals as { total: number; byAppliance: Record<string, number>; countriesCount: number };
-                setText('emissions-kpi-total', t.total.toFixed(1));
-                setText('emissions-kpi-ac', (t.byAppliance['Air Conditioning'] || 0).toFixed(1));
-                setText('emissions-kpi-fans', (t.byAppliance['Ceiling and Portable Fans'] || 0).toFixed(1));
-                setText('emissions-kpi-fridge', (t.byAppliance['Refrigerator-Freezers'] || 0).toFixed(1));
-                setText('emissions-kpi-countries', t.countriesCount);
-            } else {
-                const t = totals as { total: number; direct: number; indirect: number; bySubsector: Record<string, { direct: number; indirect: number }>; countriesCount: number };
-                setText('emissions-kpi-total', t.total.toFixed(1));
-                const acData = t.bySubsector['Split residential air conditioners'] || { direct: 0, indirect: 0 };
-                const refData = t.bySubsector['Domestic refrigeration'] || { direct: 0, indirect: 0 };
-                setText('emissions-kpi-ac', (acData.direct + acData.indirect).toFixed(1));
-                setText('emissions-kpi-fridge', (refData.direct + refData.indirect).toFixed(1));
-                setText('emissions-kpi-fans', '-'); // Subcool doesn't have fans
-                setText('emissions-kpi-countries', t.countriesCount);
-            }
+            // KPI panel removed from UI
         }
 
         // Get emissions value for map coloring
@@ -2143,23 +2291,7 @@
         }
 
         function updateEmissionsKPIs() {
-            const countryEmissions = getCountryEmissions();
-            const countries = Object.keys(countryEmissions);
-
-            let totalEmissions = 0;
-            let directEmissions = 0;
-            let indirectEmissions = 0;
-
-            countries.forEach(code => {
-                totalEmissions += countryEmissions[code].total;
-                directEmissions += countryEmissions[code].direct;
-                indirectEmissions += countryEmissions[code].indirect;
-            });
-
-            setText('emissions-countries', countries.length);
-            setText('emissions-total', totalEmissions.toFixed(2));
-            setText('emissions-direct', directEmissions.toFixed(2));
-            setText('emissions-indirect', indirectEmissions.toFixed(2));
+            // KPI panel removed from UI
         }
 
         function getEmissionsColor(value: number, maxValue: number) {
@@ -2359,22 +2491,7 @@
 
         // Update the meta pills in KPI box header
         function updateEmissionsMetaPills() {
-            const sourceEl = document.getElementById('emissions-meta-source');
-            const yearEl = document.getElementById('emissions-meta-year');
-            const scenarioEl = document.getElementById('emissions-meta-scenario');
-
-            if (sourceEl) {
-                sourceEl.innerHTML = `<i class="fa-solid fa-database"></i> ${emissionsDataSource === 'clasp' ? 'CLASP' : 'HEAT'}`;
-            }
-            if (yearEl) {
-                yearEl.innerHTML = `<i class="fa-solid fa-calendar"></i> ${emissionsYear}`;
-            }
-            if (scenarioEl) {
-                const scenarioName = emissionsDataSource === 'clasp'
-                    ? CLASP_SCENARIO_NAMES[emissionsScenario] || emissionsScenario
-                    : HEAT_SCENARIO_NAMES[emissionsScenario] || emissionsScenario;
-                scenarioEl.innerHTML = `<i class="fa-solid fa-chart-line"></i> ${scenarioName}`;
-            }
+            // Meta pills removed from UI
         }
 
         // Main update function for emissions view
@@ -2382,6 +2499,7 @@
             updateNewEmissionsKPIs();
             updateNewEmissionsMap();
             updateEmissionsCharts();
+            updateEmissionsSavingsCharts();
             updateEmissionsMetaPills();
             // Refresh country detail if a country is selected, otherwise show global
             if (selectedCountry) {
@@ -2484,18 +2602,18 @@
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
                         <div>
                             <h4 style="font-size: 0.9rem; color: #475569; margin-bottom: 0.5rem;">By Appliance/Subsector</h4>
-                            <div id="chart-emissions-category" class="chart-surface" style="height: 280px;"></div>
+                            <div id="chart-emissions-category" class="chart-surface" style="width: 100%; height: 280px; min-height: 280px;"></div>
                         </div>
                         <div>
-                            <h4 style="font-size: 0.9rem; color: #475569; margin-bottom: 0.5rem;">Top 10 Countries</h4>
-                            <div id="chart-emissions-top-countries" class="chart-surface" style="height: 280px;"></div>
+                            <h4 style="font-size: 0.9rem; color: #475569; margin-bottom: 0.5rem;">Top 10 Countries: Cumulative Savings to <span id="top-countries-year-label">${emissionsYear}</span></h4>
+                            <div id="chart-emissions-top-countries" class="chart-surface" style="width: 100%; height: 320px; min-height: 320px;"></div>
                         </div>
                     </div>
                 </div>
                 <div class="card-panel">
                     <h3>Emissions Trajectory</h3>
                     <p class="chart-subtitle">Scenario comparison over time</p>
-                    <div id="chart-emissions-timeline" class="chart-surface" style="height: 320px;"></div>
+                    <div id="chart-emissions-timeline" class="chart-surface" style="width: 100%; height: 320px; min-height: 320px;"></div>
                 </div>
             `;
 
@@ -2544,37 +2662,177 @@
 
         // Render top countries bar chart
         function renderEmissionsTopCountriesChart() {
-            let countryData: { name: string; value: number }[] = [];
-
             if (emissionsDataSource === 'clasp') {
-                const byCountry = getClaspEmissionsByCountry();
-                countryData = Object.entries(byCountry)
-                    .map(([code, data]) => ({ name: data.name || code, value: +data.total.toFixed(2) }))
-                    .sort((a, b) => b.value - a.value)
-                    .slice(0, 10);
-            } else {
-                const byCountry = getSubcoolEmissionsByCountry();
-                countryData = Object.entries(byCountry)
-                    .map(([code, data]) => ({ name: data.name || code, value: +data.total.toFixed(2) }))
-                    .sort((a, b) => b.value - a.value)
-                    .slice(0, 10);
-            }
+                // Compute per-country cumulative savings from 2025 up to selected year
+                // Each year contributes: BAU_year - scenario_year to cumulative savings
+                const targetYear = emissionsYear;
+                const years = [2020, 2025, 2030, 2035, 2040, 2045, 2050].filter(y => y <= targetYear);
 
-            setChart('chart-emissions-top-countries', {
-                tooltip: { trigger: 'axis', formatter: '{b}: {c} Mt' },
-                grid: { left: '3%', right: '8%', bottom: '3%', top: '3%', containLabel: true },
-                xAxis: { type: 'value', axisLabel: { fontSize: 10 } },
-                yAxis: {
-                    type: 'category',
-                    data: countryData.map(d => d.name).reverse(),
-                    axisLabel: { fontSize: 10 }
-                },
-                series: [{
-                    type: 'bar',
-                    data: countryData.map(d => d.value).reverse(),
-                    itemStyle: { color: '#8BC34A' }
-                }]
-            });
+                // Aggregate per-country cumulative savings with decomposition
+                const countrySavings: Record<string, {
+                    name: string;
+                    bauCumul: number;
+                    mepsSavings: number;
+                    deepEeSavings: number;
+                    batSavings: number;
+                    gridSavings: number;
+                    totalSavings: number;
+                }> = {};
+
+                years.forEach(year => {
+                    const yearData = data.claspEnergy.filter((r: any) =>
+                        r.year === year && emissionsAppliances.includes(r.appliance)
+                    );
+                    // Apply region filter if set
+                    const filtered = emissionsRegion
+                        ? yearData.filter((r: any) => getCountryRegion(r.country_code) === emissionsRegion)
+                        : yearData;
+
+                    filtered.forEach((r: any) => {
+                        const code = r.country_code;
+                        if (!countrySavings[code]) {
+                            countrySavings[code] = {
+                                name: r.country_name || code,
+                                bauCumul: 0, mepsSavings: 0, deepEeSavings: 0,
+                                batSavings: 0, gridSavings: 0, totalSavings: 0
+                            };
+                        }
+                        const bau = r.bau_co2_mt || 0;
+                        const gb = r.gb_co2_mt || 0;
+                        const nzh = r.nzh_co2_mt || 0;
+                        const bat = r.bat_co2_mt || 0;
+                        const batNzg = r.bat_co2_nzg_mt || 0;
+
+                        countrySavings[code].bauCumul += bau;
+                        countrySavings[code].mepsSavings += Math.max(0, bau - gb);
+                        countrySavings[code].deepEeSavings += Math.max(0, gb - nzh);
+                        countrySavings[code].batSavings += Math.max(0, nzh - bat);
+                        countrySavings[code].gridSavings += Math.max(0, bat - batNzg);
+                    });
+                });
+
+                // Calculate total and sort
+                Object.values(countrySavings).forEach(c => {
+                    c.totalSavings = c.mepsSavings + c.deepEeSavings + c.batSavings + c.gridSavings;
+                });
+
+                const top10 = Object.values(countrySavings)
+                    .sort((a, b) => b.totalSavings - a.totalSavings)
+                    .slice(0, 10)
+                    .reverse(); // reverse for horizontal bar (bottom = biggest)
+
+                const countries = top10.map(c => c.name);
+
+                setChart('chart-emissions-top-countries', {
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: { type: 'shadow' },
+                        formatter: (params: any) => {
+                            if (!params?.length) return '';
+                            const country = params[0].name;
+                            let html = `<strong>${country}</strong><br/>`;
+                            let total = 0;
+                            params.forEach((p: any) => {
+                                if (p.value > 0.1) {
+                                    html += `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${p.color};margin-right:4px;"></span>${p.seriesName}: ${p.value.toFixed(1)} Mt<br/>`;
+                                    total += p.value;
+                                }
+                            });
+                            html += `<strong>Total savings: ${total.toFixed(1)} Mt CO₂</strong>`;
+                            return html;
+                        }
+                    },
+                    legend: {
+                        bottom: 0,
+                        textStyle: { fontSize: 10 },
+                        itemWidth: 12, itemHeight: 8
+                    },
+                    grid: { left: '3%', right: '6%', bottom: '14%', top: '3%', containLabel: true },
+                    xAxis: {
+                        type: 'value',
+                        name: 'Mt CO₂ saved',
+                        nameLocation: 'middle',
+                        nameGap: 25,
+                        axisLabel: { fontSize: 10 }
+                    },
+                    yAxis: {
+                        type: 'category',
+                        data: countries,
+                        axisLabel: { fontSize: 10, width: 80, overflow: 'truncate' }
+                    },
+                    series: [
+                        {
+                            name: 'MEPS & Labels',
+                            type: 'bar',
+                            stack: 'savings',
+                            data: top10.map(c => +c.mepsSavings.toFixed(1)),
+                            itemStyle: { color: '#8BC34A', borderRadius: 0 },
+                            emphasis: { focus: 'series' }
+                        },
+                        {
+                            name: 'Deep Efficiency',
+                            type: 'bar',
+                            stack: 'savings',
+                            data: top10.map(c => +c.deepEeSavings.toFixed(1)),
+                            itemStyle: { color: '#66BB6A', borderRadius: 0 },
+                            emphasis: { focus: 'series' }
+                        },
+                        {
+                            name: 'Best Available',
+                            type: 'bar',
+                            stack: 'savings',
+                            data: top10.map(c => +c.batSavings.toFixed(1)),
+                            itemStyle: { color: '#43A047', borderRadius: 0 },
+                            emphasis: { focus: 'series' }
+                        },
+                        {
+                            name: 'Grid Decarb',
+                            type: 'bar',
+                            stack: 'savings',
+                            data: top10.map(c => +c.gridSavings.toFixed(1)),
+                            itemStyle: { color: '#3D6B6B', borderRadius: [0, 3, 3, 0] },
+                            emphasis: { focus: 'series' }
+                        }
+                    ]
+                });
+            } else {
+                // HEAT/Subcool: show top countries by total emissions (savings decomposition not available)
+                const byCountry = getSubcoolEmissionsByCountry();
+                const countryData = Object.entries(byCountry)
+                    .map(([code, d]) => ({ name: d.name || code, direct: +d.direct.toFixed(1), indirect: +d.indirect.toFixed(1), total: +d.total.toFixed(1) }))
+                    .sort((a, b) => b.total - a.total)
+                    .slice(0, 10)
+                    .reverse();
+
+                setChart('chart-emissions-top-countries', {
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: { type: 'shadow' },
+                        formatter: (params: any) => {
+                            if (!params?.length) return '';
+                            const country = params[0].name;
+                            let html = `<strong>${country}</strong><br/>`;
+                            let total = 0;
+                            params.forEach((p: any) => {
+                                if (p.value > 0) {
+                                    html += `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${p.color};margin-right:4px;"></span>${p.seriesName}: ${p.value.toFixed(1)} Mt<br/>`;
+                                    total += p.value;
+                                }
+                            });
+                            html += `<strong>Total: ${total.toFixed(1)} Mt CO₂</strong>`;
+                            return html;
+                        }
+                    },
+                    legend: { bottom: 0, textStyle: { fontSize: 10 }, itemWidth: 12, itemHeight: 8 },
+                    grid: { left: '3%', right: '6%', bottom: '14%', top: '3%', containLabel: true },
+                    xAxis: { type: 'value', name: 'Mt CO₂', nameLocation: 'middle', nameGap: 25, axisLabel: { fontSize: 10 } },
+                    yAxis: { type: 'category', data: countryData.map(d => d.name), axisLabel: { fontSize: 10, width: 80, overflow: 'truncate' } },
+                    series: [
+                        { name: 'Direct', type: 'bar', stack: 'emissions', data: countryData.map(d => d.direct), itemStyle: { color: '#E85A4F' }, emphasis: { focus: 'series' } },
+                        { name: 'Indirect', type: 'bar', stack: 'emissions', data: countryData.map(d => d.indirect), itemStyle: { color: '#3D6B6B', borderRadius: [0, 3, 3, 0] }, emphasis: { focus: 'series' } }
+                    ]
+                });
+            }
         }
 
         // Render timeline chart comparing scenarios
@@ -2647,6 +2905,200 @@
                     axisLabel: { fontSize: 10 }
                 },
                 series
+            });
+        }
+
+        // =====================================================
+        // EMISSIONS SAVINGS DECOMPOSITION CHARTS
+        // =====================================================
+        function updateEmissionsSavingsCharts() {
+            if (emissionsDataSource !== 'clasp') {
+                // Hide savings section when HEAT source selected (needs different decomposition)
+                const section = document.getElementById('emissions-savings-section');
+                if (section) section.style.display = 'none';
+                return;
+            }
+            const section = document.getElementById('emissions-savings-section');
+            if (section) section.style.display = '';
+
+            renderEmissionsWaterfall();
+            renderEmissionsCumulative();
+        }
+
+        function renderEmissionsWaterfall() {
+            // Calculate global totals for each scenario at the selected year
+            // Correct decomposition per CLASP methodology:
+            // - MEPS/Labels savings = BAU - GB (efficiency standards only)
+            // - Deep EE savings = GB - NZH (building-level efficiency, NOT grid decarb)
+            // - Tech max savings = NZH - BAT (best available technology)
+            // - Grid decarb potential = BAT_co2 - BAT_co2_nzg (net-zero grid variant)
+            const yearData = data.claspEnergy.filter((r: any) =>
+                r.year === emissionsYear && emissionsAppliances.includes(r.appliance)
+            );
+
+            let bauTotal = 0, gbTotal = 0, nzhTotal = 0, batTotal = 0, batNzgTotal = 0;
+            yearData.forEach((r: any) => {
+                bauTotal += r.bau_co2_mt || 0;
+                gbTotal += r.gb_co2_mt || 0;
+                nzhTotal += r.nzh_co2_mt || 0;
+                batTotal += r.bat_co2_mt || 0;
+                batNzgTotal += r.bat_co2_nzg_mt || 0;
+            });
+
+            const mepsSavings = bauTotal - gbTotal;
+            const deepEeSavings = gbTotal - nzhTotal;
+            const techSavings = nzhTotal - batTotal;
+            const gridSavings = batTotal - batNzgTotal;
+            const totalEeSavings = mepsSavings + deepEeSavings + techSavings;
+            const remaining = batNzgTotal;
+
+            setChart('chart-emissions-waterfall', {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    formatter: (params: any) => {
+                        if (!params || !params.length) return '';
+                        const item = params.find((p: any) => p.value !== 0 && p.seriesName !== 'Placeholder');
+                        if (!item) return '';
+                        return `${item.name}: ${Math.abs(item.value).toFixed(0)} Mt CO₂`;
+                    }
+                },
+                grid: { left: '3%', right: '5%', bottom: '12%', top: '8%', containLabel: true },
+                xAxis: {
+                    type: 'category',
+                    data: ['BAU', 'MEPS &\nLabels', 'Deep\nEfficiency', 'Best\nAvailable', 'Grid\nDecarb', 'Net\nEmissions'],
+                    axisLabel: { fontSize: 9, interval: 0 }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Mt CO₂',
+                    axisLabel: { fontSize: 10 }
+                },
+                series: [
+                    {
+                        name: 'Placeholder',
+                        type: 'bar',
+                        stack: 'waterfall',
+                        itemStyle: { color: 'transparent' },
+                        emphasis: { itemStyle: { color: 'transparent' } },
+                        data: [0, gbTotal, nzhTotal, batTotal, batNzgTotal, 0]
+                    },
+                    {
+                        name: 'Values',
+                        type: 'bar',
+                        stack: 'waterfall',
+                        data: [
+                            { value: bauTotal, itemStyle: { color: '#E85A4F' } },
+                            { value: -mepsSavings, itemStyle: { color: '#8BC34A' } },
+                            { value: -deepEeSavings, itemStyle: { color: '#66BB6A' } },
+                            { value: -techSavings, itemStyle: { color: '#43A047' } },
+                            { value: -gridSavings, itemStyle: { color: '#3D6B6B' } },
+                            { value: remaining, itemStyle: { color: '#f59e0b' } }
+                        ],
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: (params: any) => {
+                                const v = Math.abs(params.value);
+                                if (v < 1) return '';
+                                return v > 10 ? `${v.toFixed(0)}` : `${v.toFixed(1)}`;
+                            },
+                            fontSize: 10,
+                            fontWeight: 'bold'
+                        }
+                    }
+                ]
+            });
+        }
+
+        function renderEmissionsCumulative() {
+            // Use pre-computed cumulative columns from CLASP for accuracy
+            // bat_cumul_co2_red_mt = total EE savings (MEPS + deep EE + tech)
+            // Grid savings estimated: bat_cumul_co2_red_mt - bat_cumul_co2_red_nzg_mt (grid contribution)
+            const years = [2025, 2030, 2035, 2040, 2045, 2050];
+            let cumulMEPS: number[] = [];
+            let cumulDeepEE: number[] = [];
+            let cumulGrid: number[] = [];
+
+            years.forEach((year) => {
+                const yearData = data.claspEnergy.filter((r: any) =>
+                    r.year === year && emissionsAppliances.includes(r.appliance)
+                );
+
+                let gbCumul = 0, nzhCumul = 0, batCumul = 0, batNzgCumul = 0;
+                yearData.forEach((r: any) => {
+                    gbCumul += r.gb_cumul_co2_red_mt || 0;
+                    nzhCumul += r.nzh_cumul_co2_red_mt || 0;
+                    batCumul += r.bat_cumul_co2_red_mt || 0;
+                    batNzgCumul += r.bat_cumul_co2_red_nzg_mt || 0;
+                });
+
+                // Decompose cumulative savings:
+                // MEPS savings = GB cumulative reduction
+                // Deep EE = NZH cumul - GB cumul
+                // Grid potential = BAT_nzg cumul - BAT cumul (nzg saves more, grid contribution)
+                cumulMEPS.push(+gbCumul.toFixed(0));
+                cumulDeepEE.push(+(nzhCumul - gbCumul).toFixed(0));
+                cumulGrid.push(+(batNzgCumul - batCumul).toFixed(0));
+            });
+
+            setChart('chart-emissions-cumulative', {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: (params: any) => {
+                        let result = params[0].axisValue + '<br/>';
+                        let total = 0;
+                        params.forEach((p: any) => {
+                            result += `${p.marker} ${p.seriesName}: ${Math.abs(p.value).toLocaleString()} Mt<br/>`;
+                            total += Math.abs(p.value);
+                        });
+                        result += `<strong>Total: ${total.toLocaleString()} Mt CO₂e cumulative</strong>`;
+                        return result;
+                    }
+                },
+                legend: { bottom: 0, textStyle: { fontSize: 10 } },
+                grid: { left: '12%', right: '4%', bottom: '18%', top: '10%' },
+                xAxis: {
+                    type: 'category',
+                    data: years.map(String),
+                    axisLabel: { fontSize: 11 }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Cumulative Mt CO₂',
+                    nameLocation: 'middle',
+                    nameGap: 50,
+                    axisLabel: { fontSize: 10 }
+                },
+                series: [
+                    {
+                        name: 'MEPS & Labels',
+                        type: 'line',
+                        stack: 'cumulative',
+                        areaStyle: { opacity: 0.6 },
+                        data: cumulMEPS,
+                        smooth: true,
+                        itemStyle: { color: '#8BC34A' }
+                    },
+                    {
+                        name: 'Deep Efficiency',
+                        type: 'line',
+                        stack: 'cumulative',
+                        areaStyle: { opacity: 0.6 },
+                        data: cumulDeepEE,
+                        smooth: true,
+                        itemStyle: { color: '#66BB6A' }
+                    },
+                    {
+                        name: 'Grid Decarbonization',
+                        type: 'line',
+                        stack: 'cumulative',
+                        areaStyle: { opacity: 0.5 },
+                        data: cumulGrid,
+                        smooth: true,
+                        itemStyle: { color: '#3D6B6B' }
+                    }
+                ]
             });
         }
 
@@ -3298,8 +3750,8 @@
 
             // Reset chart titles for global view
             const setTitle = (id: string, text: string) => { const el = document.getElementById(id); if (el) el.textContent = text; };
-            setTitle('meps-chart1-title', 'MEPS & Labels by Region');
-            setTitle('meps-chart1-subtitle', 'Countries with MEPS vs Labels per region');
+            setTitle('meps-chart1-title', 'MEPS & Labels Coverage by Region');
+            setTitle('meps-chart1-subtitle', '% of countries with MEPS vs Labels per region');
             setTitle('meps-chart2-title', 'Policy Adoption Timeline');
             setTitle('meps-chart2-subtitle', 'Cumulative MEPS & Labels adoption over time');
             setTitle('meps-chart3-title', 'Equipment Type Coverage');
@@ -3325,7 +3777,11 @@
                 chart3El.style.overflow = '';
             }
 
-            // Chart 1: Countries with MEPS vs Labels by Region (grouped bar) — merged regions
+            // Chart 1: % of countries with MEPS vs Labels by Region (grouped bar) — merged regions
+            const REGION_TOTALS: Record<string, number> = {
+                'Asia': 49, 'Africa': 54, 'Americas': 35,
+                'Europe': 44, 'Middle East': 17, 'Oceania': 14
+            };
             const regionStats: Record<string, { meps: Set<string>; labels: Set<string> }> = {};
             filtered.forEach(m => {
                 const r = getMergedRegion(m.region);
@@ -3341,8 +3797,18 @@
                     trigger: 'axis',
                     axisPointer: { type: 'shadow' },
                     formatter: (params: any) => {
-                        let tip = `<strong>${params[0].axisValue}</strong>`;
-                        params.forEach((p: any) => { tip += `<br>${p.marker} ${p.seriesName}: ${p.value} countries`; });
+                        const region = params[0].axisValue;
+                        const total = REGION_TOTALS[region] || 1;
+                        let tip = `<strong>${region}</strong> (${total} countries)`;
+                        params.forEach((p: any) => {
+                            const absCount = region === 'MEPS'
+                                ? regionStats[region]?.meps?.size
+                                : regionStats[region]?.labels?.size;
+                            const mepsCount = regionStats[region]?.meps?.size || 0;
+                            const labelsCount = regionStats[region]?.labels?.size || 0;
+                            const count = p.seriesName === 'MEPS' ? mepsCount : labelsCount;
+                            tip += `<br>${p.marker} ${p.seriesName}: <strong>${p.value}%</strong> (${count} of ${total})`;
+                        });
                         return tip;
                     }
                 },
@@ -3353,20 +3819,34 @@
                     data: regionNames,
                     axisLabel: { rotate: 30, fontSize: 10, interval: 0 }
                 },
-                yAxis: { type: 'value', name: 'Countries', nameTextStyle: { fontSize: 11 } },
+                yAxis: {
+                    type: 'value',
+                    name: '% of Countries',
+                    max: 100,
+                    nameTextStyle: { fontSize: 11 },
+                    axisLabel: { formatter: (v: number) => v + '%' }
+                },
                 series: [
                     {
                         name: 'MEPS',
                         type: 'bar',
-                        data: regionNames.map(r => regionStats[r].meps.size),
+                        data: regionNames.map(r => {
+                            const total = REGION_TOTALS[r] || 1;
+                            return Math.round((regionStats[r].meps.size / total) * 100);
+                        }),
                         color: '#4A7F7F',
-                        barGap: '10%'
+                        barGap: '10%',
+                        label: { show: true, position: 'top', fontSize: 10, formatter: (p: any) => p.value + '%' }
                     },
                     {
                         name: 'Labels',
                         type: 'bar',
-                        data: regionNames.map(r => regionStats[r].labels.size),
-                        color: '#f59e0b'
+                        data: regionNames.map(r => {
+                            const total = REGION_TOTALS[r] || 1;
+                            return Math.round((regionStats[r].labels.size / total) * 100);
+                        }),
+                        color: '#f59e0b',
+                        label: { show: true, position: 'top', fontSize: 10, formatter: (p: any) => p.value + '%' }
                     }
                 ]
             });
@@ -3423,9 +3903,15 @@
             });
 
             // Chart 3: Equipment Type Coverage (MEPS vs Labels per appliance)
+            // Use all meps data (not filtered by equipment type toggle) so all 3 appliances always show
+            const allMepsForEquipChart = data.meps.filter(m => {
+                if (globalCountryFilter && m.country_code !== globalCountryFilter) return false;
+                if (mepsRegionFilter && m.region !== mepsRegionFilter) return false;
+                return true;
+            });
             const equipTypes = ['Air Conditioning', 'Domestic Refrigeration', 'Fans'];
-            const equipMeps = equipTypes.map(et => new Set(filtered.filter(r => r.equipment_type === et && isMepsRecord(r)).map(r => r.country_code)).size);
-            const equipLabels = equipTypes.map(et => new Set(filtered.filter(r => r.equipment_type === et && isLabelRecord(r)).map(r => r.country_code)).size);
+            const equipMeps = equipTypes.map(et => new Set(allMepsForEquipChart.filter(r => r.equipment_type === et && isMepsRecord(r)).map(r => r.country_code)).size);
+            const equipLabels = equipTypes.map(et => new Set(allMepsForEquipChart.filter(r => r.equipment_type === et && isLabelRecord(r)).map(r => r.country_code)).size);
 
             setChart('chart-meps-equipment', {
                 tooltip: {
@@ -3827,148 +4313,249 @@
         function updateKigaliCharts() {
             const filtered = getFilteredKigali();
 
-            // Chart 1: Kigali by Region (bar chart)
-            const regionCounts: Record<string, { parties: number, nonParties: number }> = {};
-            filtered.forEach(k => {
-                const country = data.countries.find(c => c.country_code === k.country_code);
-                const r = country?.region || 'Unknown';
-                if (!regionCounts[r]) regionCounts[r] = { parties: 0, nonParties: 0 };
-                if (k.kigali_party === 1) {
-                    regionCounts[r].parties += 1;
-                } else {
-                    regionCounts[r].nonParties += 1;
-                }
-            });
-            const regionData = Object.entries(regionCounts).sort((a, b) => (b[1].parties + b[1].nonParties) - (a[1].parties + a[1].nonParties));
+            // Market share by refrigerant type
+            renderRefrigerantMarketShare();
 
-            setChart('chart-kigali-region', {
-                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-                legend: { data: ['Kigali Parties', 'Non-Parties'], bottom: 0, textStyle: { fontSize: 10 } },
-                grid: { left: '3%', right: '4%', bottom: '18%', top: '5%', containLabel: true },
-                xAxis: {
-                    type: 'category',
-                    data: regionData.map(d => d[0]),
-                    axisLabel: { rotate: 30, fontSize: 10, interval: 0 }
-                },
-                yAxis: { type: 'value', name: 'Countries', nameTextStyle: { fontSize: 11 } },
-                series: [
-                    { name: 'Kigali Parties', type: 'bar', stack: 'total', data: regionData.map(d => d[1].parties), itemStyle: { color: '#22c55e' } },
-                    { name: 'Non-Parties', type: 'bar', stack: 'total', data: regionData.map(d => d[1].nonParties), itemStyle: { color: '#ef4444' } }
-                ]
-            });
-
-            // Chart 2: Group Type Breakdown (doughnut)
-            const groupCounts: Record<string, number> = {};
-            filtered.forEach(k => {
-                const g = k.group_type || 'Unknown';
-                groupCounts[g] = (groupCounts[g] || 0) + 1;
-            });
-            const groupData = Object.entries(groupCounts).map(([name, value]) => ({ name, value }));
-            const groupColors = ['#3D6B6B', '#8BC34A', '#E89B8C', '#E85A4F', '#4A7F7F'];
-
-            setChart('chart-kigali-groups', {
-                tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
-                legend: { bottom: 5, textStyle: { fontSize: 10 } },
-                series: [{
-                    type: 'pie',
-                    radius: ['35%', '60%'],
-                    center: ['50%', '45%'],
-                    data: groupData.map((d, i) => ({ ...d, itemStyle: { color: groupColors[i % groupColors.length] } })),
-                    itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 },
-                    label: { show: false },
-                    emphasis: { label: { show: true, fontSize: 12, fontWeight: 'bold' } }
-                }]
-            });
-
-            // Chart 3: Refrigerant GWP chart
-            renderRefrigerantGWPChart();
+            // Direct emissions trend (Subcool)
+            renderKigaliDirectEmissions();
         }
 
-        function renderRefrigerantGWPChart() {
-            if (!data.refrigerants || data.refrigerants.length === 0) return;
+        // Market share data by appliance and region (expert projections, % market share)
+        let kigaliMarketAppliance = 'ac';
+        let kigaliMarketRegion = '';
 
-            // Color mapping by refrigerant type - CCC Palette
-            const typeColors: Record<string, string> = {
-                'HFC': '#E85A4F',   // Orange-red - High GWP
-                'HCFC': '#E89B8C',  // Coral - Medium GWP
-                'HFO': '#3D6B6B',   // Teal - Low GWP
-                'NR': '#8BC34A'     // Green - Natural (lowest GWP)
-            };
+        const MARKET_SHARE_DATA: Record<string, Record<string, { years: string[], series: { name: string, data: number[], color: string }[] }>> = {
+            ac: {
+                '': { // Global
+                    years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
+                    series: [
+                        { name: 'R410A (GWP 2088)', data: [72, 52, 32, 18, 9, 4, 1], color: '#E85A4F' },
+                        { name: 'R32 (GWP 675)', data: [22, 36, 42, 42, 35, 26, 18], color: '#f59e0b' },
+                        { name: 'R290 (GWP 3)', data: [4, 9, 20, 33, 48, 62, 73], color: '#22c55e' },
+                        { name: 'R22 (HCFC)', data: [2, 3, 6, 7, 8, 8, 8], color: '#94a3b8' }
+                    ]
+                },
+                'China': {
+                    years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
+                    series: [
+                        { name: 'R410A (GWP 2088)', data: [65, 40, 20, 8, 3, 1, 0], color: '#E85A4F' },
+                        { name: 'R32 (GWP 675)', data: [25, 38, 40, 35, 25, 15, 8], color: '#f59e0b' },
+                        { name: 'R290 (GWP 3)', data: [8, 18, 35, 52, 68, 80, 88], color: '#22c55e' },
+                        { name: 'R22 (HCFC)', data: [2, 4, 5, 5, 4, 4, 4], color: '#94a3b8' }
+                    ]
+                },
+                'India': {
+                    years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
+                    series: [
+                        { name: 'R410A (GWP 2088)', data: [55, 42, 28, 15, 7, 3, 1], color: '#E85A4F' },
+                        { name: 'R32 (GWP 675)', data: [30, 40, 42, 38, 30, 20, 12], color: '#f59e0b' },
+                        { name: 'R290 (GWP 3)', data: [5, 12, 24, 40, 56, 70, 80], color: '#22c55e' },
+                        { name: 'R22 (HCFC)', data: [10, 6, 6, 7, 7, 7, 7], color: '#94a3b8' }
+                    ]
+                },
+                'Europe': {
+                    years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
+                    series: [
+                        { name: 'R410A (GWP 2088)', data: [55, 25, 10, 3, 1, 0, 0], color: '#E85A4F' },
+                        { name: 'R32 (GWP 675)', data: [35, 50, 48, 40, 30, 18, 8], color: '#f59e0b' },
+                        { name: 'R290 (GWP 3)', data: [8, 22, 38, 53, 65, 78, 88], color: '#22c55e' },
+                        { name: 'R22 (HCFC)', data: [2, 3, 4, 4, 4, 4, 4], color: '#94a3b8' }
+                    ]
+                },
+                'Africa': {
+                    years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
+                    series: [
+                        { name: 'R410A (GWP 2088)', data: [45, 48, 40, 28, 18, 10, 5], color: '#E85A4F' },
+                        { name: 'R32 (GWP 675)', data: [10, 22, 32, 38, 38, 32, 22], color: '#f59e0b' },
+                        { name: 'R290 (GWP 3)', data: [2, 5, 12, 22, 35, 50, 65], color: '#22c55e' },
+                        { name: 'R22 (HCFC)', data: [43, 25, 16, 12, 9, 8, 8], color: '#94a3b8' }
+                    ]
+                }
+            },
+            fridge: {
+                '': { // Global
+                    years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
+                    series: [
+                        { name: 'R134a (GWP 1430)', data: [52, 38, 25, 15, 8, 4, 2], color: '#E85A4F' },
+                        { name: 'R600a (GWP 3)', data: [42, 55, 65, 72, 78, 83, 87], color: '#22c55e' },
+                        { name: 'R290 (GWP 3)', data: [4, 5, 8, 11, 12, 11, 9], color: '#8BC34A' },
+                        { name: 'HFC blends', data: [2, 2, 2, 2, 2, 2, 2], color: '#94a3b8' }
+                    ]
+                },
+                'China': {
+                    years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
+                    series: [
+                        { name: 'R134a (GWP 1430)', data: [30, 18, 10, 5, 2, 1, 0], color: '#E85A4F' },
+                        { name: 'R600a (GWP 3)', data: [62, 74, 82, 87, 90, 92, 93], color: '#22c55e' },
+                        { name: 'R290 (GWP 3)', data: [6, 6, 6, 6, 6, 5, 5], color: '#8BC34A' },
+                        { name: 'HFC blends', data: [2, 2, 2, 2, 2, 2, 2], color: '#94a3b8' }
+                    ]
+                },
+                'India': {
+                    years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
+                    series: [
+                        { name: 'R134a (GWP 1430)', data: [60, 45, 30, 18, 10, 5, 2], color: '#E85A4F' },
+                        { name: 'R600a (GWP 3)', data: [35, 48, 60, 70, 78, 84, 88], color: '#22c55e' },
+                        { name: 'R290 (GWP 3)', data: [3, 5, 8, 10, 10, 9, 8], color: '#8BC34A' },
+                        { name: 'HFC blends', data: [2, 2, 2, 2, 2, 2, 2], color: '#94a3b8' }
+                    ]
+                },
+                'Europe': {
+                    years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
+                    series: [
+                        { name: 'R134a (GWP 1430)', data: [15, 8, 3, 1, 0, 0, 0], color: '#E85A4F' },
+                        { name: 'R600a (GWP 3)', data: [78, 85, 90, 93, 95, 96, 96], color: '#22c55e' },
+                        { name: 'R290 (GWP 3)', data: [5, 5, 5, 4, 3, 2, 2], color: '#8BC34A' },
+                        { name: 'HFC blends', data: [2, 2, 2, 2, 2, 2, 2], color: '#94a3b8' }
+                    ]
+                },
+                'Africa': {
+                    years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
+                    series: [
+                        { name: 'R134a (GWP 1430)', data: [72, 60, 45, 32, 20, 12, 6], color: '#E85A4F' },
+                        { name: 'R600a (GWP 3)', data: [22, 32, 44, 55, 66, 75, 82], color: '#22c55e' },
+                        { name: 'R290 (GWP 3)', data: [3, 5, 8, 10, 11, 10, 9], color: '#8BC34A' },
+                        { name: 'HFC blends', data: [3, 3, 3, 3, 3, 3, 3], color: '#94a3b8' }
+                    ]
+                }
+            }
+        };
 
-            // Sort refrigerants by GWP (descending) for visual impact
-            const sortedRefrigerants = [...data.refrigerants]
-                .filter(r => r.gwp_100_ar6 !== null && r.gwp_100_ar6 !== undefined)
-                .sort((a, b) => b.gwp_100_ar6 - a.gwp_100_ar6);
+        function renderRefrigerantMarketShare() {
+            const dataSet = MARKET_SHARE_DATA[kigaliMarketAppliance]?.[kigaliMarketRegion];
+            if (!dataSet) return;
 
-            // Take top 25 for readability
-            const topRefrigerants = sortedRefrigerants.slice(0, 25);
+            const regionLabel = kigaliMarketRegion || 'Global';
+            const applianceLabel = kigaliMarketAppliance === 'ac' ? 'Air Conditioners' : 'Domestic Refrigerators';
 
-            const chartData = topRefrigerants.map(r => ({
-                value: r.gwp_100_ar6,
-                name: r.refrigerant_code,
-                itemStyle: { color: typeColors[r.ref_type] || '#94a3b8' },
-                refType: r.ref_type,
-                isNatural: r.natural_refrigerant
-            }));
-
-            setChart('chart-refrigerant-gwp', {
+            setChart('chart-kigali-transition', {
                 tooltip: {
                     trigger: 'axis',
-                    axisPointer: { type: 'shadow' },
                     formatter: function(params: any) {
-                        const item = params[0];
-                        const refData = chartData.find(d => d.name === item.name);
-                        return `<strong>${item.name}</strong><br/>
-                                GWP (100-year): ${item.value.toLocaleString()}<br/>
-                                Type: ${refData?.refType || 'Unknown'}<br/>
-                                ${refData?.isNatural ? '<span style="color: #22c55e;">✓ Natural refrigerant</span>' : ''}`;
+                        let html = `<strong>${params[0].axisValue}</strong><br/>`;
+                        params.forEach((p: any) => {
+                            html += `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${p.color};margin-right:4px;"></span>${p.seriesName}: <strong>${p.value}%</strong><br/>`;
+                        });
+                        return html;
                     }
                 },
-                grid: {
-                    left: '3%',
-                    right: '4%',
-                    bottom: '20%',
-                    top: '8%',
-                    containLabel: true
-                },
+                grid: { left: '3%', right: '4%', bottom: '18%', top: '8%', containLabel: true },
+                legend: { bottom: 0, textStyle: { color: '#475569', fontSize: 10 }, padding: [5, 0, 0, 0] },
                 xAxis: {
                     type: 'category',
-                    data: chartData.map(d => d.name),
-                    axisLabel: {
-                        rotate: 45,
-                        fontSize: 9,
-                        interval: 0
-                    },
-                    axisTick: { alignWithLabel: true }
+                    data: dataSet.years,
+                    axisLabel: { fontSize: 11 }
                 },
                 yAxis: {
-                    type: 'log',
-                    name: 'GWP (log scale)',
-                    nameLocation: 'middle',
-                    nameGap: 50,
+                    type: 'value',
+                    name: 'Market Share (%)',
                     nameTextStyle: { color: '#475569', fontSize: 11 },
-                    axisLabel: {
-                        formatter: (value: number) => {
-                            if (value >= 1000) return (value / 1000) + 'k';
-                            return value;
-                        }
-                    },
-                    min: 1
+                    max: 100,
+                    axisLabel: { formatter: '{value}%' }
                 },
-                series: [{
-                    type: 'bar',
-                    data: chartData,
-                    barMaxWidth: 30,
-                    label: {
-                        show: false
-                    },
-                    emphasis: {
-                        itemStyle: {
-                            shadowBlur: 10,
-                            shadowColor: 'rgba(0, 0, 0, 0.3)'
-                        }
+                series: dataSet.series.map(s => ({
+                    name: s.name,
+                    type: 'line',
+                    stack: 'total',
+                    areaStyle: { opacity: 0.6 },
+                    data: s.data,
+                    smooth: true,
+                    symbol: 'circle',
+                    symbolSize: 5,
+                    lineStyle: { color: s.color, width: 2 },
+                    itemStyle: { color: s.color }
+                }))
+            });
+        }
+
+        function renderKigaliDirectEmissions() {
+            if (!data.subcool || data.subcool.length === 0) return;
+
+            // Use 5-year intervals for cleaner display
+            const allYears = Array.from(new Set(data.subcool.map((r: any) => r.year))).sort() as number[];
+            const years = allYears.filter((y: number) => y % 5 === 0 || y === allYears[0] || y === allYears[allYears.length - 1]);
+
+            const scenarios = ['BAU', 'KIP', 'KIP_PLUS', 'MIT'];
+            const scenarioColors: Record<string, string> = {
+                'BAU': '#E85A4F',
+                'KIP': '#f59e0b',
+                'KIP_PLUS': '#16a34a',
+                'MIT': '#22c55e'
+            };
+            const scenarioNames: Record<string, string> = {
+                'BAU': 'Business as Usual',
+                'KIP': 'Kigali Implementation',
+                'KIP_PLUS': 'Kigali+',
+                'MIT': 'Maximum Intervention'
+            };
+
+            const seriesData: Record<string, number[]> = {};
+            scenarios.forEach(s => { seriesData[s] = []; });
+
+            years.forEach((y: number) => {
+                scenarios.forEach(s => {
+                    const yearScenario = data.subcool.filter((r: any) =>
+                        r.year === y && r.scenario_name === s
+                    );
+                    const totalDirect = yearScenario.reduce((sum: number, r: any) =>
+                        sum + (r.direct_emission_mt || 0), 0);
+                    seriesData[s].push(Math.round(totalDirect * 10) / 10);
+                });
+            });
+
+            // Filter out scenarios with no data
+            const activeScenarios = scenarios.filter(s => seriesData[s].some(v => v > 0));
+
+            setChart('chart-kigali-direct-emissions', {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params: any) {
+                        let result = `<strong>${params[0].axisValue}</strong><br/>`;
+                        const bauVal = params.find((p: any) => p.seriesName === 'Business as Usual')?.value || 0;
+                        params.forEach((p: any) => {
+                            const pct = bauVal > 0 && p.seriesName !== 'Business as Usual'
+                                ? ` (${((1 - p.value / bauVal) * 100).toFixed(0)}% reduction)`
+                                : '';
+                            result += `${p.marker} ${p.seriesName}: ${p.value.toFixed(1)} Mt CO₂e${pct}<br/>`;
+                        });
+                        return result;
                     }
-                }]
+                },
+                legend: {
+                    data: activeScenarios.map(s => scenarioNames[s]),
+                    bottom: 0,
+                    textStyle: { fontSize: 11 },
+                    padding: [5, 0, 0, 0]
+                },
+                grid: { left: '4%', right: '4%', bottom: '18%', top: '8%', containLabel: true },
+                xAxis: {
+                    type: 'category',
+                    data: years,
+                    axisLabel: { fontSize: 11, interval: 0 },
+                    boundaryGap: false
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Direct Emissions (Mt CO₂e)',
+                    nameTextStyle: { fontSize: 11, color: '#475569' },
+                    axisLabel: { fontSize: 10 }
+                },
+                series: activeScenarios.map(s => ({
+                    name: scenarioNames[s],
+                    type: 'line',
+                    data: seriesData[s],
+                    smooth: true,
+                    symbol: 'circle',
+                    symbolSize: 5,
+                    lineStyle: {
+                        width: s === 'KIP_PLUS' ? 3.5 : 2.5,
+                        color: scenarioColors[s],
+                        type: s === 'KIP_PLUS' ? 'solid' : 'solid'
+                    },
+                    itemStyle: { color: scenarioColors[s] },
+                    areaStyle: s === 'BAU' ? { color: `${scenarioColors[s]}15` } :
+                               s === 'KIP_PLUS' ? { color: `${scenarioColors[s]}10` } : undefined
+                }))
             });
         }
 
@@ -3976,14 +4563,101 @@
             const container = document.querySelector('#kigali-country-detail .country-detail') as HTMLElement;
             if (!container) return;
 
-            const country = data.countries.find(c => c.country_code === code);
+            const country = data.countries.find((c: any) => c.country_code === code);
 
             if (!country) {
                 container.innerHTML = `<h4>Unknown Country</h4><p class="side-muted">No data available for ${code}</p>`;
                 return;
             }
 
-            container.innerHTML = `<h4>${country.country_name}</h4>`;
+            // Get Kigali status
+            const kigaliRecord = data.kigali.find((k: any) => k.country_code === code);
+            const kigaliStatus = kigaliRecord?.kigali_party === 1 ? 'Ratified' : 'Not Ratified';
+            const groupType = kigaliRecord?.group_type || 'Unknown';
+            const montrealStatus = kigaliRecord?.montreal_protocol_party === 1 ? 'Yes' : 'No';
+
+            // Get Subcool data for country (2030 BAU vs KIP)
+            const subcool2030BAU = data.subcool.filter((r: any) =>
+                r.country_code === code && r.year === 2030 && r.scenario_name === 'BAU'
+            );
+            const subcool2030KIP = data.subcool.filter((r: any) =>
+                r.country_code === code && r.year === 2030 && r.scenario_name === 'KIP'
+            );
+            const subcool2030MIT = data.subcool.filter((r: any) =>
+                r.country_code === code && r.year === 2030 && r.scenario_name === 'MIT'
+            );
+
+            const bauDirect = subcool2030BAU.reduce((s: number, r: any) => s + (r.direct_emission_mt || 0), 0);
+            const kipDirect = subcool2030KIP.reduce((s: number, r: any) => s + (r.direct_emission_mt || 0), 0);
+            const mitDirect = subcool2030MIT.reduce((s: number, r: any) => s + (r.direct_emission_mt || 0), 0);
+            const bauIndirect = subcool2030BAU.reduce((s: number, r: any) => s + (r.indirect_emission_mt || 0), 0);
+
+            const kipSavings = bauDirect > 0 ? ((bauDirect - kipDirect) / bauDirect * 100).toFixed(1) : '0';
+            const mitSavings = bauDirect > 0 ? ((bauDirect - mitDirect) / bauDirect * 100).toFixed(1) : '0';
+
+            // Determine phase-down timeline based on group type (Kigali Amendment schedule)
+            let timeline = '';
+            if (groupType.includes('Non-Article')) {
+                timeline = 'Freeze: 2019 · 40% by 2024 · 70% by 2029 · 80% by 2034 · 85% by 2036';
+            } else if (groupType.includes('Group 1')) {
+                timeline = 'Freeze: 2024 · 10% by 2029 · 30% by 2035 · 50% by 2040 · 80% by 2045';
+            } else if (groupType.includes('Group 2')) {
+                timeline = 'Freeze: 2028 · 10% by 2032 · 20% by 2037 · 30% by 2042 · 85% by 2047';
+            }
+
+            // Get KIP_PLUS data
+            const subcool2030KIPP = data.subcool.filter((r: any) =>
+                r.country_code === code && r.year === 2030 && r.scenario_name === 'KIP_PLUS'
+            );
+            const kippDirect = subcool2030KIPP.reduce((s: number, r: any) => s + (r.direct_emission_mt || 0), 0);
+            const kippSavings = bauDirect > 0 ? ((bauDirect - kippDirect) / bauDirect * 100).toFixed(1) : '0';
+
+            container.innerHTML = `
+                <h4 style="margin:0 0 0.75rem; color:#2D5252; font-size:1rem;">${country.country_name}</h4>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.75rem;">
+                    <div style="background:#f8fafb; border-radius:8px; padding:0.6rem 0.75rem; border-left:3px solid ${kigaliRecord?.kigali_party === 1 ? '#22c55e' : '#ef4444'};">
+                        <div style="font-size:0.68rem; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">Kigali Status</div>
+                        <div style="font-size:0.9rem; font-weight:700; color:${kigaliRecord?.kigali_party === 1 ? '#166534' : '#dc2626'};">${kigaliStatus}</div>
+                    </div>
+                    <div style="background:#f8fafb; border-radius:8px; padding:0.6rem 0.75rem; border-left:3px solid #3D6B6B;">
+                        <div style="font-size:0.68rem; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">Group Type</div>
+                        <div style="font-size:0.9rem; font-weight:700; color:#1e293b;">${groupType}</div>
+                    </div>
+                </div>
+                ${timeline ? `<div style="background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:0.5rem 0.75rem; margin-bottom:0.75rem; font-size:0.75rem; color:#92400e;"><i class="fa-solid fa-clock" style="margin-right:0.3rem;"></i>Phase-down timeline: ${timeline}</div>` : ''}
+                ${bauDirect > 0 ? `
+                <div style="margin-bottom:0.75rem;">
+                    <div style="font-size:0.75rem; font-weight:700; color:#3D6B6B; margin-bottom:0.4rem;"><i class="fa-solid fa-chart-line" style="margin-right:0.3rem;"></i>Direct Emissions (2030 Projections)</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0.4rem;">
+                        <div style="text-align:center; background:#fef2f2; border-radius:6px; padding:0.4rem;">
+                            <div style="font-size:0.65rem; color:#dc2626;">BAU</div>
+                            <div style="font-size:0.85rem; font-weight:700; color:#991b1b;">${bauDirect.toFixed(2)} Mt</div>
+                        </div>
+                        <div style="text-align:center; background:#fefce8; border-radius:6px; padding:0.4rem;">
+                            <div style="font-size:0.65rem; color:#d97706;">Kigali</div>
+                            <div style="font-size:0.85rem; font-weight:700; color:#92400e;">${kipDirect.toFixed(2)} Mt</div>
+                            <div style="font-size:0.6rem; color:#16a34a;">-${kipSavings}%</div>
+                        </div>
+                        <div style="text-align:center; background:linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius:6px; padding:0.4rem; border:1px solid #bbf7d0;">
+                            <div style="font-size:0.65rem; color:#16a34a; font-weight:600;">Kigali+</div>
+                            <div style="font-size:0.85rem; font-weight:700; color:#166534;">${kippDirect.toFixed(2)} Mt</div>
+                            <div style="font-size:0.6rem; color:#16a34a; font-weight:600;">-${kippSavings}%</div>
+                        </div>
+                        <div style="text-align:center; background:#f0fdf4; border-radius:6px; padding:0.4rem;">
+                            <div style="font-size:0.65rem; color:#15803d;">Mitigation</div>
+                            <div style="font-size:0.85rem; font-weight:700; color:#166534;">${mitDirect.toFixed(2)} Mt</div>
+                            <div style="font-size:0.6rem; color:#16a34a;">-${mitSavings}%</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="font-size:0.72rem; color:#64748b;">
+                    <i class="fa-solid fa-bolt" style="color:#f59e0b; margin-right:0.3rem;"></i>Indirect (electricity): ${bauIndirect.toFixed(2)} Mt (2030 BAU)
+                </div>
+                ` : '<div style="font-size:0.75rem; color:#94a3b8; font-style:italic;">No Subcool model data available for this country.</div>'}
+                <div style="margin-top:0.5rem; font-size:0.68rem; color:#94a3b8;">
+                    Montreal Protocol: ${montrealStatus} · Source: UNEP Ozone Secretariat, HEAT Subcool Model
+                </div>
+            `;
         }
 
         function updatePolicyCountryDetail(code: string) {
@@ -4028,27 +4702,7 @@
         }
 
         function updateKigaliFilterStatusBar() {
-            const regionTag = document.getElementById('kigali-filter-region');
-            const groupTag = document.getElementById('kigali-filter-groups');
-
-            if (regionTag) {
-                regionTag.innerHTML = `<i class="fa-solid fa-earth-americas"></i> ${kigaliRegionFilter || 'All Regions'}`;
-            }
-            if (groupTag) {
-                const groupFilter = (document.getElementById('kigali-group-filter') as HTMLSelectElement)?.value || '';
-                groupTag.innerHTML = `<i class="fa-solid fa-users"></i> ${groupFilter || 'All Groups'}`;
-            }
-
-            // Update status title based on country selection
-            const statusTitle = document.getElementById('kigali-status-title');
-            if (statusTitle) {
-                if (selectedCountry) {
-                    const country = data.countries.find(c => c.country_code === selectedCountry);
-                    statusTitle.textContent = country?.country_name || selectedCountry;
-                } else {
-                    statusTitle.textContent = 'Kigali Amendment Tracker';
-                }
-            }
+            // Filter status bar removed from template - no-op
         }
 
         // =====================================================
@@ -4110,12 +4764,7 @@
         }
 
         function updateAccessKPIs() {
-            const filtered = getAccessDataBySource(data, getAccessFilters(), accessDataSource);
-            const kpis = getAccessKPIs(filtered);
-            setText('access-kpi-total', (kpis.totalAtRisk / 1e9).toFixed(2) + 'B');
-            setText('access-kpi-high-impact', kpis.highImpactCountries);
-            setText('access-kpi-countries', kpis.countriesCovered);
-            setText('access-kpi-regions', kpis.regions);
+            // KPI panel removed - no-op
         }
 
         function populateAccessRegionFilter() {
@@ -4230,15 +4879,16 @@
 
         function updateAccessMap() {
             if (!accessMapSvg) return;
-            // Use unfiltered-by-country data for map display so all countries stay visible
+            // Map always shows latest historical year (2024) with tick-box filters
             const mapFilters: AccessFilters = {
-                year: accessYear,
+                year: 2024,
                 impactLevels: accessImpactLevels,
                 populationCategories: accessPopCategories,
-                region: accessRegionFilter,
+                region: '',
                 country: ''
             };
-            const mapData = getAccessDataBySource(data, mapFilters, accessDataSource);
+            const mapData = getAccessDataBySource(data, mapFilters, 'historical')
+                .filter(r => accessRegions.length === 0 || !r.region || accessRegions.includes(r.region));
             const accessTotals: Record<string, number> = {};
             mapData.forEach((record) => {
                 const value = record.population_without_cooling || 0;
@@ -4313,255 +4963,137 @@
             setWidth('access-progress-critical', (counts.critical / total) * 100);
         }
 
-        // Access Charts
+        // Access Charts - unified 2013-2050 timeline
         function updateAccessCharts() {
-            const container = document.getElementById('access-charts-container');
-            if (!container) return;
-
-            container.innerHTML = `
-                <div class="charts-grid-2col">
-                    <div class="card-panel chart-card">
-                        <div class="chart-card-header">
-                            <h3><i class="fa-solid fa-chart-bar" style="color: #E85A4F; margin-right: 0.5rem;"></i>Population at Risk by Region</h3>
-                            <p class="chart-subtitle">Year: ${accessYear}</p>
-                        </div>
-                        <div class="chart-card-body">
-                            <div class="chart-container" style="height: 280px;">
-                                <div id="chart-access-regional" class="chart-surface"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-panel chart-card">
-                        <div class="chart-card-header">
-                            <h3><i class="fa-solid fa-chart-line" style="color: #E85A4F; margin-right: 0.5rem;"></i>Trend Over Time</h3>
-                            <p class="chart-subtitle">2013-2024</p>
-                        </div>
-                        <div class="chart-card-body">
-                            <div class="chart-container" style="height: 280px;">
-                                <div id="chart-access-trend" class="chart-surface"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="charts-grid-2col">
-                    <div class="card-panel chart-card">
-                        <div class="chart-card-header">
-                            <h3><i class="fa-solid fa-chart-pie" style="color: #E89B8C; margin-right: 0.5rem;"></i>By Population Category</h3>
-                            <p class="chart-subtitle">Current selection</p>
-                        </div>
-                        <div class="chart-card-body">
-                            <div class="chart-container" style="height: 280px;">
-                                <div id="chart-access-category" class="chart-surface"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-panel chart-card">
-                        <div class="chart-card-header">
-                            <h3><i class="fa-solid fa-ranking-star" style="color: #E89B8C; margin-right: 0.5rem;"></i>By Impact Level</h3>
-                            <p class="chart-subtitle">Distribution</p>
-                        </div>
-                        <div class="chart-card-body">
-                            <div class="chart-container" style="height: 280px;">
-                                <div id="chart-access-impact" class="chart-surface"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            requestAnimationFrame(() => {
-                renderAccessRegionalChart();
-                renderAccessTrendChart();
-                renderAccessCategoryChart();
-                renderAccessImpactChart();
-            });
+            renderAccessTimeline();
         }
 
-        function renderAccessRegionalChart() {
-            const filtered = getAccessDataBySource(data, getAccessFilters(), accessDataSource);
-            const regionTotals: Record<string, number> = {};
-            filtered.forEach(r => {
-                if (r.region) {
-                    regionTotals[r.region] = (regionTotals[r.region] || 0) + (r.population_without_cooling || 0);
+        // Build country-to-region lookup from historical data.
+        // Forecast uses UN M49 sub-regions (e.g., "Central Asia and Southern Asia")
+        // while historical uses simplified SEforALL regions (e.g., "Asia and the Middle East").
+        // We normalize forecast regions per-country to match historical assignments.
+        function buildHistoricalRegionMap(): Record<string, string> {
+            const map: Record<string, string> = {};
+            for (const r of data.access) {
+                if (r.country_code && r.region) {
+                    map[r.country_code] = r.region;
                 }
+            }
+            return map;
+        }
+
+        function renderAccessTimeline() {
+            // Merge historical (2013-2024) + forecast (2025-2050) into unified dataset
+            // Normalize forecast regions per-country to match historical region taxonomy
+            const histRegionMap = buildHistoricalRegionMap();
+            const normalizedForecast = data.accessForecast.map(r => ({
+                ...r,
+                region: (r.country_code && histRegionMap[r.country_code])
+                    ? histRegionMap[r.country_code]
+                    : r.region
+            }));
+            const allRecords = [...data.access, ...normalizedForecast];
+            // Apply tick-box filters
+            const filtered = allRecords.filter(r => {
+                if (accessRegions.length > 0 && r.region && !accessRegions.includes(r.region)) return false;
+                if (accessImpactLevels.length > 0 && r.impact_level && !accessImpactLevels.includes(r.impact_level)) return false;
+                if (accessPopCategories.length > 0 && r.population_category && !accessPopCategories.includes(r.population_category)) return false;
+                return true;
             });
 
-            // Abbreviate long region names for display
-            const regionAbbrev: Record<string, string> = {
-                'Asia and Middle East': 'Asia & ME',
-                'Latin America and the Caribbean': 'LAC',
-                'Africa': 'Africa',
-                'North Africa': 'N. Africa',
-                'Pacific': 'Pacific'
+            // Group by year × population_category (stacked by income group)
+            const years = Array.from(new Set(filtered.map(r => r.year))).sort();
+            const categories = ['Rural Poor', 'Urban Poor', 'Lower-Middle Income', 'Middle-Income'];
+            const catColors: Record<string, string> = {
+                'Rural Poor': '#E85A4F',
+                'Urban Poor': '#22c55e',
+                'Lower-Middle Income': '#64748b',
+                'Middle-Income': '#f59e0b'
             };
 
-            const regions = Object.keys(regionTotals).sort((a, b) => regionTotals[b] - regionTotals[a]);
-            const displayNames = regions.map(r => regionAbbrev[r] || r);
-            const values = regions.map(r => +(regionTotals[r] / 1e9).toFixed(2));
+            const seriesData: Record<string, number[]> = {};
+            categories.forEach(cat => { seriesData[cat] = []; });
 
-            setChart('chart-access-regional', {
+            years.forEach(y => {
+                categories.forEach(cat => {
+                    const catRecords = filtered.filter(r => r.year === y && r.population_category === cat);
+                    const total = catRecords.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
+                    seriesData[cat].push(Math.round(total / 1e6 * 10) / 10);
+                });
+            });
+
+            // Only show categories with data
+            const activeCats = categories.filter(cat =>
+                accessPopCategories.includes(cat) && seriesData[cat].some(v => v > 0)
+            );
+
+            setChart('chart-access-timeline', {
                 tooltip: {
                     trigger: 'axis',
-                    formatter: (params: any) => {
-                        const idx = params[0].dataIndex;
-                        return `${regions[idx]}: ${params[0].value}B`;
+                    formatter: function(params: any) {
+                        const yr = params[0].axisValue;
+                        const isProjected = Number(yr) > 2024;
+                        let html = `<strong>${yr}</strong>${isProjected ? ' <em style="color:#94a3b8">(projected)</em>' : ''}<br/>`;
+                        let total = 0;
+                        params.forEach((p: any) => {
+                            total += p.value;
+                            html += `${p.marker} ${p.seriesName}: <strong>${p.value.toFixed(0)}M</strong><br/>`;
+                        });
+                        html += `<hr style="margin:4px 0;border-color:#e2e8f0"/><strong>Total: ${total.toFixed(0)}M</strong>`;
+                        return html;
                     }
                 },
-                grid: { left: '12%', right: '4%', bottom: '18%', top: '12%', containLabel: false },
-                xAxis: {
-                    type: 'category',
-                    data: displayNames,
-                    axisLabel: { color: '#475569', rotate: 0, fontSize: 11 },
-                    axisLine: { lineStyle: { color: '#e2e8f0' } }
-                },
-                yAxis: {
-                    type: 'value',
-                    name: 'Billions',
-                    nameLocation: 'middle',
-                    nameGap: 35,
-                    nameTextStyle: { color: '#475569', fontSize: 11 },
-                    axisLabel: { color: '#475569', fontSize: 10 },
-                    splitLine: { lineStyle: { color: '#e2e8f0' } }
-                },
-                series: [{
-                    name: 'Population at Risk',
-                    type: 'bar',
-                    data: values,
-                    itemStyle: { color: '#ef4444' }
-                }]
-            });
-        }
-
-        function renderAccessTrendChart() {
-            const years = ACCESS_YEARS;
-            const baseFilters = getAccessFilters();
-
-            const yearlyTotals = years.map(year => {
-                const yearFiltered = data.access.filter(r => {
-                    if (r.year !== year) return false;
-                    if (baseFilters.impactLevels.length > 0 && r.impact_level && !baseFilters.impactLevels.includes(r.impact_level)) return false;
-                    if (baseFilters.populationCategories.length > 0 && r.population_category && !baseFilters.populationCategories.includes(r.population_category)) return false;
-                    if (baseFilters.region && r.region !== baseFilters.region) return false;
-                    return true;
-                });
-                return yearFiltered.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0) / 1e9;
-            });
-
-            setChart('chart-access-trend', {
-                tooltip: { trigger: 'axis', formatter: '{b}: {c}B' },
-                grid: { left: '12%', right: '4%', bottom: '12%', top: '12%', containLabel: false },
-                xAxis: {
-                    type: 'category',
-                    data: years.map(String),
-                    axisLabel: { color: '#475569', fontSize: 10 },
-                    axisLine: { lineStyle: { color: '#e2e8f0' } }
-                },
-                yAxis: {
-                    type: 'value',
-                    name: 'Billions',
-                    nameLocation: 'middle',
-                    nameGap: 35,
-                    nameTextStyle: { color: '#475569', fontSize: 11 },
-                    axisLabel: { color: '#475569', fontSize: 10 },
-                    splitLine: { lineStyle: { color: '#e2e8f0' } }
-                },
-                series: [{
-                    name: 'Population at Risk',
-                    type: 'line',
-                    data: yearlyTotals.map(v => +v.toFixed(2)),
-                    smooth: true,
-                    lineStyle: { color: '#ef4444', width: 3 },
-                    areaStyle: { color: 'rgba(239, 68, 68, 0.15)' },
-                    itemStyle: { color: '#ef4444' },
-                    markLine: {
-                        data: [{ xAxis: String(accessYear) }],
-                        lineStyle: { color: '#3D6B6B', type: 'dashed' },
-                        label: { formatter: 'Selected' }
-                    }
-                }]
-            });
-        }
-
-        function renderAccessCategoryChart() {
-            const filtered = getAccessDataBySource(data, getAccessFilters(), accessDataSource);
-            const categoryTotals: Record<string, number> = {};
-            POPULATION_CATEGORIES.forEach(cat => categoryTotals[cat] = 0);
-
-            filtered.forEach(r => {
-                if (r.population_category && categoryTotals[r.population_category] !== undefined) {
-                    categoryTotals[r.population_category] += r.population_without_cooling || 0;
-                }
-            });
-
-            // CCC Palette colors for population categories
-            const categoryColors: Record<string, string> = {
-                'Rural Poor': '#E85A4F',
-                'Urban Poor': '#E89B8C',
-                'Lower-Middle Income': '#8BC34A',
-                'Middle-Income': '#3D6B6B'
-            };
-
-            setChart('chart-access-category', {
-                tooltip: { trigger: 'item', formatter: '{b}: {c}B ({d}%)' },
                 legend: {
-                    bottom: 5,
-                    textStyle: { color: '#475569', fontSize: 11 },
-                    itemWidth: 12,
-                    itemHeight: 12,
-                    itemGap: 8
+                    data: activeCats,
+                    bottom: 0,
+                    textStyle: { fontSize: 10, color: '#475569' }
                 },
-                series: [{
-                    name: 'By Category',
-                    type: 'pie',
-                    radius: ['30%', '55%'],
-                    center: ['50%', '42%'],
-                    data: POPULATION_CATEGORIES.map(cat => ({
-                        value: +(categoryTotals[cat] / 1e9).toFixed(2),
-                        name: cat,
-                        itemStyle: { color: categoryColors[cat] }
-                    }))
-                }]
-            });
-        }
-
-        function renderAccessImpactChart() {
-            const filtered = getAccessDataBySource(data, getAccessFilters(), accessDataSource);
-            const impactTotals: Record<string, number> = { High: 0, Medium: 0, Low: 0 };
-
-            filtered.forEach(r => {
-                if (r.impact_level && impactTotals[r.impact_level] !== undefined) {
-                    impactTotals[r.impact_level] += r.population_without_cooling || 0;
-                }
-            });
-
-            const impactColors: Record<string, string> = { High: '#E85A4F', Medium: '#E89B8C', Low: '#8BC34A' };
-
-            setChart('chart-access-impact', {
-                tooltip: { trigger: 'axis', formatter: '{b}: {c}B' },
-                grid: { left: '12%', right: '4%', bottom: '12%', top: '12%', containLabel: false },
+                grid: { left: '3%', right: '4%', bottom: '14%', top: '8%', containLabel: true },
                 xAxis: {
                     type: 'category',
-                    data: IMPACT_LEVELS,
-                    axisLabel: { color: '#475569', fontSize: 11 },
-                    axisLine: { lineStyle: { color: '#e2e8f0' } }
+                    data: years,
+                    axisLabel: { fontSize: 10, interval: 4 },
+                    boundaryGap: false
                 },
                 yAxis: {
                     type: 'value',
-                    name: 'Billions',
-                    nameLocation: 'middle',
-                    nameGap: 35,
-                    nameTextStyle: { color: '#475569', fontSize: 11 },
-                    axisLabel: { color: '#475569', fontSize: 10 },
-                    splitLine: { lineStyle: { color: '#e2e8f0' } }
+                    name: 'Population (millions)',
+                    nameTextStyle: { fontSize: 10, color: '#475569' },
+                    axisLabel: { fontSize: 10, formatter: '{value}M' }
                 },
-                series: [{
-                    name: 'Population at Risk',
-                    type: 'bar',
-                    data: IMPACT_LEVELS.map(level => ({
-                        value: +(impactTotals[level] / 1e9).toFixed(2),
-                        itemStyle: { color: impactColors[level] }
-                    }))
-                }]
+                visualMap: {
+                    show: false,
+                    dimension: 0,
+                    pieces: [
+                        { min: 0, max: years.indexOf(2024), color: undefined },
+                        { min: years.indexOf(2025), max: years.length - 1, color: undefined }
+                    ]
+                },
+                series: activeCats.map(cat => ({
+                    name: cat,
+                    type: 'line',
+                    stack: 'total',
+                    areaStyle: { opacity: 0.6 },
+                    data: seriesData[cat],
+                    smooth: false,
+                    symbol: 'none',
+                    lineStyle: { color: catColors[cat], width: 1.5 },
+                    itemStyle: { color: catColors[cat] },
+                    markLine: cat === activeCats[0] ? {
+                        silent: true,
+                        symbol: 'none',
+                        data: [{
+                            xAxis: '2024',
+                            lineStyle: { color: '#94a3b8', type: 'dashed', width: 1.5 },
+                            label: {
+                                formatter: 'Historical | Projected',
+                                position: 'insideEndTop',
+                                fontSize: 9,
+                                color: '#94a3b8'
+                            }
+                        }]
+                    } : undefined
+                }))
             });
         }
 
@@ -4574,31 +5106,11 @@
         }
 
         function updateAccessKpiTitle() {
-            const titleEl = document.getElementById('access-kpi-title');
-            if (!titleEl) return;
-
-            if (selectedCountry) {
-                const country = data.countries.find(c => c.country_code === selectedCountry);
-                titleEl.innerHTML = `<i class="fa-solid fa-flag"></i> ${country?.country_name || selectedCountry}`;
-            } else {
-                titleEl.innerHTML = `<i class="fa-solid fa-globe"></i> Global View`;
-            }
+            // KPI panel removed - no-op
         }
 
         function updateAccessMetaPills() {
-            const sourcePill = document.getElementById('access-meta-source');
-            const yearPill = document.getElementById('access-meta-year');
-            const regionPill = document.getElementById('access-meta-region');
-
-            if (sourcePill) {
-                sourcePill.innerHTML = `<i class="fa-solid fa-database"></i> ${accessDataSource === 'historical' ? 'Historical' : 'Forecast'}`;
-            }
-            if (yearPill) {
-                yearPill.innerHTML = `<i class="fa-solid fa-calendar"></i> ${accessYear}`;
-            }
-            if (regionPill) {
-                regionPill.innerHTML = `<i class="fa-solid fa-earth-americas"></i> ${accessRegionFilter || 'All Regions'}`;
-            }
+            // KPI panel removed - no-op
 
             // Also update filter status bar tags
             updateAccessFilterStatusBar();
@@ -5215,7 +5727,12 @@
                         return '#e2e8f0';
                     }
 
-                    if (mapType === 'gcp') {
+                    if (mapType === 'kigali') {
+                        // Kigali Amendment ratification - CCC palette
+                        const kRec = data.kigali.find(k => k.country_code === code);
+                        if (!kRec) return '#e2e8f0';
+                        return kRec.kigali_party === 1 ? '#16a34a' : '#E89B8C'; // green / coral
+                    } else if (mapType === 'gcp') {
                         // Global Cooling Pledge - CCC palette
                         const pledge = data.pledge.find(p => p.country_code === code);
                         if (!pledge) return '#e2e8f0';
@@ -5245,7 +5762,22 @@
             const legendEl = byId('ndc-legend');
             if (!legendEl) return;
 
-            if (mapType === 'gcp') {
+            if (mapType === 'kigali') {
+                legendEl.innerHTML = `
+                    <div class="legend-item">
+                        <div class="legend-color" style="background:#16a34a"></div>
+                        Ratified
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background:#E89B8C"></div>
+                        Not Ratified
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background:#e2e8f0"></div>
+                        No Data
+                    </div>
+                `;
+            } else if (mapType === 'gcp') {
                 legendEl.innerHTML = `
                     <div class="legend-item">
                         <div class="legend-color" style="background:#2D5252"></div>
@@ -5390,29 +5922,11 @@
         }
 
         function updatePolicyKpiTitle() {
-            const titleEl = document.getElementById('policy-kpi-title');
-            if (!titleEl) return;
-
-            if (selectedCountry) {
-                const country = data.countries.find(c => c.country_code === selectedCountry);
-                titleEl.innerHTML = `<i class="fa-solid fa-flag"></i> ${country?.country_name || selectedCountry}`;
-            } else {
-                titleEl.innerHTML = `<i class="fa-solid fa-globe"></i> Global View`;
-            }
+            // KPI panel removed - no-op
         }
 
         function updatePolicyMetaPills() {
-            const tabPill = document.getElementById('policy-meta-tab');
-            if (tabPill) {
-                const tabNames: Record<string, string> = {
-                    'gcp': 'Global Cooling Pledge',
-                    'ndc': 'NDC Cooling Mentions',
-                    'NCAP': 'National Cooling Action Plans'
-                };
-                tabPill.innerHTML = `<i class="fa-solid fa-file-contract"></i> ${tabNames[policyMapType] || policyMapType}`;
-            }
-
-            // Also update filter status bar tags
+            // KPI panel removed - no-op
             updatePolicyFilterStatusBar();
         }
 
@@ -5460,40 +5974,7 @@
         }
 
         function updatePolicyKPIs() {
-            // Filter by global country if set
-            const filteredPledge = globalCountryFilter
-                ? data.pledge.filter(p => p.country_code === globalCountryFilter)
-                : data.pledge;
-            const filteredNdcTracker = globalCountryFilter
-                ? data.ndcTracker.filter(n => n.country_code === globalCountryFilter)
-                : data.ndcTracker;
-            const filteredNcap = globalCountryFilter
-                ? data.ncap.filter(n => n.country_code === globalCountryFilter)
-                : data.ncap;
-
-            // GCP Signatories
-            const gcpSignatories = filteredPledge.filter(p => p.signatory === 1).length;
-            setText('policy-kpi-gcp', gcpSignatories);
-
-            // NDC 3.0 Submitted
-            const ndc30Submitted = new Set(
-                filteredNdcTracker
-                    .filter(n => n.ndc_type === 'NDC 3.0' && n.mention_status !== 'No NDC submitted')
-                    .map(n => n.country_code)
-            ).size;
-            setText('policy-kpi-ndc', ndc30Submitted);
-
-            // Cooling Mentioned (Energy Efficiency in NDC 3.0)
-            const coolingMentioned = new Set(
-                filteredNdcTracker
-                    .filter(n => n.ndc_type === 'NDC 3.0' && n.category === 'Energy Efficiency' && n.mention_value === 1)
-                    .map(n => n.country_code)
-            ).size;
-            setText('policy-kpi-cooling', coolingMentioned);
-
-            // NCAP - count of countries with NCAPs
-            const ncapCount = filteredNcap.length;
-            setText('policy-kpi-NCAP', ncapCount);
+            // KPI panel removed - no-op
         }
 
         function updateNDCCharts() {
@@ -5643,63 +6124,127 @@
             const container = document.getElementById('policy-charts-container');
             if (!container) return;
 
+            // Dispose any ECharts instances inside the container before clearing DOM
+            const chartEls = container.querySelectorAll('.chart-surface');
+            chartEls.forEach(el => {
+                const existingChart = echarts.getInstanceByDom(el as HTMLElement);
+                if (existingChart) existingChart.dispose();
+                // Also clean from the charts cache
+                if (el.id && charts[el.id]) {
+                    delete charts[el.id];
+                }
+            });
+
             // Clear existing charts
             container.innerHTML = '';
 
-            if (mapType === 'gcp') {
-                // Create GCP chart structure
+            if (mapType === 'kigali') {
+                // Create Kigali Amendment charts
+                const kigaliParties = data.kigali.filter(k => k.kigali_party === 1).length;
+                const nonParties = data.kigali.length - kigaliParties;
+                const montrealParties = data.kigali.filter(k => k.montreal_protocol_party === 1).length;
+                const groupTypes = [...new Set(data.kigali.map(k => k.group_type).filter(Boolean))] as string[];
+
                 container.innerHTML = `
                     <div class="charts-grid-2col">
                         <div class="card-panel chart-card">
                             <div class="chart-card-header">
-                                <h3><i class="fa-solid fa-chart-bar" style="color: #8BC34A; margin-right: 0.5rem;"></i>Global Cooling Pledge by Region</h3>
-                                <p class="chart-subtitle">Signatories vs Non-Signatories</p>
+                                <h3><i class="fa-solid fa-chart-pie" style="color: #16a34a; margin-right: 0.5rem;"></i>Kigali Amendment Status</h3>
+                                <p class="chart-subtitle">${kigaliParties} of ${data.kigali.length} countries ratified</p>
                             </div>
                             <div class="chart-card-body">
-                                <div class="chart-container" style="height: 280px;">
-                                    <div id="chart-gcp-regions" class="chart-surface"></div>
-                                </div>
+                                <div id="chart-kigali-status" class="chart-surface" style="width: 100%; height: 280px; min-height: 280px;"></div>
                             </div>
                         </div>
                         <div class="card-panel chart-card">
                             <div class="chart-card-header">
-                                <h3><i class="fa-solid fa-circle-nodes" style="color: #8BC34A; margin-right: 0.5rem;"></i>GCP Signatories & NDC Cooling Mentions</h3>
-                                <p class="chart-subtitle">Energy Efficiency in NDC 3.0</p>
+                                <h3><i class="fa-solid fa-earth-americas" style="color: #16a34a; margin-right: 0.5rem;"></i>Kigali Ratification by Region</h3>
+                                <p class="chart-subtitle">Regional breakdown of parties</p>
                             </div>
                             <div class="chart-card-body">
-                                <div class="chart-container" style="height: 280px;">
-                                    <div id="chart-gcp-ndc-overlap" class="chart-surface"></div>
-                                </div>
+                                <div id="chart-kigali-regions" class="chart-surface" style="width: 100%; height: 280px; min-height: 280px;"></div>
                             </div>
                         </div>
                     </div>
                     <div class="charts-grid-2col">
                         <div class="card-panel chart-card">
                             <div class="chart-card-header">
-                                <h3><i class="fa-solid fa-chart-pie" style="color: #3D6B6B; margin-right: 0.5rem;"></i>GCP Signatories by Region</h3>
-                                <p class="chart-subtitle">Regional distribution</p>
+                                <h3><i class="fa-solid fa-users-rectangle" style="color: #3D6B6B; margin-right: 0.5rem;"></i>Parties by Group Type</h3>
+                                <p class="chart-subtitle">Article 5 Group 1, Group 2, Non-Article 5</p>
                             </div>
                             <div class="chart-card-body">
-                                <div class="chart-container" style="height: 280px;">
-                                    <div id="chart-gcp-timeline" class="chart-surface"></div>
-                                </div>
+                                <div id="chart-kigali-groups" class="chart-surface" style="width: 100%; height: 280px; min-height: 280px;"></div>
                             </div>
                         </div>
                         <div class="card-panel chart-card">
                             <div class="chart-card-header">
-                                <h3><i class="fa-solid fa-layer-group" style="color: #3D6B6B; margin-right: 0.5rem;"></i>Policy Framework Coverage</h3>
-                                <p class="chart-subtitle">GCP + NDC Status</p>
+                                <h3><i class="fa-solid fa-layer-group" style="color: #3D6B6B; margin-right: 0.5rem;"></i>Treaty Coverage</h3>
+                                <p class="chart-subtitle">Montreal Protocol vs Kigali Amendment</p>
                             </div>
                             <div class="chart-card-body">
-                                <div class="chart-container" style="height: 280px;">
-                                    <div id="chart-policy-coverage" class="chart-surface"></div>
-                                </div>
+                                <div id="chart-kigali-coverage" class="chart-surface" style="width: 100%; height: 280px; min-height: 280px;"></div>
                             </div>
                         </div>
                     </div>
                 `;
-                // Initialize GCP charts after DOM is ready
-                requestAnimationFrame(() => updateGCPCharts());
+                // Wait for grid layout to fully compute, then render charts
+                waitForPolicyLayout().then(ready => {
+                    if (!ready) return; // view hidden, skip
+                    renderPolicyKigaliCharts();
+                    setTimeout(() => forceResizeViewCharts('policy'), 100);
+                    setTimeout(() => forceResizeViewCharts('policy'), 500);
+                });
+            } else if (mapType === 'gcp') {
+                // Create GCP progress chart structure
+                container.innerHTML = `
+                    <div class="charts-grid-2col">
+                        <div class="card-panel chart-card">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-bars-progress" style="color: #16a34a; margin-right: 0.5rem;"></i>Policy Adoption Progress</h3>
+                                <p class="chart-subtitle">% of countries with each policy instrument</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div id="chart-gcp-progress" class="chart-surface" style="width: 100%; height: 300px; min-height: 300px;"></div>
+                            </div>
+                        </div>
+                        <div class="card-panel chart-card">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-chart-line" style="color: #16a34a; margin-right: 0.5rem;"></i>NCAP Cumulative Adoption</h3>
+                                <p class="chart-subtitle">National Cooling Action Plans over time</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div id="chart-ncap-cumulative" class="chart-surface" style="width: 100%; height: 300px; min-height: 300px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="charts-grid-2col">
+                        <div class="card-panel chart-card">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-arrow-trend-up" style="color: #3D6B6B; margin-right: 0.5rem;"></i>NDC Cooling Integration: 2.0 vs 3.0</h3>
+                                <p class="chart-subtitle">How cooling mentions evolved across NDC generations</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div id="chart-ndc-evolution" class="chart-surface" style="width: 100%; height: 300px; min-height: 300px;"></div>
+                            </div>
+                        </div>
+                        <div class="card-panel chart-card">
+                            <div class="chart-card-header">
+                                <h3><i class="fa-solid fa-layer-group" style="color: #3D6B6B; margin-right: 0.5rem;"></i>Policy Coverage Depth</h3>
+                                <p class="chart-subtitle">How many policy instruments per country (GCP + NDC + NCAP)</p>
+                            </div>
+                            <div class="chart-card-body">
+                                <div id="chart-policy-depth" class="chart-surface" style="width: 100%; height: 300px; min-height: 300px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                // Wait for grid layout to fully compute, then render charts
+                waitForPolicyLayout().then(ready => {
+                    if (!ready) return;
+                    renderGCPProgressCharts();
+                    setTimeout(() => forceResizeViewCharts('policy'), 100);
+                    setTimeout(() => forceResizeViewCharts('policy'), 500);
+                });
 
             } else if (mapType === 'ndc') {
                 // Create NDC chart structure
@@ -5711,9 +6256,7 @@
                                 <p class="chart-subtitle">Excluding Kigali Amendment</p>
                             </div>
                             <div class="chart-card-body">
-                                <div class="chart-container" style="height: 280px;">
-                                    <div id="chart-ndc-categories" class="chart-surface"></div>
-                                </div>
+                                <div id="chart-ndc-categories" class="chart-surface" style="width: 100%; height: 280px; min-height: 280px;"></div>
                             </div>
                         </div>
                         <div class="card-panel chart-card">
@@ -5722,9 +6265,7 @@
                                 <p class="chart-subtitle">Countries mentioning cooling</p>
                             </div>
                             <div class="chart-card-body">
-                                <div class="chart-container" style="height: 280px;">
-                                    <div id="chart-ndc-regions" class="chart-surface"></div>
-                                </div>
+                                <div id="chart-ndc-regions" class="chart-surface" style="width: 100%; height: 280px; min-height: 280px;"></div>
                             </div>
                         </div>
                     </div>
@@ -5735,9 +6276,7 @@
                                 <p class="chart-subtitle">Comparison of cooling mentions</p>
                             </div>
                             <div class="chart-card-body">
-                                <div class="chart-container" style="height: 280px;">
-                                    <div id="chart-ndc-comparison" class="chart-surface"></div>
-                                </div>
+                                <div id="chart-ndc-comparison" class="chart-surface" style="width: 100%; height: 280px; min-height: 280px;"></div>
                             </div>
                         </div>
                         <div class="card-panel chart-card">
@@ -5746,15 +6285,18 @@
                                 <p class="chart-subtitle">Countries by submission status</p>
                             </div>
                             <div class="chart-card-body">
-                                <div class="chart-container" style="height: 280px;">
-                                    <div id="chart-ndc-submission" class="chart-surface"></div>
-                                </div>
+                                <div id="chart-ndc-submission" class="chart-surface" style="width: 100%; height: 280px; min-height: 280px;"></div>
                             </div>
                         </div>
                     </div>
                 `;
-                // Initialize NDC charts after DOM is ready
-                requestAnimationFrame(() => updateNDCCharts());
+                // Wait for grid layout to fully compute, then render charts
+                waitForPolicyLayout().then(ready => {
+                    if (!ready) return;
+                    updateNDCCharts();
+                    setTimeout(() => forceResizeViewCharts('policy'), 100);
+                    setTimeout(() => forceResizeViewCharts('policy'), 500);
+                });
 
             } else if (mapType === 'NCAP') {
                 // Create NCAP charts
@@ -5766,9 +6308,7 @@
                                 <p class="chart-subtitle">Countries with National Cooling Action Plans</p>
                             </div>
                             <div class="chart-card-body">
-                                <div class="chart-container" style="height: 280px;">
-                                    <div id="chart-ncap-regions" class="chart-surface"></div>
-                                </div>
+                                <div id="chart-ncap-regions" class="chart-surface" style="width: 100%; height: 280px; min-height: 280px;"></div>
                             </div>
                         </div>
                         <div class="card-panel chart-card">
@@ -5777,9 +6317,7 @@
                                 <p class="chart-subtitle">NCAPs by year of adoption</p>
                             </div>
                             <div class="chart-card-body">
-                                <div class="chart-container" style="height: 280px;">
-                                    <div id="chart-ncap-timeline" class="chart-surface"></div>
-                                </div>
+                                <div id="chart-ncap-timeline" class="chart-surface" style="width: 100%; height: 280px; min-height: 280px;"></div>
                             </div>
                         </div>
                     </div>
@@ -5793,100 +6331,358 @@
                         </div>
                     </div>
                 `;
-                // Initialize NCAP charts after DOM is ready
-                requestAnimationFrame(() => updateNCAPCharts());
+                // Wait for grid layout to fully compute, then render charts
+                waitForPolicyLayout().then(ready => {
+                    if (!ready) return;
+                    updateNCAPCharts();
+                    setTimeout(() => forceResizeViewCharts('policy'), 100);
+                    setTimeout(() => forceResizeViewCharts('policy'), 500);
+                });
             }
         }
 
-        function updateGCPCharts() {
-            const regions = [...new Set(data.countries.map(c => c.region).filter(Boolean))];
-            const gcpSignatories = regions.map(region => {
-                const regionCountries = data.countries.filter(c => c.region === region).map(c => c.country_code);
-                return data.pledge.filter(p => regionCountries.includes(p.country_code) && p.signatory === 1).length;
+        // Wait for grid layout to compute proper column widths before initializing charts.
+        // Returns false if the view section is hidden (skip chart creation).
+        // Returns true when chart-surface elements have proper layout (> 100px width).
+        function waitForPolicyLayout(maxWait = 2000): Promise<boolean> {
+            return new Promise(resolve => {
+                const container = document.getElementById('policy-charts-container');
+                if (!container) { resolve(false); return; }
+                // If the view section is hidden, don't wait - skip chart creation
+                const section = container.closest('.view-section');
+                if (section && !section.classList.contains('active')) {
+                    resolve(false);
+                    return;
+                }
+                const check = () => {
+                    const firstSurface = container.querySelector('.chart-surface');
+                    if (firstSurface) {
+                        const w = firstSurface.getBoundingClientRect().width;
+                        if (w > 100) { resolve(true); return; }
+                    }
+                    if (maxWait <= 0) {
+                        console.warn('[waitForPolicyLayout] Timed out waiting for layout');
+                        resolve(true); // still try to render
+                        return;
+                    }
+                    maxWait -= 50;
+                    setTimeout(check, 50);
+                };
+                // First check after a microtask to let the browser compute layout
+                requestAnimationFrame(() => setTimeout(check, 0));
             });
-            const gcpNonSignatories = regions.map(region => {
-                const regionCountries = data.countries.filter(c => c.region === region).map(c => c.country_code);
-                return data.pledge.filter(p => regionCountries.includes(p.country_code) && p.signatory === 0).length;
+        }
+
+        function renderPolicyKigaliCharts() {
+            const kigaliParties = data.kigali.filter(k => k.kigali_party === 1).length;
+            const nonParties = data.kigali.length - kigaliParties;
+
+            // 1. Kigali Status pie chart
+            setChart('chart-kigali-status', {
+                tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+                series: [{
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    center: ['50%', '55%'],
+                    data: [
+                        { value: kigaliParties, name: 'Ratified', itemStyle: { color: '#16a34a' } },
+                        { value: nonParties, name: 'Not Ratified', itemStyle: { color: '#E89B8C' } }
+                    ],
+                    label: { formatter: '{b}\n{c} countries', fontSize: 12 },
+                    emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.2)' } }
+                }]
             });
 
-            // GCP by Region Chart
-            setChart('chart-gcp-regions', {
-                tooltip: { trigger: 'axis' },
-                legend: {
-                    bottom: 0,
-                    textStyle: { color: '#475569', fontSize: 11 }
+            // 2. Kigali by Region bar chart
+            const regions = [...new Set(data.countries.map(c => c.region).filter(Boolean))];
+            const regionData = regions.map(region => {
+                const countryCodes = data.countries.filter(c => c.region === region).map(c => c.country_code);
+                const ratified = data.kigali.filter(k => countryCodes.includes(k.country_code) && k.kigali_party === 1).length;
+                const total = data.kigali.filter(k => countryCodes.includes(k.country_code)).length;
+                return { region, ratified, notRatified: total - ratified };
+            }).sort((a, b) => b.ratified - a.ratified);
+
+            setChart('chart-kigali-regions', {
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                grid: { left: '3%', right: '4%', bottom: '3%', top: '10%', containLabel: true },
+                xAxis: { type: 'category', data: regionData.map(r => r.region), axisLabel: { rotate: 30, fontSize: 10 } },
+                yAxis: { type: 'value', name: 'Countries' },
+                series: [
+                    { name: 'Ratified', type: 'bar', stack: 'total', data: regionData.map(r => r.ratified), itemStyle: { color: '#16a34a' } },
+                    { name: 'Not Ratified', type: 'bar', stack: 'total', data: regionData.map(r => r.notRatified), itemStyle: { color: '#E89B8C' } }
+                ]
+            });
+
+            // 3. Parties by Group Type
+            const groupTypes = [...new Set(data.kigali.map(k => k.group_type).filter(Boolean))] as string[];
+            const groupData = groupTypes.map(gt => ({
+                name: gt,
+                value: data.kigali.filter(k => k.group_type === gt && k.kigali_party === 1).length
+            })).sort((a, b) => b.value - a.value);
+
+            const groupColors = ['#16a34a', '#3D6B6B', '#f59e0b', '#8BC34A'];
+            setChart('chart-kigali-groups', {
+                tooltip: { trigger: 'item', formatter: '{b}: {c} parties ({d}%)' },
+                series: [{
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    center: ['50%', '55%'],
+                    data: groupData.map((g, i) => ({
+                        ...g,
+                        itemStyle: { color: groupColors[i % groupColors.length] }
+                    })),
+                    label: { formatter: '{b}\n{c}', fontSize: 11 },
+                    emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.2)' } }
+                }]
+            });
+
+            // 4. Treaty Coverage comparison
+            const montrealParties = data.kigali.filter(k => k.montreal_protocol_party === 1).length;
+            setChart('chart-kigali-coverage', {
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                grid: { left: '3%', right: '4%', bottom: '3%', top: '10%', containLabel: true },
+                xAxis: { type: 'category', data: ['Montreal Protocol', 'Kigali Amendment'] },
+                yAxis: { type: 'value', name: 'Countries', max: Math.max(montrealParties, kigaliParties) + 10 },
+                series: [{
+                    type: 'bar',
+                    data: [
+                        { value: montrealParties, itemStyle: { color: '#3D6B6B' } },
+                        { value: kigaliParties, itemStyle: { color: '#16a34a' } }
+                    ],
+                    barWidth: '40%',
+                    label: { show: true, position: 'top', formatter: '{c} parties', fontSize: 12 }
+                }]
+            });
+        }
+
+        function renderGCPProgressCharts() {
+            const totalCountries = data.countries.length || 195;
+
+            // 1. Policy Adoption Progress - horizontal bar gauge
+            const gcpCount = data.pledge.filter(p => p.signatory === 1).length;
+            const ndcCoolingCount = new Set(
+                data.ndcTracker
+                    .filter(n => n.ndc_type === 'NDC 3.0' && n.category === 'Energy Efficiency' && n.mention_value === 1)
+                    .map(n => n.country_code)
+            ).size;
+            const ncapCount = data.ncap.length;
+            const kigaliCount = data.kigali.filter(k => k.kigali_party === 1).length;
+            const mepsACCount = new Set(data.meps.filter(m => m.equipment_type === 'Air Conditioning').map(m => m.country_code)).size;
+
+            const indicators = [
+                { name: 'Kigali Ratified', value: kigaliCount, color: '#16a34a' },
+                { name: 'AC MEPS Adopted', value: mepsACCount, color: '#3D6B6B' },
+                { name: 'GCP Signatories', value: gcpCount, color: '#22c55e' },
+                { name: 'NDC Cooling Mention', value: ndcCoolingCount, color: '#f59e0b' },
+                { name: 'NCAP Developed', value: ncapCount, color: '#8b5cf6' }
+            ];
+
+            setChart('chart-gcp-progress', {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' },
+                    formatter: function(params: any) {
+                        const d = params[0];
+                        const idx = d.dataIndex;
+                        const ind = indicators[idx];
+                        return `<strong>${ind.name}</strong><br/>${ind.value} of ${totalCountries} countries (${((ind.value / totalCountries) * 100).toFixed(0)}%)`;
+                    }
                 },
-                grid: { left: '3%', right: '3%', bottom: '15%', top: '8%', containLabel: true },
-                xAxis: categoryAxis(regions),
-                yAxis: valueAxis(),
+                grid: { left: '3%', right: '12%', bottom: '3%', top: '3%', containLabel: true },
+                xAxis: {
+                    type: 'value',
+                    max: 100,
+                    axisLabel: { formatter: '{value}%', color: '#475569', fontSize: 10 },
+                    splitLine: { lineStyle: { color: '#f1f5f9' } }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: indicators.map(i => i.name),
+                    axisLabel: { color: '#334155', fontSize: 11, fontWeight: 500 },
+                    axisLine: { show: false },
+                    axisTick: { show: false }
+                },
+                series: [{
+                    type: 'bar',
+                    data: indicators.map(i => ({
+                        value: +((i.value / totalCountries) * 100).toFixed(1),
+                        itemStyle: {
+                            color: {
+                                type: 'linear', x: 0, y: 0, x2: 1, y2: 0,
+                                colorStops: [
+                                    { offset: 0, color: i.color },
+                                    { offset: 1, color: i.color + '99' }
+                                ]
+                            },
+                            borderRadius: [0, 4, 4, 0]
+                        },
+                        label: {
+                            show: true,
+                            position: 'right',
+                            formatter: `${i.value}`,
+                            color: '#334155',
+                            fontWeight: 600,
+                            fontSize: 12
+                        }
+                    })),
+                    barWidth: '55%'
+                }]
+            });
+
+            // 2. NCAP Cumulative Timeline
+            const ncapYears = data.ncap
+                .map(n => n.year)
+                .filter((y): y is number => y !== null && y !== undefined)
+                .sort((a, b) => a - b);
+
+            const yearCounts: Record<number, number> = {};
+            ncapYears.forEach(year => { yearCounts[year] = (yearCounts[year] || 0) + 1; });
+            const years = Object.keys(yearCounts).map(Number).sort((a, b) => a - b);
+
+            let cumulative = 0;
+            const cumulativeData = years.map(y => { cumulative += yearCounts[y]; return cumulative; });
+            const annualData = years.map(y => yearCounts[y]);
+
+            setChart('chart-ncap-cumulative', {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function(params: any) {
+                        let html = `<strong>${params[0].axisValue}</strong><br/>`;
+                        params.forEach((p: any) => {
+                            html += `${p.marker} ${p.seriesName}: <strong>${p.value}</strong><br/>`;
+                        });
+                        return html;
+                    }
+                },
+                legend: { bottom: 0, textStyle: { color: '#475569', fontSize: 10 } },
+                grid: { left: '3%', right: '4%', bottom: '15%', top: '10%', containLabel: true },
+                xAxis: {
+                    type: 'category',
+                    data: years.map(String),
+                    axisLabel: { color: '#475569', fontSize: 10, rotate: 30 }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Countries',
+                    nameTextStyle: { color: '#475569', fontSize: 11 },
+                    axisLabel: { color: '#475569', fontSize: 10 }
+                },
                 series: [
                     {
-                        name: 'Signatories',
-                        type: 'bar',
-                        stack: 'total',
-                        data: gcpSignatories,
-                        itemStyle: { color: '#22c55e' }
+                        name: 'Cumulative NCAPs',
+                        type: 'line',
+                        data: cumulativeData,
+                        smooth: true,
+                        lineStyle: { color: '#8b5cf6', width: 3 },
+                        areaStyle: { color: 'rgba(139, 92, 246, 0.12)' },
+                        itemStyle: { color: '#8b5cf6' },
+                        symbol: 'circle',
+                        symbolSize: 6
                     },
                     {
-                        name: 'Non-Signatories',
+                        name: 'New per Year',
                         type: 'bar',
-                        stack: 'total',
-                        data: gcpNonSignatories,
-                        itemStyle: { color: '#94a3b8' }
+                        data: annualData,
+                        itemStyle: { color: '#c4b5fd', borderRadius: [3, 3, 0, 0] },
+                        barWidth: '40%'
                     }
                 ]
             });
 
-            // GCP Signatories with NDC Cooling Mentions (pie chart)
-            const gcpWithNDC = data.pledge.filter(p => {
-                if (p.signatory !== 1) return false;
-                return data.ndcTracker.some(n =>
-                    n.country_code === p.country_code &&
-                    n.ndc_type === 'NDC 3.0' &&
-                    n.category === 'Energy Efficiency' &&
-                    n.mention_value === 1
-                );
-            }).length;
-            const gcpWithoutNDC = data.pledge.filter(p => p.signatory === 1).length - gcpWithNDC;
+            // 3. NDC Cooling Integration Evolution: 2.0 vs 3.0
+            const ndcCategories = [...new Set(data.ndcTracker.map(n => n.category).filter(Boolean))] as string[];
+            const categoryAbbrev: Record<string, string> = {
+                'Energy Efficiency': 'Energy Eff.',
+                'Refrigerant Management': 'Refrigerants',
+                'Thermal Comfort': 'Thermal',
+                'Cold Chain': 'Cold Chain',
+                'Passive Cooling': 'Passive',
+                'District Cooling': 'District'
+            };
 
-            setChart('chart-gcp-ndc-overlap', {
-                tooltip: { trigger: 'item' },
-                legend: {
-                    bottom: 0,
-                    textStyle: { color: '#475569', fontSize: 11 }
+            const ndc20Mentions = ndcCategories.map(cat =>
+                new Set(data.ndcTracker.filter(n => n.ndc_type === 'NDC 2.0' && n.category === cat && n.mention_value === 1).map(n => n.country_code)).size
+            );
+            const ndc30Mentions = ndcCategories.map(cat =>
+                new Set(data.ndcTracker.filter(n => n.ndc_type === 'NDC 3.0' && n.category === cat && n.mention_value === 1).map(n => n.country_code)).size
+            );
+
+            setChart('chart-ndc-evolution', {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' }
+                },
+                legend: { bottom: 0, textStyle: { color: '#475569', fontSize: 10 } },
+                grid: { left: '3%', right: '4%', bottom: '15%', top: '10%', containLabel: true },
+                xAxis: {
+                    type: 'category',
+                    data: ndcCategories.map(c => categoryAbbrev[c] || c),
+                    axisLabel: { color: '#475569', fontSize: 9, rotate: 25, interval: 0 }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: 'Countries',
+                    nameTextStyle: { color: '#475569', fontSize: 11 },
+                    axisLabel: { color: '#475569', fontSize: 10 }
+                },
+                series: [
+                    {
+                        name: 'NDC 2.0',
+                        type: 'bar',
+                        data: ndc20Mentions,
+                        itemStyle: { color: '#94a3b8', borderRadius: [3, 3, 0, 0] },
+                        barGap: '10%'
+                    },
+                    {
+                        name: 'NDC 3.0',
+                        type: 'bar',
+                        data: ndc30Mentions,
+                        itemStyle: { color: '#16a34a', borderRadius: [3, 3, 0, 0] }
+                    }
+                ]
+            });
+
+            // 4. Policy Coverage Depth - funnel/histogram
+            const countryCodes = data.countries.map(c => c.country_code);
+            const coverageCount: Record<number, number> = { 0: 0, 1: 0, 2: 0, 3: 0 };
+
+            countryCodes.forEach(cc => {
+                let depth = 0;
+                if (data.pledge.some(p => p.country_code === cc && p.signatory === 1)) depth++;
+                if (data.ndcTracker.some(n => n.country_code === cc && n.ndc_type === 'NDC 3.0' && n.category === 'Energy Efficiency' && n.mention_value === 1)) depth++;
+                if (data.ncap.some(n => n.country_code === cc)) depth++;
+                coverageCount[depth]++;
+            });
+
+            const depthLabels = ['No Policy', '1 Instrument', '2 Instruments', 'All 3 (GCP+NDC+NCAP)'];
+            const depthColors = ['#e2e8f0', '#f59e0b', '#3D6B6B', '#16a34a'];
+
+            setChart('chart-policy-depth', {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function(params: any) {
+                        return `<strong>${params.name}</strong><br/>${params.value} countries (${((params.value / totalCountries) * 100).toFixed(0)}%)`;
+                    }
                 },
                 series: [{
-                    name: 'GCP Signatories',
                     type: 'pie',
-                    radius: ['35%', '60%'],
-                    center: ['50%', '45%'],
-                    data: [
-                        { value: gcpWithNDC, name: 'With NDC Cooling', itemStyle: { color: '#22c55e' } },
-                        { value: gcpWithoutNDC, name: 'Without NDC Cooling', itemStyle: { color: '#f59e0b' } }
-                    ]
+                    radius: ['40%', '70%'],
+                    center: ['50%', '48%'],
+                    data: depthLabels.map((label, i) => ({
+                        value: coverageCount[i],
+                        name: label,
+                        itemStyle: { color: depthColors[i] }
+                    })),
+                    label: {
+                        formatter: '{b}\n{c}',
+                        fontSize: 11,
+                        color: '#334155'
+                    },
+                    emphasis: {
+                        itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.2)' }
+                    }
                 }]
             });
-
-            // GCP Adoption Timeline (bar chart by region showing total)
-            setChart('chart-gcp-timeline', {
-                tooltip: { trigger: 'axis' },
-                legend: {
-                    bottom: 0,
-                    textStyle: { color: '#475569', fontSize: 11 }
-                },
-                grid: { left: '3%', right: '3%', bottom: '15%', top: '8%', containLabel: true },
-                xAxis: categoryAxis(regions),
-                yAxis: valueAxis(),
-                series: [{
-                    name: 'GCP Signatories',
-                    type: 'bar',
-                    data: gcpSignatories,
-                    itemStyle: { color: '#22c55e' }
-                }]
-            });
-
-            // Update policy coverage chart
-            updatePolicyCoverageChart();
         }
 
         function updateNCAPCharts() {
@@ -6040,7 +6836,32 @@
             // Show/hide pillar info button
             const infoBtn = document.getElementById('pillar-info-btn') as HTMLElement | null;
             if (infoBtn) infoBtn.style.display = pillarInfo[view] ? 'inline-flex' : 'none';
-            requestAnimationFrame(resizeCharts);
+            // After display:none → block, ECharts instances initialized at 0×0
+            // must be disposed and re-created at correct dimensions.
+            // Force a layout reflow, then reinit charts with explicit pixel dimensions.
+            const reinitViewCharts = () => {
+                // Force layout reflow so getBoundingClientRect returns correct values
+                if (viewSection) void viewSection.offsetHeight;
+                forceReinitCharts = true;
+                if (view === 'meps') updateMepsCharts();
+                if (view === 'emissions') { updateEmissionsCharts(); updateEmissionsSavingsCharts(); }
+                if (view === 'kigali') updateKigaliCharts();
+                if (view === 'access') renderAccessTimeline();
+                if (view === 'policy') {
+                    const activeTab = document.querySelector<HTMLButtonElement>('.policy-map-tab.active');
+                    updatePolicyChartsForMapType(activeTab?.dataset.map ?? 'kigali');
+                }
+                forceReinitCharts = false;
+                // Explicit pixel resize for all charts in this view
+                forceResizeViewCharts(view);
+            };
+            // Wait for layout to settle, then reinit
+            requestAnimationFrame(() => {
+                setTimeout(reinitViewCharts, 200);
+                // Additional resize passes
+                setTimeout(() => forceResizeViewCharts(view), 500);
+                setTimeout(() => forceResizeViewCharts(view), 1000);
+            });
         }
 
         // Window bridges are exposed in init() after all functions are defined
@@ -6321,116 +7142,23 @@
                 });
             }
 
-            // Access & Vulnerability filters
-            // Data source toggle (Historical vs Forecast)
-            document.querySelectorAll<HTMLButtonElement>('#access-source-toggles .toggle-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const source = btn.dataset.source as 'historical' | 'forecast';
-                    if (!source) return;
-
-                    // Update toggle state
-                    document.querySelectorAll('#access-source-toggles .toggle-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    accessDataSource = source;
-
-                    // Update year slider range based on data source
-                    const slider = document.getElementById('access-year-slider') as HTMLInputElement;
-                    const yearDisplay = document.getElementById('access-year-display');
-                    if (slider && yearDisplay) {
-                        if (source === 'forecast') {
-                            slider.min = '2025';
-                            slider.max = '2030';
-                            slider.value = '2025';
-                            accessYear = 2025;
-                            yearDisplay.textContent = '2025';
-                        } else {
-                            slider.min = '2013';
-                            slider.max = '2024';
-                            slider.value = '2024';
-                            accessYear = 2024;
-                            yearDisplay.textContent = '2024';
-                        }
-                    }
-
-                    updateAccessView();
-                });
-            });
-
-            const accessYearSlider = document.getElementById('access-year-slider') as HTMLInputElement | null;
-            if (accessYearSlider) {
-                accessYearSlider.addEventListener('input', () => {
-                    accessYear = Number(accessYearSlider.value);
-                    const yearDisplay = document.getElementById('access-year-display');
-                    if (yearDisplay) yearDisplay.textContent = String(accessYear);
-                    updateAccessView();
-                });
-            }
-
-            // Impact/Risk level toggles
-            document.querySelectorAll<HTMLButtonElement>('#access-impact-toggles .toggle-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const level = btn.dataset.impact;
-                    if (!level) return;
-                    btn.classList.toggle('active');
-                    if (btn.classList.contains('active')) {
-                        if (!accessImpactLevels.includes(level)) {
-                            accessImpactLevels = [...accessImpactLevels, level];
-                        }
-                    } else {
-                        accessImpactLevels = accessImpactLevels.filter(l => l !== level);
-                    }
-                    updateAccessView();
-                });
-            });
-
-            // Population category toggles
-            document.querySelectorAll<HTMLButtonElement>('#access-pop-toggles .toggle-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const cat = btn.dataset.category;
-                    if (!cat) return;
-                    btn.classList.toggle('active');
-                    if (btn.classList.contains('active')) {
-                        if (!accessPopCategories.includes(cat)) {
-                            accessPopCategories = [...accessPopCategories, cat];
-                        }
-                    } else {
-                        accessPopCategories = accessPopCategories.filter(c => c !== cat);
-                    }
-                    updateAccessView();
-                });
-            });
-
-            // Population All/None buttons
-            const accessPopAll = document.getElementById('access-pop-all');
-            if (accessPopAll) {
-                accessPopAll.addEventListener('click', () => {
-                    accessPopCategories = [...POPULATION_CATEGORIES];
-                    document.querySelectorAll<HTMLButtonElement>('#access-pop-toggles .toggle-btn').forEach(btn => {
-                        btn.classList.add('active');
+            // Access & Vulnerability tick-box filters
+            function wireAccessCheckboxes(containerId: string, stateGetter: () => string[], stateSetter: (v: string[]) => void) {
+                document.querySelectorAll<HTMLInputElement>(`#${containerId} input[type="checkbox"]`).forEach(cb => {
+                    cb.addEventListener('change', () => {
+                        const checked: string[] = [];
+                        document.querySelectorAll<HTMLInputElement>(`#${containerId} input[type="checkbox"]:checked`).forEach(c => {
+                            checked.push(c.value);
+                        });
+                        stateSetter(checked);
+                        updateAccessView();
+                        renderAccessTimeline();
                     });
-                    updateAccessView();
                 });
             }
-
-            const accessPopNone = document.getElementById('access-pop-none');
-            if (accessPopNone) {
-                accessPopNone.addEventListener('click', () => {
-                    accessPopCategories = [];
-                    document.querySelectorAll<HTMLButtonElement>('#access-pop-toggles .toggle-btn').forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-                    updateAccessView();
-                });
-            }
-
-            // Access region filter
-            const accessRegionFilterEl = document.getElementById('access-region-filter') as HTMLSelectElement | null;
-            if (accessRegionFilterEl) {
-                accessRegionFilterEl.addEventListener('change', () => {
-                    accessRegionFilter = accessRegionFilterEl.value;
-                    updateAccessView();
-                });
-            }
+            wireAccessCheckboxes('access-region-checks', () => accessRegions, v => { accessRegions = v; });
+            wireAccessCheckboxes('access-pop-checks', () => accessPopCategories, v => { accessPopCategories = v; });
+            wireAccessCheckboxes('access-impact-checks', () => accessImpactLevels, v => { accessImpactLevels = v; });
 
             // MEPS (Product Efficiency) filters
             const mepsRegionFilterEl = document.getElementById('meps-region-filter') as HTMLSelectElement | null;
@@ -6496,6 +7224,42 @@
                     updateKigaliView();
                 });
             }
+
+            // Market share appliance toggles (AC / Fridge)
+            document.querySelectorAll<HTMLButtonElement>('.kigali-appliance-toggle').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    kigaliMarketAppliance = btn.dataset.appliance || 'ac';
+                    document.querySelectorAll<HTMLButtonElement>('.kigali-appliance-toggle').forEach(b => {
+                        b.classList.remove('active');
+                        b.style.background = 'white';
+                        b.style.color = '#475569';
+                        b.style.borderColor = '#e2e8f0';
+                    });
+                    btn.classList.add('active');
+                    btn.style.background = '#3D6B6B';
+                    btn.style.color = 'white';
+                    btn.style.borderColor = '#3D6B6B';
+                    renderRefrigerantMarketShare();
+                });
+            });
+
+            // Market share region toggles (Global / China / India / Europe / Africa)
+            document.querySelectorAll<HTMLButtonElement>('.kigali-region-toggle').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    kigaliMarketRegion = btn.dataset.region || '';
+                    document.querySelectorAll<HTMLButtonElement>('.kigali-region-toggle').forEach(b => {
+                        b.classList.remove('active');
+                        b.style.background = 'white';
+                        b.style.color = '#475569';
+                        b.style.borderColor = '#e2e8f0';
+                    });
+                    btn.classList.add('active');
+                    btn.style.background = '#3D6B6B';
+                    btn.style.color = 'white';
+                    btn.style.borderColor = '#3D6B6B';
+                    renderRefrigerantMarketShare();
+                });
+            });
         }
 
         // =====================================================
@@ -6595,6 +7359,26 @@
             updateSidePanels('overview');
             requestAnimationFrame(resizeCharts);
             window.addEventListener('resize', resizeCharts);
+
+            // ResizeObserver: auto-resize charts when their view sections become visible
+            // This catches the display:none → display:block transition reliably
+            const chartResizeObserver = new ResizeObserver((entries) => {
+                for (const entry of entries) {
+                    if (entry.contentRect.width > 0) {
+                        const el = entry.target as HTMLElement;
+                        const viewName = el.id?.replace('view-', '') || '';
+                        // Use explicit pixel resize for the active view
+                        requestAnimationFrame(() => {
+                            if (viewName) forceResizeViewCharts(viewName);
+                            resizeCharts();
+                        });
+                    }
+                }
+            });
+            document.querySelectorAll('.view-section').forEach(section => {
+                chartResizeObserver.observe(section);
+            });
+
             console.log('Dashboard initialization complete!');
         }
 
@@ -6646,8 +7430,7 @@
       <PartnersPillar active={currentViewState === 'partners'} />
     </main>
 
-    <!-- Right Sidebar (Component) -->
-    <RightPanel {insightText} />
+    <!-- Right sidebar removed - partner logos now inline in pillar cards -->
   </div>
 
   <div class="tooltip" id="tooltip"></div>

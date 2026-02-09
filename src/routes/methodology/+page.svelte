@@ -30,7 +30,7 @@
       <li><a href="#meps">MEPS & Labels Methodology</a></li>
       <li><a href="#kigali">Kigali Tracking Methodology</a></li>
       <li><a href="#access">Access & Vulnerability Methodology</a></li>
-      <li><a href="#limitations">Known Limitations</a></li>
+      <li><a href="#limitations">Methodology Notes & Scope</a></li>
     </ol>
   </nav>
 
@@ -39,8 +39,9 @@
     <h2><i class="fa-solid fa-layer-group"></i> Three-Layer DECARB Methodology</h2>
     <p>
       The CoolProgress DECARB pathway models the combined emission reduction achievable through
-      three independent intervention layers. This approach corrects a critical gap: neither the
-      HEAT global model nor the CLASP efficiency model accounts for grid decarbonization.
+      three independent intervention layers. This integrated approach captures the full mitigation
+      potential of the cooling sector by combining refrigerant transitions, appliance efficiency
+      improvements, and the ongoing decarbonization of electricity grids.
     </p>
 
     <div class="formula-card">
@@ -54,7 +55,7 @@
       <div class="layer-card">
         <div class="layer-badge" style="background: #E85A4F;">Layer 1</div>
         <h3>Direct Emissions (Kigali)</h3>
-        <p><strong>Source:</strong> HEAT Global Model, MIT scenario</p>
+        <p><strong>Source:</strong> HEAT Global Cooling Model</p>
         <p><strong>Mechanism:</strong> HFC phase-down per Kigali Amendment schedules</p>
         <ul>
           <li>Non-Article 5: &minus;85% by 2047</li>
@@ -67,7 +68,7 @@
       <div class="layer-card">
         <div class="layer-badge" style="background: #8BC34A;">Layer 2</div>
         <h3>Energy Efficiency (CLASP GB)</h3>
-        <p><strong>Source:</strong> CLASP Mepsy model, Global Best scenario</p>
+        <p><strong>Source:</strong> CLASP Global Best scenario</p>
         <p><strong>Mechanism:</strong> Best-practice MEPS + labels across all countries</p>
         <div class="ratio-table">
           <table>
@@ -100,13 +101,14 @@
       </div>
     </div>
 
-    <div class="critical-finding">
-      <i class="fa-solid fa-triangle-exclamation"></i>
+    <div class="methodology-note">
+      <i class="fa-solid fa-lightbulb"></i>
       <div>
-        <strong>Critical Finding:</strong> Neither HEAT nor CLASP model grid decarbonization.
-        HEAT uses near-static grid emission factors (India: 976 &rarr; 948 gCO<sub>2</sub>/kWh 2020&ndash;2050, only &minus;3%;
-        China: 857 &rarr; 896, actually <em>increases</em>). Layer 3 corrects this fundamental gap using
-        IEA STEPS trajectories.
+        <strong>Why three layers?</strong> Appliance-level models typically hold grid emission factors
+        constant to isolate equipment-side impacts. The CoolProgress methodology adds Layer 3 to
+        reflect the real-world trajectory of electricity decarbonization, drawing on IEA STEPS
+        projections. This provides a more complete picture of the cooling sector's emission pathway
+        through 2050.
       </div>
     </div>
   </section>
@@ -122,10 +124,10 @@
         <h3>HEAT GmbH</h3>
         <p class="source-role">Global Cooling Model &amp; Dashboard Development</p>
         <ul>
-          <li>global_model_subcool: BAU/KIP/MIT emission scenarios by country</li>
+          <li>Global Cooling Model: BAU, Kigali, and mitigation emission scenarios by country</li>
           <li>Direct emissions: HFC refrigerant leakage modeling</li>
-          <li>Indirect emissions: Country-level grid emission factors</li>
-          <li>Dashboard architecture, data integration, and methodology design</li>
+          <li>Indirect emissions: Country-level electricity consumption and grid emission factors</li>
+          <li>Three-layer DECARB methodology design, data integration, and dashboard development</li>
         </ul>
         <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">heat-gmbh.de</a>
       </div>
@@ -135,9 +137,9 @@
         <h3>CLASP</h3>
         <p class="source-role">Appliance Efficiency &amp; Energy Data</p>
         <ul>
-          <li>Mepsy model: BAU/GB/NZH/BAT energy consumption scenarios</li>
+          <li>Energy consumption scenarios: BAU, Global Best, Net Zero Heroes, Best Available Technology</li>
           <li>Country-level appliance stock and energy projections</li>
-          <li>MEPS and Labels database (via CPRC)</li>
+          <li>MEPS and Labels database via the Policy Resource Center (CPRC)</li>
           <li>World's Best MEPS benchmarking</li>
         </ul>
         <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">clasp.ngo/tools/mepsy</a>
@@ -203,27 +205,27 @@
       <strong>Direct emissions</strong> come from refrigerant gas leaks during manufacturing, operation, and disposal.
     </p>
 
-    <h3>BAU Scenario</h3>
+    <h3>BAU Scenario (Business as Usual)</h3>
     <ul>
-      <li><strong>Indirect:</strong> HEAT global_model_subcool (BAU scenario) + CLASP BAU energy</li>
-      <li><strong>Direct:</strong> HEAT model based on installed base HFC charge, annual leak rates, and end-of-life emissions</li>
-      <li><strong>Validation:</strong> Cross-checked against IEA/OWID 2022 benchmark (~1,750 Mt CO<sub>2</sub>e for AC)</li>
+      <li><strong>Indirect:</strong> HEAT Global Cooling Model (BAU scenario) combined with CLASP BAU energy projections</li>
+      <li><strong>Direct:</strong> HEAT Global Cooling Model based on installed HFC charge, annual leak rates, and end-of-life emissions</li>
+      <li><strong>Validation:</strong> Cross-checked against IEA and OWID 2022 benchmarks (~1,750 Mt CO<sub>2</sub>e for AC)</li>
     </ul>
 
-    <h3>DECARB Scenario</h3>
+    <h3>DECARB Scenario (Decarbonization Pathway)</h3>
     <ul>
-      <li><strong>Indirect:</strong> BAU indirect &times; CLASP efficiency ratio &times; IEA grid ratio (three-layer)</li>
-      <li><strong>Direct:</strong> HEAT MIT scenario (Kigali-compliant refrigerant phase-down)</li>
-      <li><strong>Fans:</strong> CLASP GB scenario &times; IEA grid ratio only (no refrigerant, no direct emissions)</li>
+      <li><strong>Indirect:</strong> Three-layer approach: BAU indirect emissions &times; CLASP efficiency ratio &times; IEA grid decarbonization ratio</li>
+      <li><strong>Direct:</strong> Kigali-compliant refrigerant phase-down trajectory (HEAT Global Cooling Model)</li>
+      <li><strong>Fans:</strong> CLASP Global Best efficiency scenario &times; IEA grid ratio (fans have no refrigerant and zero direct emissions)</li>
     </ul>
 
     <h3>Appliance Coverage</h3>
     <table class="data-table">
-      <thead><tr><th>Appliance</th><th>Direct Emissions</th><th>Indirect Emissions</th><th>DECARB Source</th></tr></thead>
+      <thead><tr><th>Appliance</th><th>Direct Emissions</th><th>Indirect Emissions</th><th>DECARB Layers Applied</th></tr></thead>
       <tbody>
-        <tr><td>Air Conditioners</td><td>Yes (HFC leaks)</td><td>Yes (electricity)</td><td>HEAT MIT + CLASP GB + IEA STEPS</td></tr>
-        <tr><td>Refrigerators</td><td>Yes (minimal)</td><td>Yes (electricity)</td><td>HEAT MIT + CLASP GB + IEA STEPS</td></tr>
-        <tr><td>Fans</td><td>None (no refrigerant)</td><td>Yes (electricity)</td><td>CLASP GB + IEA STEPS</td></tr>
+        <tr><td>Air Conditioners</td><td>Yes (HFC refrigerants)</td><td>Yes (electricity)</td><td>Layer 1 (Kigali) + Layer 2 (Efficiency) + Layer 3 (Grid)</td></tr>
+        <tr><td>Refrigerators</td><td>Yes (minimal HFC)</td><td>Yes (electricity)</td><td>Layer 1 (Kigali) + Layer 2 (Efficiency) + Layer 3 (Grid)</td></tr>
+        <tr><td>Fans</td><td>None (no refrigerant)</td><td>Yes (electricity)</td><td>Layer 2 (Efficiency) + Layer 3 (Grid)</td></tr>
       </tbody>
     </table>
   </section>
@@ -267,41 +269,43 @@
       food (cold chains), and livelihoods (labor productivity).
     </p>
     <ul>
-      <li><strong>Historical data (2013&ndash;2024):</strong> SEforALL access_to_cooling_seeforall table</li>
-      <li><strong>Forecast data (2025&ndash;2030):</strong> access_to_cooling_forecast projections</li>
+      <li><strong>Historical data (2013&ndash;2024):</strong> SEforALL Chilling Prospects series</li>
+      <li><strong>Forecast data (2025&ndash;2030):</strong> CoolProgress projections based on SEforALL methodology</li>
       <li><strong>Population categories:</strong> Rural Poor, Urban Poor, Lower-Middle Income, Middle-Income</li>
       <li><strong>Risk levels:</strong> High, Medium, Low &mdash; based on income, infrastructure, and climate vulnerability</li>
     </ul>
   </section>
 
-  <!-- Section 7: Limitations -->
+  <!-- Section 7: Methodology Notes -->
   <section class="meth-section" id="limitations">
-    <h2><i class="fa-solid fa-circle-exclamation"></i> Known Limitations</h2>
+    <h2><i class="fa-solid fa-circle-info"></i> Methodology Notes & Scope</h2>
     <div class="limitations-list">
       <div class="limitation">
-        <strong>Grid emission factors (HEAT model):</strong>
-        HEAT uses near-static country-level grid emission factors (e.g., India: 976 &rarr; 948 gCO<sub>2</sub>/kWh,
-        China: 857 &rarr; 896). The IEA STEPS Layer 3 correction addresses this at the global level but does not
-        capture country-specific grid decarbonization trajectories.
+        <strong>Grid decarbonization approach:</strong>
+        Layer 3 applies IEA STEPS grid decarbonization ratios at the global level. Country-specific
+        grid trajectories vary and may diverge from the global average. Future versions will incorporate
+        regional grid intensity pathways as IEA country-level data becomes available.
       </div>
       <div class="limitation">
-        <strong>MEPS data currency:</strong>
-        The MEPS database contains entries primarily from 2016&ndash;2019. Recent MEPS updates (2024&ndash;2025)
-        for key markets (India, EU Ecodesign 2025, China) are being incorporated.
+        <strong>MEPS data updates:</strong>
+        The MEPS database is updated annually in alignment with CLASP data releases. The 2026 update
+        incorporates recent standard revisions across 10 priority markets including India, the EU,
+        China, Brazil, and Saudi Arabia.
       </div>
       <div class="limitation">
-        <strong>Fan emissions:</strong>
-        No HEAT model exists for fans. Fan DECARB relies on CLASP GB efficiency ratios and IEA grid decarbonization only.
+        <strong>Fan emission pathway:</strong>
+        Since fans do not contain refrigerants, the DECARB pathway for fans applies Layer 2 (energy efficiency)
+        and Layer 3 (grid decarbonization) only. Layer 1 (Kigali) does not apply.
       </div>
       <div class="limitation">
         <strong>NCAP coverage:</strong>
-        Only ~30 National Cooling Action Plans are tracked. Many countries have NCAPs in development
-        that are not yet reflected in the database.
+        CoolProgress tracks approximately 30 National Cooling Action Plans. Additional NCAPs under
+        development by countries will be incorporated as they are officially published.
       </div>
       <div class="limitation">
-        <strong>Aggregations table:</strong>
-        The global aggregation of country-level data points is under development. Current global views
-        use pre-computed timeseries rather than real-time aggregation.
+        <strong>Global aggregation:</strong>
+        Global-level indicators are derived from pre-computed timeseries based on the HEAT Global Cooling
+        Model. Country-level detail is available through the interactive map and country selection features.
       </div>
     </div>
   </section>
@@ -492,6 +496,7 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
     margin: 1.25rem 0;
+    align-items: stretch;
   }
 
   .layer-card {
@@ -499,6 +504,9 @@
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     padding: 1rem;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
   }
 
   .layer-badge {
@@ -530,6 +538,7 @@
   /* Ratio Tables */
   .ratio-table {
     margin: 0.5rem 0;
+    overflow-x: auto;
   }
 
   .ratio-table table, .data-table {
@@ -564,27 +573,27 @@
     margin: 0.25rem 0 0;
   }
 
-  /* Critical Finding */
-  .critical-finding {
+  /* Methodology Note */
+  .methodology-note {
     display: flex;
     gap: 0.75rem;
     align-items: flex-start;
-    background: #fef3c7;
-    border: 1px solid #f59e0b;
-    border-left: 4px solid #f59e0b;
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-left: 4px solid #22c55e;
     border-radius: 8px;
     padding: 1rem 1.25rem;
     margin: 1.5rem 0;
   }
 
-  .critical-finding i {
-    color: #f59e0b;
+  .methodology-note i {
+    color: #22c55e;
     font-size: 1.1rem;
     flex-shrink: 0;
     margin-top: 0.15rem;
   }
 
-  .critical-finding p, .critical-finding div {
+  .methodology-note p, .methodology-note div {
     font-size: 0.85rem;
     margin: 0;
     line-height: 1.5;

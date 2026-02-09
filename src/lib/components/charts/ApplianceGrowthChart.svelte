@@ -48,6 +48,59 @@
   // Reactive sources
   $: activeSources = getActiveSources(selectedAppliance);
 
+  // Cumulative decarbonization potential 2025-2050
+  interface DecarbStats {
+    totalAvoided: number;
+    indirectAvoided: number;
+    directAvoided: number;
+    label: string;
+  }
+
+  function calcCumulativeDecarb(appliance: ApplianceType): DecarbStats {
+    const bau = getApplianceData(appliance, 'BAU').filter(d => d.year >= 2025).sort((a, b) => a.year - b.year);
+    const decarb = getApplianceData(appliance, 'DECARB').filter(d => d.year >= 2025).sort((a, b) => a.year - b.year);
+    let totalAvoided = 0, indirectAvoided = 0, directAvoided = 0;
+
+    for (let i = 0; i < bau.length - 1; i++) {
+      const dt = bau[i + 1].year - bau[i].year;
+      const avoidedStart = bau[i].totalEmissionMt - decarb[i].totalEmissionMt;
+      const avoidedEnd = bau[i + 1].totalEmissionMt - decarb[i + 1].totalEmissionMt;
+      totalAvoided += (avoidedStart + avoidedEnd) / 2 * dt;
+
+      const indStart = bau[i].indirectEmissionMt - decarb[i].indirectEmissionMt;
+      const indEnd = bau[i + 1].indirectEmissionMt - decarb[i + 1].indirectEmissionMt;
+      indirectAvoided += (indStart + indEnd) / 2 * dt;
+
+      const dirStart = bau[i].directEmissionMt - decarb[i].directEmissionMt;
+      const dirEnd = bau[i + 1].directEmissionMt - decarb[i + 1].directEmissionMt;
+      directAvoided += (dirStart + dirEnd) / 2 * dt;
+    }
+
+    return {
+      totalAvoided: Math.round(totalAvoided),
+      indirectAvoided: Math.round(indirectAvoided),
+      directAvoided: Math.round(directAvoided),
+      label: APPLIANCE_META[appliance].label,
+    };
+  }
+
+  $: decarbStats = showDecarb ? (() => {
+    const appliances: ApplianceType[] = ['AC', 'DomRef', 'Fans'];
+    const stats = appliances.map(calcCumulativeDecarb);
+    const grandTotal = stats.reduce((s, d) => s + d.totalAvoided, 0);
+    const grandIndirect = stats.reduce((s, d) => s + d.indirectAvoided, 0);
+    const grandDirect = stats.reduce((s, d) => s + d.directAvoided, 0);
+    return { stats, grandTotal, grandIndirect, grandDirect };
+  })() : null;
+
+  function fmtGt(mt: number): string {
+    return (mt / 1000).toFixed(1);
+  }
+
+  function fmtMt(mt: number): string {
+    return mt.toLocaleString();
+  }
+
   function getActiveSources(app: ApplianceType | 'All'): { name: string; url: string }[] {
     const sources: { name: string; url: string }[] = [];
     const seen = new Set<string>();
@@ -101,7 +154,7 @@
             silent: true, symbol: 'none',
             data: [{ xAxis: demarcationIdx }],
             lineStyle: { color: '#94a3b8', width: 1, type: 'dashed' },
-            label: { show: true, formatter: '2025', fontSize: 9, color: '#94a3b8', position: 'start' }
+            label: { show: false }
           } : undefined
         });
 
@@ -144,7 +197,7 @@
           silent: true, symbol: 'none',
           data: [{ xAxis: demarcationIdx }],
           lineStyle: { color: '#94a3b8', width: 1, type: 'dashed' },
-          label: { show: true, formatter: '2025', fontSize: 9, color: '#94a3b8', position: 'start' }
+          label: { show: false }
         } : undefined
       });
 
@@ -255,7 +308,7 @@
           silent: true, symbol: 'none',
           data: [{ xAxis: demarcationIdx }],
           lineStyle: { color: '#94a3b8', width: 1, type: 'dashed' },
-          label: { show: true, formatter: '2025', fontSize: 9, color: '#94a3b8', position: 'start' }
+          label: { show: false }
         } : undefined
       });
 
@@ -486,6 +539,41 @@
 
   <div class="chart-container" bind:this={chartContainer}></div>
 
+  {#if showDecarb && selectedMetric === 'emissions' && decarbStats}
+    <div class="decarb-highlight">
+      <div class="decarb-highlight-header">
+        <i class="fa-solid fa-leaf"></i>
+        <span>Cumulative Decarbonization Potential (2025&ndash;2050)</span>
+      </div>
+      <div class="decarb-kpi-row">
+        <div class="decarb-kpi grand">
+          <div class="decarb-kpi-value">{fmtGt(decarbStats.grandTotal)} Gt</div>
+          <div class="decarb-kpi-label">Total avoided CO&#8322;e</div>
+          <div class="decarb-kpi-sub">
+            <span class="decarb-tag indirect">{fmtGt(decarbStats.grandIndirect)} Gt indirect</span>
+            <span class="decarb-tag direct">{fmtGt(decarbStats.grandDirect)} Gt direct</span>
+          </div>
+        </div>
+        {#each decarbStats.stats as s}
+          <div class="decarb-kpi">
+            <div class="decarb-kpi-value">{fmtMt(s.totalAvoided)} Mt</div>
+            <div class="decarb-kpi-label">{s.label}</div>
+            {#if s.directAvoided > 0}
+              <div class="decarb-kpi-sub">
+                <span class="decarb-tag indirect">{fmtMt(s.indirectAvoided)} indirect</span>
+                <span class="decarb-tag direct">{fmtMt(s.directAvoided)} direct</span>
+              </div>
+            {:else}
+              <div class="decarb-kpi-sub">
+                <span class="decarb-tag indirect">{fmtMt(s.indirectAvoided)} indirect only</span>
+              </div>
+            {/if}
+          </div>
+        {/each}
+      </div>
+    </div>
+  {/if}
+
   <div class="chart-source">
     Sources:
     {#each activeSources as src, i}
@@ -620,5 +708,98 @@
   .chart-source a:hover {
     color: #2D5252;
     border-bottom-color: #2D5252;
+  }
+
+  /* Decarb Highlight */
+  .decarb-highlight {
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+    border: 1px solid #86efac;
+    border-left: 4px solid #22c55e;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    margin-top: 0.75rem;
+  }
+
+  .decarb-highlight-header {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #166534;
+    margin-bottom: 0.5rem;
+  }
+
+  .decarb-highlight-header i {
+    color: #22c55e;
+  }
+
+  .decarb-kpi-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 0.6rem;
+    align-items: start;
+  }
+
+  .decarb-kpi {
+    text-align: center;
+    padding: 0.4rem 0.3rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(134, 239, 172, 0.4);
+  }
+
+  .decarb-kpi.grand {
+    background: rgba(22, 101, 52, 0.06);
+    border-color: rgba(22, 101, 52, 0.2);
+  }
+
+  .decarb-kpi-value {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #166534;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .decarb-kpi.grand .decarb-kpi-value {
+    font-size: 1.3rem;
+  }
+
+  .decarb-kpi-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #555;
+    margin-top: 0.1rem;
+  }
+
+  .decarb-kpi-sub {
+    display: flex;
+    gap: 0.3rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+  }
+
+  .decarb-tag {
+    font-size: 0.6rem;
+    font-weight: 600;
+    padding: 0.1rem 0.4rem;
+    border-radius: 999px;
+  }
+
+  .decarb-tag.indirect {
+    background: rgba(61, 107, 107, 0.1);
+    color: #3D6B6B;
+  }
+
+  .decarb-tag.direct {
+    background: rgba(232, 90, 79, 0.1);
+    color: #E85A4F;
+  }
+
+  @media (max-width: 640px) {
+    .decarb-kpi-row {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 </style>
