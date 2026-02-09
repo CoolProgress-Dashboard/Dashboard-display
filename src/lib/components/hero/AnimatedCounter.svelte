@@ -198,17 +198,17 @@
     bottom: calc(100% + 10px);
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(15, 23, 42, 0.97);
-    color: #f1f5f9;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: #ffffff;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
     border-radius: 10px;
     padding: 0.75rem 1rem;
     font-size: 0.78rem;
     line-height: 1.55;
     width: 260px;
     max-width: 90vw;
-    z-index: 1000;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    z-index: 9999;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
     pointer-events: auto;
     animation: tooltip-fade-in 0.15s ease-out;
   }
@@ -220,7 +220,7 @@
     left: 50%;
     transform: translateX(-50%);
     border: 6px solid transparent;
-    border-top-color: rgba(15, 23, 42, 0.97);
+    border-top-color: #ffffff;
   }
 
   @keyframes tooltip-fade-in {
@@ -235,12 +235,16 @@
   .tooltip-source {
     margin-top: 0.4rem !important;
     font-size: 0.65rem;
-    color: rgba(255, 255, 255, 0.5);
+    color: #64748b;
   }
 
   .tooltip-source a {
-    color: rgba(139, 195, 74, 0.8);
+    color: #3D6B6B;
     text-decoration: none;
+  }
+
+  .tooltip-source a:hover {
+    text-decoration: underline;
   }
 
   @media (max-width: 768px) {
