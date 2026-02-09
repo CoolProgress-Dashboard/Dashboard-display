@@ -257,6 +257,8 @@
     color: #ffffff;
     margin: 0 0 0.75rem;
     letter-spacing: -0.03em;
+    position: relative;
+    z-index: 1;
   }
 
   .headline-line {
@@ -288,6 +290,8 @@
     transition:
       opacity 0.7s ease 0.35s,
       transform 0.7s ease 0.35s;
+    position: relative;
+    z-index: 1;
   }
 
   .revealed .hero-subtitle {
@@ -304,6 +308,8 @@
     gap: 0.75rem;
     margin: 0 auto 1.25rem;
     max-width: 800px;
+    position: relative;
+    z-index: 100;
   }
 
   .counter-wrapper {
