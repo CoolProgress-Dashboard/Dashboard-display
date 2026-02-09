@@ -212,11 +212,11 @@
         ]
       },
       kigali: {
-        headline: '157 countries ratified Kigali. But ratification is not implementation.',
+        headline: '172 countries ratified Kigali. But ratification is not implementation.',
         subhead: 'The Kigali Amendment can prevent 0.5\u00B0C of warming \u2014 if commitments become refrigerant transitions on the ground.',
         insight:
-          '157 parties have ratified, covering 95% of HFC consumption. Non-A5 must reach 15% of baseline by 2036. The transition: R-410A (GWP 2,088) \u2192 R-290 propane (GWP 3). China and India already manufacture R-290 ACs at scale.',
-        entryStat: '157 parties ratified -- 95% of global HFC consumption covered',
+          '172 parties have ratified, covering 95% of HFC consumption. Non-A5 must reach 15% of baseline by 2036. The transition: R-410A (GWP 2,088) \u2192 R-290 propane (GWP 3). China and India already manufacture R-290 ACs at scale.',
+        entryStat: '172 parties ratified -- 95% of global HFC consumption covered',
         methodology: 'Kigali ratification and implementation data: UNEP Ozone Secretariat. HFC baselines: KIP database. GWP values: IPCC AR6. Integration: HEAT GmbH.',
         sources: [
           { name: 'UNEP Ozone Secretariat', url: 'https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment-2016', logo: '/images/unep.png', logoLarge: true },
@@ -1139,10 +1139,10 @@
                     (emissionsAppliances.length === 0 || emissionsAppliances.includes(r.appliance))
                 );
 
-                // Get unique years (filtered to 2020-2045)
+                // Get unique years (filtered to 2020-2050)
                 const yearSet = new Set<number>();
                 countryClaspData.forEach(r => {
-                    if (r.year >= 2020 && r.year <= 2045) yearSet.add(r.year);
+                    if (r.year >= 2020 && r.year <= 2050) yearSet.add(r.year);
                 });
                 years = Array.from(yearSet).sort((a, b) => a - b);
 
@@ -1189,10 +1189,10 @@
                     r.scenario_name === emissionsScenario
                 );
 
-                // Get unique years (filtered to 2020-2045)
+                // Get unique years (filtered to 2020-2050)
                 const yearSet = new Set<number>();
                 countrySubcoolData.forEach(r => {
-                    if (r.year >= 2020 && r.year <= 2045) yearSet.add(r.year);
+                    if (r.year >= 2020 && r.year <= 2050) yearSet.add(r.year);
                 });
                 years = Array.from(yearSet).sort((a, b) => a - b);
 
@@ -1365,7 +1365,7 @@
                 if (lineContainer && years.length > 0 && stackedSeriesData.length > 0) {
                     emissionsCountryLineChart = echarts.init(lineContainer);
                     emissionsCountryLineChart.setOption({
-                        grid: { top: 30, right: 10, bottom: 28, left: 50 },
+                        grid: { top: 30, right: 25, bottom: 32, left: 50 },
                         legend: {
                             show: true,
                             top: 0,
@@ -2678,7 +2678,7 @@
 
         // Render timeline chart comparing scenarios
         function renderNewEmissionsTimeline() {
-            const years = [2020, 2025, 2030, 2035, 2040, 2045];
+            const years = [2020, 2025, 2030, 2035, 2040, 2045, 2050];
             const series: any[] = [];
 
             if (emissionsDataSource === 'clasp') {
@@ -6041,12 +6041,22 @@
                         </div>
                     </div>
                 `;
-                // Wait for grid layout to fully compute, then render charts
-                waitForPolicyLayout().then(ready => {
-                    if (!ready) return; // view hidden, skip
+                // Render Kigali charts: try immediately, then retry with delays
+                const tryRenderKigali = () => {
+                    const section = container.closest('.view-section');
+                    if (!section?.classList.contains('active')) return false;
                     renderPolicyKigaliCharts();
-                    setTimeout(() => forceResizeViewCharts('policy'), 100);
-                    setTimeout(() => forceResizeViewCharts('policy'), 500);
+                    forceResizeViewCharts('policy');
+                    return true;
+                };
+                requestAnimationFrame(() => {
+                    if (!tryRenderKigali()) {
+                        setTimeout(tryRenderKigali, 300);
+                        setTimeout(tryRenderKigali, 800);
+                    } else {
+                        setTimeout(() => forceResizeViewCharts('policy'), 200);
+                        setTimeout(() => forceResizeViewCharts('policy'), 500);
+                    }
                 });
             } else if (mapType === 'gcp') {
                 // Create GCP progress chart structure
@@ -6092,24 +6102,25 @@
                         </div>
                     </div>
                 `;
-                // Wait for grid layout to fully compute, then render charts
-                waitForPolicyLayout().then(ready => {
-                    console.log('[GCP] waitForPolicyLayout resolved:', ready);
-                    if (!ready) {
-                        // Fallback: try rendering after a delay even if layout check failed
-                        setTimeout(() => {
-                            const section = container.closest('.view-section');
-                            if (section?.classList.contains('active')) {
-                                console.log('[GCP] Fallback render triggered');
-                                renderGCPProgressCharts();
-                                forceResizeViewCharts('policy');
-                            }
-                        }, 500);
-                        return;
-                    }
+                // Render GCP charts: try immediately, then retry with delays
+                const tryRenderGCP = () => {
+                    const section = container.closest('.view-section');
+                    if (!section?.classList.contains('active')) return false;
                     renderGCPProgressCharts();
-                    setTimeout(() => forceResizeViewCharts('policy'), 100);
-                    setTimeout(() => forceResizeViewCharts('policy'), 500);
+                    forceResizeViewCharts('policy');
+                    return true;
+                };
+                // Immediate attempt (works if section already visible)
+                requestAnimationFrame(() => {
+                    if (!tryRenderGCP()) {
+                        // Deferred attempts for hidden-at-init or slow layout
+                        setTimeout(tryRenderGCP, 300);
+                        setTimeout(tryRenderGCP, 800);
+                    } else {
+                        // Resize passes
+                        setTimeout(() => forceResizeViewCharts('policy'), 200);
+                        setTimeout(() => forceResizeViewCharts('policy'), 500);
+                    }
                 });
 
             } else if (mapType === 'ndc') {
@@ -6156,12 +6167,22 @@
                         </div>
                     </div>
                 `;
-                // Wait for grid layout to fully compute, then render charts
-                waitForPolicyLayout().then(ready => {
-                    if (!ready) return;
+                // Render NDC charts: try immediately, then retry with delays
+                const tryRenderNDC = () => {
+                    const section = container.closest('.view-section');
+                    if (!section?.classList.contains('active')) return false;
                     updateNDCCharts();
-                    setTimeout(() => forceResizeViewCharts('policy'), 100);
-                    setTimeout(() => forceResizeViewCharts('policy'), 500);
+                    forceResizeViewCharts('policy');
+                    return true;
+                };
+                requestAnimationFrame(() => {
+                    if (!tryRenderNDC()) {
+                        setTimeout(tryRenderNDC, 300);
+                        setTimeout(tryRenderNDC, 800);
+                    } else {
+                        setTimeout(() => forceResizeViewCharts('policy'), 200);
+                        setTimeout(() => forceResizeViewCharts('policy'), 500);
+                    }
                 });
 
             } else if (mapType === 'NCAP') {
@@ -6197,12 +6218,22 @@
                         </div>
                     </div>
                 `;
-                // Wait for grid layout to fully compute, then render charts
-                waitForPolicyLayout().then(ready => {
-                    if (!ready) return;
+                // Render NCAP charts: try immediately, then retry with delays
+                const tryRenderNCAP = () => {
+                    const section = container.closest('.view-section');
+                    if (!section?.classList.contains('active')) return false;
                     updateNCAPCharts();
-                    setTimeout(() => forceResizeViewCharts('policy'), 100);
-                    setTimeout(() => forceResizeViewCharts('policy'), 500);
+                    forceResizeViewCharts('policy');
+                    return true;
+                };
+                requestAnimationFrame(() => {
+                    if (!tryRenderNCAP()) {
+                        setTimeout(tryRenderNCAP, 300);
+                        setTimeout(tryRenderNCAP, 800);
+                    } else {
+                        setTimeout(() => forceResizeViewCharts('policy'), 200);
+                        setTimeout(() => forceResizeViewCharts('policy'), 500);
+                    }
                 });
             }
         }

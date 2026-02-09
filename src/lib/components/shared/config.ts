@@ -47,10 +47,10 @@ export const VIEW_META: Record<string, ViewMeta> = {
     ]
   },
   kigali: {
-    headline: '157 countries ratified Kigali. But ratification is not implementation.',
+    headline: '172 countries ratified Kigali. But ratification is not implementation.',
     subhead: 'The Kigali Amendment can prevent 0.5\u00B0C of warming \u2014 if countries convert commitments into refrigerant transitions on the ground.',
     insight:
-      'HFCs are invisible, odorless \u2014 and thousands of times more potent than CO\u2082. A single service van leak can release the equivalent of driving a car for a year. 157 nations have signed the Kigali Amendment, but the real test is on the factory floor: converting production lines, training 15 million technicians, and building recovery infrastructure from scratch.',
+      'HFCs are invisible, odorless \u2014 and thousands of times more potent than CO\u2082. A single service van leak can release the equivalent of driving a car for a year. 172 nations have signed the Kigali Amendment, but the real test is on the factory floor: converting production lines, training 15 million technicians, and building recovery infrastructure from scratch.',
     methodology: 'Kigali ratification and implementation data: UNEP Ozone Secretariat. HFC baselines and allowable emissions: KIP database. GWP values: IPCC AR6.',
     sources: [
       { name: 'UNEP Ozone Secretariat', url: 'https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment', logo: '/images/unep.png', logoLarge: true },

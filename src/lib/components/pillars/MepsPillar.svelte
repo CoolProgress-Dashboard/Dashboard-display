@@ -212,7 +212,7 @@
     </div>
 
     <!-- Charts Grid -->
-    <div class="charts-section" style="background: #fafafa; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
+    <div class="meps-charts-section charts-section">
       <div class="card-panel chart-card">
         <div class="chart-card-header">
           <h3 id="meps-chart1-title"><i class="fa-solid fa-chart-bar" style="color: #8BC34A; margin-right: 0.5rem;"></i>MEPS & Labels by Region</h3>
@@ -658,5 +658,33 @@
     .meps-counters :global(.counter-label) {
       font-size: 0.65rem;
     }
+  }
+
+  /* Charts section - constrain width */
+  .meps-charts-section {
+    background: #fafafa;
+    padding: 1.25rem;
+    border-radius: 0 0 16px 16px;
+    border: 1px solid #e2e8f0;
+    border-top: none;
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .meps-charts-section :global(.chart-card) {
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .meps-charts-section :global(.chart-card-body) {
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .meps-charts-section :global(.chart-card + .chart-card) {
+    margin-top: 1.25rem;
   }
 </style>

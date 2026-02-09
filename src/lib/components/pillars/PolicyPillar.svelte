@@ -14,9 +14,9 @@
   // Animated stat cards
   const policyStats = [
     {
-      value: '157',
+      value: '172',
       label: 'Kigali Amendment parties',
-      context: '157 countries have ratified the Kigali Amendment to the Montreal Protocol, creating a legally binding framework to phase down HFCs by over 80%.'
+      context: '172 countries have ratified the Kigali Amendment to the Montreal Protocol, creating a legally binding framework to phase down HFCs by over 80%. Source: UN Treaty Collection (Feb 2026).'
     },
     {
       value: '71',

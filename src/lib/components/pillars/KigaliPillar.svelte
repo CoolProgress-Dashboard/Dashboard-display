@@ -14,9 +14,9 @@
   // Animated stat cards
   const kigaliStats = [
     {
-      value: '157',
+      value: '172',
       label: 'Kigali parties ratified',
-      context: '157 countries have ratified the Kigali Amendment, covering over 95% of global HFC consumption. Source: UNEP Ozone Secretariat.'
+      context: '172 countries have ratified the Kigali Amendment, covering over 95% of global HFC consumption. Source: UNEP Ozone Secretariat (Feb 2026).'
     },
     {
       value: '0.5\u00B0C',

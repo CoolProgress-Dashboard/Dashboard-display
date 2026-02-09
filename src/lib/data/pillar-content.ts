@@ -130,7 +130,7 @@ export const pillarContent: PillarContentMap = {
 	kigali: {
 		headline: 'The refrigerant revolution',
 		subhead: 'From HFCs to natural cooling -- the Kigali Amendment is rewriting the rules.',
-		entryStat: '157 parties ratified -- 95% of global HFC consumption covered',
+		entryStat: '172 parties ratified -- 95% of global HFC consumption covered',
 		storyHook:
 			'The Montreal Protocol already eliminated the ozone-depleting CFCs and is phasing out HCFCs. ' +
 			'But the replacement gases -- hydrofluorocarbons (HFCs) -- turned out to be potent greenhouse gases. ' +
@@ -144,7 +144,7 @@ export const pillarContent: PillarContentMap = {
 			'HFO blends with GWPs under 150, and natural refrigerants -- R-290 propane (GWP 3), R-600a isobutane (GWP 3), R-744 CO2 (GWP 1), ' +
 			'and R-717 ammonia (GWP 0). Natural refrigerants are the end state. They carry negligible direct climate impact and avoid the per- and polyfluoroalkyl ' +
 			'(PFAS) concerns increasingly associated with HFOs. China and India are already manufacturing R-290 split ACs at scale. ' +
-			'As of early 2026, 157 parties have ratified the Kigali Amendment, covering over 95% of global HFC consumption.',
+			'As of February 2026, 172 parties have ratified the Kigali Amendment, covering over 95% of global HFC consumption.',
 		callToInsight:
 			'Ratification is necessary but not sufficient. The real test is implementation: converting manufacturing lines, training technicians, ' +
 			'updating safety codes, and building recovery and destruction infrastructure for legacy gases. ' +

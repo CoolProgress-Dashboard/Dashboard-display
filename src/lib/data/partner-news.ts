@@ -93,12 +93,12 @@ export const partnerNews: NewsItem[] = [
     color: '#3D6B6B'
   },
   {
-    id: 'kigali-171',
-    headline: 'Kigali Amendment reaches 171 ratifications, boosting climate action',
-    source: 'UNEP Ozone Secretariat',
-    sourceUrl: 'https://ozone.unep.org/kigali-amendment-hits-milestone-100th-ratification-boosting-climate-action',
-    date: 'Sep 2025',
-    summary: '171 states and the EU have ratified the Kigali Amendment, on track to avoid up to 0.4C of warming by end of century through HFC phase-down.',
+    id: 'kigali-172',
+    headline: 'Kigali Amendment reaches 172 ratifications, boosting climate action',
+    source: 'UN Treaty Collection',
+    sourceUrl: 'https://treaties.un.org/Pages/ViewDetails.aspx?src=IND&mtdsg_no=XXVII-2-f&chapter=27&clang=_en',
+    date: 'Feb 2026',
+    summary: '172 states have ratified the Kigali Amendment, on track to avoid up to 0.4\u00B0C of warming by end of century through HFC phase-down.',
     category: 'Policy',
     icon: 'fa-flask',
     color: '#8BC34A'

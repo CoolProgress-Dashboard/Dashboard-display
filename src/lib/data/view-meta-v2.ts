@@ -115,14 +115,14 @@ export const viewMetaV2: ViewMetaMap = {
 	},
 
 	kigali: {
-		headline: '157 countries ratified Kigali. But ratification is not implementation.',
+		headline: '172 countries ratified Kigali. But ratification is not implementation.',
 		subhead:
 			'The Kigali Amendment can prevent 0.5\u00B0C of warming \u2014 if commitments become refrigerant transitions on the ground.',
 		insight:
-			'157 parties have ratified, covering 95% of global HFC consumption. Non-A5 countries must reach 15% of baseline by 2036. ' +
+			'172 parties have ratified, covering 95% of global HFC consumption. Non-A5 countries must reach 15% of baseline by 2036. ' +
 			'The transition runs from high-GWP HFCs (R-410A: GWP 2,088) toward natural refrigerants (R-290 propane: GWP 3). ' +
 			'China and India already manufacture R-290 split ACs at scale. The real test: manufacturing conversion, technician training, and F-gas recovery.',
-		entryStat: '157 parties ratified -- 95% of global HFC consumption covered',
+		entryStat: '172 parties ratified -- 95% of global HFC consumption covered',
 		sources: [
 			{
 				name: 'UNEP Ozone Secretariat',
