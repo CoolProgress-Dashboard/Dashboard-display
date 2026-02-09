@@ -1,5 +1,8 @@
 <script lang="ts">
   import '../app.css';
+
+  // SvelteKit may pass params in some builds; declare to avoid warnings.
+  export let params: Record<string, string> | undefined;
 </script>
 
 <svelte:head>

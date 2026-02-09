@@ -87,11 +87,36 @@ const safeFetch = async <T>(
   }
 };
 
+const safeFetchWithFallback = async <T>(
+  url: string,
+  key: string,
+  primaryTable: string,
+  fallbackTable: string,
+  columns: string,
+  filter = '',
+  limit = 1000
+): Promise<T[]> => {
+  try {
+    return await fetchTable<T>(url, key, primaryTable, columns, filter, limit);
+  } catch (err) {
+    console.warn(
+      `[Dashboard] Failed to load "${primaryTable}", falling back to "${fallbackTable}":`,
+      err
+    );
+    try {
+      return await fetchTable<T>(url, key, fallbackTable, columns, filter, limit);
+    } catch (fallbackErr) {
+      console.error(`[Dashboard] Failed to load "${fallbackTable}":`, fallbackErr);
+      return [];
+    }
+  }
+};
+
 export const loadDashboardData = async (
   url: string,
   key: string
 ): Promise<DashboardData> => {
-  const [countries, pledge, kigali, meps, access, accessForecast, emissions, ndcTracker, ncap, claspEnergy, subcool, regions, refrigerants] =
+  const [countries, pledge, kigali, meps, access, accessForecast, ndcTracker, ncap, regions, refrigerants] =
     await Promise.all([
       safeFetch(url, key, 'countries', 'country_code,country_name,region'),
       safeFetch(url, key, 'global_cooling_pledge', 'country_code,country_name,signatory'),
@@ -126,14 +151,6 @@ export const loadDashboardData = async (
       safeFetch(
         url,
         key,
-        'v_emissions_summary',
-        'country_code,country_name,region,year,scenario_code,appliance_category,total_emissions,direct_emissions,indirect_emissions',
-        '',
-        10000 // ~9,740 rows need pagination
-      ),
-      safeFetch(
-        url,
-        key,
         'ndc_tracker_clasp',
         'country_code,country_name,continent,subregion,annex_status,ndc_type,category,mention_status,mention_value',
         '',
@@ -144,22 +161,6 @@ export const loadDashboardData = async (
         key,
         'ncap',
         'id,country_code,country_name,year,long_term_goal,sectoral_targets,energy_consumed_twh,ghg_emissions_mtco2e,cooling_access_vulnerability,energy_efficiency_demand_reduction,refrigerant_management,remarks,policy_available_pdf'
-      ),
-      safeFetch<ClaspEnergyRecord>(
-        url,
-        key,
-        'clasp_energy_consumption',
-        'id,country_code,country_name,year,appliance,bau_final_energy_twh,bau_co2_mt,gb_final_energy_twh,gb_co2_mt,gb_annual_co2_red_mt,nzh_final_energy_twh,nzh_co2_mt,nzh_annual_co2_red_mt,bat_final_energy_twh,bat_co2_mt,bat_annual_co2_red_mt,appliance_units_in_use,appliance_ownership_rate',
-        '',
-        50000
-      ),
-      safeFetch<SubcoolRecord>(
-        url,
-        key,
-        'global_model_subcool',
-        'id,scenario_id,scenario_name,country_code,country_name,subsector_id,subsector,year,indirect_emission_mt,direct_emission_mt,stock,unit_sales,ec_gwh',
-        '',
-        100000
       ),
       safeFetch<RegionRecord>(
         url,
@@ -182,15 +183,52 @@ export const loadDashboardData = async (
     meps,
     access,
     accessForecast,
-    emissions,
     ndcTracker,
     ncap,
-    claspEnergy,
-    subcool,
     regions,
     refrigerants,
+    emissions: [],
+    claspEnergy: [],
+    subcool: [],
     ndc: []
   };
+};
+
+export const loadEmissionsData = async (
+  url: string,
+  key: string
+): Promise<Pick<DashboardData, 'emissions' | 'claspEnergy' | 'subcool'>> => {
+  const [emissions, claspEnergy, subcool] = await Promise.all([
+    safeFetchWithFallback(
+      url,
+      key,
+      'mv_emissions_summary',
+      'v_emissions_summary',
+      'country_code,country_name,region,year,scenario_code,appliance_category,total_emissions,direct_emissions,indirect_emissions',
+      '',
+      10000
+    ),
+    safeFetchWithFallback<ClaspEnergyRecord>(
+      url,
+      key,
+      'mv_clasp_energy_consumption',
+      'clasp_energy_consumption',
+      'id,country_code,country_name,year,appliance,bau_final_energy_twh,bau_co2_mt,gb_final_energy_twh,gb_co2_mt,gb_annual_co2_red_mt,nzh_final_energy_twh,nzh_co2_mt,nzh_annual_co2_red_mt,bat_final_energy_twh,bat_co2_mt,bat_annual_co2_red_mt,appliance_units_in_use,appliance_ownership_rate',
+      '',
+      50000
+    ),
+    safeFetchWithFallback<SubcoolRecord>(
+      url,
+      key,
+      'mv_global_model_subcool',
+      'global_model_subcool',
+      'id,scenario_id,scenario_name,country_code,country_name,subsector_id,subsector,year,indirect_emission_mt,direct_emission_mt,stock,unit_sales,ec_gwh',
+      '',
+      100000
+    )
+  ]);
+
+  return { emissions, claspEnergy, subcool };
 };
 
 export const getEmissionsData = (

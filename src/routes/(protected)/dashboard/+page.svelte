@@ -7,10 +7,13 @@
     getAccessDataBySource,
     getAccessKPIs,
     getEmissionsData,
-    getNdcRecord,
-    loadDashboardData
+    getNdcRecord
   } from '$lib/services/dashboard-data';
   import type { AccessFilters, Country, DashboardData, EmissionsFilters, Meps, NdcFilters } from '$lib/services/dashboard-types';
+  import type { PageData } from './$types';
+
+  // Get data from server load function
+  export let data: PageData;
 
   onMount(async () => {
     const loadScript = (src: string) =>
@@ -42,8 +45,7 @@
     // =====================================================
     // CONFIGURATION
     // =====================================================
-    const SUPABASE_URL = 'https://hcpmdkkavtadgugrqohl.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjcG1ka2thdnRhZGd1Z3Jxb2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyODcwMzAsImV4cCI6MjA3Nzg2MzAzMH0.hjYqzGqAQ_C7vVsAo-UcSICFEpzsKP5R5xGi8sh-etA';
+    // Data is now loaded from server (no need for SUPABASE_URL/KEY here)
 
     const byId = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
     const setText = (id: string, value: string | number) => {
@@ -51,8 +53,53 @@
       if (el) el.textContent = String(value);
     };
 
-        // Data storage
-    let data: DashboardData = createDefaultData();
+        // Data storage - initialized from server
+    let dashboardData: DashboardData = data.data;
+    let emissionsLoaded = false;
+    let emissionsInitializing = false;
+    let emissionsInitialized = false;
+    let emissionsLoading: Promise<void> | null = null;
+
+    const ensureEmissionsData = async () => {
+        if (emissionsLoaded) return;
+        if (emissionsLoading) return emissionsLoading;
+
+        emissionsLoading = (async () => {
+            setStatus('Loading emissions dashboardData...');
+            try {
+                const res = await fetch('/api/dashboard/emissions');
+                if (!res.ok) throw new Error(`Emissions load failed: ${res.status}`);
+                const payload = await res.json();
+                const loaded = payload?.data;
+                if (!loaded) throw new Error('Emissions payload missing data');
+                dashboardData.emissions = loaded.emissions || [];
+                dashboardData.claspEnergy = loaded.claspEnergy || [];
+                dashboardData.subcool = loaded.subcool || [];
+                emissionsLoaded = true;
+                setStatus('Emissions data loaded', 'success');
+            } catch (err) {
+                console.error('[Dashboard] Emissions data load failed:', err);
+                setStatus('Failed to load emissions data', 'error');
+            } finally {
+                emissionsLoading = null;
+            }
+        })();
+
+        return emissionsLoading;
+    };
+
+    const initEmissionsView = async () => {
+        if (!emissionsLoaded) return;
+        if (emissionsInitializing) return;
+        if (emissionsInitialized) return;
+        emissionsInitializing = true;
+        populateEmissionsRegionFilter();
+        await initEmissionsMap();
+        updateEmissionsView();
+        updateSidebarStats();
+        emissionsInitializing = false;
+        emissionsInitialized = true;
+    };
 
         type Indicator = 'pledge' | 'kigali' | 'meps';
 
@@ -279,17 +326,17 @@
         }
       } else {
         // Default stats
-        const pledgeCount = data.pledge.filter(p => p.signatory === 1).length;
-        const kigaliCount = data.kigali.filter(k => k.kigali_party === 1).length;
-        const mepsCountries = new Set(data.meps.map(m => m.country_code)).size;
+        const pledgeCount = dashboardData.pledge.filter(p => p.signatory === 1).length;
+        const kigaliCount = dashboardData.kigali.filter(k => k.kigali_party === 1).length;
+        const mepsCountries = new Set(dashboardData.meps.map(m => m.country_code)).size;
         setLabel(1, 'Total Countries');
-        setVal(1, data.countries.length);
+        setVal(1, dashboardData.countries.length);
         setLabel(2, 'GCP Coverage');
-        setVal(2, `${Math.round(pledgeCount / data.countries.length * 100)}%`);
+        setVal(2, `${Math.round(pledgeCount / dashboardData.countries.length * 100)}%`);
         setLabel(3, 'Kigali Coverage');
-        setVal(3, `${Math.round(kigaliCount / data.kigali.length * 100)}%`);
+        setVal(3, `${Math.round(kigaliCount / dashboardData.kigali.length * 100)}%`);
         setLabel(4, 'MEPS Coverage');
-        setVal(4, `${Math.round(mepsCountries / data.countries.length * 100)}%`);
+        setVal(4, `${Math.round(mepsCountries / dashboardData.countries.length * 100)}%`);
       }
     };
 
@@ -298,7 +345,7 @@
       let label = 'Global';
       let isCountryView = false;
       if (globalCountryFilter) {
-        const country = data.countries.find(c => c.country_code === globalCountryFilter);
+        const country = dashboardData.countries.find(c => c.country_code === globalCountryFilter);
         label = country?.country_name || globalCountryFilter;
         isCountryView = true;
       }
@@ -376,9 +423,9 @@
         // KPI UPDATES
         // =====================================================
         function updateKPIs() {
-            const pledgeCount = data.pledge.filter(p => p.signatory === 1).length;
-            const kigaliCount = data.kigali.filter(k => k.kigali_party === 1).length;
-            const mepsCountries = new Set(data.meps.map(m => m.country_code)).size;
+            const pledgeCount = dashboardData.pledge.filter(p => p.signatory === 1).length;
+            const kigaliCount = dashboardData.kigali.filter(k => k.kigali_party === 1).length;
+            const mepsCountries = new Set(dashboardData.meps.map(m => m.country_code)).size;
 
             // Overview KPIs (match 3-card layout)
             setText('kpi-climate', '10%');
@@ -386,39 +433,39 @@
             setText('kpi-access', '1.2 Bn');
 
             // MEPS KPIs
-            const mandatoryMeps = data.meps.filter(m => m.requirement_type === 'Mandatory').length;
-            const voluntaryMeps = data.meps.filter(m => m.requirement_type === 'Voluntary').length;
+            const mandatoryMeps = dashboardData.meps.filter(m => m.requirement_type === 'Mandatory').length;
+            const voluntaryMeps = dashboardData.meps.filter(m => m.requirement_type === 'Voluntary').length;
             setText('meps-total', mepsCountries);
-            setText('meps-mandatory', new Set(data.meps.filter(m => m.requirement_type === 'Mandatory').map(m => m.country_code)).size);
-            setText('meps-voluntary', new Set(data.meps.filter(m => m.requirement_type === 'Voluntary').map(m => m.country_code)).size);
-            setText('meps-none', data.countries.length - mepsCountries);
+            setText('meps-mandatory', new Set(dashboardData.meps.filter(m => m.requirement_type === 'Mandatory').map(m => m.country_code)).size);
+            setText('meps-voluntary', new Set(dashboardData.meps.filter(m => m.requirement_type === 'Voluntary').map(m => m.country_code)).size);
+            setText('meps-none', dashboardData.countries.length - mepsCountries);
 
             // Kigali KPIs
-            const montrealCount = data.kigali.filter(k => k.montreal_protocol_party === 1).length;
-            const a5Count = data.kigali.filter(k => k.group_type && k.group_type.includes('A5')).length;
+            const montrealCount = dashboardData.kigali.filter(k => k.montreal_protocol_party === 1).length;
+            const a5Count = dashboardData.kigali.filter(k => k.group_type && k.group_type.includes('A5')).length;
             setText('kigali-parties', kigaliCount);
             setText('montreal-parties', montrealCount);
             setText('kigali-a5', a5Count);
-            setText('kigali-non', data.kigali.length - kigaliCount);
+            setText('kigali-non', dashboardData.kigali.length - kigaliCount);
 
             // Access KPIs
-            const accessRegions = new Set(data.access.map(a => a.region)).size;
-            const totalPop = data.access.reduce((sum, a) => sum + (parseFloat(a.population_without_cooling) || 0), 0);
-            setText('access-high', new Set(data.access.map(a => a.country_code)).size);
-            setText('access-total', data.access.length);
+            const accessRegions = new Set(dashboardData.access.map(a => a.region)).size;
+            const totalPop = dashboardData.access.reduce((sum, a) => sum + (parseFloat(a.population_without_cooling) || 0), 0);
+            setText('access-high', new Set(dashboardData.access.map(a => a.country_code)).size);
+            setText('access-total', dashboardData.access.length);
             setText('access-pop', (totalPop / 1e9).toFixed(2));
             setText('access-regions', accessRegions);
 
             // Policy KPIs
-            const bothCount = data.countries.filter(c => {
-                const hasPledge = data.pledge.find(p => p.country_code === c.country_code && p.signatory === 1);
-                const hasKigali = data.kigali.find(k => k.country_code === c.country_code && k.kigali_party === 1);
+            const bothCount = dashboardData.countries.filter(c => {
+                const hasPledge = dashboardData.pledge.find(p => p.country_code === c.country_code && p.signatory === 1);
+                const hasKigali = dashboardData.kigali.find(k => k.country_code === c.country_code && k.kigali_party === 1);
                 return hasPledge && hasKigali;
             }).length;
-            const noneCount = data.countries.filter(c => {
-                const hasPledge = data.pledge.find(p => p.country_code === c.country_code && p.signatory === 1);
-                const hasKigali = data.kigali.find(k => k.country_code === c.country_code && k.kigali_party === 1);
-                const hasMeps = data.meps.find(m => m.country_code === c.country_code);
+            const noneCount = dashboardData.countries.filter(c => {
+                const hasPledge = dashboardData.pledge.find(p => p.country_code === c.country_code && p.signatory === 1);
+                const hasKigali = dashboardData.kigali.find(k => k.country_code === c.country_code && k.kigali_party === 1);
+                const hasMeps = dashboardData.meps.find(m => m.country_code === c.country_code);
                 return !hasPledge && !hasKigali && !hasMeps;
             }).length;
             // Policy KPIs are now updated by updateNDCKPIs()
@@ -436,7 +483,7 @@
             if (!select) return;
 
             // Sort countries alphabetically by name
-            const sortedCountries = [...data.countries]
+            const sortedCountries = [...dashboardData.countries]
                 .filter(c => c.country_name)
                 .sort((a, b) => (a.country_name || '').localeCompare(b.country_name || ''));
 
@@ -535,7 +582,7 @@
             if (!code) return '#e2e8f0';
 
             if (selectedRegion) {
-                const country = data.countries.find(c => c.country_code === code);
+                const country = dashboardData.countries.find(c => c.country_code === code);
                 if (!country || country.region !== selectedRegion) return '#e2e8f0';
             }
 
@@ -653,7 +700,7 @@
                 return;
             }
 
-            const country = data.countries.find(c => c.country_code === code);
+            const country = dashboardData.countries.find(c => c.country_code === code);
 
             // If country not in database, show what we know
             if (!country) {
@@ -665,9 +712,9 @@
             }
 
             let info = `<strong>${country.country_name}</strong><br>`;
-            const pledgeRec = data.pledge.find(p => p.country_code === code);
-            const kigaliRec = data.kigali.find(k => k.country_code === code);
-            const mepsRec = data.meps.find(m => m.country_code === code);
+            const pledgeRec = dashboardData.pledge.find(p => p.country_code === code);
+            const kigaliRec = dashboardData.kigali.find(k => k.country_code === code);
+            const mepsRec = dashboardData.meps.find(m => m.country_code === code);
 
             info += pledgeRec && pledgeRec.signatory === 1 ? '✓ GCP Signatory<br>' : '✗ Not GCP Signatory<br>';
             info += kigaliRec && kigaliRec.kigali_party === 1 ? '✓ Kigali Party<br>' : '✗ Not Kigali Party<br>';
@@ -685,7 +732,7 @@
 
         function handleClick(event: MouseEvent, d: any) {
             const code = countryIdToCode[normalizeId(d.id)];
-            const country = data.countries.find(c => c.country_code === code);
+            const country = dashboardData.countries.find(c => c.country_code === code);
             if (!country) return;
 
             selectedCountry = code;
@@ -711,7 +758,7 @@
         }
 
         function updateCountryDetail(code: string) {
-            const country = data.countries.find(c => c.country_code === code);
+            const country = dashboardData.countries.find(c => c.country_code === code);
             if (!country) return;
 
             // For Access view, show SEforALL data
@@ -744,10 +791,10 @@
                 return;
             }
 
-            const pledgeRec = data.pledge.find(p => p.country_code === code);
-            const kigaliRec = data.kigali.find(k => k.country_code === code);
-            const mepsRec = data.meps.find(m => m.country_code === code);
-            const ndcRec = getNdcRecord(data, code, getNdcFilters());
+            const pledgeRec = dashboardData.pledge.find(p => p.country_code === code);
+            const kigaliRec = dashboardData.kigali.find(k => k.country_code === code);
+            const mepsRec = dashboardData.meps.find(m => m.country_code === code);
+            const ndcRec = getNdcRecord(dashboardData, code, getNdcFilters());
 
             const hasPledge = pledgeRec && pledgeRec.signatory === 1;
             const hasKigali = kigaliRec && kigaliRec.kigali_party === 1;
@@ -825,7 +872,7 @@
             if (!accessDetail) return;
 
             // Get all years of data for this country
-            const countryData = data.access.filter(r => r.country_code === code);
+            const countryData = dashboardData.access.filter(r => r.country_code === code);
 
             // CCC Palette colors for population categories
             const categoryColors: Record<string, string> = {
@@ -1066,7 +1113,7 @@
             if (!emissionsDetail) return;
 
             // Get country region from regions data
-            const regionData = data.regions.find(r => r.country_code === code);
+            const regionData = dashboardData.regions.find(r => r.country_code === code);
             const region = regionData?.region || country.region || 'N/A';
 
             // Colors for appliances/subsectors and emission types - CCC Palette
@@ -1094,7 +1141,7 @@
                 scenarioLabel = CLASP_SCENARIO_NAMES[emissionsScenario] || emissionsScenario;
 
                 // Get all country data across all years
-                const countryClaspData = data.claspEnergy.filter(r =>
+                const countryClaspData = dashboardData.claspEnergy.filter(r =>
                     r.country_code === code &&
                     (emissionsAppliances.length === 0 || emissionsAppliances.includes(r.appliance))
                 );
@@ -1144,7 +1191,7 @@
                 scenarioLabel = HEAT_SCENARIO_NAMES[emissionsScenario] || emissionsScenario;
 
                 // Get all country data across all years for selected scenario
-                const countrySubcoolData = data.subcool.filter(r =>
+                const countrySubcoolData = dashboardData.subcool.filter(r =>
                     r.country_code === code &&
                     r.scenario_name === emissionsScenario
                 );
@@ -1578,13 +1625,13 @@
                     if (emissionsDataSource === 'clasp') {
                         const byCountry = getClaspEmissionsByCountry();
                         countryData = Object.entries(byCountry)
-                            .map(([code, data]) => ({ name: data.name || code, value: data.total }))
+                            .map(([code, data]) => ({ name: dashboardData.name || code, value: dashboardData.total }))
                             .sort((a, b) => b.value - a.value)
                             .slice(0, 8);
                     } else {
                         const byCountry = getSubcoolEmissionsByCountry();
                         countryData = Object.entries(byCountry)
-                            .map(([code, data]) => ({ name: data.name || code, value: data.total }))
+                            .map(([code, data]) => ({ name: dashboardData.name || code, value: dashboardData.total }))
                             .sort((a, b) => b.value - a.value)
                             .slice(0, 8);
                     }
@@ -1620,12 +1667,14 @@
         const initChart = (id: string) => {
             const el = getChartEl(id);
             if (!el) return null;
+            if (el.clientWidth === 0 || el.clientHeight === 0) return null;
             return echarts.init(el);
         };
 
         const setChart = (id: string, option: any) => {
             const el = getChartEl(id);
             if (!el) return;
+            if (el.clientWidth === 0 || el.clientHeight === 0) return;
             if (!charts[id]) {
                 charts[id] = echarts.init(el);
             } else if (charts[id].getDom && charts[id].getDom() !== el) {
@@ -1673,11 +1722,11 @@
         function initCharts() {
             // Regional Signatories Chart
             const regionData = {};
-            data.countries.forEach(c => {
+            dashboardData.countries.forEach(c => {
                 if (c.region) {
                     regionData[c.region] = regionData[c.region] || { total: 0, signatories: 0 };
                     regionData[c.region].total++;
-                    const pledge = data.pledge.find(p => p.country_code === c.country_code);
+                    const pledge = dashboardData.pledge.find(p => p.country_code === c.country_code);
                     if (pledge && pledge.signatory === 1) regionData[c.region].signatories++;
                 }
             });
@@ -1708,20 +1757,20 @@
             });
 
             // Protocol Distribution Chart
-            const kigaliCount = data.kigali.filter(k => k.kigali_party === 1).length;
-            const pledgeOnly = data.countries.filter(c => {
-                const hasPledge = data.pledge.find(p => p.country_code === c.country_code && p.signatory === 1);
-                const hasKigali = data.kigali.find(k => k.country_code === c.country_code && k.kigali_party === 1);
+            const kigaliCount = dashboardData.kigali.filter(k => k.kigali_party === 1).length;
+            const pledgeOnly = dashboardData.countries.filter(c => {
+                const hasPledge = dashboardData.pledge.find(p => p.country_code === c.country_code && p.signatory === 1);
+                const hasKigali = dashboardData.kigali.find(k => k.country_code === c.country_code && k.kigali_party === 1);
                 return hasPledge && !hasKigali;
             }).length;
-            const kigaliOnly = data.countries.filter(c => {
-                const hasPledge = data.pledge.find(p => p.country_code === c.country_code && p.signatory === 1);
-                const hasKigali = data.kigali.find(k => k.country_code === c.country_code && k.kigali_party === 1);
+            const kigaliOnly = dashboardData.countries.filter(c => {
+                const hasPledge = dashboardData.pledge.find(p => p.country_code === c.country_code && p.signatory === 1);
+                const hasKigali = dashboardData.kigali.find(k => k.country_code === c.country_code && k.kigali_party === 1);
                 return !hasPledge && hasKigali;
             }).length;
-            const both = data.countries.filter(c => {
-                const hasPledge = data.pledge.find(p => p.country_code === c.country_code && p.signatory === 1);
-                const hasKigali = data.kigali.find(k => k.country_code === c.country_code && k.kigali_party === 1);
+            const both = dashboardData.countries.filter(c => {
+                const hasPledge = dashboardData.pledge.find(p => p.country_code === c.country_code && p.signatory === 1);
+                const hasKigali = dashboardData.kigali.find(k => k.country_code === c.country_code && k.kigali_party === 1);
                 return hasPledge && hasKigali;
             }).length;
 
@@ -1738,7 +1787,7 @@
                             { value: pledgeOnly, name: 'GCP Only', itemStyle: { color: '#8BC34A' } },
                             { value: kigaliOnly, name: 'Kigali Only', itemStyle: { color: '#f59e0b' } },
                             {
-                                value: data.countries.length - both - pledgeOnly - kigaliOnly,
+                                value: dashboardData.countries.length - both - pledgeOnly - kigaliOnly,
                                 name: 'Neither',
                                 itemStyle: { color: '#475569' }
                             }
@@ -1857,7 +1906,7 @@
 
             // Policy Timeline Chart
             const yearData = {};
-            data.meps.forEach(m => {
+            dashboardData.meps.forEach(m => {
                 if (m.year_adopted) {
                     yearData[m.year_adopted] = (yearData[m.year_adopted] || 0) + 1;
                 }
@@ -1912,18 +1961,18 @@
         let emissionsMapSvg: any;
 
         function getFilteredEmissions() {
-            return getEmissionsData(data, getEmissionsFilters());
+            return getEmissionsData(dashboardData, getEmissionsFilters());
         }
 
         // Get region for a country code
         function getCountryRegion(code: string): string {
-            const regionRec = data.regions.find(r => r.country_code === code);
+            const regionRec = dashboardData.regions.find(r => r.country_code === code);
             return regionRec?.region || '';
         }
 
         // Get CLASP data filtered by current selections
         function getFilteredClaspData() {
-            return data.claspEnergy.filter(r => {
+            return dashboardData.claspEnergy.filter(r => {
                 // Global country filter from sidebar
                 if (globalCountryFilter && r.country_code !== globalCountryFilter) return false;
                 if (r.year !== emissionsYear) return false;
@@ -1949,7 +1998,7 @@
 
         // Get Subcool data filtered by current selections
         function getFilteredSubcoolData() {
-            return data.subcool.filter(r => {
+            return dashboardData.subcool.filter(r => {
                 // Global country filter from sidebar
                 if (globalCountryFilter && r.country_code !== globalCountryFilter) return false;
                 if (r.year !== emissionsYear) return false;
@@ -2312,7 +2361,7 @@
             if (!select) return;
 
             const regions = new Set<string>();
-            data.regions.forEach(r => {
+            dashboardData.regions.forEach(r => {
                 if (r.region) regions.add(r.region);
             });
 
@@ -2347,13 +2396,14 @@
 
         // Main update function for emissions view
         function updateEmissionsView() {
+            if (!emissionsLoaded) return;
             updateNewEmissionsKPIs();
             updateNewEmissionsMap();
             updateEmissionsCharts();
             updateEmissionsMetaPills();
             // Refresh country detail if a country is selected, otherwise show global
             if (selectedCountry) {
-                const country = data.countries.find(c => c.country_code === selectedCountry);
+                const country = dashboardData.countries.find(c => c.country_code === selectedCountry);
                 if (country) {
                     updateEmissionsCountryDetail(selectedCountry, country);
                 }
@@ -2369,7 +2419,7 @@
             // Get all emissions by country (unfiltered by country for map display)
             let countryValues: Record<string, number> = {};
             if (emissionsDataSource === 'clasp') {
-                const unfilteredClasp = data.claspEnergy.filter(r => {
+                const unfilteredClasp = dashboardData.claspEnergy.filter(r => {
                     if (r.year !== emissionsYear) return false;
                     if (emissionsAppliances.length > 0 && !emissionsAppliances.includes(r.appliance)) return false;
                     if (emissionsRegion) {
@@ -2384,7 +2434,7 @@
                     countryValues[r.country_code] += co2;
                 });
             } else {
-                const unfilteredSubcool = data.subcool.filter(r => {
+                const unfilteredSubcool = dashboardData.subcool.filter(r => {
                     if (r.year !== emissionsYear) return false;
                     if (r.scenario_name !== emissionsScenario) return false;
                     if (emissionsRegion) {
@@ -2517,13 +2567,13 @@
             if (emissionsDataSource === 'clasp') {
                 const byCountry = getClaspEmissionsByCountry();
                 countryData = Object.entries(byCountry)
-                    .map(([code, data]) => ({ name: data.name || code, value: +data.total.toFixed(2) }))
+                    .map(([code, data]) => ({ name: dashboardData.name || code, value: +dashboardData.total.toFixed(2) }))
                     .sort((a, b) => b.value - a.value)
                     .slice(0, 10);
             } else {
                 const byCountry = getSubcoolEmissionsByCountry();
                 countryData = Object.entries(byCountry)
-                    .map(([code, data]) => ({ name: data.name || code, value: +data.total.toFixed(2) }))
+                    .map(([code, data]) => ({ name: dashboardData.name || code, value: +dashboardData.total.toFixed(2) }))
                     .sort((a, b) => b.value - a.value)
                     .slice(0, 10);
             }
@@ -2553,7 +2603,7 @@
             if (emissionsDataSource === 'clasp') {
                 CLASP_SCENARIOS.forEach((scenario, idx) => {
                     const yearTotals = years.map(y => {
-                        const filtered = data.claspEnergy.filter(r =>
+                        const filtered = dashboardData.claspEnergy.filter(r =>
                             r.year === y && emissionsAppliances.includes(r.appliance)
                         );
                         let total = 0;
@@ -2576,7 +2626,7 @@
             } else {
                 HEAT_SCENARIOS.forEach((scenario, idx) => {
                     const yearTotals = years.map(y => {
-                        const filtered = data.subcool.filter(r =>
+                        const filtered = dashboardData.subcool.filter(r =>
                             r.year === y && r.scenario_name === scenario
                         );
                         let total = 0;
@@ -2687,7 +2737,7 @@
             const records = getMapFilteredMeps().filter(m => m.country_code === code);
 
             if (selectedRegion) {
-                const country = data.countries.find(c => c.country_code === code);
+                const country = dashboardData.countries.find(c => c.country_code === code);
                 if (!country || country.region !== selectedRegion) {
                     return { level: 'none', label: 'No Data' };
                 }
@@ -2785,10 +2835,10 @@
                     })
                     .on('mouseover', (event: MouseEvent, d: any) => {
                         const code = countryIdToCode[normalizeId(d.id)];
-                        const country = data.countries.find(c => c.country_code === code);
+                        const country = dashboardData.countries.find(c => c.country_code === code);
                         const status = getMepsStatus(code);
                         // Use raw data for tooltip (not filtered) so hover always shows full picture
-                        const allRecs = data.meps.filter(m => m.country_code === code);
+                        const allRecs = dashboardData.meps.filter(m => m.country_code === code);
                         const mepsRecs = allRecs.filter(r => isMepsRecord(r));
                         const labelRecs = allRecs.filter(r => isLabelRecord(r));
                         const equips = [...new Set(allRecs.map(m => m.equipment_type).filter(Boolean))];
@@ -2863,7 +2913,7 @@
                 if (el) el.style.width = `${pct}%`;
             };
 
-            const codes = new Set(data.countries.map(c => c.country_code));
+            const codes = new Set(dashboardData.countries.map(c => c.country_code));
             const total = codes.size;
             const counts = { both: 0, meps: 0, labels: 0, critical: 0 };
 
@@ -2895,7 +2945,7 @@
 
         // Filtered for KPIs/charts — includes country filter
         function getFilteredMeps() {
-            return data.meps.filter(m => {
+            return dashboardData.meps.filter(m => {
                 if (globalCountryFilter && m.country_code !== globalCountryFilter) return false;
                 if (mepsRegionFilter && m.region !== mepsRegionFilter) return false;
                 // Equipment type filter — if none selected, nothing passes
@@ -2906,7 +2956,7 @@
 
         // Filtered for MAP — never filters by selected country so all countries stay visible
         function getMapFilteredMeps() {
-            return data.meps.filter(m => {
+            return dashboardData.meps.filter(m => {
                 if (mepsRegionFilter && m.region !== mepsRegionFilter) return false;
                 // Equipment type filter — if none selected, nothing passes
                 if (!mepsEquipmentTypes.includes(m.equipment_type || '')) return false;
@@ -2927,7 +2977,7 @@
             // Populate region filter
             const regionSelect = document.getElementById('meps-region-filter') as HTMLSelectElement;
             if (regionSelect) {
-                const regions = new Set(data.meps.map(m => m.region).filter(Boolean));
+                const regions = new Set(dashboardData.meps.map(m => m.region).filter(Boolean));
                 regionSelect.innerHTML = '<option value="">All Regions</option>';
                 Array.from(regions).sort().forEach(r => {
                     const opt = document.createElement('option');
@@ -2982,7 +3032,7 @@
         function updateMepsCharts() {
             // If a country is selected, show country-specific charts
             if (selectedMepsCountry) {
-                const records = data.meps.filter(m => m.country_code === selectedMepsCountry);
+                const records = dashboardData.meps.filter(m => m.country_code === selectedMepsCountry);
                 updateMepsCountryCharts(selectedMepsCountry, records);
             } else {
                 // Show global charts
@@ -2995,8 +3045,8 @@
             const container = document.querySelector('#meps-country-detail .country-detail') as HTMLElement;
             if (!container) return;
 
-            const country = data.countries.find(c => c.country_code === code);
-            const allRecords = data.meps.filter(m => m.country_code === code);
+            const country = dashboardData.countries.find(c => c.country_code === code);
+            const allRecords = dashboardData.meps.filter(m => m.country_code === code);
 
             if (!country) {
                 container.innerHTML = `<h4>Unknown Country</h4><p class="side-muted">No data available for ${code}</p>`;
@@ -3012,7 +3062,7 @@
         }
 
         function updateMepsCountryCharts(code: string, records: Meps[]) {
-            const country = data.countries.find(c => c.country_code === code);
+            const country = dashboardData.countries.find(c => c.country_code === code);
             const countryName = country?.country_name || code;
             const equipTypes = ['Air Conditioning', 'Domestic Refrigeration', 'Fans'];
             const equipShort: Record<string, string> = { 'Air Conditioning': 'AC', 'Domestic Refrigeration': 'Fridge', 'Fans': 'Fans' };
@@ -3450,7 +3500,7 @@
             if (!titleEl) return;
 
             if (selectedCountry) {
-                const country = data.countries.find(c => c.country_code === selectedCountry);
+                const country = dashboardData.countries.find(c => c.country_code === selectedCountry);
                 titleEl.innerHTML = `<i class="fa-solid fa-flag"></i> ${country?.country_name || selectedCountry}`;
             } else {
                 titleEl.innerHTML = `<i class="fa-solid fa-globe"></i> Global View`;
@@ -3493,7 +3543,7 @@
             const statusTitle = document.getElementById('meps-status-title');
             if (statusTitle) {
                 if (selectedCountry) {
-                    const country = data.countries.find(c => c.country_code === selectedCountry);
+                    const country = dashboardData.countries.find(c => c.country_code === selectedCountry);
                     statusTitle.textContent = country?.country_name || selectedCountry;
                 } else {
                     statusTitle.textContent = 'Product Efficiency Analysis';
@@ -3523,13 +3573,13 @@
             if (!code) return { level: 'critical', label: 'Critical' };
 
             if (selectedRegion) {
-                const country = data.countries.find(c => c.country_code === code);
+                const country = dashboardData.countries.find(c => c.country_code === code);
                 if (!country || country.region !== selectedRegion) {
                     return { level: 'low', label: 'Low/None' };
                 }
             }
 
-            const record = data.kigali.find(k => k.country_code === code);
+            const record = dashboardData.kigali.find(k => k.country_code === code);
             if (!record) {
                 return { level: 'low', label: 'Low/None' };
             }
@@ -3614,7 +3664,7 @@
                     })
                     .on('mouseover', (event: MouseEvent, d: any) => {
                         const code = countryIdToCode[normalizeId(d.id)];
-                        const country = data.countries.find(c => c.country_code === code);
+                        const country = dashboardData.countries.find(c => c.country_code === code);
                         const status = getKigaliStatus(code);
                         tooltip.innerHTML = `
                             <strong>${country?.country_name || code || 'Unknown'}</strong><br>
@@ -3680,7 +3730,7 @@
                 if (el) el.style.width = `${pct}%`;
             };
 
-            const codes = new Set(data.countries.map(c => c.country_code));
+            const codes = new Set(dashboardData.countries.map(c => c.country_code));
             const total = codes.size;
             const counts = { high: 0, medium: 0, low: 0, critical: 0 };
 
@@ -3711,12 +3761,12 @@
         // =====================================================
 
         function getFilteredKigali() {
-            return data.kigali.filter(k => {
+            return dashboardData.kigali.filter(k => {
                 // Global country filter from sidebar
                 if (globalCountryFilter && k.country_code !== globalCountryFilter) return false;
                 // Region filter
                 if (kigaliRegionFilter) {
-                    const country = data.countries.find(c => c.country_code === k.country_code);
+                    const country = dashboardData.countries.find(c => c.country_code === k.country_code);
                     if (!country || country.region !== kigaliRegionFilter) return false;
                 }
                 // Group type filter
@@ -3739,8 +3789,8 @@
             const regionSelect = document.getElementById('kigali-region-filter') as HTMLSelectElement;
             if (regionSelect) {
                 const regions = new Set<string>();
-                data.kigali.forEach(k => {
-                    const country = data.countries.find(c => c.country_code === k.country_code);
+                dashboardData.kigali.forEach(k => {
+                    const country = dashboardData.countries.find(c => c.country_code === k.country_code);
                     if (country?.region) regions.add(country.region);
                 });
                 regionSelect.innerHTML = '<option value="">All Regions</option>';
@@ -3755,7 +3805,7 @@
             // Populate group type toggles
             const toggleContainer = document.getElementById('kigali-group-toggles');
             if (toggleContainer) {
-                const groupTypes = new Set(data.kigali.map(k => k.group_type).filter(Boolean));
+                const groupTypes = new Set(dashboardData.kigali.map(k => k.group_type).filter(Boolean));
                 kigaliGroupTypes = Array.from(groupTypes) as string[]; // Select all by default
                 toggleContainer.innerHTML = '';
                 Array.from(groupTypes).sort().forEach(gt => {
@@ -3798,7 +3848,7 @@
             // Chart 1: Kigali by Region (bar chart)
             const regionCounts: Record<string, { parties: number, nonParties: number }> = {};
             filtered.forEach(k => {
-                const country = data.countries.find(c => c.country_code === k.country_code);
+                const country = dashboardData.countries.find(c => c.country_code === k.country_code);
                 const r = country?.region || 'Unknown';
                 if (!regionCounts[r]) regionCounts[r] = { parties: 0, nonParties: 0 };
                 if (k.kigali_party === 1) {
@@ -3853,7 +3903,7 @@
         }
 
         function renderRefrigerantGWPChart() {
-            if (!data.refrigerants || data.refrigerants.length === 0) return;
+            if (!dashboardData.refrigerants || dashboardData.refrigerants.length === 0) return;
 
             // Color mapping by refrigerant type - CCC Palette
             const typeColors: Record<string, string> = {
@@ -3864,7 +3914,7 @@
             };
 
             // Sort refrigerants by GWP (descending) for visual impact
-            const sortedRefrigerants = [...data.refrigerants]
+            const sortedRefrigerants = [...dashboardData.refrigerants]
                 .filter(r => r.gwp_100_ar6 !== null && r.gwp_100_ar6 !== undefined)
                 .sort((a, b) => b.gwp_100_ar6 - a.gwp_100_ar6);
 
@@ -3944,7 +3994,7 @@
             const container = document.querySelector('#kigali-country-detail .country-detail') as HTMLElement;
             if (!container) return;
 
-            const country = data.countries.find(c => c.country_code === code);
+            const country = dashboardData.countries.find(c => c.country_code === code);
 
             if (!country) {
                 container.innerHTML = `<h4>Unknown Country</h4><p class="side-muted">No data available for ${code}</p>`;
@@ -3958,7 +4008,7 @@
             const container = document.querySelector('#policy-country-detail .country-detail') as HTMLElement;
             if (!container) return;
 
-            const country = data.countries.find(c => c.country_code === code);
+            const country = dashboardData.countries.find(c => c.country_code === code);
 
             if (!country) {
                 container.innerHTML = `<h4>Unknown Country</h4><p class="side-muted">No data available for ${code}</p>`;
@@ -4011,7 +4061,7 @@
             const statusTitle = document.getElementById('kigali-status-title');
             if (statusTitle) {
                 if (selectedCountry) {
-                    const country = data.countries.find(c => c.country_code === selectedCountry);
+                    const country = dashboardData.countries.find(c => c.country_code === selectedCountry);
                     statusTitle.textContent = country?.country_name || selectedCountry;
                 } else {
                     statusTitle.textContent = 'Kigali Amendment Tracker';
@@ -4031,7 +4081,7 @@
         const ACCESS_LABELS = ['<1M', '1-5M', '5-20M', '20-50M', '50-200M', '200-500M', '>500M'];
 
         function getAccessTotalsFiltered(): Record<string, number> {
-            const filtered = getAccessDataBySource(data, getAccessFilters(), accessDataSource);
+            const filtered = getAccessDataBySource(dashboardData, getAccessFilters(), accessDataSource);
             const totals: Record<string, number> = {};
             filtered.forEach((record) => {
                 const value = record.population_without_cooling || 0;
@@ -4078,7 +4128,7 @@
         }
 
         function updateAccessKPIs() {
-            const filtered = getAccessDataBySource(data, getAccessFilters(), accessDataSource);
+            const filtered = getAccessDataBySource(dashboardData, getAccessFilters(), accessDataSource);
             const kpis = getAccessKPIs(filtered);
             setText('access-kpi-total', (kpis.totalAtRisk / 1e9).toFixed(2) + 'B');
             setText('access-kpi-high-impact', kpis.highImpactCountries);
@@ -4089,7 +4139,7 @@
         function populateAccessRegionFilter() {
             const select = document.getElementById('access-region-filter') as HTMLSelectElement;
             if (!select) return;
-            const regions = [...new Set(data.access.map(r => r.region).filter(Boolean))].sort();
+            const regions = [...new Set(dashboardData.access.map(r => r.region).filter(Boolean))].sort();
             select.innerHTML = '<option value="">All Regions</option>';
             regions.forEach(region => {
                 const option = document.createElement('option');
@@ -4159,7 +4209,7 @@
                     .attr('fill', d => {
                         const code = countryIdToCode[normalizeId(d.id)];
                         if (!code) return '#e2e8f0';
-                        const country = data.countries.find(c => c.country_code === code);
+                        const country = dashboardData.countries.find(c => c.country_code === code);
                         if (selectedRegion && country?.region !== selectedRegion) {
                             return '#e2e8f0';
                         }
@@ -4170,7 +4220,7 @@
                     .on('mouseover', (event: MouseEvent, d: any) => {
                         const code = countryIdToCode[normalizeId(d.id)];
                         if (!code) return;
-                        const country = data.countries.find(c => c.country_code === code);
+                        const country = dashboardData.countries.find(c => c.country_code === code);
                         const accessTotals = getAccessTotalsFiltered();
                         const value = accessTotals[code] || 0;
                         const valueLabel = value ? `${(value / 1e6).toFixed(1)}M` : 'No data';
@@ -4206,7 +4256,7 @@
                 region: accessRegionFilter,
                 country: ''
             };
-            const mapData = getAccessDataBySource(data, mapFilters, accessDataSource);
+            const mapData = getAccessDataBySource(dashboardData, mapFilters, accessDataSource);
             const accessTotals: Record<string, number> = {};
             mapData.forEach((record) => {
                 const value = record.population_without_cooling || 0;
@@ -4222,7 +4272,7 @@
                 .attr('fill', function() {
                     const code = d3.select(this).attr('data-code');
                     if (!code) return '#e2e8f0';
-                    const country = data.countries.find(c => c.country_code === code);
+                    const country = dashboardData.countries.find(c => c.country_code === code);
                     if (selectedRegion && country?.region !== selectedRegion) {
                         return '#e2e8f0';
                     }
@@ -4346,7 +4396,7 @@
         }
 
         function renderAccessRegionalChart() {
-            const filtered = getAccessDataBySource(data, getAccessFilters(), accessDataSource);
+            const filtered = getAccessDataBySource(dashboardData, getAccessFilters(), accessDataSource);
             const regionTotals: Record<string, number> = {};
             filtered.forEach(r => {
                 if (r.region) {
@@ -4405,7 +4455,7 @@
             const baseFilters = getAccessFilters();
 
             const yearlyTotals = years.map(year => {
-                const yearFiltered = data.access.filter(r => {
+                const yearFiltered = dashboardData.access.filter(r => {
                     if (r.year !== year) return false;
                     if (baseFilters.impactLevels.length > 0 && r.impact_level && !baseFilters.impactLevels.includes(r.impact_level)) return false;
                     if (baseFilters.populationCategories.length > 0 && r.population_category && !baseFilters.populationCategories.includes(r.population_category)) return false;
@@ -4451,7 +4501,7 @@
         }
 
         function renderAccessCategoryChart() {
-            const filtered = getAccessDataBySource(data, getAccessFilters(), accessDataSource);
+            const filtered = getAccessDataBySource(dashboardData, getAccessFilters(), accessDataSource);
             const categoryTotals: Record<string, number> = {};
             POPULATION_CATEGORIES.forEach(cat => categoryTotals[cat] = 0);
 
@@ -4493,7 +4543,7 @@
         }
 
         function renderAccessImpactChart() {
-            const filtered = getAccessDataBySource(data, getAccessFilters(), accessDataSource);
+            const filtered = getAccessDataBySource(dashboardData, getAccessFilters(), accessDataSource);
             const impactTotals: Record<string, number> = { High: 0, Medium: 0, Low: 0 };
 
             filtered.forEach(r => {
@@ -4546,7 +4596,7 @@
             if (!titleEl) return;
 
             if (selectedCountry) {
-                const country = data.countries.find(c => c.country_code === selectedCountry);
+                const country = dashboardData.countries.find(c => c.country_code === selectedCountry);
                 titleEl.innerHTML = `<i class="fa-solid fa-flag"></i> ${country?.country_name || selectedCountry}`;
             } else {
                 titleEl.innerHTML = `<i class="fa-solid fa-globe"></i> Global View`;
@@ -4593,7 +4643,7 @@
             const statusTitle = document.getElementById('access-status-title');
             if (statusTitle) {
                 if (selectedCountry) {
-                    const country = data.countries.find(c => c.country_code === selectedCountry);
+                    const country = dashboardData.countries.find(c => c.country_code === selectedCountry);
                     statusTitle.textContent = country?.country_name || selectedCountry;
                 } else {
                     statusTitle.textContent = 'Cooling Access Gap Analysis';
@@ -4626,11 +4676,11 @@
 
             // Get emissions for hovered country (ignoring globalCountryFilter so tooltip works for all countries)
             let tooltipContent = '';
-            const country = data.countries.find(c => c.country_code === code);
+            const country = dashboardData.countries.find(c => c.country_code === code);
             const countryName = country?.country_name || code;
 
             if (emissionsDataSource === 'clasp') {
-                const countryRecords = data.claspEnergy.filter(r =>
+                const countryRecords = dashboardData.claspEnergy.filter(r =>
                     r.country_code === code &&
                     r.year === emissionsYear &&
                     (emissionsAppliances.length === 0 || emissionsAppliances.includes(r.appliance))
@@ -4660,7 +4710,7 @@
                     `;
                 }
             } else {
-                const countryRecords = data.subcool.filter(r =>
+                const countryRecords = dashboardData.subcool.filter(r =>
                     r.country_code === code &&
                     r.year === emissionsYear &&
                     r.scenario_name === emissionsScenario
@@ -4713,10 +4763,10 @@
             const scenario = scenarioSelect ? scenarioSelect.value : 'BAU';
 
             // Get all years
-            const years = [...new Set(data.emissions.map(e => e.year))].sort((a, b) => a - b);
+            const years = [...new Set(dashboardData.emissions.map(e => e.year))].sort((a, b) => a - b);
 
             // Get emissions by region for each year
-            const regions = [...new Set(data.emissions.map(e => e.region).filter(Boolean))];
+            const regions = [...new Set(dashboardData.emissions.map(e => e.region).filter(Boolean))];
             // CCC Palette for regions
             const regionColors = {
                 'Asia': '#E85A4F',
@@ -4731,7 +4781,7 @@
 
             const datasets = regions.map((region, idx) => {
                 const yearData = years.map(year => {
-                    const filtered = data.emissions.filter(e =>
+                    const filtered = dashboardData.emissions.filter(e =>
                         e.scenario_code === scenario &&
                         e.year === year &&
                         e.region === region
@@ -4774,7 +4824,7 @@
         }
 
         function populateEmissionsYears() {
-            const years = [...new Set(data.emissions.map(e => e.year))].sort((a, b) => a - b);
+            const years = [...new Set(dashboardData.emissions.map(e => e.year))].sort((a, b) => a - b);
             const select = document.getElementById('emissions-year') as HTMLSelectElement | null;
             if (!select) return;
             select.innerHTML = '';
@@ -4799,7 +4849,7 @@
 
         function getFilteredNDC() {
             const filters = getNdcFilters();
-            return data.ndcTracker.filter(n =>
+            return dashboardData.ndcTracker.filter(n =>
                 n.ndc_type === filters.type &&
                 n.category === filters.category
             );
@@ -4811,7 +4861,7 @@
             if (typeSelect) {
                 typeSelect.innerHTML = '';
                 // Get unique NDC types from data
-                const types = [...new Set(data.ndcTracker.map(n => n.ndc_type).filter(Boolean))].sort();
+                const types = [...new Set(dashboardData.ndcTracker.map(n => n.ndc_type).filter(Boolean))].sort();
                 types.forEach(type => {
                     const option = document.createElement('option');
                     option.value = type;
@@ -4873,25 +4923,25 @@
 
         function updateNDCKPIs() {
             // Total unique countries in NDC tracker
-            const totalCountries = new Set(data.ndcTracker.map(n => n.country_code)).size;
+            const totalCountries = new Set(dashboardData.ndcTracker.map(n => n.country_code)).size;
 
             // Countries with NDC 3.0 submitted (not "No NDC submitted")
             const ndc30Submitted = new Set(
-                data.ndcTracker
+                dashboardData.ndcTracker
                     .filter(n => n.ndc_type === 'NDC 3.0' && n.mention_status !== 'No NDC submitted')
                     .map(n => n.country_code)
             ).size;
 
             // Countries mentioning Energy Efficiency in current NDC type filter
             const eeMentioned = new Set(
-                data.ndcTracker
+                dashboardData.ndcTracker
                     .filter(n => n.ndc_type === ndcType && n.category === 'Energy Efficiency' && n.mention_value === 1)
                     .map(n => n.country_code)
             ).size;
 
             // Countries mentioning Air Conditioners in current NDC type filter
             const acMentioned = new Set(
-                data.ndcTracker
+                dashboardData.ndcTracker
                     .filter(n => n.ndc_type === ndcType && n.category === 'Air Conditioners' && n.mention_value === 1)
                     .map(n => n.country_code)
             ).size;
@@ -4991,12 +5041,12 @@
                     .attr('fill', d => {
                         const code = countryIdToCode[normalizeId(d.id)];
                         if (!code) return '#e2e8f0';
-                        const country = data.countries.find(c => c.country_code === code);
+                        const country = dashboardData.countries.find(c => c.country_code === code);
                         if (selectedRegion && country?.region !== selectedRegion) {
                             return '#e2e8f0';
                         }
                         // Initialize with GCP view (first tab) - CCC palette
-                        const pledge = data.pledge.find(p => p.country_code === code);
+                        const pledge = dashboardData.pledge.find(p => p.country_code === code);
                         if (!pledge) return '#e2e8f0';
                         return pledge.signatory === 1 ? '#2D5252' : '#E89B8C';
                     })
@@ -5023,12 +5073,12 @@
                 return;
             }
 
-            const country = data.countries.find(c => c.country_code === code);
+            const country = dashboardData.countries.find(c => c.country_code === code);
             const countryName = country?.country_name || code;
             const region = country?.region || 'N/A';
 
             if (policyMapType === 'gcp') {
-                const pledge = data.pledge.find(p => p.country_code === code);
+                const pledge = dashboardData.pledge.find(p => p.country_code === code);
                 const statusColor = pledge?.signatory === 1 ? '#2D5252' : '#E89B8C';
                 const statusText = pledge?.signatory === 1 ? 'Signatory' : 'Non-Signatory';
                 tooltip.innerHTML = `
@@ -5038,7 +5088,7 @@
                     Region: ${region}
                 `;
             } else if (policyMapType === 'ndc') {
-                const record = getNdcRecord(data, code, getNdcFilters());
+                const record = getNdcRecord(dashboardData, code, getNdcFilters());
                 if (!record) {
                     tooltip.innerHTML = `<strong>${countryName}</strong><br><em>No NDC data</em>`;
                 } else {
@@ -5054,7 +5104,7 @@
                 }
             } else {
                 // NCAP tooltip
-                const ncapRecord = data.ncap.find(n => n.country_code === code);
+                const ncapRecord = dashboardData.ncap.find(n => n.country_code === code);
                 if (ncapRecord) {
                     tooltip.innerHTML = `
                         <strong>${countryName}</strong><br>
@@ -5087,7 +5137,7 @@
                 .attr('fill', function() {
                     const code = d3.select(this).attr('data-code');
                     if (!code) return '#e2e8f0';
-                    const country = data.countries.find(c => c.country_code === code);
+                    const country = dashboardData.countries.find(c => c.country_code === code);
                     if (selectedRegion && country?.region !== selectedRegion) {
                         return '#e2e8f0';
                     }
@@ -5133,7 +5183,7 @@
                 return;
             }
 
-            const record = getNdcRecord(data, code, getNdcFilters());
+            const record = getNdcRecord(dashboardData, code, getNdcFilters());
 
             if (!record) {
                 tooltip.innerHTML = `<strong>${code}</strong><br><em>No NDC data</em>`;
@@ -5178,14 +5228,14 @@
                     const code = d3.select(this).attr('data-code');
                     if (!code) return '#e2e8f0';
 
-                    const country = data.countries.find(c => c.country_code === code);
+                    const country = dashboardData.countries.find(c => c.country_code === code);
                     if (selectedRegion && country?.region !== selectedRegion) {
                         return '#e2e8f0';
                     }
 
                     if (mapType === 'gcp') {
                         // Global Cooling Pledge - CCC palette
-                        const pledge = data.pledge.find(p => p.country_code === code);
+                        const pledge = dashboardData.pledge.find(p => p.country_code === code);
                         if (!pledge) return '#e2e8f0';
                         return pledge.signatory === 1 ? '#2D5252' : '#E89B8C'; // CCC dark teal / coral
                     } else if (mapType === 'ndc') {
@@ -5195,7 +5245,7 @@
                         return getNDCColor(status ? status.status : null);
                     } else if (mapType === 'NCAP') {
                         // NCAP Status - countries with NCAP - CCC palette
-                        const ncapCountry = data.ncap.find(n => n.country_code === code);
+                        const ncapCountry = dashboardData.ncap.find(n => n.country_code === code);
                         return ncapCountry ? '#3D6B6B' : '#E89B8C'; // CCC teal / coral
                     }
                     return '#e2e8f0';
@@ -5264,7 +5314,7 @@
         function initNDCCharts() {
             // NDC Mentions by Category Chart (excluding Kigali Amendment)
             const mentionedCounts = ndcCategories.map(cat => {
-                return data.ndcTracker.filter(n =>
+                return dashboardData.ndcTracker.filter(n =>
                     n.ndc_type === ndcType &&
                     n.category === cat &&
                     n.mention_value === 1
@@ -5272,7 +5322,7 @@
             });
 
             const notMentionedCounts = ndcCategories.map(cat => {
-                return data.ndcTracker.filter(n =>
+                return dashboardData.ndcTracker.filter(n =>
                     n.ndc_type === ndcType &&
                     n.category === cat &&
                     n.mention_status === 'Not mentioned'
@@ -5307,9 +5357,9 @@
             });
 
             // NDC Status by Region Chart
-            const regions = [...new Set(data.ndcTracker.map(n => n.continent).filter(Boolean))];
+            const regions = [...new Set(dashboardData.ndcTracker.map(n => n.continent).filter(Boolean))];
             const regionMentioned = regions.map(region => {
-                return data.ndcTracker.filter(n =>
+                return dashboardData.ndcTracker.filter(n =>
                     n.ndc_type === ndcType &&
                     n.category === ndcCategory &&
                     n.continent === region &&
@@ -5362,7 +5412,7 @@
             if (!titleEl) return;
 
             if (selectedCountry) {
-                const country = data.countries.find(c => c.country_code === selectedCountry);
+                const country = dashboardData.countries.find(c => c.country_code === selectedCountry);
                 titleEl.innerHTML = `<i class="fa-solid fa-flag"></i> ${country?.country_name || selectedCountry}`;
             } else {
                 titleEl.innerHTML = `<i class="fa-solid fa-globe"></i> Global View`;
@@ -5406,7 +5456,7 @@
             const statusTitle = document.getElementById('policy-status-title');
             if (statusTitle) {
                 if (selectedCountry) {
-                    const country = data.countries.find(c => c.country_code === selectedCountry);
+                    const country = dashboardData.countries.find(c => c.country_code === selectedCountry);
                     statusTitle.textContent = country?.country_name || selectedCountry;
                 } else {
                     statusTitle.textContent = 'Policy Framework Analysis';
@@ -5430,14 +5480,14 @@
         function updatePolicyKPIs() {
             // Filter by global country if set
             const filteredPledge = globalCountryFilter
-                ? data.pledge.filter(p => p.country_code === globalCountryFilter)
-                : data.pledge;
+                ? dashboardData.pledge.filter(p => p.country_code === globalCountryFilter)
+                : dashboardData.pledge;
             const filteredNdcTracker = globalCountryFilter
-                ? data.ndcTracker.filter(n => n.country_code === globalCountryFilter)
-                : data.ndcTracker;
+                ? dashboardData.ndcTracker.filter(n => n.country_code === globalCountryFilter)
+                : dashboardData.ndcTracker;
             const filteredNcap = globalCountryFilter
-                ? data.ncap.filter(n => n.country_code === globalCountryFilter)
-                : data.ncap;
+                ? dashboardData.ncap.filter(n => n.country_code === globalCountryFilter)
+                : dashboardData.ncap;
 
             // GCP Signatories
             const gcpSignatories = filteredPledge.filter(p => p.signatory === 1).length;
@@ -5467,7 +5517,7 @@
         function updateNDCCharts() {
             // Update categories chart (using ndcCategories which excludes Kigali Amendment)
             const mentionedCounts = ndcCategories.map(cat => {
-                return data.ndcTracker.filter(n =>
+                return dashboardData.ndcTracker.filter(n =>
                     n.ndc_type === ndcType &&
                     n.category === cat &&
                     n.mention_value === 1
@@ -5475,7 +5525,7 @@
             });
 
             const notMentionedCounts = ndcCategories.map(cat => {
-                return data.ndcTracker.filter(n =>
+                return dashboardData.ndcTracker.filter(n =>
                     n.ndc_type === ndcType &&
                     n.category === cat &&
                     n.mention_status === 'Not mentioned'
@@ -5510,9 +5560,9 @@
             });
 
             // Update regions chart
-            const regions = [...new Set(data.ndcTracker.map(n => n.continent).filter(Boolean))];
+            const regions = [...new Set(dashboardData.ndcTracker.map(n => n.continent).filter(Boolean))];
             const regionMentioned = regions.map(region => {
-                return data.ndcTracker.filter(n =>
+                return dashboardData.ndcTracker.filter(n =>
                     n.ndc_type === ndcType &&
                     n.category === ndcCategory &&
                     n.continent === region &&
@@ -5541,14 +5591,14 @@
 
             // NDC 3.0 vs Previous NDC comparison
             const ndc30Mentioned = ndcCategories.map(cat => {
-                return new Set(data.ndcTracker.filter(n =>
+                return new Set(dashboardData.ndcTracker.filter(n =>
                     n.ndc_type === 'NDC 3.0' &&
                     n.category === cat &&
                     n.mention_value === 1
                 ).map(n => n.country_code)).size;
             });
             const prevNdcMentioned = ndcCategories.map(cat => {
-                return new Set(data.ndcTracker.filter(n =>
+                return new Set(dashboardData.ndcTracker.filter(n =>
                     n.ndc_type === 'Other' &&
                     n.category === cat &&
                     n.mention_value === 1
@@ -5581,10 +5631,10 @@
             });
 
             // NDC Submission Status (pie chart)
-            const submittedCount = new Set(data.ndcTracker.filter(n =>
+            const submittedCount = new Set(dashboardData.ndcTracker.filter(n =>
                 n.ndc_type === 'NDC 3.0' && n.mention_status !== 'No NDC submitted'
             ).map(n => n.country_code)).size;
-            const notSubmittedCount = new Set(data.ndcTracker.filter(n =>
+            const notSubmittedCount = new Set(dashboardData.ndcTracker.filter(n =>
                 n.ndc_type === 'NDC 3.0' && n.mention_status === 'No NDC submitted'
             ).map(n => n.country_code)).size;
 
@@ -5767,14 +5817,14 @@
         }
 
         function updateGCPCharts() {
-            const regions = [...new Set(data.countries.map(c => c.region).filter(Boolean))];
+            const regions = [...new Set(dashboardData.countries.map(c => c.region).filter(Boolean))];
             const gcpSignatories = regions.map(region => {
-                const regionCountries = data.countries.filter(c => c.region === region).map(c => c.country_code);
-                return data.pledge.filter(p => regionCountries.includes(p.country_code) && p.signatory === 1).length;
+                const regionCountries = dashboardData.countries.filter(c => c.region === region).map(c => c.country_code);
+                return dashboardData.pledge.filter(p => regionCountries.includes(p.country_code) && p.signatory === 1).length;
             });
             const gcpNonSignatories = regions.map(region => {
-                const regionCountries = data.countries.filter(c => c.region === region).map(c => c.country_code);
-                return data.pledge.filter(p => regionCountries.includes(p.country_code) && p.signatory === 0).length;
+                const regionCountries = dashboardData.countries.filter(c => c.region === region).map(c => c.country_code);
+                return dashboardData.pledge.filter(p => regionCountries.includes(p.country_code) && p.signatory === 0).length;
             });
 
             // GCP by Region Chart
@@ -5806,16 +5856,16 @@
             });
 
             // GCP Signatories with NDC Cooling Mentions (pie chart)
-            const gcpWithNDC = data.pledge.filter(p => {
+            const gcpWithNDC = dashboardData.pledge.filter(p => {
                 if (p.signatory !== 1) return false;
-                return data.ndcTracker.some(n =>
+                return dashboardData.ndcTracker.some(n =>
                     n.country_code === p.country_code &&
                     n.ndc_type === 'NDC 3.0' &&
                     n.category === 'Energy Efficiency' &&
                     n.mention_value === 1
                 );
             }).length;
-            const gcpWithoutNDC = data.pledge.filter(p => p.signatory === 1).length - gcpWithNDC;
+            const gcpWithoutNDC = dashboardData.pledge.filter(p => p.signatory === 1).length - gcpWithNDC;
 
             setChart('chart-gcp-ndc-overlap', {
                 tooltip: { trigger: 'item' },
@@ -5859,10 +5909,10 @@
 
         function updateNCAPCharts() {
             // NCAP by Region Chart
-            const regions = [...new Set(data.countries.map(c => c.region).filter(Boolean))];
+            const regions = [...new Set(dashboardData.countries.map(c => c.region).filter(Boolean))];
             const ncapByRegion = regions.map(region => {
-                const regionCountries = data.countries.filter(c => c.region === region).map(c => c.country_code);
-                return data.ncap.filter(n => regionCountries.includes(n.country_code)).length;
+                const regionCountries = dashboardData.countries.filter(c => c.region === region).map(c => c.country_code);
+                return dashboardData.ncap.filter(n => regionCountries.includes(n.country_code)).length;
             });
 
             setChart('chart-ncap-regions', {
@@ -5881,7 +5931,7 @@
             });
 
             // NCAP Timeline Chart - by year
-            const ncapYears = data.ncap
+            const ncapYears = dashboardData.ncap
                 .map(n => n.year)
                 .filter((y): y is number => y !== null && y !== undefined)
                 .sort((a, b) => a - b);
@@ -5912,7 +5962,7 @@
             // Countries list
             const listEl = document.getElementById('ncap-countries-list');
             if (listEl) {
-                const sortedNcap = [...data.ncap].sort((a, b) => a.country_name.localeCompare(b.country_name));
+                const sortedNcap = [...dashboardData.ncap].sort((a, b) => a.country_name.localeCompare(b.country_name));
                 listEl.innerHTML = sortedNcap.map(n => `
                     <div class="ncap-country-card" style="background: #f8fafc; border-radius: 8px; padding: 0.75rem; border-left: 3px solid #8b5cf6;">
                         <div style="font-weight: 600; color: #1e293b;">${n.country_name}</div>
@@ -5924,17 +5974,17 @@
         }
 
         function updatePolicyCoverageChart() {
-            const gcpCount = data.pledge.filter(p => p.signatory === 1).length;
+            const gcpCount = dashboardData.pledge.filter(p => p.signatory === 1).length;
             const ndcCoolingCount = new Set(
-                data.ndcTracker.filter(n =>
+                dashboardData.ndcTracker.filter(n =>
                     n.ndc_type === ndcType &&
                     n.category === ndcCategory &&
                     n.mention_value === 1
                 ).map(n => n.country_code)
             ).size;
-            const bothCount = data.pledge.filter(p => {
+            const bothCount = dashboardData.pledge.filter(p => {
                 if (p.signatory !== 1) return false;
-                const hasNdcMention = data.ndcTracker.some(n =>
+                const hasNdcMention = dashboardData.ndcTracker.some(n =>
                     n.country_code === p.country_code &&
                     n.ndc_type === ndcType &&
                     n.category === ndcCategory &&
@@ -5942,7 +5992,7 @@
                 );
                 return hasNdcMention;
             }).length;
-            const neitherCount = data.countries.length - gcpCount - ndcCoolingCount + bothCount;
+            const neitherCount = dashboardData.countries.length - gcpCount - ndcCoolingCount + bothCount;
 
             setChart('chart-policy-coverage', {
                 tooltip: { trigger: 'item' },
@@ -5977,6 +6027,18 @@
             const container = document.querySelector<HTMLElement>('.main-container');
             if (container) {
                 container.classList.toggle('overview-only', view === 'overview');
+            }
+            if (view === 'emissions') {
+                ensureEmissionsData()
+                    .then(async () => {
+                        if (!emissionsInitialized) {
+                            await initEmissionsView();
+                        } else {
+                            updateEmissionsView();
+                            updateSidebarStats();
+                        }
+                    })
+                    .catch((err) => console.error('Emissions init failed:', err));
             }
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             const viewSection = document.getElementById(`view-${view}`);
@@ -6461,7 +6523,7 @@
             const kigaliGroupAll = document.getElementById('kigali-group-all');
             if (kigaliGroupAll) {
                 kigaliGroupAll.addEventListener('click', () => {
-                    const allGroups = [...new Set(data.kigali.map(k => k.group_type).filter(Boolean))] as string[];
+                    const allGroups = [...new Set(dashboardData.kigali.map(k => k.group_type).filter(Boolean))] as string[];
                     kigaliGroupTypes = allGroups;
                     document.querySelectorAll<HTMLButtonElement>('#kigali-group-toggles .toggle-btn').forEach(btn => {
                         btn.classList.add('active');
@@ -6487,35 +6549,39 @@
         // =====================================================
         async function init() {
             try {
-                setStatus('Loading data from Supabase...');
-                data = await loadDashboardData(SUPABASE_URL, SUPABASE_KEY);
-
-                // Log loaded table sizes for debugging
+                setStatus('Initializing dashboard...');
+                
+                // Data is already loaded from server via +page.server.ts
+                // Just log the table sizes for debugging
                 const tables = {
-                    countries: data.countries.length,
-                    pledge: data.pledge.length,
-                    kigali: data.kigali.length,
-                    meps: data.meps.length,
-                    access: data.access.length,
-                    accessForecast: data.accessForecast.length,
-                    emissions: data.emissions.length,
-                    ndcTracker: data.ndcTracker.length,
-                    ncap: data.ncap.length,
-                    claspEnergy: data.claspEnergy.length,
-                    subcool: data.subcool.length,
-                    regions: data.regions.length,
-                    refrigerants: data.refrigerants.length
+                    countries: dashboardData.countries.length,
+                    pledge: dashboardData.pledge.length,
+                    kigali: dashboardData.kigali.length,
+                    meps: dashboardData.meps.length,
+                    access: dashboardData.access.length,
+                    accessForecast: dashboardData.accessForecast.length,
+                    emissions: dashboardData.emissions.length,
+                    ndcTracker: dashboardData.ndcTracker.length,
+                    ncap: dashboardData.ncap.length,
+                    claspEnergy: dashboardData.claspEnergy.length,
+                    subcool: dashboardData.subcool.length,
+                    regions: dashboardData.regions.length,
+                    refrigerants: dashboardData.refrigerants.length
                 };
                 console.log('Dashboard data loaded:', tables);
+                emissionsLoaded =
+                    dashboardData.emissions.length > 0 ||
+                    dashboardData.claspEnergy.length > 0 ||
+                    dashboardData.subcool.length > 0;
                 const emptyTables = Object.entries(tables).filter(([, v]) => v === 0).map(([k]) => k);
                 if (emptyTables.length > 0) {
                     console.warn('Tables with no data:', emptyTables);
                 }
 
-                if (data.countries.length === 0) {
+                if (dashboardData.countries.length === 0) {
                     setStatus('Warning: No country data loaded. Check browser console for details.', 'error');
                 } else {
-                    setStatus(`Loaded ${data.countries.length} countries, ${data.access.length} access records`, 'success');
+                    setStatus(`Loaded ${dashboardData.countries.length} countries, ${dashboardData.access.length} access records`, 'success');
                 }
                 setText('last-updated', `Updated: ${new Date().toLocaleDateString()}`);
             } catch (error) {
@@ -6555,11 +6621,6 @@
 
             initCharts();
 
-            // Initialize emissions (enhanced)
-            populateEmissionsRegionFilter();
-            await initEmissionsMap();
-            updateEmissionsView();
-
             // Initialize NDC Tracker
             await initNDCMap();
             populatePolicyNDCFilters();
@@ -6589,7 +6650,7 @@
 </svelte:head>
 
 <div class="dashboard-body">
-  <div id="status">Loading dashboard data...</div>
+  <div id="status">Loading dashboard dashboardData...</div>
 
   <div class="main-container">
     <!-- Left Sidebar -->

@@ -97,6 +97,10 @@ cooling-dashboard/
    - Refrigerant transitions
    - NDC tracker data
 
+3. **Performance (Optional)**
+
+   Run the SQL in `supabase/dashboard_materialized_views.sql` to create materialized views used by the dashboard for faster reads. Refresh those views as part of your data update pipeline.
+
 ## Environment Variables
 
 | Variable | Description |
