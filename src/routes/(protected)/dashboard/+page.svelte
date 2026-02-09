@@ -4521,11 +4521,38 @@
             const country = data.countries.find(c => c.country_code === code);
 
             if (!country) {
-                container.innerHTML = `<h4>Unknown Country</h4><p class="side-muted">No data available for ${code}</p>`;
+                container.innerHTML = `<p class="side-muted">No data available for ${code}</p>`;
                 return;
             }
 
-            container.innerHTML = `<h4>${country.country_name}</h4>`;
+            // Get policy data for the country
+            const pledgeRec = data.pledge.find(p => p.country_code === code);
+            const kigaliRec = data.kigali.find(k => k.country_code === code);
+            const ndcRec = getNdcRecord(data, code, getNdcFilters());
+
+            const hasGCP = pledgeRec && pledgeRec.signatory === 1;
+            const hasKigali = kigaliRec && kigaliRec.kigali_party === 1;
+            const ndcStatus = ndcRec?.mention_status ?? 'No data';
+
+            container.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+                    <div style="text-align: center; padding: 0.75rem; background: ${hasKigali ? '#f0fdf4' : '#fef2f2'}; border-radius: 8px; border: 1px solid ${hasKigali ? '#86efac' : '#fecaca'};">
+                        <i class="fa-solid fa-flask" style="font-size: 1.25rem; color: ${hasKigali ? '#22c55e' : '#ef4444'}; margin-bottom: 0.25rem; display: block;"></i>
+                        <div style="font-size: 0.7rem; font-weight: 700; color: ${hasKigali ? '#166534' : '#b91c1c'};">Kigali</div>
+                        <div style="font-size: 0.65rem; color: #64748b;">${hasKigali ? 'Party' : 'Non-party'}</div>
+                    </div>
+                    <div style="text-align: center; padding: 0.75rem; background: ${hasGCP ? '#f0fdf4' : '#fef2f2'}; border-radius: 8px; border: 1px solid ${hasGCP ? '#86efac' : '#fecaca'};">
+                        <i class="fa-solid fa-handshake" style="font-size: 1.25rem; color: ${hasGCP ? '#22c55e' : '#ef4444'}; margin-bottom: 0.25rem; display: block;"></i>
+                        <div style="font-size: 0.7rem; font-weight: 700; color: ${hasGCP ? '#166534' : '#b91c1c'};">GCP</div>
+                        <div style="font-size: 0.65rem; color: #64748b;">${hasGCP ? 'Signatory' : 'Non-signatory'}</div>
+                    </div>
+                    <div style="text-align: center; padding: 0.75rem; background: ${ndcStatus === 'Mentioned' ? '#f0fdf4' : ndcStatus === 'Not mentioned' ? '#fef2f2' : '#f8fafc'}; border-radius: 8px; border: 1px solid ${ndcStatus === 'Mentioned' ? '#86efac' : ndcStatus === 'Not mentioned' ? '#fecaca' : '#e2e8f0'};">
+                        <i class="fa-solid fa-file-lines" style="font-size: 1.25rem; color: ${ndcStatus === 'Mentioned' ? '#22c55e' : ndcStatus === 'Not mentioned' ? '#ef4444' : '#94a3b8'}; margin-bottom: 0.25rem; display: block;"></i>
+                        <div style="font-size: 0.7rem; font-weight: 700; color: ${ndcStatus === 'Mentioned' ? '#166534' : ndcStatus === 'Not mentioned' ? '#b91c1c' : '#64748b'};">NDC</div>
+                        <div style="font-size: 0.65rem; color: #64748b;">${ndcStatus}</div>
+                    </div>
+                </div>
+            `;
         }
 
         function showGlobalKigaliDetail() {
@@ -5555,9 +5582,9 @@
             tooltip.style.top = (event.pageY + 10) + 'px';
         }
 
-        // NDC categories to display (excluding Kigali Amendment per user request)
-        const ndcCategories = ['Energy Efficiency', 'Air Conditioners', 'Refrigerators & freezers',
-                               'Appliance MEPS', 'Appliance Labels', 'Doubling EE'];
+        // NDC categories to display in charts
+        const ndcCategories = ['Energy Efficiency', 'Kigali Amendment', 'Doubling EE',
+                               'Refrigerators & freezers', 'Air Conditioners', 'MEPS & Labels'];
 
         // NDC type options (from database)
         const ndcTypeOptions = ['NDC 3.0', 'Other'];
@@ -6487,20 +6514,23 @@
             });
 
             // 3. NDC Cooling Integration Evolution: 2.0 vs 3.0
-            const ndcCategories = [...new Set(data.ndcTracker.map(n => n.category).filter(Boolean))] as string[];
+            // Only show specific categories as requested
+            const ndcEvolutionCategories = ['Energy Efficiency', 'Kigali Amendment', 'Doubling EE',
+                                            'Refrigerators & freezers', 'Air Conditioners', 'Appliance MEPS', 'Appliance Labels'];
             const categoryAbbrev: Record<string, string> = {
                 'Energy Efficiency': 'Energy Eff.',
-                'Refrigerant Management': 'Refrigerants',
-                'Thermal Comfort': 'Thermal',
-                'Cold Chain': 'Cold Chain',
-                'Passive Cooling': 'Passive',
-                'District Cooling': 'District'
+                'Kigali Amendment': 'Kigali',
+                'Doubling EE': 'Doubling EE',
+                'Refrigerators & freezers': 'Refrigerators',
+                'Air Conditioners': 'ACs',
+                'Appliance MEPS': 'MEPS',
+                'Appliance Labels': 'Labels'
             };
 
-            const ndc20Mentions = ndcCategories.map(cat =>
+            const ndc20Mentions = ndcEvolutionCategories.map(cat =>
                 new Set(data.ndcTracker.filter(n => n.ndc_type === 'NDC 2.0' && n.category === cat && n.mention_value === 1).map(n => n.country_code)).size
             );
-            const ndc30Mentions = ndcCategories.map(cat =>
+            const ndc30Mentions = ndcEvolutionCategories.map(cat =>
                 new Set(data.ndcTracker.filter(n => n.ndc_type === 'NDC 3.0' && n.category === cat && n.mention_value === 1).map(n => n.country_code)).size
             );
 
@@ -6513,7 +6543,7 @@
                 grid: { left: '3%', right: '4%', bottom: '15%', top: '10%', containLabel: true },
                 xAxis: {
                     type: 'category',
-                    data: ndcCategories.map(c => categoryAbbrev[c] || c),
+                    data: ndcEvolutionCategories.map(c => categoryAbbrev[c] || c),
                     axisLabel: { color: '#475569', fontSize: 9, rotate: 25, interval: 0 }
                 },
                 yAxis: {
