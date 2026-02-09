@@ -297,7 +297,7 @@
     border-left: 4px solid #16a34a;
     padding: 1.75rem;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .policy-story-card::before {
@@ -386,7 +386,7 @@
 
   .policy-counters :global(.counter-display) { font-size: 1.8rem; color: #166534; }
   .policy-counters :global(.counter-label) { font-size: 0.72rem; color: #15803d; }
-  .policy-counters :global(.counter-tooltip) { background: rgba(15, 23, 42, 0.95); }
+  .policy-counters :global(.counter-tooltip) { background: #0f172a; z-index: 99999; box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.2); }
 
   /* Narrative */
   .policy-narrative {

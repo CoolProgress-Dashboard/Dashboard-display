@@ -301,7 +301,7 @@
     border-left: 4px solid #d97706;
     padding: 1.75rem;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .access-story-card::before {
@@ -390,7 +390,7 @@
 
   .access-counters :global(.counter-display) { font-size: 1.8rem; color: #92400e; }
   .access-counters :global(.counter-label) { font-size: 0.72rem; color: #b45309; }
-  .access-counters :global(.counter-tooltip) { background: rgba(15, 23, 42, 0.95); }
+  .access-counters :global(.counter-tooltip) { background: #0f172a; z-index: 99999; box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.2); }
 
   /* Narrative */
   .access-narrative {

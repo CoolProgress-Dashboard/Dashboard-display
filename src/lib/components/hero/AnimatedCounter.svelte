@@ -198,19 +198,20 @@
     bottom: calc(100% + 10px);
     left: 50%;
     transform: translateX(-50%);
-    background: #ffffff;
-    color: #1e293b;
-    border: 1px solid #e2e8f0;
+    background: #0f172a;
+    color: #f1f5f9;
+    border: 1px solid rgba(148, 163, 184, 0.3);
     border-radius: 10px;
-    padding: 0.75rem 1rem;
-    font-size: 0.78rem;
-    line-height: 1.55;
-    width: 260px;
+    padding: 0.85rem 1.1rem;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    width: 280px;
     max-width: 90vw;
-    z-index: 9999;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+    z-index: 99999;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.2);
     pointer-events: auto;
     animation: tooltip-fade-in 0.15s ease-out;
+    isolation: isolate;
   }
 
   .counter-tooltip::before {
@@ -220,7 +221,7 @@
     left: 50%;
     transform: translateX(-50%);
     border: 6px solid transparent;
-    border-top-color: #ffffff;
+    border-top-color: #0f172a;
   }
 
   @keyframes tooltip-fade-in {
