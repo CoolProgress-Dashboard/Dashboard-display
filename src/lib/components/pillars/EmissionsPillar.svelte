@@ -352,7 +352,7 @@
     border-left: 4px solid #E85A4F;
     padding: 1.75rem;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .emissions-story-card::before {
@@ -467,7 +467,9 @@
   }
 
   .emissions-counters :global(.counter-tooltip) {
-    background: rgba(15, 23, 42, 0.95);
+    background: #0f172a;
+    z-index: 99999;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.2);
   }
 
   /* ===========================
