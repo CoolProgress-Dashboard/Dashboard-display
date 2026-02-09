@@ -3045,11 +3045,11 @@
         function getMepsColor(level: string) {
             switch (level) {
                 case 'both':
-                    return '#2D5252'; // CCC dark teal - has both MEPS & Labels
+                    return '#8BC34A'; // Light green - has both MEPS & Labels
                 case 'meps':
                     return '#3D6B6B'; // CCC teal - MEPS only
                 case 'labels':
-                    return '#8BC34A'; // CCC green - Labels only
+                    return '#FFB74D'; // Orange - Labels only
                 case 'limited':
                     return '#E89B8C'; // CCC coral - other policies
                 case 'critical':
@@ -3168,7 +3168,7 @@
             if (!legend) return;
             legend.innerHTML = `
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#2D5252"></div>
+                    <div class="legend-color" style="background:#8BC34A"></div>
                     MEPS & Labels
                 </div>
                 <div class="legend-item">
@@ -3176,7 +3176,7 @@
                     MEPS Only
                 </div>
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#8BC34A"></div>
+                    <div class="legend-color" style="background:#FFB74D"></div>
                     Labels Only
                 </div>
                 <div class="legend-item">
@@ -4107,8 +4107,10 @@
             const filtered = getFilteredKigali();
             const kigaliParties = filtered.filter(k => k.kigali_party === 1).length;
             const montrealParties = filtered.filter(k => k.montreal_protocol_party === 1).length;
-            const article5 = filtered.filter(k => k.group_type && k.group_type.includes('Article 5')).length;
-            const nonArticle5 = filtered.filter(k => k.group_type && k.group_type.includes('Non-Article')).length;
+            // Match Article 5 countries (A5 Group 1, A5 Group 2) but NOT Non-A5
+            const article5 = filtered.filter(k => k.group_type && (k.group_type.includes('A5') || k.group_type.includes('Article 5')) && !k.group_type.toLowerCase().includes('non')).length;
+            // Match Non-Article 5 countries
+            const nonArticle5 = filtered.filter(k => k.group_type && k.group_type.toLowerCase().includes('non')).length;
             return { kigaliParties, montrealParties, article5, nonArticle5, total: filtered.length };
         }
 
@@ -4134,6 +4136,7 @@
             const toggleContainer = document.getElementById('kigali-group-toggles');
             if (toggleContainer) {
                 const groupTypes = new Set(data.kigali.map(k => k.group_type).filter(Boolean));
+                console.log('Kigali group_type values:', Array.from(groupTypes));
                 kigaliGroupTypes = Array.from(groupTypes) as string[]; // Select all by default
                 toggleContainer.innerHTML = '';
                 Array.from(groupTypes).sort().forEach(gt => {
