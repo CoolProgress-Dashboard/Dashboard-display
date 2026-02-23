@@ -5,9 +5,15 @@
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners } from '$lib/data/partner-data';
   import MepsLevelChart from '$lib/components/charts/MepsLevelChart.svelte';
+  import MepsByRegionChart from '$lib/components/charts/MepsByRegionChart.svelte';
+  import MepsEquipmentChart from '$lib/components/charts/MepsEquipmentChart.svelte';
 
   export let active: boolean = false;
   export let onPillarInfoClick: (() => void) | null = null;
+  export let mepsRegionData: Array<{ name: string; meps: number; labels: number; total: number }> = [];
+  export let mepsEquipmentData: Array<{ type: string; meps: number; labels: number }> = [];
+  export let mepsShowRegionCard: boolean = true;
+  export let mepsEquipmentCountryHtml: string = '';
 
   const meta = VIEW_META.meps;
   const mepsContent = pillarContent.meps;
@@ -213,15 +219,17 @@
 
     <!-- Charts Grid -->
     <div class="meps-charts-section charts-section">
-      <div class="card-panel chart-card">
-        <div class="chart-card-header">
-          <h3 id="meps-chart1-title"><i class="fa-solid fa-chart-bar" style="color: #8BC34A; margin-right: 0.5rem;"></i>MEPS & Labels by Region</h3>
-          <p class="chart-subtitle" id="meps-chart1-subtitle">Countries with MEPS vs Labels per region</p>
+      {#if mepsShowRegionCard}
+        <div class="card-panel chart-card">
+          <div class="chart-card-header">
+            <h3><i class="fa-solid fa-chart-bar" style="color: #8BC34A; margin-right: 0.5rem;"></i>MEPS &amp; Labels by Region</h3>
+            <p class="chart-subtitle">Countries with MEPS vs Labels per region</p>
+          </div>
+          <div class="chart-card-body">
+            <MepsByRegionChart regionData={mepsRegionData} />
+          </div>
         </div>
-        <div class="chart-card-body">
-          <div id="chart-meps-by-region" class="chart-surface" style="width: 100%; height: 280px; min-height: 280px;"></div>
-        </div>
-      </div>
+      {/if}
 
       <div class="card-panel chart-card">
         <div class="chart-card-header">
@@ -229,7 +237,7 @@
           <p class="chart-subtitle" id="meps-chart3-subtitle">Countries with MEPS vs Labels by appliance</p>
         </div>
         <div class="chart-card-body">
-          <div id="chart-meps-equipment" class="chart-surface" style="width: 100%; height: 320px; min-height: 320px;"></div>
+          <MepsEquipmentChart equipment={mepsEquipmentData} countryHtml={mepsEquipmentCountryHtml} />
         </div>
       </div>
     </div>

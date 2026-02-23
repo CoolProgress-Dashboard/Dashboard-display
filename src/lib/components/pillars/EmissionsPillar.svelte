@@ -2,12 +2,18 @@
   import { onMount } from 'svelte';
   import { VIEW_META } from '$lib/components/shared/config';
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
+  import EmissionsWaterfallChart from '$lib/components/charts/EmissionsWaterfallChart.svelte';
+  import EmissionsCumulativeChart from '$lib/components/charts/EmissionsCumulativeChart.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners } from '$lib/data/partner-data';
   import { globalCoolingPledge } from '$lib/data/partner-data';
 
   export let active: boolean = false;
   export let onPillarInfoClick: (() => void) | null = null;
+  // Data props — passed from dashboard/+page.svelte
+  export let claspEnergy: any[] = [];
+  export let emissionsYear: number = 2030;
+  export let emissionsAppliances: string[] = ['Air Conditioning', 'Ceiling and Portable Fans', 'Refrigerator-Freezers'];
 
   const meta = VIEW_META.emissions;
   const emissionsContent = pillarContent.emissions;
@@ -67,9 +73,7 @@
   let revealed = false;
 
   onMount(() => {
-    const timer = setTimeout(() => {
-      revealed = true;
-    }, 150);
+    const timer = setTimeout(() => { revealed = true; }, 150);
     return () => clearTimeout(timer);
   });
 </script>
@@ -203,22 +207,19 @@
             <i class="fa-solid fa-book-open" style="font-size: 0.6rem;"></i> Methodology
           </a>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-          <div>
-            <h5 style="font-size: 0.75rem; color: #3D6B6B; margin: 0 0 0.5rem; font-weight: 600;">
-              <i class="fa-solid fa-chart-column" style="margin-right: 0.3rem;"></i>
-              Waterfall: BAU → Net Emissions
-              <a href="/methodology#waterfall" style="font-size: 0.6rem; color: #94a3b8; margin-left: 0.3rem; text-decoration: none;" title="View methodology"><i class="fa-solid fa-circle-info"></i></a>
-            </h5>
-            <div id="chart-emissions-waterfall" class="chart-surface" style="width: 100%; height: 280px; min-height: 280px;"></div>
+        <div class="savings-charts-grid">
+          <div class="savings-chart-col">
+            <EmissionsWaterfallChart
+              {claspEnergy}
+              year={emissionsYear}
+              appliances={emissionsAppliances}
+            />
           </div>
-          <div>
-            <h5 style="font-size: 0.75rem; color: #3D6B6B; margin: 0 0 0.5rem; font-weight: 600;">
-              <i class="fa-solid fa-chart-area" style="margin-right: 0.3rem;"></i>
-              Cumulative Savings (2025–2050)
-              <a href="/methodology#cumulative" style="font-size: 0.6rem; color: #94a3b8; margin-left: 0.3rem; text-decoration: none;" title="View methodology"><i class="fa-solid fa-circle-info"></i></a>
-            </h5>
-            <div id="chart-emissions-cumulative" class="chart-surface" style="width: 100%; height: 280px; min-height: 280px;"></div>
+          <div class="savings-chart-col">
+            <EmissionsCumulativeChart
+              {claspEnergy}
+              appliances={emissionsAppliances}
+            />
           </div>
         </div>
         <div style="font-size: 0.7rem; color: #94a3b8; text-align: center; padding: 0.25rem;">
@@ -759,16 +760,34 @@
   /* ===========================
      RESPONSIVE
      =========================== */
+  /* ===========================
+     SAVINGS DECOMPOSITION GRID
+     Two charts side-by-side, stacks at narrower widths.
+     min-width: 0 prevents grid blowout from ECharts inline px widths.
+     =========================== */
+  .savings-charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .savings-chart-col {
+    min-width: 0; /* critical: lets grid items shrink past ECharts inline width */
+    overflow: hidden;
+  }
+
+  @media (max-width: 1100px) {
+    .savings-charts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
   @media (max-width: 1024px) {
     .emissions-counters {
       grid-template-columns: repeat(2, 1fr);
     }
 
     .emissions-highlights-grid {
-      grid-template-columns: 1fr;
-    }
-
-    #emissions-savings-section > div:nth-child(2) {
       grid-template-columns: 1fr;
     }
   }

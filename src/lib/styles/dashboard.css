@@ -1412,10 +1412,22 @@ select {
   margin-bottom: 0.5rem;
 }
 
-/* Responsive charts grid */
-@media (max-width: 768px) {
+/* Country detail charts grid — two side-by-side charts that stack when narrow.
+   min-width:0 on children prevents ECharts inline-px widths from causing grid blowout. */
+.country-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.country-charts-grid > * {
+  min-width: 0; /* critical: lets ECharts containers shrink below their rendered pixel width */
+}
+
+@media (max-width: 1100px) {
   .country-charts-grid {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr;
   }
 }
 

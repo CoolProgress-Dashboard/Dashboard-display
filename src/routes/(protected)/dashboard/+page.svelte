@@ -39,6 +39,17 @@
   let pillarModalVisible = false;
   let insightText = '';
 
+  // Top-level reactive props for EmissionsPillar (mirrors closure vars; updated from onMount)
+  let emissionsClaspEnergy: any[] = [];
+  let emissionsYearProp: number = 2030;
+  let emissionsAppliancesProp: string[] = ['Air Conditioning', 'Ceiling and Portable Fans', 'Refrigerator-Freezers'];
+
+  // Top-level reactive props for MepsPillar charts (updated from onMount)
+  let mepsRegionData: Array<{ name: string; meps: number; labels: number; total: number }> = [];
+  let mepsEquipmentData: Array<{ type: string; meps: number; labels: number }> = [];
+  let mepsShowRegionCard: boolean = true;
+  let mepsEquipmentCountryHtml: string = '';
+
   function handleViewChange(view: string) {
     // Delegate to the onMount switchView function if available
     if (typeof (window as any).__dashboardSwitchView === 'function') {
@@ -926,7 +937,7 @@
                         </span>
                     </div>
                 </div>
-                <div class="country-charts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1rem;">
+                <div class="country-charts-grid">
                     <div class="chart-box" style="background: #fafafa; border-radius: 8px; padding: 0.75rem;">
                         <div style="font-size: 0.75rem; font-weight: 600; color: #92400e; margin-bottom: 0.5rem;">
                             <i class="fa-solid fa-chart-area" style="margin-right: 0.3rem; color: #f59e0b;"></i>
@@ -1316,7 +1327,7 @@
                         </span>
                     </div>
                 </div>
-                <div class="country-charts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1rem;">
+                <div class="country-charts-grid">
                     <div class="chart-box" style="background: #fafafa; border-radius: 8px; padding: 0.75rem;">
                         <div style="font-size: 0.75rem; font-weight: 600; color: #3D6B6B; margin-bottom: 0.5rem;">
                             <i class="fa-solid fa-chart-area" style="margin-right: 0.3rem; color: #8BC34A;"></i>
@@ -1443,8 +1454,8 @@
                         legend: { show: false },
                         series: [{
                             type: 'pie',
-                            radius: ['35%', '65%'],
-                            center: ['50%', '50%'],
+                            radius: ['32%', '56%'],
+                            center: ['50%', '52%'],
                             avoidLabelOverlap: true,
                             itemStyle: {
                                 borderRadius: 4,
@@ -1454,12 +1465,13 @@
                             label: {
                                 show: true,
                                 position: 'outside',
-                                fontSize: 11,
+                                fontSize: 10,
                                 fontWeight: 500,
                                 color: '#475569',
+                                overflow: 'break',
                                 formatter: (params: any) => `${params.name}\n${params.percent}%`
                             },
-                            labelLine: { show: true, length: 10, length2: 10 },
+                            labelLine: { show: true, length: 6, length2: 6 },
                             emphasis: {
                                 label: { show: true, fontSize: 14, fontWeight: 'bold' },
                                 itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' }
@@ -1629,21 +1641,24 @@
         };
 
         const resizeCharts = () => {
-            // Only resize charts whose DOM elements are in a visible (active) view section
             Object.entries(charts).forEach(([id, chart]) => {
                 if (!chart || !chart.resize) return;
                 const dom = chart.getDom ? chart.getDom() : null;
                 if (dom) {
                     const section = dom.closest('.view-section');
-                    if (section && !section.classList.contains('active')) return; // skip hidden charts
+                    if (section && !section.classList.contains('active')) return;
+                    // Clear ECharts' stale inline pixel width so CSS correctly
+                    // computes the new container size before resize() measures it.
+                    dom.style.width = '';
+                    void dom.offsetWidth; // force reflow
                 }
                 chart.resize();
             });
-            if (accessCountryChart) accessCountryChart.resize();
-            if (accessCountryStackedChart) accessCountryStackedChart.resize();
-            if (accessCountryPieChart) accessCountryPieChart.resize();
-            if (emissionsCountryLineChart) emissionsCountryLineChart.resize();
-            if (emissionsCountryPieChart) emissionsCountryPieChart.resize();
+            if (accessCountryChart) { const d = accessCountryChart.getDom(); if (d) { d.style.width = ''; void d.offsetWidth; } accessCountryChart.resize(); }
+            if (accessCountryStackedChart) { const d = accessCountryStackedChart.getDom(); if (d) { d.style.width = ''; void d.offsetWidth; } accessCountryStackedChart.resize(); }
+            if (accessCountryPieChart) { const d = accessCountryPieChart.getDom(); if (d) { d.style.width = ''; void d.offsetWidth; } accessCountryPieChart.resize(); }
+            if (emissionsCountryLineChart) { const d = emissionsCountryLineChart.getDom(); if (d) { d.style.width = ''; void d.offsetWidth; } emissionsCountryLineChart.resize(); }
+            if (emissionsCountryPieChart) { const d = emissionsCountryPieChart.getDom(); if (d) { d.style.width = ''; void d.offsetWidth; } emissionsCountryPieChart.resize(); }
         };
 
         // Force resize all chart-surface elements in a specific view with explicit pixel dimensions.
@@ -2766,8 +2781,8 @@
             const section = document.getElementById('emissions-savings-section');
             if (section) section.style.display = '';
 
-            renderEmissionsWaterfall();
-            renderEmissionsCumulative();
+            // renderEmissionsWaterfall();   // now handled by EmissionsWaterfallChart component
+            // renderEmissionsCumulative();  // now handled by EmissionsCumulativeChart component
         }
 
         function renderEmissionsWaterfall() {
@@ -2808,7 +2823,7 @@
                         return `${item.name}: ${Math.abs(item.value).toFixed(0)} Mt CO₂`;
                     }
                 },
-                grid: { left: '3%', right: '5%', bottom: '15%', top: '18%', containLabel: true },
+                grid: { left: '5%', right: '10%', bottom: '15%', top: '18%', containLabel: true },
                 xAxis: {
                     type: 'category',
                     data: ['BAU', 'MEPS &\nLabels', 'Deep\nEfficiency', 'Best\nAvailable', 'Grid\nDecarb', 'Net\nEmissions'],
@@ -2906,7 +2921,7 @@
                     }
                 },
                 legend: { bottom: 0, textStyle: { fontSize: 10 } },
-                grid: { left: '12%', right: '4%', bottom: '18%', top: '10%' },
+                grid: { left: '5%', right: '5%', bottom: '22%', top: '10%', containLabel: true },
                 xAxis: {
                     type: 'category',
                     data: years.map(String),
@@ -3373,12 +3388,8 @@
             }
             setTitle('meps-chart3-subtitle', 'Complete breakdown by appliance, instrument and status');
 
-            // Hide chart 1 container (Region chart) in country view — timeline takes full width
-            const chart1Card = document.getElementById('chart-meps-by-region')?.closest('.card-panel') as HTMLElement | null;
-            if (chart1Card) chart1Card.style.display = 'none';
-            // Make the charts grid single-column so timeline spans full width
-            const chartsGrid = chart1Card?.parentElement as HTMLElement | null;
-            if (chartsGrid) chartsGrid.style.gridTemplateColumns = '1fr';
+            // Hide region chart card in country view — timeline takes full width
+            mepsShowRegionCard = false;
 
             // ── Chart 2: Policy Timeline ──
             // Shapes: circle = MEPS, diamond = Labels
@@ -3529,15 +3540,8 @@
                 ]
             });
 
-            // ── Chart 3: Full-width Policy Details as enriched HTML ──
-            const chart3El = document.getElementById('chart-meps-equipment');
-            if (chart3El) {
-                if (charts['chart-meps-equipment']) {
-                    charts['chart-meps-equipment'].dispose();
-                    delete charts['chart-meps-equipment'];
-                }
-                chart3El.style.overflow = 'auto';
-
+            // ── Chart 3: Full-width Policy Details as enriched HTML — push to MepsEquipmentChart ──
+            {
                 let html = `<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1.25rem;">`;
                 equipTypes.forEach(et => {
                     const appRecs = records.filter(r => r.equipment_type === et);
@@ -3605,43 +3609,25 @@
                 });
                 html += `</div>`;
 
-                chart3El.innerHTML = html;
+                mepsEquipmentCountryHtml = html;
             }
         }
 
         function updateMepsGlobalCharts() {
             const filtered = getFilteredMeps();
 
-            // Reset chart titles for global view
+            // Reset chart titles for global view (timeline and equipment chart titles)
             const setTitle = (id: string, text: string) => { const el = document.getElementById(id); if (el) el.textContent = text; };
-            setTitle('meps-chart1-title', 'MEPS & Labels Coverage by Region');
-            setTitle('meps-chart1-subtitle', '% of countries with MEPS vs Labels per region');
             setTitle('meps-chart2-title', 'Policy Adoption Timeline');
             setTitle('meps-chart2-subtitle', 'Cumulative MEPS & Labels adoption over time');
             setTitle('meps-chart3-title', 'Equipment Type Coverage');
             setTitle('meps-chart3-subtitle', 'Countries with MEPS vs Labels by appliance');
 
-            // Restore chart 1 container and grid layout for global view
-            const chart1Card = document.getElementById('chart-meps-by-region')?.closest('.card-panel') as HTMLElement | null;
-            if (chart1Card) chart1Card.style.display = '';
-            const chartsGrid = chart1Card?.parentElement as HTMLElement | null;
-            if (chartsGrid) chartsGrid.style.gridTemplateColumns = '';
+            // Restore region card and clear country HTML in equipment chart
+            mepsShowRegionCard = true;
+            mepsEquipmentCountryHtml = '';
 
-            // Clear HTML content from chart1 if it was used for policy list
-            const chart1El = document.getElementById('chart-meps-by-region');
-            if (chart1El && !charts['chart-meps-by-region']) {
-                chart1El.innerHTML = '';
-                chart1El.style.overflow = '';
-            }
-
-            // Clear HTML content from chart3 if it was used for policy details
-            const chart3El = document.getElementById('chart-meps-equipment');
-            if (chart3El && !charts['chart-meps-equipment']) {
-                chart3El.innerHTML = '';
-                chart3El.style.overflow = '';
-            }
-
-            // Chart 1: % of countries with MEPS vs Labels by Region (grouped bar) — merged regions
+            // Chart 1: % of countries with MEPS vs Labels by Region — push data to MepsByRegionChart
             const REGION_TOTALS: Record<string, number> = {
                 'Asia': 49, 'Africa': 54, 'Americas': 35,
                 'Europe': 44, 'Middle East': 17, 'Oceania': 14
@@ -3654,66 +3640,14 @@
                 if (isLabelRecord(m)) regionStats[r].labels.add(m.country_code);
             });
             const desiredOrder = ['Asia', 'Africa', 'Americas', 'Europe', 'Middle East', 'Oceania'];
-            const regionNames = desiredOrder.filter(r => regionStats[r]);
-
-            setChart('chart-meps-by-region', {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: { type: 'shadow' },
-                    formatter: (params: any) => {
-                        const region = params[0].axisValue;
-                        const total = REGION_TOTALS[region] || 1;
-                        let tip = `<strong>${region}</strong> (${total} countries)`;
-                        params.forEach((p: any) => {
-                            const absCount = region === 'MEPS'
-                                ? regionStats[region]?.meps?.size
-                                : regionStats[region]?.labels?.size;
-                            const mepsCount = regionStats[region]?.meps?.size || 0;
-                            const labelsCount = regionStats[region]?.labels?.size || 0;
-                            const count = p.seriesName === 'MEPS' ? mepsCount : labelsCount;
-                            tip += `<br>${p.marker} ${p.seriesName}: <strong>${p.value}%</strong> (${count} of ${total})`;
-                        });
-                        return tip;
-                    }
-                },
-                legend: { data: ['MEPS', 'Labels'], top: 5, textStyle: { fontSize: 11 } },
-                grid: { left: '3%', right: '4%', bottom: '15%', top: '15%', containLabel: true },
-                xAxis: {
-                    type: 'category',
-                    data: regionNames,
-                    axisLabel: { rotate: 30, fontSize: 10, interval: 0 }
-                },
-                yAxis: {
-                    type: 'value',
-                    name: '% of Countries',
-                    max: 100,
-                    nameTextStyle: { fontSize: 11 },
-                    axisLabel: { formatter: (v: number) => v + '%' }
-                },
-                series: [
-                    {
-                        name: 'MEPS',
-                        type: 'bar',
-                        data: regionNames.map(r => {
-                            const total = REGION_TOTALS[r] || 1;
-                            return Math.round((regionStats[r].meps.size / total) * 100);
-                        }),
-                        color: '#4A7F7F',
-                        barGap: '10%',
-                        label: { show: true, position: 'top', fontSize: 10, formatter: (p: any) => p.value + '%' }
-                    },
-                    {
-                        name: 'Labels',
-                        type: 'bar',
-                        data: regionNames.map(r => {
-                            const total = REGION_TOTALS[r] || 1;
-                            return Math.round((regionStats[r].labels.size / total) * 100);
-                        }),
-                        color: '#f59e0b',
-                        label: { show: true, position: 'top', fontSize: 10, formatter: (p: any) => p.value + '%' }
-                    }
-                ]
-            });
+            mepsRegionData = desiredOrder
+                .filter(r => regionStats[r])
+                .map(r => ({
+                    name: r,
+                    meps: regionStats[r].meps.size,
+                    labels: regionStats[r].labels.size,
+                    total: REGION_TOTALS[r] || 1
+                }));
 
             // Chart 2: Policy Adoption Timeline (MEPS vs Labels over time)
             const yearMeps: Record<number, number> = {};
@@ -3766,7 +3700,7 @@
                 ]
             });
 
-            // Chart 3: Equipment Type Coverage (MEPS vs Labels per appliance)
+            // Chart 3: Equipment Type Coverage — push data to MepsEquipmentChart
             // Use all meps data (not filtered by equipment type toggle) so all 3 appliances always show
             const allMepsForEquipChart = data.meps.filter(m => {
                 if (globalCountryFilter && m.country_code !== globalCountryFilter) return false;
@@ -3774,43 +3708,11 @@
                 return true;
             });
             const equipTypes = ['Air Conditioning', 'Domestic Refrigeration', 'Fans'];
-            const equipMeps = equipTypes.map(et => new Set(allMepsForEquipChart.filter(r => r.equipment_type === et && isMepsRecord(r)).map(r => r.country_code)).size);
-            const equipLabels = equipTypes.map(et => new Set(allMepsForEquipChart.filter(r => r.equipment_type === et && isLabelRecord(r)).map(r => r.country_code)).size);
-
-            setChart('chart-meps-equipment', {
-                tooltip: {
-                    trigger: 'axis',
-                    axisPointer: { type: 'shadow' },
-                    formatter: (params: any) => {
-                        let tip = `<strong>${params[0].axisValue}</strong>`;
-                        params.forEach((p: any) => { tip += `<br>${p.marker} ${p.seriesName}: ${p.value} countries`; });
-                        return tip;
-                    }
-                },
-                legend: { data: ['MEPS', 'Labels'], top: 5, textStyle: { fontSize: 11 } },
-                grid: { left: '3%', right: '8%', bottom: '3%', top: '15%', containLabel: true },
-                xAxis: { type: 'value', axisLabel: { fontSize: 10 } },
-                yAxis: {
-                    type: 'category',
-                    data: equipTypes.slice().reverse(),
-                    axisLabel: { fontSize: 10 }
-                },
-                series: [
-                    {
-                        name: 'MEPS',
-                        type: 'bar',
-                        data: equipMeps.slice().reverse(),
-                        color: '#4A7F7F',
-                        barGap: '10%'
-                    },
-                    {
-                        name: 'Labels',
-                        type: 'bar',
-                        data: equipLabels.slice().reverse(),
-                        color: '#f59e0b'
-                    }
-                ]
-            });
+            mepsEquipmentData = equipTypes.map(et => ({
+                type: et,
+                meps: new Set(allMepsForEquipChart.filter(r => r.equipment_type === et && isMepsRecord(r)).map(r => r.country_code)).size,
+                labels: new Set(allMepsForEquipChart.filter(r => r.equipment_type === et && isLabelRecord(r)).map(r => r.country_code)).size
+            }));
 
         }
 
@@ -5823,6 +5725,7 @@
             const regionTag = document.getElementById('policy-filter-region');
 
             const tabNames: Record<string, string> = {
+                'kigali': 'Kigali Amendment',
                 'gcp': 'Global Cooling Pledge',
                 'ndc': 'NDC Cooling Mentions',
                 'NCAP': 'National Cooling Action Plans'
@@ -6075,21 +5978,11 @@
                         </div>
                     </div>
                 `;
-                // Render Kigali charts with escalating retries
-                const tryRenderKigali = () => {
-                    const section = container.closest('.view-section');
-                    if (!section?.classList.contains('active')) return false;
+                // Render Kigali charts after browser computes grid layout.
+                requestAnimationFrame(() => {
                     renderPolicyKigaliCharts();
-                    forceResizeViewCharts('policy');
-                    return true;
-                };
-                // Try synchronously first, then escalating timeouts
-                if (!tryRenderKigali()) {
-                    setTimeout(() => { if (!tryRenderKigali()) setTimeout(tryRenderKigali, 200); }, 50);
-                    setTimeout(tryRenderKigali, 500);
-                } else {
-                    setTimeout(() => forceResizeViewCharts('policy'), 200);
-                }
+                    requestAnimationFrame(() => forceResizeViewCharts('policy'));
+                });
             } else if (mapType === 'gcp') {
                 // Create GCP progress chart structure
                 container.innerHTML = `
@@ -6134,21 +6027,11 @@
                         </div>
                     </div>
                 `;
-                // Render GCP charts with escalating retries
-                const tryRenderGCP = () => {
-                    const section = container.closest('.view-section');
-                    if (!section?.classList.contains('active')) return false;
+                // Render GCP charts after browser computes grid layout.
+                requestAnimationFrame(() => {
                     renderGCPProgressCharts();
-                    forceResizeViewCharts('policy');
-                    return true;
-                };
-                // Try synchronously first, then escalating timeouts
-                if (!tryRenderGCP()) {
-                    setTimeout(() => { if (!tryRenderGCP()) setTimeout(tryRenderGCP, 200); }, 50);
-                    setTimeout(tryRenderGCP, 500);
-                } else {
-                    setTimeout(() => forceResizeViewCharts('policy'), 200);
-                }
+                    requestAnimationFrame(() => forceResizeViewCharts('policy'));
+                });
 
             } else if (mapType === 'ndc') {
                 // Create NDC chart structure
@@ -6194,20 +6077,11 @@
                         </div>
                     </div>
                 `;
-                // Render NDC charts with escalating retries
-                const tryRenderNDC = () => {
-                    const section = container.closest('.view-section');
-                    if (!section?.classList.contains('active')) return false;
+                // Render NDC charts after browser computes grid layout.
+                requestAnimationFrame(() => {
                     updateNDCCharts();
-                    forceResizeViewCharts('policy');
-                    return true;
-                };
-                if (!tryRenderNDC()) {
-                    setTimeout(() => { if (!tryRenderNDC()) setTimeout(tryRenderNDC, 200); }, 50);
-                    setTimeout(tryRenderNDC, 500);
-                } else {
-                    setTimeout(() => forceResizeViewCharts('policy'), 200);
-                }
+                    requestAnimationFrame(() => forceResizeViewCharts('policy'));
+                });
 
             } else if (mapType === 'NCAP') {
                 // Create NCAP charts
@@ -6242,20 +6116,11 @@
                         </div>
                     </div>
                 `;
-                // Render NCAP charts with escalating retries
-                const tryRenderNCAP = () => {
-                    const section = container.closest('.view-section');
-                    if (!section?.classList.contains('active')) return false;
+                // Render NCAP charts after browser computes grid layout.
+                requestAnimationFrame(() => {
                     updateNCAPCharts();
-                    forceResizeViewCharts('policy');
-                    return true;
-                };
-                if (!tryRenderNCAP()) {
-                    setTimeout(() => { if (!tryRenderNCAP()) setTimeout(tryRenderNCAP, 200); }, 50);
-                    setTimeout(tryRenderNCAP, 500);
-                } else {
-                    setTimeout(() => forceResizeViewCharts('policy'), 200);
-                }
+                    requestAnimationFrame(() => forceResizeViewCharts('policy'));
+                });
             }
         }
 
@@ -6975,6 +6840,7 @@
             if (emissionsYearSlider) {
                 emissionsYearSlider.addEventListener('input', () => {
                     emissionsYear = Number(emissionsYearSlider.value);
+                    emissionsYearProp = emissionsYear; // sync top-level prop
                     const display = document.getElementById('emissions-year-display');
                     if (display) display.textContent = String(emissionsYear);
                     updateEmissionsView();
@@ -7012,6 +6878,7 @@
                     } else {
                         emissionsAppliances = emissionsAppliances.filter(a => a !== appliance);
                     }
+                    emissionsAppliancesProp = [...emissionsAppliances]; // sync top-level prop
                     updateEmissionsView();
                 });
             });
@@ -7062,6 +6929,7 @@
 
                     // Dynamically create and populate charts for the active tab
                     updatePolicyChartsForMapType(mapType);
+                    updatePolicyFilterStatusBar();
                 });
             });
 
@@ -7215,6 +7083,7 @@
             try {
                 setStatus('Loading data from Supabase...');
                 data = await loadDashboardData(SUPABASE_URL, SUPABASE_KEY);
+                emissionsClaspEnergy = data.claspEnergy; // sync top-level prop for EmissionsPillar
 
                 // Log loaded table sizes for debugging
                 const tables = {
@@ -7364,8 +7233,21 @@
 
       <!-- Pillar Views (Components) -->
       <OverviewPillar active={currentViewState === 'overview'} onNavigate={handleViewChange} />
-      <EmissionsPillar active={currentViewState === 'emissions'} onPillarInfoClick={handlePillarInfoClick} />
-      <MepsPillar active={currentViewState === 'meps'} onPillarInfoClick={handlePillarInfoClick} />
+      <EmissionsPillar
+        active={currentViewState === 'emissions'}
+        onPillarInfoClick={handlePillarInfoClick}
+        claspEnergy={emissionsClaspEnergy}
+        emissionsYear={emissionsYearProp}
+        emissionsAppliances={emissionsAppliancesProp}
+      />
+      <MepsPillar
+        active={currentViewState === 'meps'}
+        onPillarInfoClick={handlePillarInfoClick}
+        {mepsRegionData}
+        {mepsEquipmentData}
+        {mepsShowRegionCard}
+        {mepsEquipmentCountryHtml}
+      />
       <KigaliPillar active={currentViewState === 'kigali'} onPillarInfoClick={handlePillarInfoClick} />
       <AccessPillar active={currentViewState === 'access'} onPillarInfoClick={handlePillarInfoClick} />
       <PolicyPillar active={currentViewState === 'policy'} onPillarInfoClick={handlePillarInfoClick} />
