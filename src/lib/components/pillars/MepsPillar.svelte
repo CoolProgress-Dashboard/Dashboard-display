@@ -217,6 +217,22 @@
       <div class="country-detail"></div>
     </div>
 
+    <!-- AC Inverter Share Map -->
+    <div class="card-panel inverter-map-card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fa-solid fa-snowflake"></i>
+          AC Inverter Technology Share
+        </div>
+        <div class="card-subtitle-text">Share of inverter-type AC units by country (latest available year)</div>
+      </div>
+      <div id="inverter-map-container" class="map-surface"></div>
+      <div class="legend legend-row">
+        <span class="legend-label">Inverter Share:</span>
+        <div id="inverter-legend" class="legend-items"></div>
+      </div>
+    </div>
+
     <!-- Charts Grid -->
     <div class="meps-charts-section charts-section">
       {#if mepsShowRegionCard}
@@ -239,22 +255,6 @@
         <div class="chart-card-body">
           <MepsEquipmentChart equipment={mepsEquipmentData} countryHtml={mepsEquipmentCountryHtml} />
         </div>
-      </div>
-    </div>
-
-    <!-- AC Inverter Share Map -->
-    <div class="card-panel map-card">
-      <div class="card-header">
-        <div class="card-title">
-          <i class="fa-solid fa-snowflake"></i>
-          AC Inverter Technology Share
-        </div>
-        <div class="card-subtitle-text">Share of inverter-type AC units by country (latest available year)</div>
-      </div>
-      <div id="inverter-map-container" class="map-surface"></div>
-      <div class="legend legend-row">
-        <span class="legend-label">Inverter Share:</span>
-        <div id="inverter-legend" class="legend-items"></div>
       </div>
     </div>
 
@@ -716,5 +716,13 @@
     font-size: 0.75rem;
     color: #64748b;
     margin-top: 0.15rem;
+  }
+
+  /* Inverter map card — standalone, not visually connected to neighbour */
+  .inverter-map-card {
+    /* Inherits card-panel base; explicit border so it always renders fully */
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
   }
 </style>
