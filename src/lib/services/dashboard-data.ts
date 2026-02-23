@@ -2,6 +2,7 @@ import type {
   AccessFilters,
   AccessForecastRecord,
   AccessRecord,
+  AcInverterRecord,
   ClaspEnergyRecord,
   DashboardData,
   EmissionsFilters,
@@ -68,7 +69,8 @@ export const createDefaultData = (): DashboardData => ({
   claspEnergy: [],
   subcool: [],
   regions: [],
-  refrigerants: []
+  refrigerants: [],
+  acInverterShare: []
 });
 
 const safeFetch = async <T>(
@@ -91,7 +93,7 @@ export const loadDashboardData = async (
   url: string,
   key: string
 ): Promise<DashboardData> => {
-  const [countries, pledge, kigali, meps, access, accessForecast, emissions, ndcTracker, ncap, claspEnergy, subcool, regions, refrigerants] =
+  const [countries, pledge, kigali, meps, access, accessForecast, emissions, ndcTracker, ncap, claspEnergy, subcool, regions, refrigerants, acInverterShare] =
     await Promise.all([
       safeFetch(url, key, 'countries', 'country_code,country_name,region'),
       safeFetch(url, key, 'global_cooling_pledge', 'country_code,country_name,signatory'),
@@ -172,6 +174,12 @@ export const loadDashboardData = async (
         key,
         'refrigerants',
         'id,refrigerant_code,gwp_100_ar6,gwp_source,ref_type,natural_refrigerant'
+      ),
+      safeFetch<AcInverterRecord>(
+        url,
+        key,
+        'ac_inverter_share',
+        'id,region,country_code,country_name,year_label,year_start,year_end,inverter_pct,non_inverter_pct,confidence,is_estimate,scope_notes,source_name,source_url'
       )
     ]);
 
@@ -189,6 +197,7 @@ export const loadDashboardData = async (
     subcool,
     regions,
     refrigerants,
+    acInverterShare,
     ndc: []
   };
 };

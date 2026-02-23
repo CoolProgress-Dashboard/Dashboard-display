@@ -242,6 +242,22 @@
       </div>
     </div>
 
+    <!-- AC Inverter Share Map -->
+    <div class="card-panel map-card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fa-solid fa-snowflake"></i>
+          AC Inverter Technology Share
+        </div>
+        <div class="card-subtitle-text">Share of inverter-type AC units by country (latest available year)</div>
+      </div>
+      <div id="inverter-map-container" class="map-surface"></div>
+      <div class="legend legend-row">
+        <span class="legend-label">Inverter Share:</span>
+        <div id="inverter-legend" class="legend-items"></div>
+      </div>
+    </div>
+
     <!-- Source Attribution -->
     <div style="text-align: center; padding: 0.75rem; font-size: 0.7rem; color: #94a3b8;">
       Sources:
@@ -694,5 +710,11 @@
 
   .meps-charts-section :global(.chart-card + .chart-card) {
     margin-top: 1.25rem;
+  }
+
+  .card-subtitle-text {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 0.15rem;
   }
 </style>

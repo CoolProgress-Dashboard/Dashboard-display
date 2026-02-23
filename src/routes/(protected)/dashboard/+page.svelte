@@ -3166,6 +3166,121 @@
             }
         }
 
+        async function initInverterMap() {
+            const container = document.getElementById('inverter-map-container');
+            if (!container) return;
+
+            const width = container.clientWidth || 800;
+            const height = container.clientHeight || 400;
+
+            // Build a map: country_code → latest record (by year_end)
+            const latestByCountry = new Map<string, { pct: number; nonPct: number | null; year: string; confidence: string; name: string }>();
+            (data.acInverterShare as any[]).forEach((r: any) => {
+                if (!r.country_code || r.inverter_pct == null) return;
+                const existing = latestByCountry.get(r.country_code);
+                const yearEnd = r.year_end ?? 0;
+                if (!existing || yearEnd > ((existing as any)._yearEnd ?? 0)) {
+                    latestByCountry.set(r.country_code, {
+                        pct: r.inverter_pct,
+                        nonPct: r.non_inverter_pct ?? null,
+                        year: r.year_label || String(r.year_end || ''),
+                        confidence: r.confidence || '',
+                        name: r.country_name || r.country_code,
+                        _yearEnd: yearEnd
+                    } as any);
+                }
+            });
+
+            // Color scale: 0% → red, 50% → yellow, 100% → teal/green
+            function lerp(a: number, b: number, t: number) { return Math.round(a + (b - a) * t); }
+            function getInverterColor(pct: number | null): string {
+                if (pct == null) return '#d0d0d0';
+                const t = Math.max(0, Math.min(100, pct)) / 100;
+                if (t <= 0.5) {
+                    const f = t * 2;
+                    return `rgb(${lerp(232,245,f)},${lerp(90,158,f)},${lerp(79,11,f)})`;
+                } else {
+                    const f = (t - 0.5) * 2;
+                    return `rgb(${lerp(245,74,f)},${lerp(158,127,f)},${lerp(11,127,f)})`;
+                }
+            }
+
+            const svg = d3.select('#inverter-map-container')
+                .append('svg')
+                .attr('width', '100%')
+                .attr('height', '100%')
+                .attr('viewBox', `0 0 ${width} ${height}`)
+                .attr('preserveAspectRatio', 'xMidYMid meet');
+
+            const projection = d3.geoNaturalEarth1()
+                .scale(width / 6)
+                .translate([width / 2, height / 1.8]);
+
+            const path = d3.geoPath().projection(projection);
+
+            try {
+                const world = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json');
+                const countries = topojson.feature(world, world.objects.countries);
+
+                svg.selectAll('path')
+                    .data(countries.features)
+                    .enter()
+                    .append('path')
+                    .attr('d', path)
+                    .attr('fill', (d: any) => {
+                        const code = countryIdToCode[normalizeId(d.id)];
+                        const info = code ? latestByCountry.get(code) : null;
+                        return getInverterColor(info?.pct ?? null);
+                    })
+                    .attr('stroke', '#fff')
+                    .attr('stroke-width', 0.4)
+                    .on('mouseover', (event: MouseEvent, d: any) => {
+                        const code = countryIdToCode[normalizeId(d.id)];
+                        const country = data.countries.find(c => c.country_code === code);
+                        const info = code ? latestByCountry.get(code) : null;
+                        let html = `<strong>${country?.country_name || (info as any)?.name || code || 'Unknown'}</strong><br>`;
+                        if (info) {
+                            html += `<span style="color:#8BC34A;font-weight:600">Inverter: ${info.pct.toFixed(1)}%</span>`;
+                            if (info.nonPct != null) html += `<br><span style="color:#ddd;font-size:0.85em">Non-inverter: ${info.nonPct.toFixed(1)}%</span>`;
+                            if (info.year) html += `<br><span style="font-size:0.8em">Year: ${info.year}</span>`;
+                            if (info.confidence) html += `<br><span style="font-size:0.8em">Confidence: ${info.confidence}</span>`;
+                        } else {
+                            html += `<span style="color:#aaa">No data available</span>`;
+                        }
+                        tooltip.innerHTML = html;
+                        tooltip.style.opacity = 1;
+                        tooltip.style.left = (event.pageX + 10) + 'px';
+                        tooltip.style.top = (event.pageY + 10) + 'px';
+                    })
+                    .on('mouseout', handleOut);
+
+                // Build legend
+                const legend = document.getElementById('inverter-legend');
+                if (legend) {
+                    legend.innerHTML = `
+                        <div class="legend-item">
+                            <div class="legend-color" style="background:${getInverterColor(90)}"></div>
+                            &gt;75% Inverter
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background:${getInverterColor(50)}"></div>
+                            ~50%
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background:${getInverterColor(15)}"></div>
+                            &lt;25% Inverter
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background:#d0d0d0"></div>
+                            No Data
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Inverter map error:', error);
+            }
+        }
+
         function updateMepsMap() {
             if (!mepsMapSvg) return;
 
@@ -7132,6 +7247,7 @@
             populateCountryFilter();
             await initMap();
             await initMepsMap();
+            await initInverterMap();
             await initKigaliMap();
             await initAccessMap();
 

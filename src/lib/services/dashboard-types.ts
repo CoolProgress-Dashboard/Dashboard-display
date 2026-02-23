@@ -107,6 +107,7 @@ export type DashboardData = {
   subcool: SubcoolRecord[];
   regions: RegionRecord[];
   refrigerants: RefrigerantRecord[];
+  acInverterShare: AcInverterRecord[];
 };
 
 export type EmissionsFilters = {
@@ -213,4 +214,22 @@ export type RefrigerantRecord = {
   gwp_source?: string | null;
   ref_type: string; // "HFC", "HCFC", "HFO", "NR"
   natural_refrigerant: boolean;
+};
+
+// AC inverter technology share data
+export type AcInverterRecord = {
+  id: number;
+  region?: string | null;
+  country_code: string;
+  country_name: string;
+  year_label?: string | null;
+  year_start?: number | null;
+  year_end?: number | null;
+  inverter_pct?: number | null;
+  non_inverter_pct?: number | null;
+  confidence?: string | null;
+  is_estimate?: boolean | null;
+  scope_notes?: string | null;
+  source_name?: string | null;
+  source_url?: string | null;
 };
