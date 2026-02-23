@@ -71,6 +71,7 @@
     .filter((p): p is NonNullable<typeof p> => p != null);
 
   let revealed = false;
+  let activeMapView: 'coverage' | 'inverter' = 'coverage';
 
   onMount(() => {
     const timer = setTimeout(() => {
@@ -186,51 +187,62 @@
       <MepsLevelChart />
     </div>
 
-    <!-- Map Card with Appliance Toggles -->
+    <!-- Combined Map Card -->
     <div class="card-panel map-card">
-      <div class="card-header">
-        <div class="card-title">
-          <i class="fa-solid fa-bolt"></i>
-          MEPS &amp; Labels Coverage
+      <div class="card-header combined-map-header">
+        <div class="combined-map-header-top">
+          <div class="card-title">
+            {#if activeMapView === 'coverage'}
+              <i class="fa-solid fa-bolt"></i> MEPS &amp; Labels Coverage
+            {:else}
+              <i class="fa-solid fa-snowflake"></i> AC Variable Speed Share
+            {/if}
+          </div>
+          <div class="map-view-toggle">
+            <button type="button" class="map-toggle-btn" class:active={activeMapView === 'coverage'} on:click={() => activeMapView = 'coverage'}>
+              <i class="fa-solid fa-bolt"></i> MEPS &amp; Labels
+            </button>
+            <button type="button" class="map-toggle-btn" class:active={activeMapView === 'inverter'} on:click={() => activeMapView = 'inverter'}>
+              <i class="fa-solid fa-snowflake"></i> Variable Speed
+            </button>
+          </div>
         </div>
-        <div class="meps-map-toggles">
+        <!-- Equipment toggles — kept in DOM so JS can populate; hidden when inverter view active -->
+        <div class="meps-map-toggles" style:display={activeMapView === 'coverage' ? '' : 'none'}>
           <div class="toggle-group" id="meps-equipment-toggles">
             <!-- Populated dynamically by initMepsFilters -->
           </div>
         </div>
       </div>
-      <div id="meps-map-container" class="map-surface"></div>
-      <div class="legend legend-row">
-        <span class="legend-label">Policy Status:</span>
-        <div id="meps-legend" class="legend-items"></div>
+
+      <!-- MEPS Coverage map panel -->
+      <div style:display={activeMapView === 'coverage' ? 'block' : 'none'}>
+        <div id="meps-map-container" class="map-surface"></div>
+        <div class="legend legend-row">
+          <span class="legend-label">Policy Status:</span>
+          <div id="meps-legend" class="legend-items"></div>
+        </div>
+        <div class="progress-bar" id="meps-progress">
+          <span class="progress-segment" id="meps-progress-both" title="MEPS & Labels" style="background:#8BC34A"></span>
+          <span class="progress-segment" id="meps-progress-meps" title="MEPS Only" style="background:#3D6B6B"></span>
+          <span class="progress-segment" id="meps-progress-labels" title="Labels Only" style="background:#FFB74D"></span>
+          <span class="progress-segment" id="meps-progress-critical" title="No Policies" style="background:#ef4444"></span>
+        </div>
       </div>
-      <div class="progress-bar" id="meps-progress">
-        <span class="progress-segment" id="meps-progress-both" title="MEPS & Labels" style="background:#8BC34A"></span>
-        <span class="progress-segment" id="meps-progress-meps" title="MEPS Only" style="background:#3D6B6B"></span>
-        <span class="progress-segment" id="meps-progress-labels" title="Labels Only" style="background:#FFB74D"></span>
-        <span class="progress-segment" id="meps-progress-critical" title="No Policies" style="background:#ef4444"></span>
+
+      <!-- Inverter map panel -->
+      <div style:display={activeMapView === 'inverter' ? 'block' : 'none'}>
+        <div id="inverter-map-container" class="map-surface"></div>
+        <div class="legend legend-row">
+          <span class="legend-label">Inverter Share:</span>
+          <div id="inverter-legend" class="legend-items"></div>
+        </div>
       </div>
     </div>
 
     <!-- Country Detail (populated when clicking a country on the map) -->
     <div class="country-card-inline" id="meps-country-detail" style="display:none;">
       <div class="country-detail"></div>
-    </div>
-
-    <!-- AC Inverter Share Map -->
-    <div class="card-panel inverter-map-card">
-      <div class="card-header">
-        <div class="card-title">
-          <i class="fa-solid fa-snowflake"></i>
-          AC Inverter Technology Share
-        </div>
-        <div class="card-subtitle-text">Share of inverter-type AC units by country (latest available year)</div>
-      </div>
-      <div id="inverter-map-container" class="map-surface"></div>
-      <div class="legend legend-row">
-        <span class="legend-label">Inverter Share:</span>
-        <div id="inverter-legend" class="legend-items"></div>
-      </div>
     </div>
 
     <!-- Charts Grid -->
@@ -718,11 +730,53 @@
     margin-top: 0.15rem;
   }
 
-  /* Inverter map card — standalone, not visually connected to neighbour */
-  .inverter-map-card {
-    /* Inherits card-panel base; explicit border so it always renders fully */
+  /* Combined map header */
+  .combined-map-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .combined-map-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* Map view toggle buttons */
+  .map-view-toggle {
+    display: flex;
+    gap: 0.35rem;
+    flex-shrink: 0;
+  }
+
+  .map-toggle-btn {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.3rem 0.75rem;
     border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    overflow: hidden;
+    border-radius: 6px;
+    background: #f8fafc;
+    color: #64748b;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    white-space: nowrap;
+  }
+
+  .map-toggle-btn.active {
+    background: #3D6B6B;
+    color: #fff;
+    border-color: #3D6B6B;
+  }
+
+  .map-toggle-btn:hover:not(.active) {
+    background: #f1f5f9;
+    color: #3D6B6B;
+    border-color: #cbd5e1;
   }
 </style>
