@@ -1620,17 +1620,20 @@
                 }
             }
             charts[id].setOption(option, true);
-            // Resize with parent-based pixel dimensions after browser paints
+            // Resize with parent-based pixel dimensions after browser paints.
+            // Uses getBoundingClientRect on the parent and subtracts padding so the
+            // chart is sized to the true CONTENT area, not the element's clientWidth
+            // (which includes padding and would make the chart 40px too wide).
             requestAnimationFrame(() => {
                 if (!charts[id] || !charts[id].resize) return;
-                // Zero out ECharts inline width to get true parent available width
                 const chartDom = charts[id].getDom ? charts[id].getDom() : el;
-                const origW = chartDom.style.width;
-                chartDom.style.width = '0';
-                void chartDom.offsetWidth;
-                const parent = chartDom.closest('.chart-card-body') as HTMLElement || chartDom.parentElement;
-                let rw = parent ? parent.clientWidth : 0;
-                chartDom.style.width = origW || '';
+                const parent = (chartDom.closest('.chart-card-body') as HTMLElement) || chartDom.parentElement as HTMLElement;
+                let rw = 0;
+                if (parent) {
+                    const rect = parent.getBoundingClientRect();
+                    const ps = getComputedStyle(parent);
+                    rw = rect.width - (parseFloat(ps.paddingLeft) || 0) - (parseFloat(ps.paddingRight) || 0);
+                }
                 if (rw < 50) rw = el.clientWidth;
                 if (rw < 50) { rw = findParentWidth(el); if (rw > 50) rw -= 40; }
                 const rh = el.clientHeight || parseInt(el.style.minHeight) || 280;
@@ -1641,24 +1644,35 @@
         };
 
         const resizeCharts = () => {
-            Object.entries(charts).forEach(([id, chart]) => {
+            // Use explicit parent-based width measurement (same as forceResizeViewCharts)
+            // to guarantee the chart canvas matches the actual available content area.
+            const resizeOne = (chart: any) => {
                 if (!chart || !chart.resize) return;
                 const dom = chart.getDom ? chart.getDom() : null;
-                if (dom) {
-                    const section = dom.closest('.view-section');
-                    if (section && !section.classList.contains('active')) return;
-                    // Clear ECharts' stale inline pixel width so CSS correctly
-                    // computes the new container size before resize() measures it.
-                    dom.style.width = '';
-                    void dom.offsetWidth; // force reflow
+                if (!dom) return;
+                const section = dom.closest('.view-section');
+                if (section && !section.classList.contains('active')) return;
+                // Measure from parent container to get true content width
+                const parent = dom.closest('.chart-card-body') as HTMLElement || dom.parentElement as HTMLElement;
+                let w = 0;
+                if (parent) {
+                    const rect = parent.getBoundingClientRect();
+                    const ps = getComputedStyle(parent);
+                    w = rect.width - (parseFloat(ps.paddingLeft) || 0) - (parseFloat(ps.paddingRight) || 0);
                 }
-                chart.resize();
-            });
-            if (accessCountryChart) { const d = accessCountryChart.getDom(); if (d) { d.style.width = ''; void d.offsetWidth; } accessCountryChart.resize(); }
-            if (accessCountryStackedChart) { const d = accessCountryStackedChart.getDom(); if (d) { d.style.width = ''; void d.offsetWidth; } accessCountryStackedChart.resize(); }
-            if (accessCountryPieChart) { const d = accessCountryPieChart.getDom(); if (d) { d.style.width = ''; void d.offsetWidth; } accessCountryPieChart.resize(); }
-            if (emissionsCountryLineChart) { const d = emissionsCountryLineChart.getDom(); if (d) { d.style.width = ''; void d.offsetWidth; } emissionsCountryLineChart.resize(); }
-            if (emissionsCountryPieChart) { const d = emissionsCountryPieChart.getDom(); if (d) { d.style.width = ''; void d.offsetWidth; } emissionsCountryPieChart.resize(); }
+                if (w < 50) w = dom.clientWidth;
+                if (w < 50) { w = findParentWidth(dom); if (w > 50) w -= 40; }
+                const h = dom.clientHeight || parseInt(dom.style.minHeight) || 280;
+                if (w > 50 && h > 50) {
+                    chart.resize({ width: Math.floor(w), height: Math.floor(h) });
+                }
+            };
+            Object.values(charts).forEach(resizeOne);
+            if (accessCountryChart) resizeOne(accessCountryChart);
+            if (accessCountryStackedChart) resizeOne(accessCountryStackedChart);
+            if (accessCountryPieChart) resizeOne(accessCountryPieChart);
+            if (emissionsCountryLineChart) resizeOne(emissionsCountryLineChart);
+            if (emissionsCountryPieChart) resizeOne(emissionsCountryPieChart);
         };
 
         // Force resize all chart-surface elements in a specific view with explicit pixel dimensions.
@@ -7165,6 +7179,8 @@
                     btn.style.color = 'white';
                     btn.style.borderColor = '#3D6B6B';
                     renderRefrigerantMarketShare();
+                    // Correct width after setChart's RAF resizes to clientWidth (includes padding)
+                    requestAnimationFrame(() => forceResizeViewCharts('kigali'));
                 });
             });
 
@@ -7183,6 +7199,8 @@
                     btn.style.color = 'white';
                     btn.style.borderColor = '#3D6B6B';
                     renderRefrigerantMarketShare();
+                    // Correct width after setChart's RAF resizes to clientWidth (includes padding)
+                    requestAnimationFrame(() => forceResizeViewCharts('kigali'));
                 });
             });
         }
@@ -7285,7 +7303,12 @@
             setApplianceScope('ac');
             updateSidePanels('overview');
             requestAnimationFrame(resizeCharts);
-            window.addEventListener('resize', resizeCharts);
+            window.addEventListener('resize', () => {
+                resizeCharts();
+                // Also force-resize the active view with explicit pixel dimensions
+                // as a belt-and-suspenders correction after resizeCharts runs.
+                requestAnimationFrame(() => forceResizeViewCharts(currentView));
+            });
 
             // ResizeObserver: auto-resize charts when their view sections become visible
             // This catches the display:none → display:block transition reliably
