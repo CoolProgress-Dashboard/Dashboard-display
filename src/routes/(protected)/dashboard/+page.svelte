@@ -49,6 +49,7 @@
   let mepsEquipmentData: Array<{ type: string; meps: number; labels: number }> = [];
   let mepsShowRegionCard: boolean = true;
   let mepsEquipmentCountryHtml: string = '';
+  let acInverterShareProp: import('$lib/services/dashboard-types').AcInverterRecord[] = [];
 
   function handleViewChange(view: string) {
     // Delegate to the onMount switchView function if available
@@ -1542,6 +1543,7 @@
         // CHARTS
         // =====================================================
         const charts: Record<string, any> = {};
+        const chartObservers: Map<string, ResizeObserver> = new Map();
         let accessCountryChart: echarts.ECharts | null = null;
         let accessCountryStackedChart: echarts.ECharts | null = null;
         let accessCountryPieChart: echarts.ECharts | null = null;
@@ -1575,11 +1577,13 @@
             if (!el) return;
             let needsInit = !charts[id];
             if (!needsInit && charts[id].getDom && charts[id].getDom() !== el) {
+                if (chartObservers.has(id)) { chartObservers.get(id)!.disconnect(); chartObservers.delete(id); }
                 charts[id].dispose();
                 needsInit = true;
             }
             // Force re-init when switching views (dispose stale 0-width instances)
             if (!needsInit && forceReinitCharts) {
+                if (chartObservers.has(id)) { chartObservers.get(id)!.disconnect(); chartObservers.delete(id); }
                 charts[id].dispose();
                 delete charts[id];
                 needsInit = true;
@@ -1596,18 +1600,17 @@
                 const section = el.closest('.view-section') as HTMLElement | null;
                 const sectionActive = section?.classList.contains('active');
                 if (sectionActive) {
-                    // Measure true available width: zero out chart element so parent isn't inflated
-                    const origW = el.style.width;
-                    el.style.width = '0';
-                    void el.offsetWidth; // force reflow
-                    const parent = el.closest('.chart-card-body') as HTMLElement || el.parentElement;
-                    let w = parent ? parent.clientWidth : 0;
-                    el.style.width = origW || '';
-                    const h = el.clientHeight || parseInt(el.style.minHeight) || 280;
-                    if (w < 50) w = el.clientWidth;
-                    if (w < 50 && section) w = (section as HTMLElement).clientWidth - 80;
-                    if (w < 50) w = 600;
-                    charts[id] = echarts.init(el, null, { width: Math.floor(w), height: Math.floor(h) });
+                    // Clear any ECharts-set inline width/height so CSS (width: 100%) governs.
+                    // echarts.init without explicit dims reads el.clientWidth at init time and
+                    // does NOT pin el.style.width to a fixed pixel value, so chart.resize()
+                    // (no args) will always re-read el.clientWidth correctly on every resize.
+                    el.style.width = '';
+                    // Preserve height from inline style if present; fall back to min-height or default.
+                    if (!el.style.height) {
+                        el.style.height = el.style.minHeight || '280px';
+                    }
+                    void el.offsetWidth; // force reflow so clientWidth reflects CSS width
+                    charts[id] = echarts.init(el);
                 } else {
                     // View is hidden — use explicit computed dimensions
                     let w = 0;
@@ -1620,52 +1623,40 @@
                 }
             }
             charts[id].setOption(option, true);
-            // Resize with parent-based pixel dimensions after browser paints.
-            // Uses getBoundingClientRect on the parent and subtracts padding so the
-            // chart is sized to the true CONTENT area, not the element's clientWidth
-            // (which includes padding and would make the chart 40px too wide).
-            requestAnimationFrame(() => {
-                if (!charts[id] || !charts[id].resize) return;
-                const chartDom = charts[id].getDom ? charts[id].getDom() : el;
-                const parent = (chartDom.closest('.chart-card-body') as HTMLElement) || chartDom.parentElement as HTMLElement;
-                let rw = 0;
-                if (parent) {
-                    const rect = parent.getBoundingClientRect();
-                    const ps = getComputedStyle(parent);
-                    rw = rect.width - (parseFloat(ps.paddingLeft) || 0) - (parseFloat(ps.paddingRight) || 0);
-                }
-                if (rw < 50) rw = el.clientWidth;
-                if (rw < 50) { rw = findParentWidth(el); if (rw > 50) rw -= 40; }
-                const rh = el.clientHeight || parseInt(el.style.minHeight) || 280;
-                if (rw > 50) {
-                    charts[id].resize({ width: Math.floor(rw), height: Math.floor(rh) });
-                }
-            });
+            // Attach ResizeObserver so the chart auto-resizes whenever its container changes size.
+            // This mirrors the pattern used by self-contained chart components (AcGrowthChart, etc.)
+            // and works because the observer reads el.clientWidth directly from the DOM each time.
+            if (needsInit && !chartObservers.has(id)) {
+                // Pass el.clientWidth explicitly — this bypasses any stored opts.width inside
+                // ECharts/zrender, so the canvas is always resized to the current CSS-computed
+                // width regardless of how the chart was originally initialised.
+                // CSS fix (min-width:0 on .pillar-stack > *) ensures el.clientWidth correctly
+                // shrinks with the viewport, making this value always accurate.
+                const obs = new ResizeObserver(() => {
+                    if (!charts[id]) return;
+                    const w = el.clientWidth;
+                    const h = el.clientHeight || parseInt(el.style.minHeight) || 280;
+                    if (w > 10 && h > 10) charts[id].resize({ width: w, height: h });
+                });
+                obs.observe(el);
+                chartObservers.set(id, obs);
+            }
         };
 
         const resizeCharts = () => {
-            // Use explicit parent-based width measurement (same as forceResizeViewCharts)
-            // to guarantee the chart canvas matches the actual available content area.
+            // Call chart.resize() with no args so zrender re-reads el.clientWidth from the DOM.
+            // Charts initialised with echarts.init(el) (no explicit dims) never have a pinned
+            // inline style.width, so this correctly picks up the current CSS-computed width.
+            // Only resize charts whose section is currently active (hidden sections have clientWidth=0).
             const resizeOne = (chart: any) => {
                 if (!chart || !chart.resize) return;
                 const dom = chart.getDom ? chart.getDom() : null;
                 if (!dom) return;
                 const section = dom.closest('.view-section');
                 if (section && !section.classList.contains('active')) return;
-                // Measure from parent container to get true content width
-                const parent = dom.closest('.chart-card-body') as HTMLElement || dom.parentElement as HTMLElement;
-                let w = 0;
-                if (parent) {
-                    const rect = parent.getBoundingClientRect();
-                    const ps = getComputedStyle(parent);
-                    w = rect.width - (parseFloat(ps.paddingLeft) || 0) - (parseFloat(ps.paddingRight) || 0);
-                }
-                if (w < 50) w = dom.clientWidth;
-                if (w < 50) { w = findParentWidth(dom); if (w > 50) w -= 40; }
+                const w = dom.clientWidth;
                 const h = dom.clientHeight || parseInt(dom.style.minHeight) || 280;
-                if (w > 50 && h > 50) {
-                    chart.resize({ width: Math.floor(w), height: Math.floor(h) });
-                }
+                if (w > 10) chart.resize({ width: w, height: h });
             };
             Object.values(charts).forEach(resizeOne);
             if (accessCountryChart) resizeOne(accessCountryChart);
@@ -1675,9 +1666,11 @@
             if (emissionsCountryPieChart) resizeOne(emissionsCountryPieChart);
         };
 
-        // Force resize all chart-surface elements in a specific view with explicit pixel dimensions.
-        // Reads width from the PARENT container (chart-card-body) minus its padding,
-        // because ECharts may have modified the chart element's own inline width.
+        // Force resize all chart-surface elements in the given active view.
+        // Calls chart.resize() with no args so zrender re-reads el.clientWidth from the DOM.
+        // This works because charts in the active view were initialised with echarts.init(el)
+        // (no explicit dims), so el.style.width is never pinned to a fixed pixel value and
+        // el.clientWidth always reflects the current CSS-computed width.
         const forceResizeViewCharts = (view: string) => {
             const section = document.getElementById(`view-${view}`);
             if (!section) return;
@@ -1685,34 +1678,23 @@
             surfaces.forEach(el => {
                 const chartId = el.id;
                 if (!chartId || !charts[chartId]) return;
-                // Read width from parent container (avoids ECharts inline style interference)
-                let w = 0;
-                const parent = el.parentElement;
-                if (parent) {
-                    const parentRect = parent.getBoundingClientRect();
-                    const parentStyle = getComputedStyle(parent);
-                    const padL = parseFloat(parentStyle.paddingLeft) || 0;
-                    const padR = parseFloat(parentStyle.paddingRight) || 0;
-                    w = parentRect.width - padL - padR;
-                }
-                // Fallback: try reading from the element itself or walking up DOM
-                if (w < 50) {
-                    w = el.getBoundingClientRect().width;
-                }
-                if (w < 50) {
-                    w = findParentWidth(el);
-                    if (w > 50) w -= 40;
-                }
+                const w = el.clientWidth;
                 const h = el.clientHeight || parseInt(el.style.minHeight) || 280;
-                if (w > 50 && h > 50) {
-                    charts[chartId].resize({ width: Math.floor(w), height: Math.floor(h) });
-                }
+                if (w > 10) charts[chartId].resize({ width: w, height: h });
             });
 
             // Also resize Global Overview charts for emissions view
             if (view === 'emissions') {
-                if (emissionsCountryPieChart) emissionsCountryPieChart.resize();
-                if (emissionsCountryLineChart) emissionsCountryLineChart.resize();
+                const resizeExtra = (chart: any) => {
+                    if (!chart) return;
+                    const dom = chart.getDom?.();
+                    if (!dom) return;
+                    const w = dom.clientWidth;
+                    const h = dom.clientHeight || 280;
+                    if (w > 10) chart.resize({ width: w, height: h });
+                };
+                resizeExtra(emissionsCountryPieChart);
+                resizeExtra(emissionsCountryLineChart);
             }
         };
 
@@ -1999,7 +1981,7 @@
                 // Global country filter from sidebar
                 if (globalCountryFilter && r.country_code !== globalCountryFilter) return false;
                 if (r.year !== emissionsYear) return false;
-                if (emissionsAppliances.length > 0 && !emissionsAppliances.includes(r.appliance)) return false;
+                if (!(emissionsAppliances.length === 0 || emissionsAppliances.includes(r.appliance))) return false;
                 if (emissionsRegion) {
                     const region = getCountryRegion(r.country_code);
                     if (region !== emissionsRegion) return false;
@@ -2176,8 +2158,8 @@
             const logMax = Math.log10(maxValue + 1);
             const ratio = logValue / logMax;
 
-            // CCC color gradient from green (low) to orange-red (very high)
-            if (ratio < 0.25) return '#8BC34A';  // Low - CCC green
+            // CCC color gradient from yellow (low) to orange-red (very high)
+            if (ratio < 0.25) return '#fef9c3';  // Low - yellow
             if (ratio < 0.5) return '#E89B8C';   // Medium - CCC coral
             if (ratio < 0.75) return '#E85A4F';  // High - CCC orange-red
             return '#D94539';                     // Very High - CCC dark orange-red
@@ -2284,7 +2266,7 @@
         function updateEmissionsLegend() {
             byId('emissions-legend').innerHTML = `
                 <div class="legend-item">
-                    <div class="legend-color" style="background:#8BC34A"></div>
+                    <div class="legend-color" style="background:#fef9c3"></div>
                     Low
                 </div>
                 <div class="legend-item">
@@ -2395,7 +2377,7 @@
             if (emissionsDataSource === 'clasp') {
                 const unfilteredClasp = data.claspEnergy.filter(r => {
                     if (r.year !== emissionsYear) return false;
-                    if (emissionsAppliances.length > 0 && !emissionsAppliances.includes(r.appliance)) return false;
+                    if (!emissionsAppliances.includes(r.appliance)) return false;
                     if (emissionsRegion) {
                         const region = getCountryRegion(r.country_code);
                         if (region !== emissionsRegion) return false;
@@ -2450,7 +2432,7 @@
             if (!container) return;
 
             const thresholds = [0.25, 0.5, 0.75, 1.0];
-            const colors = ['#8BC34A', '#E89B8C', '#E85A4F', '#D94539'];
+            const colors = ['#fef9c3', '#E89B8C', '#E85A4F', '#D94539'];
             const labels = ['Low', 'Medium', 'High', 'Very High'];
 
             container.innerHTML = thresholds.map((t, i) => {
@@ -2555,7 +2537,7 @@
 
                 years.forEach(year => {
                     const yearData = data.claspEnergy.filter((r: any) =>
-                        r.year === year && emissionsAppliances.includes(r.appliance)
+                        r.year === year && (emissionsAppliances.length === 0 || emissionsAppliances.includes(r.appliance))
                     );
                     // Apply region filter if set
                     const filtered = emissionsRegion
@@ -2644,7 +2626,7 @@
                             emphasis: { focus: 'series' }
                         },
                         {
-                            name: 'Deep Efficiency',
+                            name: 'High Efficiency',
                             type: 'bar',
                             stack: 'savings',
                             data: top10.map(c => +c.deepEeSavings.toFixed(1)),
@@ -2718,7 +2700,7 @@
                 CLASP_SCENARIOS.forEach((scenario, idx) => {
                     const yearTotals = years.map(y => {
                         const filtered = data.claspEnergy.filter(r =>
-                            r.year === y && emissionsAppliances.includes(r.appliance)
+                            r.year === y && (emissionsAppliances.length === 0 || emissionsAppliances.includes(r.appliance))
                         );
                         let total = 0;
                         filtered.forEach(r => {
@@ -2807,7 +2789,7 @@
             // - Tech max savings = NZH - BAT (best available technology)
             // - Grid decarb potential = BAT_co2 - BAT_co2_nzg (net-zero grid variant)
             const yearData = data.claspEnergy.filter((r: any) =>
-                r.year === emissionsYear && emissionsAppliances.includes(r.appliance)
+                r.year === emissionsYear && (emissionsAppliances.length === 0 || emissionsAppliances.includes(r.appliance))
             );
 
             let bauTotal = 0, gbTotal = 0, nzhTotal = 0, batTotal = 0, batNzgTotal = 0;
@@ -2840,7 +2822,7 @@
                 grid: { left: '5%', right: '10%', bottom: '15%', top: '18%', containLabel: true },
                 xAxis: {
                     type: 'category',
-                    data: ['BAU', 'MEPS &\nLabels', 'Deep\nEfficiency', 'Best\nAvailable', 'Grid\nDecarb', 'Net\nEmissions'],
+                    data: ['BAU', 'MEPS &\nLabels', 'High\nEfficiency', 'Best\nAvailable', 'Grid\nDecarb', 'Net\nEmissions'],
                     axisLabel: { fontSize: 9, interval: 0 }
                 },
                 yAxis: {
@@ -2900,7 +2882,7 @@
 
             years.forEach((year) => {
                 const yearData = data.claspEnergy.filter((r: any) =>
-                    r.year === year && emissionsAppliances.includes(r.appliance)
+                    r.year === year && (emissionsAppliances.length === 0 || emissionsAppliances.includes(r.appliance))
                 );
 
                 let gbCumul = 0, nzhCumul = 0, batCumul = 0, batNzgCumul = 0;
@@ -2959,7 +2941,7 @@
                         itemStyle: { color: '#8BC34A' }
                     },
                     {
-                        name: 'Deep Efficiency',
+                        name: 'High Efficiency',
                         type: 'line',
                         stack: 'cumulative',
                         areaStyle: { opacity: 0.6 },
@@ -6966,15 +6948,32 @@
 
             // Year slider
             const emissionsYearSlider = document.getElementById('emissions-year-slider') as HTMLInputElement | null;
+            const updateYearThumbDisplay = () => {
+                if (!emissionsYearSlider) return;
+                const display = document.getElementById('emissions-year-display') as HTMLElement | null;
+                if (!display) return;
+                display.textContent = String(emissionsYearSlider.value);
+                const pct = (Number(emissionsYearSlider.value) - 2020) / (2050 - 2020);
+                const thumbW = 16;
+                const trackW = emissionsYearSlider.offsetWidth;
+                if (trackW > 0) {
+                    display.style.left = (pct * (trackW - thumbW) + thumbW / 2) + 'px';
+                } else {
+                    display.style.left = (pct * 100) + '%';
+                }
+                display.style.transform = 'translateX(-50%)';
+            };
+
             if (emissionsYearSlider) {
                 emissionsYearSlider.addEventListener('input', () => {
                     emissionsYear = Number(emissionsYearSlider.value);
                     emissionsYearProp = emissionsYear; // sync top-level prop
-                    const display = document.getElementById('emissions-year-display');
-                    if (display) display.textContent = String(emissionsYear);
+                    updateYearThumbDisplay();
                     updateEmissionsView();
                     updateSidebarStats();
                 });
+                // Set initial position once layout has settled
+                requestAnimationFrame(() => updateYearThumbDisplay());
             }
 
             // Scenario dropdown
@@ -7215,8 +7214,12 @@
         async function init() {
             try {
                 setStatus('Loading data from Supabase...');
+                console.log(new Date())
                 data = await loadDashboardData(SUPABASE_URL, SUPABASE_KEY);
+                console.log(new Date())
+
                 emissionsClaspEnergy = data.claspEnergy; // sync top-level prop for EmissionsPillar
+                acInverterShareProp = data.acInverterShare; // sync top-level prop for MepsPillar
 
                 // Log loaded table sizes for debugging
                 const tables = {
@@ -7386,6 +7389,7 @@
         {mepsEquipmentData}
         {mepsShowRegionCard}
         {mepsEquipmentCountryHtml}
+        acInverterShare={acInverterShareProp}
       />
       <KigaliPillar active={currentViewState === 'kigali'} onPillarInfoClick={handlePillarInfoClick} />
       <AccessPillar active={currentViewState === 'access'} onPillarInfoClick={handlePillarInfoClick} />

@@ -252,7 +252,7 @@
           return html;
         }
       },
-      grid: { left: '3%', right: '12%', bottom: '12%', top: '8%', containLabel: true },
+      grid: { left: '3%', right: '5%', bottom: '12%', top: '8%', containLabel: true },
       xAxis: {
         type: 'value',
         name: 'Year',

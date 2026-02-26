@@ -31,33 +31,6 @@
       <option value="">All Countries</option>
     </select>
 
-    <label class="filter-label scope-label" class:disabled={scopeDisabled}>Appliance Scope</label>
-    <div class="scope-toggle" class:disabled={scopeDisabled}>
-      <button
-        class="scope-btn"
-        class:active={activeScope === 'ac'}
-        data-scope="ac"
-        type="button"
-        disabled={scopeDisabled}
-        on:click={() => onScopeChange('ac')}
-      >ACs</button>
-      <button
-        class="scope-btn"
-        class:active={activeScope === 'fridge'}
-        data-scope="fridge"
-        type="button"
-        disabled={scopeDisabled}
-        on:click={() => onScopeChange('fridge')}
-      >Fridges</button>
-      <button
-        class="scope-btn"
-        class:active={activeScope === 'fan'}
-        data-scope="fan"
-        type="button"
-        disabled={scopeDisabled}
-        on:click={() => onScopeChange('fan')}
-      >Fans</button>
-    </div>
   </div>
 
   <div class="nav-section">
@@ -110,7 +83,7 @@
       on:click={() => onViewChange('access')}
     >
       <span class="nav-icon"><i class="fa-solid fa-people-roof"></i></span>
-      <span>4. Access &amp; Vulnerability</span>
+      <span>4. Access & Vulnerability</span>
     </button>
     <button
       class="nav-btn nav-item"

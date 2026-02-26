@@ -1,0 +1,23 @@
+Photo Strategic Summary 1: 
+
+	- Edit the names from area 1 to match the ones on area 2. The same names of the pillars. 
+
+Photo Strategic Summary 2: 
+	- Make the font bigger and show the date bigger.
+
+Photo Overall 1:
+	- Remove this filter for all pillars and rearrange how the pane looks. 
+
+Photo Strategic Summary 3.1:
+	- When you click on the Botton marked in red and with a one. The page the user is redirected to, it is open with the view at the 	bottom of the page. (see Strategic Summary 3.2) it should be on the top of the page. 
+	
+Photo Emissions 1: 
+	- Make the overall font of the graphs a bit bigger. For number 1 add the legend of the y axis. For both 2 change the term "deep 	efficiency" for "high efficiency". 
+
+Photo Emissions 2: 
+	- in 1 Make the color of low yellow instead of green. 
+	- in 2 change the way the bar is presented. Add the first and last years to the side and show the year shown on the top.
+	- in 3 the filters are not working. when you click on an appliance the data of this one should be then hidden or shown. However the 	data is not being really affected. see in the picture there non of the appliances are selected and still data is shown.
+
+Photo Emissions 3:
+	- Remove the this white bar and reduce the space between both elements. Overview and map

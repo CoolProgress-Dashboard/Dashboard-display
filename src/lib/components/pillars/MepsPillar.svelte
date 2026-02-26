@@ -7,6 +7,9 @@
   import MepsLevelChart from '$lib/components/charts/MepsLevelChart.svelte';
   import MepsByRegionChart from '$lib/components/charts/MepsByRegionChart.svelte';
   import MepsEquipmentChart from '$lib/components/charts/MepsEquipmentChart.svelte';
+  import InverterByRegionChart from '$lib/components/charts/InverterByRegionChart.svelte';
+  import InverterByCountryChart from '$lib/components/charts/InverterByCountryChart.svelte';
+  import type { AcInverterRecord } from '$lib/services/dashboard-types';
 
   export let active: boolean = false;
   export let onPillarInfoClick: (() => void) | null = null;
@@ -14,6 +17,44 @@
   export let mepsEquipmentData: Array<{ type: string; meps: number; labels: number }> = [];
   export let mepsShowRegionCard: boolean = true;
   export let mepsEquipmentCountryHtml: string = '';
+  export let acInverterShare: AcInverterRecord[] = [];
+
+  // Compute inverter share by region (average per region, latest reading per country)
+  $: inverterRegionData = (() => {
+    const latestByCountry = new Map<string, { region: string; pct: number; yearEnd: number }>();
+    acInverterShare.forEach(r => {
+      if (!r.country_code || r.inverter_pct == null) return;
+      const existing = latestByCountry.get(r.country_code);
+      const ye = r.year_end ?? 0;
+      if (!existing || ye > existing.yearEnd) {
+        latestByCountry.set(r.country_code, { region: r.region || 'Unknown', pct: r.inverter_pct, yearEnd: ye });
+      }
+    });
+    const regionMap = new Map<string, { sum: number; count: number }>();
+    latestByCountry.forEach(({ region, pct }) => {
+      if (!regionMap.has(region)) regionMap.set(region, { sum: 0, count: 0 });
+      const e = regionMap.get(region)!;
+      e.sum += pct; e.count++;
+    });
+    return Array.from(regionMap.entries())
+      .map(([name, { sum, count }]) => ({ name, avg: Math.round(sum / count) }))
+      .filter(r => r.name !== 'Unknown')
+      .sort((a, b) => b.avg - a.avg);
+  })();
+
+  // Compute inverter share by country (top 15, latest reading per country)
+  $: inverterCountryData = (() => {
+    const latestByCountry = new Map<string, { name: string; pct: number; yearEnd: number }>();
+    acInverterShare.forEach(r => {
+      if (!r.country_code || r.inverter_pct == null) return;
+      const existing = latestByCountry.get(r.country_code);
+      const ye = r.year_end ?? 0;
+      if (!existing || ye > existing.yearEnd) {
+        latestByCountry.set(r.country_code, { name: r.country_name || r.country_code, pct: r.inverter_pct, yearEnd: ye });
+      }
+    });
+    return Array.from(latestByCountry.values()).sort((a, b) => b.pct - a.pct);
+  })();
 
   const meta = VIEW_META.meps;
   const mepsContent = pillarContent.meps;
@@ -190,6 +231,12 @@
     <!-- Combined Map Card -->
     <div class="card-panel map-card">
       <div class="card-header combined-map-header">
+        <!-- Description highlight box — always on top -->
+        <div class="map-view-description">
+          <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
+          Choose to see MEPS and levels of Refrigerators, Split ACs and Fans — or the share between variable and fixed speed AC.
+        </div>
+        <!-- Title + toggle buttons -->
         <div class="combined-map-header-top">
           <div class="card-title">
             {#if activeMapView === 'coverage'}
@@ -198,13 +245,15 @@
               <i class="fa-solid fa-snowflake"></i> AC Variable Speed Share
             {/if}
           </div>
-          <div class="map-view-toggle">
-            <button type="button" class="map-toggle-btn" class:active={activeMapView === 'coverage'} on:click={() => activeMapView = 'coverage'}>
-              <i class="fa-solid fa-bolt"></i> MEPS &amp; Labels
-            </button>
-            <button type="button" class="map-toggle-btn" class:active={activeMapView === 'inverter'} on:click={() => activeMapView = 'inverter'}>
-              <i class="fa-solid fa-snowflake"></i> Variable Speed
-            </button>
+          <div class="map-controls-row">
+            <div class="map-view-toggle">
+              <button type="button" class="map-toggle-btn" class:active={activeMapView === 'coverage'} on:click={() => activeMapView = 'coverage'}>
+                <i class="fa-solid fa-bolt"></i> MEPS &amp; Labels
+              </button>
+              <button type="button" class="map-toggle-btn" class:active={activeMapView === 'inverter'} on:click={() => activeMapView = 'inverter'}>
+                <i class="fa-solid fa-snowflake"></i> Variable Speed
+              </button>
+            </div>
           </div>
         </div>
         <!-- Equipment toggles — kept in DOM so JS can populate; hidden when inverter view active -->
@@ -245,30 +294,52 @@
       <div class="country-detail"></div>
     </div>
 
-    <!-- Charts Grid -->
-    <div class="meps-charts-section charts-section">
-      {#if mepsShowRegionCard}
+    <!-- Charts Grid — switches with the map toggle -->
+    {#if activeMapView === 'coverage'}
+      <div class="meps-charts-section charts-section">
+        {#if mepsShowRegionCard}
+          <div class="card-panel chart-card">
+            <div class="chart-card-header">
+              <h3><i class="fa-solid fa-chart-bar" style="color: #8BC34A; margin-right: 0.5rem;"></i>MEPS &amp; Labels by Region</h3>
+              <p class="chart-subtitle">Countries with MEPS vs Labels per region</p>
+            </div>
+            <div class="chart-card-body">
+              <MepsByRegionChart regionData={mepsRegionData} />
+            </div>
+          </div>
+        {/if}
         <div class="card-panel chart-card">
           <div class="chart-card-header">
-            <h3><i class="fa-solid fa-chart-bar" style="color: #8BC34A; margin-right: 0.5rem;"></i>MEPS &amp; Labels by Region</h3>
-            <p class="chart-subtitle">Countries with MEPS vs Labels per region</p>
+            <h3 id="meps-chart3-title"><i class="fa-solid fa-cogs" style="color: #8BC34A; margin-right: 0.5rem;"></i>Equipment Type Coverage</h3>
+            <p class="chart-subtitle" id="meps-chart3-subtitle">Countries with MEPS vs Labels by appliance</p>
           </div>
           <div class="chart-card-body">
-            <MepsByRegionChart regionData={mepsRegionData} />
+            <MepsEquipmentChart equipment={mepsEquipmentData} countryHtml={mepsEquipmentCountryHtml} />
           </div>
         </div>
-      {/if}
-
-      <div class="card-panel chart-card">
-        <div class="chart-card-header">
-          <h3 id="meps-chart3-title"><i class="fa-solid fa-cogs" style="color: #8BC34A; margin-right: 0.5rem;"></i>Equipment Type Coverage</h3>
-          <p class="chart-subtitle" id="meps-chart3-subtitle">Countries with MEPS vs Labels by appliance</p>
+      </div>
+    {:else}
+      <div class="meps-charts-section charts-section">
+        <div class="card-panel chart-card">
+          <div class="chart-card-header">
+            <h3><i class="fa-solid fa-snowflake" style="color: #3D6B6B; margin-right: 0.5rem;"></i>Inverter Share by Region</h3>
+            <p class="chart-subtitle">Average share of variable-speed (inverter) ACs per region</p>
+          </div>
+          <div class="chart-card-body">
+            <InverterByRegionChart data={inverterRegionData} />
+          </div>
         </div>
-        <div class="chart-card-body">
-          <MepsEquipmentChart equipment={mepsEquipmentData} countryHtml={mepsEquipmentCountryHtml} />
+        <div class="card-panel chart-card">
+          <div class="chart-card-header">
+            <h3><i class="fa-solid fa-ranking-star" style="color: #3D6B6B; margin-right: 0.5rem;"></i>Top Countries — Inverter Penetration</h3>
+            <p class="chart-subtitle">Countries with highest variable-speed AC market share (latest data)</p>
+          </div>
+          <div class="chart-card-body">
+            <InverterByCountryChart data={inverterCountryData} />
+          </div>
         </div>
       </div>
-    </div>
+    {/if}
 
     <!-- Source Attribution -->
     <div style="text-align: center; padding: 0.75rem; font-size: 0.7rem; color: #94a3b8;">
@@ -740,9 +811,25 @@
   .combined-map-header-top {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     flex-wrap: wrap;
     gap: 0.5rem;
+  }
+
+  .map-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .map-view-description {
+    font-size: 0.8rem;
+    color: #4A7F7F;
+    padding: 0.5rem 0.75rem;
+    background: #F5FAFA;
+    border-radius: 8px;
+    border-left: 3px solid #8BC34A;
   }
 
   /* Map view toggle buttons */

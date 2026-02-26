@@ -211,7 +211,7 @@
           <button class="toggle-btn kigali-appliance-toggle" data-appliance="fridge" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #e2e8f0; border-radius: 5px; background: white; color: #475569; cursor: pointer;">Fridges</button>
         </div>
         <span style="color: #cbd5e1;">|</span>
-        <div style="display: flex; gap: 0.35rem;" id="kigali-region-toggles">
+        <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;" id="kigali-region-toggles">
           <button class="toggle-btn kigali-region-toggle active" data-region="" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #3D6B6B; border-radius: 5px; background: #3D6B6B; color: white; cursor: pointer;">Global</button>
           <button class="toggle-btn kigali-region-toggle" data-region="China" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #e2e8f0; border-radius: 5px; background: white; color: #475569; cursor: pointer;">China</button>
           <button class="toggle-btn kigali-region-toggle" data-region="India" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #e2e8f0; border-radius: 5px; background: white; color: #475569; cursor: pointer;">India</button>

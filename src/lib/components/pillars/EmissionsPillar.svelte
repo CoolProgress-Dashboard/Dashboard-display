@@ -195,7 +195,7 @@
 
     <!-- Savings Decomposition -->
     <div class="card-panel">
-      <div id="emissions-savings-section" style="margin-top: 1rem; border-top: 1px solid #e2e8f0; padding-top: 1rem;">
+      <div id="emissions-savings-section" style="margin-top: 0; border-top: none; padding-top: 0;">
         <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: flex-start;">
           <div>
             <h4 style="font-size: 0.85rem; color: #3D6B6B; margin: 0; font-weight: 700;">
@@ -249,7 +249,7 @@
         <div id="emissions-legend" class="legend-items"></div>
       </div>
       <div class="progress-bar" id="emissions-progress">
-        <span class="progress-segment" id="emissions-progress-low" style="background: #8BC34A;"></span>
+        <span class="progress-segment" id="emissions-progress-low" style="background: #fef9c3;"></span>
         <span class="progress-segment" id="emissions-progress-medium" style="background: #E89B8C;"></span>
         <span class="progress-segment" id="emissions-progress-high" style="background: #E85A4F;"></span>
         <span class="progress-segment" id="emissions-progress-critical" style="background: #D94539;"></span>
@@ -272,11 +272,15 @@
           </div>
 
           <!-- Year Slider -->
-          <div class="filter-group" style="flex: 2; min-width: 200px;">
+          <div class="filter-group" style="min-width: 180px;">
             <label class="filter-label">Year</label>
             <div style="display: flex; align-items: center; gap: 0.5rem;">
-              <input type="range" id="emissions-year-slider" min="2020" max="2050" value="2030" style="flex: 1;" />
-              <span id="emissions-year-display" style="font-weight: 700; color: #3D6B6B; font-size: 0.85rem;">2030</span>
+              <span style="font-size: 0.75rem; color: #64748b; font-weight: 600; white-space: nowrap;">2020</span>
+              <div style="flex: 1; position: relative; padding-top: 1.6rem;">
+                <span id="emissions-year-display" style="position: absolute; top: 0; left: 33.33%; transform: translateX(-50%); font-size: 0.75rem; color: #64748b; font-weight: 600; white-space: nowrap; pointer-events: none;">2030</span>
+                <input type="range" id="emissions-year-slider" min="2020" max="2050" value="2030" style="width: 100%; display: block;" />
+              </div>
+              <span style="font-size: 0.75rem; color: #64748b; font-weight: 600; white-space: nowrap;">2050</span>
             </div>
           </div>
 

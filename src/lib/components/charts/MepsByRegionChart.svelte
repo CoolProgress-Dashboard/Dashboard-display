@@ -25,19 +25,19 @@
           return tip;
         }
       },
-      legend: { data: ['MEPS', 'Labels'], top: 5, textStyle: { fontSize: 11 } },
-      grid: { left: '8%', right: '5%', bottom: '22%', top: '18%', containLabel: true },
+      legend: { data: ['MEPS', 'Labels'], top: 5, textStyle: { fontSize: 13 } },
+      grid: { left: '8%', right: '5%', bottom: '25%', top: '18%', containLabel: true },
       xAxis: {
         type: 'category',
         data: names,
-        axisLabel: { rotate: 45, fontSize: 9, interval: 0 }
+        axisLabel: { rotate: 45, fontSize: 12, interval: 0 }
       },
       yAxis: {
         type: 'value',
         name: '% of Countries',
         max: 100,
-        nameTextStyle: { fontSize: 11 },
-        axisLabel: { formatter: (v: number) => v + '%', fontSize: 10 }
+        nameTextStyle: { fontSize: 13 },
+        axisLabel: { formatter: (v: number) => v + '%', fontSize: 12 }
       },
       series: [
         {
@@ -46,14 +46,14 @@
           data: data.map(r => Math.round((r.meps / (r.total || 1)) * 100)),
           color: '#4A7F7F',
           barGap: '10%',
-          label: { show: true, position: 'top', fontSize: 10, formatter: (p: any) => p.value + '%' }
+          label: { show: true, position: 'top', fontSize: 13, fontWeight: 'bold', formatter: (p: any) => p.value + '%' }
         },
         {
           name: 'Labels',
           type: 'bar',
           data: data.map(r => Math.round((r.labels / (r.total || 1)) * 100)),
           color: '#f59e0b',
-          label: { show: true, position: 'top', fontSize: 10, formatter: (p: any) => p.value + '%' }
+          label: { show: true, position: 'top', fontSize: 13, fontWeight: 'bold', formatter: (p: any) => p.value + '%' }
         }
       ]
     };
@@ -91,7 +91,7 @@
 <style>
   .chart-container {
     width: 100%;
-    height: 240px;
+    height: 280px;
     overflow: hidden;
   }
 </style>

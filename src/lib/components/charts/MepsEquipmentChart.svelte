@@ -22,13 +22,13 @@
           return tip;
         }
       },
-      legend: { data: ['MEPS', 'Labels'], top: 5, textStyle: { fontSize: 11 } },
-      grid: { left: '22%', right: '8%', bottom: '8%', top: '15%', containLabel: true },
-      xAxis: { type: 'value', axisLabel: { fontSize: 9 } },
+      legend: { data: ['MEPS', 'Labels'], top: 5, textStyle: { fontSize: 13 } },
+      grid: { left: '18%', right: '20%', bottom: '8%', top: '18%', containLabel: true },
+      xAxis: { type: 'value', axisLabel: { fontSize: 12 } },
       yAxis: {
         type: 'category',
         data: types,
-        axisLabel: { fontSize: 10 }
+        axisLabel: { fontSize: 13 }
       },
       series: [
         {
@@ -102,7 +102,7 @@
 
   .chart-container {
     width: 100%;
-    height: 220px;
+    height: 250px;
     overflow: hidden;
   }
 

@@ -31,6 +31,7 @@
     });
 
     return {
+      textStyle: { fontSize: 13 },
       tooltip: {
         trigger: 'axis',
         confine: true,
@@ -45,18 +46,22 @@
           return result;
         }
       },
-      legend: { bottom: 0, textStyle: { fontSize: 10 } },
-      grid: { left: '3%', right: '3%', bottom: '22%', top: '8%', containLabel: true },
+      legend: { bottom: 4, textStyle: { fontSize: 11 } },
+      grid: { left: 72, right: '3%', bottom: '20%', top: '8%', containLabel: false },
       xAxis: {
         type: 'category',
         data: YEARS.map(String),
-        axisLabel: { fontSize: 10 }
+        axisLabel: { fontSize: 12 }
       },
       yAxis: {
         type: 'value',
         min: 0,
+        name: 'Mt CO₂',
+        nameLocation: 'middle',
+        nameGap: 50,
+        nameTextStyle: { fontSize: 12, color: '#64748b' },
         axisLabel: {
-          fontSize: 9,
+          fontSize: 12,
           formatter: (v: number) => v >= 1000 ? (v / 1000).toFixed(0) + 'k' : String(v)
         }
       },
@@ -71,7 +76,7 @@
           itemStyle: { color: '#8BC34A' }
         },
         {
-          name: 'Deep Efficiency',
+          name: 'High Efficiency',
           type: 'line',
           stack: 'cumulative',
           areaStyle: { opacity: 0.6 },
@@ -159,7 +164,7 @@
 
   .chart-container {
     width: 100%;
-    height: 280px;
+    height: 300px;
     overflow: hidden;
   }
 </style>

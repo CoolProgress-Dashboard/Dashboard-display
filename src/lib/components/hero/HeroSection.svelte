@@ -50,11 +50,11 @@
 
   // Pillar navigation buttons
   const pillars = [
-    { id: 'emissions', icon: 'fa-smog', label: 'Emissions' },
-    { id: 'meps', icon: 'fa-bolt', label: 'Efficiency' },
-    { id: 'kigali', icon: 'fa-snowflake', label: 'Refrigerants' },
-    { id: 'access', icon: 'fa-people-group', label: 'Access' },
-    { id: 'policy', icon: 'fa-landmark', label: 'Policy' }
+    { id: 'emissions', icon: 'fa-smog', label: '1. Emissions' },
+    { id: 'meps', icon: 'fa-bolt', label: '2. Product Efficiency' },
+    { id: 'kigali', icon: 'fa-snowflake', label: '3. Refrigerant Transition' },
+    { id: 'access', icon: 'fa-people-group', label: '4. Access & Vulnerability' },
+    { id: 'policy', icon: 'fa-landmark', label: '5. Policy Framework' }
   ];
 
   let revealed = false;

@@ -23,10 +23,12 @@
     const mepsSavings   = bauTotal  - gbTotal;
     const deepEeSavings = gbTotal   - nzhTotal;
     const techSavings   = nzhTotal  - batTotal;
-    const gridSavings   = batTotal  - batNzgTotal;
-    const remaining     = batNzgTotal;
+    // batNzgTotal may be null/0 in DB; fall back to batTotal so Net Emissions bar always shows
+    const gridSavings   = batNzgTotal > 0 ? batTotal - batNzgTotal : 0;
+    const remaining     = batNzgTotal > 0 ? batNzgTotal : batTotal;
 
     return {
+      textStyle: { fontSize: 13 },
       tooltip: {
         trigger: 'axis',
         axisPointer: { type: 'shadow' },
@@ -41,16 +43,16 @@
       grid: { left: '5%', right: '10%', bottom: '15%', top: '18%', containLabel: true },
       xAxis: {
         type: 'category',
-        data: ['BAU', 'MEPS &\nLabels', 'Deep\nEfficiency', 'Best\nAvailable', 'Grid\nDecarb', 'Net\nEmissions'],
-        axisLabel: { fontSize: 9, interval: 0 }
+        data: ['BAU', 'MEPS &\nLabels', 'High\nEfficiency', 'Best\nAvailable', 'Grid\nDecarb', 'Net\nEmissions'],
+        axisLabel: { fontSize: 12, interval: 0 }
       },
       yAxis: {
         type: 'value',
         name: 'Mt CO₂',
         nameLocation: 'middle',
         nameGap: 40,
-        nameTextStyle: { fontSize: 11, fontWeight: 'bold', color: '#475569' },
-        axisLabel: { fontSize: 10 }
+        nameTextStyle: { fontSize: 12, color: '#475569' },
+        axisLabel: { fontSize: 12 }
       },
       series: [
         {
@@ -152,6 +154,6 @@
 
   .chart-container {
     width: 100%;
-    height: 280px;
+    height: 300px;
   }
 </style>

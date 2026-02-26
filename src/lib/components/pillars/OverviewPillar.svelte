@@ -46,7 +46,7 @@
         <button
           class="partner-bar-cta"
           type="button"
-          on:click={() => onNavigate('partners')}
+          on:click={() => { onNavigate('partners'); setTimeout(() => { document.querySelector('.main-content')?.scrollTo({ top: 0, behavior: 'instant' }); }, 50); }}
         >
           View All <i class="fa-solid fa-arrow-right"></i>
         </button>
@@ -408,9 +408,9 @@
   }
 
   .news-card-date {
-    font-size: 0.58rem;
-    color: #94a3b8;
-    font-weight: 500;
+    font-size: 0.68rem;
+    color: #64748b;
+    font-weight: 600;
   }
 
   .news-card-source {
@@ -420,7 +420,7 @@
   }
 
   .news-card-headline {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: #334155;
     line-height: 1.35;
@@ -432,7 +432,7 @@
   }
 
   .news-card-summary {
-    font-size: 0.7rem;
+    font-size: 0.78rem;
     color: #64748b;
     line-height: 1.5;
     margin: 0;

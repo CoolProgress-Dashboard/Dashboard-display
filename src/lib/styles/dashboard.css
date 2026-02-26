@@ -685,6 +685,16 @@ select {
   gap: 1.5rem;
   max-width: 1400px;
   margin: 0 auto;
+  width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+/* Allow flex children to shrink below their content's min-width.
+   Without this, a card containing wide toggle buttons or chart titles
+   cannot shrink to a smaller viewport, causing chart clipping. */
+.pillar-stack > * {
+  min-width: 0;
 }
 
 /* Make map and country detail boxes attached */
@@ -1054,6 +1064,8 @@ select {
   padding: 1rem 1.25rem;
   box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
   max-width: 100%;
+  min-width: 0;
+  width: 100%;
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -1187,7 +1199,9 @@ select {
   padding: 1rem 1.25rem;
   background: #fafafa;
   width: 100%;
+  min-width: 0;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .chart-card-body .chart-surface,
