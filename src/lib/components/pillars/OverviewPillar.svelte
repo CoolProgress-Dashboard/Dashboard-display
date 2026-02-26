@@ -1,7 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   export let active: boolean = false;
-  export let onNavigate: (pillar: string) => void = () => {};
+  export let onNavigate: (pillar: string) => void = (pillar) => goto(`/dashboard/${pillar}`);
 
   import HeroSection from '$lib/components/hero/HeroSection.svelte';
   import CountrySpotlight from '$lib/components/charts/CountrySpotlight.svelte';

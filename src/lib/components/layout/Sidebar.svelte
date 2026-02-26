@@ -1,11 +1,11 @@
 <script lang="ts">
+  import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   import { partnerNews, NEWS_LAST_UPDATED, CATEGORY_META, type NewsItem } from '$lib/data/partner-news';
+  import type { Country } from '$lib/services/dashboard-types';
 
-  export let currentView: string = 'overview';
-  export let onViewChange: (view: string) => void = () => {};
-  export let onScopeChange: (scope: string) => void = () => {};
-  export let scopeDisabled: boolean = false;
-  export let activeScope: string = 'ac';
+  export let currentView: string = 'overview'; // kept for legacy compatibility
+  export let countries: Country[] = [];
 
   let newsExpanded = false;
   let activeFilter: NewsItem['category'] | 'all' = 'all';
@@ -15,6 +15,30 @@
   $: filteredNews = activeFilter === 'all'
     ? partnerNews
     : partnerNews.filter(n => n.category === activeFilter);
+
+  // Active view comes from the URL
+  $: activeView = $page.url.pathname.split('/').at(-1) ?? 'overview';
+  $: selectedCountry = $page.url.searchParams.get('country') ?? '';
+
+  function handleCountryChange(e: Event) {
+    const value = (e.currentTarget as HTMLSelectElement).value;
+    const url = new URL($page.url);
+    if (value) {
+      url.searchParams.set('country', value);
+    } else {
+      url.searchParams.delete('country');
+    }
+    goto(url.toString(), { replaceState: true, noScroll: true });
+  }
+
+  const navLinks = [
+    { view: 'overview',  label: 'Strategic Summary',    icon: 'fa-house' },
+    { view: 'emissions', label: '1. Emissions',          icon: 'fa-smog' },
+    { view: 'meps',      label: '2. Product Efficiency', icon: 'fa-bolt' },
+    { view: 'kigali',    label: '3. Refrigerant Transition', icon: 'fa-flask' },
+    { view: 'access',    label: '4. Access & Vulnerability', icon: 'fa-people-roof' },
+    { view: 'policy',    label: '5. Policy Framework',   icon: 'fa-scale-balanced' },
+  ];
 </script>
 
 <aside class="sidebar-left">
@@ -27,87 +51,44 @@
 
   <div class="sidebar-filters">
     <label class="filter-label" for="country-filter">Country Selected</label>
-    <select id="country-filter" class="filter-select">
+    <select
+      id="country-filter"
+      class="filter-select"
+      value={selectedCountry}
+      on:change={handleCountryChange}
+    >
       <option value="">All Countries</option>
+      {#each countries.sort((a, b) => (a.country_name ?? '').localeCompare(b.country_name ?? '')) as country (country.country_code)}
+        <option value={country.country_code}>{country.country_name}</option>
+      {/each}
     </select>
-
   </div>
 
   <div class="nav-section">
     <h3>Navigation Pillars</h3>
-    <button
-      class="nav-btn nav-item"
-      class:active={currentView === 'overview'}
-      data-view="overview"
-      type="button"
-      on:click={() => onViewChange('overview')}
-    >
-      <span class="nav-icon"><i class="fa-solid fa-house"></i></span>
-      <span>Strategic Summary</span>
-    </button>
-    <button
-      class="nav-btn nav-item"
-      class:active={currentView === 'emissions'}
-      data-view="emissions"
-      type="button"
-      on:click={() => onViewChange('emissions')}
-    >
-      <span class="nav-icon"><i class="fa-solid fa-smog"></i></span>
-      <span>1. Emissions</span>
-    </button>
-    <button
-      class="nav-btn nav-item"
-      class:active={currentView === 'meps'}
-      data-view="meps"
-      type="button"
-      on:click={() => onViewChange('meps')}
-    >
-      <span class="nav-icon"><i class="fa-solid fa-bolt"></i></span>
-      <span>2. Product Efficiency</span>
-    </button>
-    <button
-      class="nav-btn nav-item"
-      class:active={currentView === 'kigali'}
-      data-view="kigali"
-      type="button"
-      on:click={() => onViewChange('kigali')}
-    >
-      <span class="nav-icon"><i class="fa-solid fa-flask"></i></span>
-      <span>3. Refrigerant Transition</span>
-    </button>
-    <button
-      class="nav-btn nav-item"
-      class:active={currentView === 'access'}
-      data-view="access"
-      type="button"
-      on:click={() => onViewChange('access')}
-    >
-      <span class="nav-icon"><i class="fa-solid fa-people-roof"></i></span>
-      <span>4. Access & Vulnerability</span>
-    </button>
-    <button
-      class="nav-btn nav-item"
-      class:active={currentView === 'policy'}
-      data-view="policy"
-      type="button"
-      on:click={() => onViewChange('policy')}
-    >
-      <span class="nav-icon"><i class="fa-solid fa-scale-balanced"></i></span>
-      <span>5. Policy Framework</span>
-    </button>
+    {#each navLinks as link}
+      <a
+        href="/dashboard/{link.view}"
+        class="nav-btn nav-item"
+        class:active={activeView === link.view}
+        data-view={link.view}
+      >
+        <span class="nav-icon"><i class="fa-solid {link.icon}"></i></span>
+        <span>{link.label}</span>
+      </a>
+    {/each}
   </div>
 
   <div class="nav-section nav-section-partners">
-    <button
+    <a
+      href="/dashboard/partners"
       class="nav-btn nav-item nav-item-partners"
-      class:active={currentView === 'partners'}
+      class:active={activeView === 'partners'}
       data-view="partners"
-      type="button"
-      on:click={() => onViewChange('partners')}
     >
       <span class="nav-icon"><i class="fa-solid fa-handshake"></i></span>
       <span>Partner Ecosystem</span>
-    </button>
+    </a>
   </div>
 
   <!-- Latest News Section -->
@@ -184,6 +165,15 @@
 </aside>
 
 <style>
+  /* Anchor nav links styled like the old nav buttons */
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: inherit;
+  }
+
   /* Latest News - Sidebar Section */
   .sidebar-news {
     margin-top: 0.5rem;

@@ -4,14 +4,30 @@
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners, globalCoolingPledge } from '$lib/data/partner-data';
+  import {
+    ACCESS_ALL_YEARS,
+    POPULATION_CATEGORIES
+  } from '$lib/components/shared/config';
+  import type { AccessRecord, AccessForecastRecord, Country } from '$lib/services/dashboard-types';
 
+  // -------------------------------------------------------
+  // Props
+  // -------------------------------------------------------
   export let active: boolean = false;
   export let onPillarInfoClick: (() => void) | null = null;
+  /** Historical access records (data.access) */
+  export let accessData: AccessRecord[] = [];
+  /** Forecast access records (data.accessForecast) */
+  export let accessForecast: AccessForecastRecord[] = [];
+  /** Countries lookup (data.countries) */
+  export let countries: Country[] = [];
 
+  // -------------------------------------------------------
+  // Static config / story content
+  // -------------------------------------------------------
   const meta = VIEW_META.access;
   const accessContent = pillarContent.access;
 
-  // Animated stat cards
   const accessStats = [
     {
       value: '1.2B',
@@ -35,7 +51,6 @@
     }
   ];
 
-  // Chart highlights - matches current functionality (map + filters + country detail)
   const chartHighlights = [
     {
       icon: 'fa-earth-americas',
@@ -57,19 +72,853 @@
     }
   ];
 
-  // Access pillar partners: CCC (client) → SE4ALL → Cool Coalition → Kigali Pledge → HEAT (last)
   const accessPartnerIds = ['ccc', 'se4all', 'cool-coalition', 'heat'];
   const accessPartners = accessPartnerIds
     .map(id => partners.find(p => p.id === id))
     .filter((p): p is NonNullable<typeof p> => p != null);
 
+  // -------------------------------------------------------
+  // Reveal animation state
+  // -------------------------------------------------------
   let revealed = false;
 
-  onMount(() => {
-    const timer = setTimeout(() => {
-      revealed = true;
-    }, 150);
-    return () => clearTimeout(timer);
+  // -------------------------------------------------------
+  // ISO numeric → alpha-3 code mapping (complete)
+  // -------------------------------------------------------
+  const countryIdToCode: Record<string, string> = {
+    '4': 'AFG', '8': 'ALB', '12': 'DZA', '16': 'ASM', '20': 'AND',
+    '24': 'AGO', '28': 'ATG', '31': 'AZE', '32': 'ARG', '36': 'AUS',
+    '40': 'AUT', '44': 'BHS', '48': 'BHR', '50': 'BGD', '51': 'ARM',
+    '52': 'BRB', '56': 'BEL', '60': 'BMU', '64': 'BTN', '68': 'BOL',
+    '70': 'BIH', '72': 'BWA', '76': 'BRA', '84': 'BLZ', '90': 'SLB',
+    '96': 'BRN', '100': 'BGR', '104': 'MMR', '108': 'BDI', '112': 'BLR',
+    '116': 'KHM', '120': 'CMR', '124': 'CAN', '132': 'CPV', '140': 'CAF',
+    '144': 'LKA', '148': 'TCD', '152': 'CHL', '156': 'CHN', '158': 'TWN',
+    '170': 'COL', '174': 'COM', '178': 'COG', '180': 'COD', '184': 'COK',
+    '188': 'CRI', '191': 'HRV', '192': 'CUB', '196': 'CYP', '203': 'CZE',
+    '204': 'BEN', '208': 'DNK', '212': 'DMA', '214': 'DOM', '218': 'ECU',
+    '222': 'SLV', '226': 'GNQ', '231': 'ETH', '232': 'ERI', '233': 'EST',
+    '238': 'FLK', '242': 'FJI', '246': 'FIN', '250': 'FRA', '260': 'ATF',
+    '262': 'DJI', '266': 'GAB', '268': 'GEO', '270': 'GMB', '275': 'PSE',
+    '276': 'DEU', '288': 'GHA', '296': 'KIR', '300': 'GRC', '304': 'DNK',
+    '308': 'GRD', '320': 'GTM', '324': 'GIN', '328': 'GUY', '332': 'HTI',
+    '340': 'HND', '348': 'HUN', '352': 'ISL', '356': 'IND', '360': 'IDN',
+    '364': 'IRN', '368': 'IRQ', '372': 'IRL', '376': 'ISR', '380': 'ITA',
+    '384': 'CIV', '388': 'JAM', '392': 'JPN', '398': 'KAZ', '400': 'JOR',
+    '404': 'KEN', '408': 'PRK', '410': 'KOR', '414': 'KWT', '417': 'KGZ',
+    '418': 'LAO', '422': 'LBN', '426': 'LSO', '428': 'LVA', '430': 'LBR',
+    '434': 'LBY', '440': 'LTU', '442': 'LUX', '450': 'MDG', '454': 'MWI',
+    '458': 'MYS', '462': 'MDV', '466': 'MLI', '470': 'MLT', '478': 'MRT',
+    '480': 'MUS', '484': 'MEX', '496': 'MNG', '498': 'MDA', '499': 'MNE',
+    '504': 'MAR', '508': 'MOZ', '512': 'OMN', '516': 'NAM', '520': 'NRU',
+    '524': 'NPL', '528': 'NLD', '540': 'NCL', '548': 'VUT', '554': 'NZL',
+    '558': 'NIC', '562': 'NER', '566': 'NGA', '570': 'NIU', '578': 'NOR',
+    '583': 'FSM', '584': 'MHL', '585': 'PLW', '586': 'PAK', '591': 'PAN',
+    '598': 'PNG', '600': 'PRY', '604': 'PER', '608': 'PHL', '616': 'POL',
+    '620': 'PRT', '624': 'GNB', '626': 'TLS', '630': 'USA', '634': 'QAT',
+    '642': 'ROU', '643': 'RUS', '646': 'RWA', '659': 'KNA', '662': 'LCA',
+    '670': 'VCT', '678': 'STP', '682': 'SAU', '686': 'SEN', '688': 'SRB',
+    '690': 'SYC', '694': 'SLE', '702': 'SGP', '703': 'SVK', '704': 'VNM',
+    '705': 'SVN', '706': 'SOM', '710': 'ZAF', '716': 'ZWE', '724': 'ESP',
+    '728': 'SSD', '729': 'SDN', '732': 'ESH', '740': 'SUR', '748': 'SWZ',
+    '752': 'SWE', '756': 'CHE', '760': 'SYR', '762': 'TJK', '764': 'THA',
+    '768': 'TGO', '776': 'TON', '780': 'TTO', '784': 'ARE', '788': 'TUN',
+    '792': 'TUR', '795': 'TKM', '798': 'TUV', '800': 'UGA', '804': 'UKR',
+    '807': 'MKD', '818': 'EGY', '826': 'GBR', '834': 'TZA', '840': 'USA',
+    '854': 'BFA', '858': 'URY', '860': 'UZB', '862': 'VEN', '882': 'WSM',
+    '887': 'YEM', '894': 'ZMB'
+  };
+
+  // -------------------------------------------------------
+  // onMount: load scripts, init map, timeline, event wiring
+  // -------------------------------------------------------
+  // Cast needed because Svelte's types don't allow async onMount + cleanup together,
+  // but the runtime correctly handles this pattern.
+  (onMount as (fn: () => Promise<() => void>) => void)(async () => {
+    // ---- reveal animation ----
+    const revealTimer = setTimeout(() => { revealed = true; }, 150);
+
+    // ---- load D3 + TopoJSON from CDN ----
+    const loadScript = (src: string) =>
+      new Promise<void>((resolve, reject) => {
+        const existing = document.querySelector(`script[src="${src}"]`);
+        if (existing && (existing as HTMLScriptElement & { dataset: DOMStringMap }).dataset.loaded) {
+          resolve(); return;
+        }
+        const script = (existing || document.createElement('script')) as HTMLScriptElement;
+        script.src = src;
+        script.async = true;
+        script.onload = () => { (script as any).dataset.loaded = 'true'; resolve(); };
+        script.onerror = () => reject(new Error(`Failed to load ${src}`));
+        if (!existing) document.head.appendChild(script);
+      });
+
+    await Promise.all(
+      ['https://d3js.org/d3.v7.min.js', 'https://d3js.org/topojson.v3.min.js'].map(loadScript)
+    );
+
+    const d3 = (window as any).d3;
+    const topojson = (window as any).topojson;
+    const echarts = await import('echarts');
+
+    // -------------------------------------------------------
+    // Filter state (local to this component)
+    // -------------------------------------------------------
+    let accessYear = 2024;
+    let accessImpactLevels: string[] = ['High', 'Medium', 'Low'];
+    let accessPopCategories: string[] = ['Rural Poor', 'Urban Poor', 'Lower-Middle Income', 'Middle-Income'];
+    let accessRegions: string[] = ['Africa', 'Asia and the Middle East', 'Latin America and the Caribbean', 'Oceania'];
+    let selectedCountry: string | null = null;
+
+    // -------------------------------------------------------
+    // Color / threshold config
+    // -------------------------------------------------------
+    const ACCESS_THRESHOLDS = [1e6, 5e6, 20e6, 50e6, 200e6, 500e6];
+    const ACCESS_COLORS = ['#FFFDE7', '#FFF59D', '#FFE082', '#FFB74D', '#FF7043', '#E53935', '#B71C1C'];
+    const ACCESS_LABELS = ['<1M', '1-5M', '5-20M', '20-50M', '50-200M', '200-500M', '>500M'];
+
+    // -------------------------------------------------------
+    // Chart instances
+    // -------------------------------------------------------
+    const charts: Record<string, any> = {};
+    const chartObservers: Map<string, ResizeObserver> = new Map();
+    let accessMapSvg: any = null;
+    let accessCountryStackedChart: any = null;
+    let accessCountryPieChart: any = null;
+
+    // -------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------
+    function normalizeId(id: string | number | null | undefined): string {
+      if (id === undefined || id === null) return '';
+      const num = parseInt(String(id), 10);
+      return isNaN(num) ? String(id) : String(num);
+    }
+
+    function getAccessColorByValue(value: number): string {
+      if (value <= 0) return '#e2e8f0';
+      for (let i = 0; i < ACCESS_THRESHOLDS.length; i++) {
+        if (value < ACCESS_THRESHOLDS[i]) return ACCESS_COLORS[i];
+      }
+      return ACCESS_COLORS[ACCESS_COLORS.length - 1];
+    }
+
+    function getAccessLevel(value: number, maxValue: number) {
+      if (value <= 0) return { level: 'low', label: 'Low Gap' };
+      const logValue = Math.log10(value + 1);
+      const logMax = Math.log10(maxValue + 1);
+      const ratio = logMax ? logValue / logMax : 0;
+      if (ratio < 0.25) return { level: 'low', label: 'Low Gap' };
+      if (ratio < 0.5)  return { level: 'medium', label: 'Medium Gap' };
+      if (ratio < 0.75) return { level: 'high', label: 'High Gap' };
+      return { level: 'critical', label: 'Critical Gap' };
+    }
+
+    /** Aggregate population_without_cooling by country for current filters */
+    function getAccessTotalsFiltered(): Record<string, number> {
+      // Map always shows 2024 historical data with tick-box region/impact/pop filters
+      const mapFiltered = accessData.filter(r => {
+        if (r.year !== 2024) return false;
+        if (accessRegions.length > 0 && r.region && !accessRegions.includes(r.region)) return false;
+        if (accessImpactLevels.length > 0 && r.impact_level && !accessImpactLevels.includes(r.impact_level)) return false;
+        if (accessPopCategories.length > 0 && r.population_category && !accessPopCategories.includes(r.population_category)) return false;
+        return true;
+      });
+      const totals: Record<string, number> = {};
+      mapFiltered.forEach(r => {
+        const v = r.population_without_cooling || 0;
+        totals[r.country_code] = (totals[r.country_code] || 0) + v;
+      });
+      return totals;
+    }
+
+    // -------------------------------------------------------
+    // Legend & progress bar
+    // -------------------------------------------------------
+    function updateAccessLegend() {
+      const legend = document.getElementById('access-legend');
+      if (!legend) return;
+      legend.innerHTML = ACCESS_COLORS.map((color, i) => `
+        <div class="legend-item">
+          <div class="legend-color" style="background:${color}"></div>
+          ${ACCESS_LABELS[i]}
+        </div>
+      `).join('');
+    }
+
+    function updateAccessProgress() {
+      const setWidth = (id: string, pct: number) => {
+        const el = document.getElementById(id);
+        if (el) el.style.width = `${pct}%`;
+      };
+      const accessTotals = getAccessTotalsFiltered();
+      const values = Object.values(accessTotals);
+      const total = values.length;
+      const counts = { low: 0, medium: 0, high: 0, critical: 0 };
+      const maxValue = Math.max(...values, 1);
+      values.forEach(value => {
+        const level = getAccessLevel(value, maxValue).level;
+        if (level === 'low') counts.low++;
+        else if (level === 'medium') counts.medium++;
+        else if (level === 'high') counts.high++;
+        else counts.critical++;
+      });
+      if (!total) {
+        setWidth('access-progress-low', 0);
+        setWidth('access-progress-medium', 0);
+        setWidth('access-progress-high', 0);
+        setWidth('access-progress-critical', 0);
+        return;
+      }
+      setWidth('access-progress-low', (counts.low / total) * 100);
+      setWidth('access-progress-medium', (counts.medium / total) * 100);
+      setWidth('access-progress-high', (counts.high / total) * 100);
+      setWidth('access-progress-critical', (counts.critical / total) * 100);
+    }
+
+    // -------------------------------------------------------
+    // "Viewing" badge inside this pillar
+    // -------------------------------------------------------
+    function updateAccessViewingBadge() {
+      const el = document.getElementById('access-viewing');
+      if (!el) return;
+      if (selectedCountry) {
+        const c = countries.find(c => c.country_code === selectedCountry);
+        el.textContent = c?.country_name || selectedCountry;
+      } else {
+        el.textContent = 'Global';
+      }
+    }
+
+    // -------------------------------------------------------
+    // setChart helper (ECharts init + ResizeObserver)
+    // -------------------------------------------------------
+    function setChart(id: string, option: any) {
+      const el = document.getElementById(id) as HTMLDivElement | null;
+      if (!el) return;
+      let needsInit = !charts[id];
+      if (!needsInit && charts[id].getDom && charts[id].getDom() !== el) {
+        if (chartObservers.has(id)) { chartObservers.get(id)!.disconnect(); chartObservers.delete(id); }
+        charts[id].dispose();
+        needsInit = true;
+      }
+      if (needsInit) {
+        el.style.width = '';
+        if (!el.style.height) el.style.height = el.style.minHeight || '280px';
+        void el.offsetWidth;
+        charts[id] = echarts.init(el);
+      }
+      charts[id].setOption(option, true);
+      if (needsInit && !chartObservers.has(id)) {
+        const obs = new ResizeObserver(() => {
+          if (!charts[id]) return;
+          const w = el.clientWidth;
+          const h = el.clientHeight || parseInt(el.style.minHeight) || 280;
+          if (w > 10 && h > 10) charts[id].resize({ width: w, height: h });
+        });
+        obs.observe(el);
+        chartObservers.set(id, obs);
+      }
+    }
+
+    // -------------------------------------------------------
+    // Tooltip (shared with the page-level tooltip if it exists,
+    // but Access creates its own fallback if absent)
+    // -------------------------------------------------------
+    function getTooltip(): HTMLElement {
+      return document.getElementById('tooltip') as HTMLElement;
+    }
+
+    function hideTooltip() {
+      const tt = getTooltip();
+      if (tt) tt.style.opacity = '0';
+    }
+
+    // -------------------------------------------------------
+    // D3 Map: initAccessMap
+    // -------------------------------------------------------
+    async function initAccessMap() {
+      const container = document.getElementById('access-map-container');
+      if (!container) return;
+
+      // Remove any existing SVG (prevents duplicates on hot reload)
+      d3.select('#access-map-container').selectAll('svg').remove();
+
+      const width = container.clientWidth || 800;
+      const height = container.clientHeight || 400;
+
+      accessMapSvg = d3.select('#access-map-container')
+        .append('svg')
+        .attr('width', '100%')
+        .attr('height', '100%')
+        .attr('viewBox', `0 0 ${width} ${height}`)
+        .attr('preserveAspectRatio', 'xMidYMid meet');
+
+      const projection = d3.geoNaturalEarth1()
+        .scale(width / 6)
+        .translate([width / 2, height / 1.8]);
+
+      const path = d3.geoPath().projection(projection);
+
+      // Ocean click → reset to global view
+      accessMapSvg.append('rect')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('fill', 'transparent')
+        .style('cursor', 'pointer')
+        .on('click', () => {
+          selectedCountry = null;
+          updateAccessViewingBadge();
+          showGlobalAccessDetail();
+          // Propagate reset to page-level global filter if available
+          if (typeof (window as any).__dashboardClearCountry === 'function') {
+            (window as any).__dashboardClearCountry();
+          }
+        });
+
+      try {
+        const world = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json');
+        const worldCountries = topojson.feature(world, world.objects.countries);
+        const accessTotals = getAccessTotalsFiltered();
+
+        accessMapSvg.selectAll('path')
+          .data(worldCountries.features)
+          .enter()
+          .append('path')
+          .attr('d', path)
+          .attr('class', 'country-path access-path')
+          .attr('data-code', (d: any) => countryIdToCode[normalizeId(d.id)] || '')
+          .attr('fill', (d: any) => {
+            const code = countryIdToCode[normalizeId(d.id)];
+            if (!code) return '#e2e8f0';
+            const value = accessTotals[code];
+            if (value === undefined || value <= 0) return '#e2e8f0';
+            return getAccessColorByValue(value);
+          })
+          .on('mouseover', (event: MouseEvent, d: any) => {
+            const code = countryIdToCode[normalizeId(d.id)];
+            if (!code) return;
+            const country = countries.find(c => c.country_code === code);
+            const totals = getAccessTotalsFiltered();
+            const value = totals[code] || 0;
+            const valueLabel = value ? `${(value / 1e6).toFixed(1)}M` : 'No data';
+            const tt = getTooltip();
+            if (!tt) return;
+            tt.innerHTML = `
+              <strong>${country?.country_name || code}</strong><br>
+              <span style="color: var(--text-secondary)">Year: ${accessYear}</span><br>
+              Population at Risk: ${valueLabel}
+            `;
+            tt.style.opacity = '1';
+            tt.style.left = (event.pageX + 10) + 'px';
+            tt.style.top = (event.pageY + 10) + 'px';
+          })
+          .on('mouseout', hideTooltip)
+          .on('click', (event: MouseEvent, d: any) => {
+            const code = countryIdToCode[normalizeId(d.id)];
+            if (!code) return;
+            const country = countries.find(c => c.country_code === code);
+            if (!country) return;
+            selectedCountry = code;
+            updateAccessViewingBadge();
+            highlightAccessCountry(code);
+            updateAccessCountryDetail(code, country);
+            // Sync page-level global filter if available
+            if (typeof (window as any).__dashboardSetCountry === 'function') {
+              (window as any).__dashboardSetCountry(code);
+            }
+          });
+
+        updateAccessLegend();
+        updateAccessProgress();
+        updateAccessViewingBadge();
+      } catch (error) {
+        console.error('Access map error:', error);
+      }
+    }
+
+    // -------------------------------------------------------
+    // updateAccessMap: re-color paths after filter change
+    // -------------------------------------------------------
+    function updateAccessMap() {
+      if (!accessMapSvg) return;
+      const accessTotals = getAccessTotalsFiltered();
+
+      accessMapSvg.selectAll('.access-path')
+        .transition()
+        .duration(300)
+        .attr('fill', function(this: any) {
+          const code = d3.select(this).attr('data-code');
+          if (!code) return '#e2e8f0';
+          const value = accessTotals[code];
+          if (value === undefined || value <= 0) return '#e2e8f0';
+          return getAccessColorByValue(value);
+        });
+
+      updateAccessLegend();
+      updateAccessProgress();
+      updateAccessViewingBadge();
+    }
+
+    // -------------------------------------------------------
+    // Highlight selected country on the access map
+    // -------------------------------------------------------
+    function highlightAccessCountry(code: string) {
+      if (!accessMapSvg) return;
+      accessMapSvg.selectAll('.access-path')
+        .classed('country-selected', function(this: any) {
+          return d3.select(this).attr('data-code') === code;
+        });
+    }
+
+    // -------------------------------------------------------
+    // renderAccessTimeline: unified 2013-2050 stacked area chart
+    // -------------------------------------------------------
+    function buildHistoricalRegionMap(): Record<string, string> {
+      const map: Record<string, string> = {};
+      for (const r of accessData) {
+        if (r.country_code && r.region) map[r.country_code] = r.region;
+      }
+      return map;
+    }
+
+    function renderAccessTimeline() {
+      const histRegionMap = buildHistoricalRegionMap();
+
+      // Normalize forecast regions to match historical SEforALL taxonomy per country
+      const normalizedForecast = accessForecast.map(r => ({
+        ...r,
+        region: (r.country_code && histRegionMap[r.country_code])
+          ? histRegionMap[r.country_code]
+          : r.region
+      }));
+
+      const allRecords = [...accessData, ...normalizedForecast];
+
+      // Apply tick-box filters
+      const filtered = allRecords.filter(r => {
+        if (accessRegions.length > 0 && r.region && !accessRegions.includes(r.region)) return false;
+        if (accessImpactLevels.length > 0 && r.impact_level && !accessImpactLevels.includes(r.impact_level)) return false;
+        if (accessPopCategories.length > 0 && r.population_category && !accessPopCategories.includes(r.population_category)) return false;
+        return true;
+      });
+
+      const years = Array.from(new Set(filtered.map(r => r.year))).sort((a, b) => a - b);
+      const categories = ['Rural Poor', 'Urban Poor', 'Lower-Middle Income', 'Middle-Income'];
+      const catColors: Record<string, string> = {
+        'Rural Poor': '#E85A4F',
+        'Urban Poor': '#22c55e',
+        'Lower-Middle Income': '#64748b',
+        'Middle-Income': '#f59e0b'
+      };
+
+      const seriesData: Record<string, number[]> = {};
+      categories.forEach(cat => { seriesData[cat] = []; });
+
+      years.forEach(y => {
+        categories.forEach(cat => {
+          const catRecords = filtered.filter(r => r.year === y && r.population_category === cat);
+          const total = catRecords.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
+          seriesData[cat].push(Math.round(total / 1e6 * 10) / 10);
+        });
+      });
+
+      // Only render categories that are active and have data
+      const activeCats = categories.filter(cat =>
+        accessPopCategories.includes(cat) && seriesData[cat].some(v => v > 0)
+      );
+
+      setChart('chart-access-timeline', {
+        tooltip: {
+          trigger: 'axis',
+          formatter: function(params: any) {
+            const yr = params[0].axisValue;
+            const isProjected = Number(yr) > 2024;
+            let html = `<strong>${yr}</strong>${isProjected ? ' <em style="color:#94a3b8">(projected)</em>' : ''}<br/>`;
+            let total = 0;
+            params.forEach((p: any) => {
+              total += p.value;
+              html += `${p.marker} ${p.seriesName}: <strong>${p.value.toFixed(0)}M</strong><br/>`;
+            });
+            html += `<hr style="margin:4px 0;border-color:#e2e8f0"/><strong>Total: ${total.toFixed(0)}M</strong>`;
+            return html;
+          }
+        },
+        legend: {
+          data: activeCats,
+          bottom: 0,
+          textStyle: { fontSize: 10, color: '#475569' }
+        },
+        grid: { left: '3%', right: '4%', bottom: '14%', top: '8%', containLabel: true },
+        xAxis: {
+          type: 'category',
+          data: years,
+          axisLabel: { fontSize: 10, interval: 4 },
+          boundaryGap: false
+        },
+        yAxis: {
+          type: 'value',
+          name: 'Population (millions)',
+          nameTextStyle: { fontSize: 10, color: '#475569' },
+          axisLabel: { fontSize: 10, formatter: '{value}M' }
+        },
+        series: activeCats.map((cat, idx) => ({
+          name: cat,
+          type: 'line',
+          stack: 'total',
+          areaStyle: { opacity: 0.6 },
+          data: seriesData[cat],
+          smooth: false,
+          symbol: 'none',
+          lineStyle: { color: catColors[cat], width: 1.5 },
+          itemStyle: { color: catColors[cat] },
+          markLine: idx === 0 ? {
+            silent: true,
+            symbol: 'none',
+            data: [{
+              xAxis: '2024',
+              lineStyle: { color: '#94a3b8', type: 'dashed', width: 1.5 },
+              label: {
+                formatter: 'Historical | Projected',
+                position: 'insideEndTop',
+                fontSize: 9,
+                color: '#94a3b8'
+              }
+            }]
+          } : undefined
+        }))
+      });
+    }
+
+    // -------------------------------------------------------
+    // updateAccessCharts: entry point for all chart refreshes
+    // -------------------------------------------------------
+    function updateAccessCharts() {
+      renderAccessTimeline();
+    }
+
+    // -------------------------------------------------------
+    // updateAccessView: full refresh (map + charts)
+    // -------------------------------------------------------
+    function updateAccessView() {
+      updateAccessMap();
+      updateAccessCharts();
+    }
+
+    // -------------------------------------------------------
+    // Country detail panel
+    // -------------------------------------------------------
+    function updateAccessCountryDetail(code: string, country: Country) {
+      const accessDetail = document.querySelector('#access-country-detail .country-detail') as HTMLElement | null;
+      if (!accessDetail) return;
+
+      const countryData = [...accessData, ...accessForecast].filter(r => r.country_code === code);
+
+      const categoryColors: Record<string, string> = {
+        'Rural Poor': '#E85A4F',
+        'Urban Poor': '#E89B8C',
+        'Lower-Middle Income': '#8BC34A',
+        'Middle-Income': '#3D6B6B'
+      };
+
+      // Build stacked data by category over 2013-2050 timeline
+      const stackedData = POPULATION_CATEGORIES.map(cat => ({
+        name: cat,
+        data: ACCESS_ALL_YEARS.map(year => {
+          const yearCatData = countryData.filter(r => r.year === year && r.population_category === cat);
+          return yearCatData.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
+        }),
+        color: categoryColors[cat]
+      }));
+
+      // 2024 breakdown for pie chart
+      const currentYearData = countryData.filter(r => r.year === 2024);
+      const categoryBreakdown = POPULATION_CATEGORIES.map(cat => {
+        const catTotal = currentYearData
+          .filter(r => r.population_category === cat)
+          .reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
+        return { category: cat, value: catTotal, color: categoryColors[cat] };
+      }).filter(cb => cb.value > 0);
+
+      const currentYearTotal = currentYearData.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
+      const baselineYear = 2013;
+      const baselineTotal = countryData
+        .filter(r => r.year === baselineYear)
+        .reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
+      const changePercent = baselineTotal > 0
+        ? ((currentYearTotal - baselineTotal) / baselineTotal * 100).toFixed(1)
+        : '0';
+      const changeColor = Number(changePercent) > 0 ? '#E85A4F' : '#8BC34A';
+      const changeIcon = Number(changePercent) > 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+      const region = country.region || 'Global South';
+      const trendDirection = Number(changePercent) > 0 ? 'increased' : 'decreased';
+      const dominantCategory = categoryBreakdown.reduce(
+        (max, c) => c.value > max.value ? c : max,
+        { category: '', value: 0 }
+      ).category;
+      const trendDescription = `Population without cooling access has ${trendDirection} by ${Math.abs(Number(changePercent))}% since ${baselineYear}.`;
+      const breakdownDescription = dominantCategory
+        ? `The largest vulnerable group is ${dominantCategory}, making up the majority of those at risk.`
+        : '';
+
+      accessDetail.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+          <h4 style="color: #92400e; font-size: 1.1rem; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-flag" style="color: #f59e0b;"></i>
+            ${country.country_name}
+            <span style="font-size: 0.75rem; font-weight: 400; color: #64748b; margin-left: 0.5rem;">${region}</span>
+          </h4>
+          <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
+            <span style="font-size: 0.8rem; color: #E85A4F; font-weight: 600;">
+              <i class="fa-solid fa-users" style="margin-right: 0.25rem;"></i>
+              ${(currentYearTotal / 1e6).toFixed(1)}M at risk
+            </span>
+            <span style="font-size: 0.8rem; color: ${changeColor}; font-weight: 500;">
+              <i class="fa-solid ${changeIcon}" style="margin-right: 0.25rem;"></i>
+              ${Math.abs(Number(changePercent))}% since ${baselineYear}
+            </span>
+          </div>
+        </div>
+        <div class="country-charts-grid">
+          <div class="chart-box" style="background: #fafafa; border-radius: 8px; padding: 0.75rem;">
+            <div style="font-size: 0.75rem; font-weight: 600; color: #92400e; margin-bottom: 0.5rem;">
+              <i class="fa-solid fa-chart-area" style="margin-right: 0.3rem; color: #f59e0b;"></i>
+              Population at Risk Over Time
+            </div>
+            <div class="access-stacked-chart" style="width: 100%; height: 200px;"></div>
+          </div>
+          <div class="chart-box" style="background: #fafafa; border-radius: 8px; padding: 0.75rem;">
+            <div style="font-size: 0.75rem; font-weight: 600; color: #92400e; margin-bottom: 0.5rem;">
+              <i class="fa-solid fa-chart-pie" style="margin-right: 0.3rem; color: #f59e0b;"></i>
+              2024 Category Breakdown
+            </div>
+            <div class="access-pie-chart" style="width: 100%; height: 200px;"></div>
+          </div>
+        </div>
+        <div class="country-insight" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 1rem; border-left: 3px solid #f59e0b;">
+          <div style="font-size: 0.8rem; font-weight: 600; color: #92400e; margin-bottom: 0.5rem;">
+            <i class="fa-solid fa-lightbulb" style="color: #f59e0b; margin-right: 0.35rem;"></i>
+            Analysis for ${country.country_name}
+          </div>
+          <p style="font-size: 0.85rem; color: #78350f; line-height: 1.6; margin: 0;">
+            ${trendDescription} ${breakdownDescription}
+            <span style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #64748b;">
+              <em>Data: SEforALL Chilling Prospects (historical) &bull; HEAT projection (2025-2050)</em>
+            </span>
+          </p>
+        </div>
+      `;
+
+      // Render ECharts inside the newly-created DOM nodes
+      setTimeout(() => {
+        const stackedContainer = accessDetail.querySelector('.access-stacked-chart') as HTMLElement | null;
+        const pieContainer = accessDetail.querySelector('.access-pie-chart') as HTMLElement | null;
+
+        if (accessCountryStackedChart) { accessCountryStackedChart.dispose(); accessCountryStackedChart = null; }
+        if (accessCountryPieChart) { accessCountryPieChart.dispose(); accessCountryPieChart = null; }
+
+        if (stackedContainer) {
+          accessCountryStackedChart = echarts.init(stackedContainer);
+          accessCountryStackedChart.setOption({
+            grid: { top: 30, right: 10, bottom: 28, left: 50 },
+            legend: {
+              show: true, top: 0, left: 'center',
+              itemWidth: 14, itemHeight: 10,
+              textStyle: { fontSize: 11, color: '#475569', fontWeight: 500 },
+              itemGap: 10
+            },
+            xAxis: {
+              type: 'category',
+              data: ACCESS_ALL_YEARS.map(String),
+              axisLabel: { fontSize: 10, interval: 4, fontWeight: 500, color: '#475569' },
+              axisLine: { lineStyle: { color: '#cbd5e1' } },
+              axisTick: { show: false },
+              boundaryGap: false
+            },
+            yAxis: {
+              type: 'value',
+              axisLabel: {
+                fontSize: 11, fontWeight: 500, color: '#475569',
+                formatter: (v: number) => v >= 1e6 ? `${(v / 1e6).toFixed(0)}M` : v >= 1e3 ? `${(v / 1e3).toFixed(0)}K` : String(v)
+              },
+              splitLine: { lineStyle: { color: '#e2e8f0' } },
+              name: 'Population', nameLocation: 'middle', nameGap: 35,
+              nameTextStyle: { fontSize: 10, color: '#64748b', fontWeight: 500 }
+            },
+            series: stackedData.map((cat, idx) => ({
+              name: cat.name,
+              type: 'line',
+              stack: 'total',
+              smooth: true,
+              symbol: 'none',
+              lineStyle: { width: 0 },
+              areaStyle: { opacity: 0.8, color: cat.color },
+              emphasis: { focus: 'series' },
+              data: cat.data,
+              ...(idx === 0 ? {
+                markLine: {
+                  silent: true,
+                  symbol: 'none',
+                  data: [{ xAxis: '2024', lineStyle: { color: '#94a3b8', type: 'dashed', width: 1 }, label: { show: false } }]
+                }
+              } : {})
+            })),
+            tooltip: {
+              trigger: 'axis',
+              textStyle: { fontSize: 12 },
+              axisPointer: { type: 'cross', label: { backgroundColor: '#6a7985' } },
+              formatter: (params: any) => {
+                let total = 0;
+                let html = `<strong style="font-size:13px">${params[0].axisValue}</strong><br/>`;
+                params.forEach((p: any) => {
+                  if (p.value > 0) {
+                    html += `<span style="display:inline-block;width:10px;height:10px;background:${p.color};border-radius:50%;margin-right:5px;"></span>${p.seriesName}: ${(p.value / 1e6).toFixed(2)}M<br/>`;
+                    total += p.value;
+                  }
+                });
+                html += `<strong>Total: ${(total / 1e6).toFixed(2)}M</strong>`;
+                return html;
+              }
+            }
+          });
+        }
+
+        if (pieContainer && categoryBreakdown.length > 0) {
+          accessCountryPieChart = echarts.init(pieContainer);
+          accessCountryPieChart.setOption({
+            tooltip: {
+              trigger: 'item',
+              textStyle: { fontSize: 12 },
+              formatter: (params: any) => `<strong style="font-size:13px">${params.name}</strong><br/>${(params.value / 1e6).toFixed(2)}M (${params.percent}%)`
+            },
+            legend: { show: false },
+            series: [{
+              type: 'pie',
+              radius: ['35%', '65%'],
+              center: ['50%', '50%'],
+              avoidLabelOverlap: true,
+              itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 },
+              label: {
+                show: true,
+                position: 'outside',
+                fontSize: 11,
+                fontWeight: 500,
+                formatter: (params: any) => {
+                  const shortName = params.name
+                    .replace('Rural Poor', 'Rural')
+                    .replace('Urban Poor', 'Urban')
+                    .replace('Lower-Middle Income', 'Lower-Mid')
+                    .replace('Middle-Income', 'Middle');
+                  return `${shortName}\n${params.percent}%`;
+                }
+              },
+              labelLine: { show: true, length: 8, length2: 8 },
+              emphasis: {
+                label: { show: true, fontSize: 13, fontWeight: 'bold' },
+                itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0,0,0,0.5)' }
+              },
+              data: categoryBreakdown.map(c => ({
+                name: c.category,
+                value: c.value,
+                itemStyle: { color: c.color }
+              }))
+            }]
+          });
+        } else if (pieContainer) {
+          pieContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:0.75rem;">No data for selected year</div>';
+        }
+      }, 100);
+    }
+
+    function showGlobalAccessDetail() {
+      const container = document.querySelector('#access-country-detail .country-detail') as HTMLElement | null;
+      if (!container) return;
+      container.innerHTML = `
+        <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
+          <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #f59e0b; margin-bottom: 0.75rem; display: block;"></i>
+          <h4 style="color: #92400e; margin-bottom: 0.5rem;">Select a Country</h4>
+          <p style="font-size: 0.85rem;">Click on any country in the map above to view cooling access gap details and population breakdown.</p>
+        </div>
+      `;
+    }
+
+    // -------------------------------------------------------
+    // Checkbox filter wiring
+    // -------------------------------------------------------
+    function wireAccessCheckboxes(
+      containerId: string,
+      stateSetter: (v: string[]) => void
+    ) {
+      document.querySelectorAll<HTMLInputElement>(`#${containerId} input[type="checkbox"]`).forEach(cb => {
+        cb.addEventListener('change', () => {
+          const checked: string[] = [];
+          document.querySelectorAll<HTMLInputElement>(`#${containerId} input[type="checkbox"]:checked`)
+            .forEach(c => checked.push(c.value));
+          stateSetter(checked);
+          updateAccessView();
+          renderAccessTimeline();
+        });
+      });
+    }
+
+    wireAccessCheckboxes('access-region-checks', v => { accessRegions = v; });
+    wireAccessCheckboxes('access-pop-checks', v => { accessPopCategories = v; });
+    wireAccessCheckboxes('access-impact-checks', v => { accessImpactLevels = v; });
+
+    // -------------------------------------------------------
+    // Window resize: resize timeline chart
+    // -------------------------------------------------------
+    function onWindowResize() {
+      Object.values(charts).forEach((chart: any) => {
+        if (!chart || !chart.resize) return;
+        const dom = chart.getDom ? chart.getDom() : null;
+        if (!dom) return;
+        const section = dom.closest('.view-section');
+        if (section && !section.classList.contains('active')) return;
+        const w = dom.clientWidth;
+        const h = dom.clientHeight || parseInt(dom.style.minHeight) || 280;
+        if (w > 10) chart.resize({ width: w, height: h });
+      });
+    }
+    window.addEventListener('resize', onWindowResize);
+
+    // -------------------------------------------------------
+    // Register page-level callbacks so switchView can
+    // re-render the timeline when switching to 'access'
+    // -------------------------------------------------------
+    (window as any).__accessRenderTimeline = () => {
+      renderAccessTimeline();
+    };
+    (window as any).__accessUpdateView = () => {
+      updateAccessView();
+    };
+
+    // -------------------------------------------------------
+    // Initial render (data may already be available via props)
+    // -------------------------------------------------------
+    await initAccessMap();
+    updateAccessCharts();
+    showGlobalAccessDetail();
+
+    // -------------------------------------------------------
+    // Cleanup
+    // -------------------------------------------------------
+    return () => {
+      clearTimeout(revealTimer);
+      window.removeEventListener('resize', onWindowResize);
+      delete (window as any).__accessRenderTimeline;
+      delete (window as any).__accessUpdateView;
+      Object.entries(charts).forEach(([id, chart]) => {
+        if (chartObservers.has(id)) { chartObservers.get(id)!.disconnect(); chartObservers.delete(id); }
+        chart.dispose();
+      });
+      if (accessCountryStackedChart) { accessCountryStackedChart.dispose(); accessCountryStackedChart = null; }
+      if (accessCountryPieChart) { accessCountryPieChart.dispose(); accessCountryPieChart = null; }
+      if (accessMapSvg) {
+        d3.select('#access-map-container').selectAll('svg').remove();
+        accessMapSvg = null;
+      }
+    };
   });
 </script>
 
@@ -224,7 +1073,7 @@
           <span class="checkbox-label"><i class="fa-solid fa-earth-americas"></i> Region</span>
           <div class="checkbox-items" id="access-region-checks">
             <label class="tick-box"><input type="checkbox" value="Africa" checked /><span class="tick-mark"></span>Africa</label>
-            <label class="tick-box"><input type="checkbox" value="Asia and the Middle East" checked /><span class="tick-mark"></span>Asia & Middle East</label>
+            <label class="tick-box"><input type="checkbox" value="Asia and the Middle East" checked /><span class="tick-mark"></span>Asia &amp; Middle East</label>
             <label class="tick-box"><input type="checkbox" value="Latin America and the Caribbean" checked /><span class="tick-mark"></span>Latin America</label>
             <label class="tick-box"><input type="checkbox" value="Oceania" checked /><span class="tick-mark"></span>Oceania</label>
           </div>
