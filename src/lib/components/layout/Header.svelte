@@ -28,7 +28,6 @@
     {/if}
   </div>
   <div class="story-meta">
-    <div id="last-updated" class="story-updated">Loading...</div>
     {#if showPillarInfo}
       <button class="pillar-info-btn" type="button" id="pillar-info-btn" on:click={onPillarInfoClick}>
         <i class="fa-solid fa-circle-info"></i>
