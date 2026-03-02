@@ -120,7 +120,13 @@
 
   // Country sync — exposed after D3 init
   let _applyMepsCountry: ((code: string | null) => void) | null = null;
+  let _initInverterMapLazy: (() => void) | null = null;
+  let _inverterMapReady = false;
   $: { const _c = $page?.url?.searchParams?.get('country') ?? null; if (_applyMepsCountry) _applyMepsCountry(_c); }
+  $: if (activeMapView === 'inverter' && _initInverterMapLazy && !_inverterMapReady) {
+    _inverterMapReady = true;
+    _initInverterMapLazy();
+  }
 
   onMount(() => {
     // Reveal animation timer
@@ -794,6 +800,7 @@
         .style('cursor', 'pointer')
         .on('click', () => {
           selectedMepsCountry = '';
+          mepsMapSvg.selectAll('.country-path').classed('country-selected', false);
           showGlobalMepsDetail();
           updateMepsView();
           if (typeof (window as any).__dashboardClearCountry === 'function') {
@@ -848,6 +855,9 @@
             const country = countries.find(c => c.country_code === code);
             if (!country) return;
             selectedMepsCountry = code;
+            // Highlight selected country on map
+            mepsMapSvg.selectAll('.country-path')
+              .classed('country-selected', (pd: any) => countryIdToCode[normalizeId((pd as any).id)] === code);
             updateMepsCountryDetail(code);
             updateMepsView();
             if (typeof (window as any).__dashboardSetCountry === 'function') {
@@ -985,11 +995,29 @@
         // Initialise filters (populates equipment toggle buttons)
         initMepsFilters();
 
-        // Render maps (both can run in parallel — each fetches world-atlas independently)
-        await Promise.all([
-          initMepsMap(d3Lib, topojsonLib),
-          initInverterMap(d3Lib, topojsonLib)
-        ]);
+        // Render MEPS coverage map immediately (visible on load)
+        await initMepsMap(d3Lib, topojsonLib);
+
+        // If URL had a country selected before D3 loaded, apply map highlight now
+        if (selectedMepsCountry && mepsMapSvg) {
+          const _code = selectedMepsCountry;
+          mepsMapSvg.selectAll('.country-path')
+            .classed('country-selected', (pd: any) => countryIdToCode[normalizeId((pd as any).id)] === _code);
+        }
+
+        // Inverter map: lazy-init when user first switches to inverter tab
+        _initInverterMapLazy = async () => {
+          // Wait one animation frame so the container becomes visible before we read its dimensions
+          await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+          const invContainer = document.getElementById('inverter-map-container');
+          if (invContainer) invContainer.innerHTML = '';
+          await initInverterMap(d3Lib, topojsonLib);
+        };
+        // If inverter tab is already active on mount, init immediately
+        if (activeMapView === 'inverter') {
+          _inverterMapReady = true;
+          await initInverterMap(d3Lib, topojsonLib);
+        }
 
         // Initial chart render (global view)
         updateMepsGlobalCharts();
@@ -1006,6 +1034,7 @@
       function applyMepsCountry(code: string | null) {
         if (!code) {
           selectedMepsCountry = '';
+          if (mepsMapSvg) mepsMapSvg.selectAll('.country-path').classed('country-selected', false);
           showGlobalMepsDetail();
           updateMepsView();
           return;
@@ -1013,6 +1042,16 @@
         const country = countries.find(c => c.country_code === code);
         if (!country) return;
         selectedMepsCountry = code;
+        // Highlight on map using data-code attribute (works after D3 has loaded)
+        if (mepsMapSvg) {
+          const d3Lib = (window as any).d3;
+          if (d3Lib) {
+            mepsMapSvg.selectAll('.country-path')
+              .classed('country-selected', function(this: any) {
+                return d3Lib.select(this).attr('data-code') === code;
+              });
+          }
+        }
         updateMepsCountryDetail(code);
         updateMepsView();
       }

@@ -161,6 +161,7 @@
       let ndcCategory = 'Energy Efficiency';
       let policyMapType = 'gcp';
       let selectedRegion = '';
+      let selectedPolicyCountry: string | null = null;
 
       const getNdcFilters = (): NdcFilters => ({ type: ndcType, category: ndcCategory });
 
@@ -396,6 +397,7 @@
         const code = countryIdToCode[normalizeId(d.id)];
         const country = countries.find((c: any) => c.country_code === code);
         if (!country) return;
+        selectedPolicyCountry = code;
 
         // Highlight the selected country on this map
         ndcMapSvg.selectAll('.ndc-path')
@@ -594,7 +596,12 @@
             }
             return '#e2e8f0';
           })
-          .attr('stroke', '#cbd5e1');
+          .attr('stroke', function(this: any) {
+            return d3.select(this).attr('data-code') === selectedPolicyCountry ? '#0f172a' : '#cbd5e1';
+          })
+          .attr('stroke-width', function(this: any) {
+            return d3.select(this).attr('data-code') === selectedPolicyCountry ? 2 : 0.5;
+          });
 
         updatePolicyLegend(mapType);
       }
@@ -1123,6 +1130,7 @@
           .attr('fill', 'transparent')
           .style('cursor', 'pointer')
           .on('click', () => {
+            selectedPolicyCountry = null;
             ndcMapSvg.selectAll('.ndc-path')
               .attr('stroke', '#cbd5e1')
               .attr('stroke-width', 0.5);
@@ -1259,6 +1267,7 @@
       // Expose country-apply function for reactive URL sync
       function applyPolicyCountry(code: string | null) {
         if (!code) {
+          selectedPolicyCountry = null;
           // Reset all map highlights
           if (ndcMapSvg) ndcMapSvg.selectAll('.ndc-path').attr('stroke', '#cbd5e1').attr('stroke-width', 0.5);
           const viewingEl = document.getElementById('policy-viewing');
@@ -1268,6 +1277,7 @@
         }
         const country = countries.find((c: any) => c.country_code === code);
         if (!country) return;
+        selectedPolicyCountry = code;
         // Highlight on active map
         if (ndcMapSvg) {
           ndcMapSvg.selectAll('.ndc-path')

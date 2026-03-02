@@ -110,7 +110,6 @@
     let kigaliMarketAppliance = 'ac';
     let kigaliMarketRegion = '';
     let kigaliRegionFilter = '';
-    let kigaliGroupTypes: string[] = [];
 
     // ECharts instance registry and resize observers
     const charts: Record<string, any> = {};
@@ -255,25 +254,19 @@
 
     // ── Kigali status / colour helpers ────────────────────────────────────────
     function getKigaliStatus(code: string | undefined): { level: string; label: string } {
-      if (!code) return { level: 'critical', label: 'Critical' };
+      if (!code) return { level: 'nodata', label: 'No Data' };
       const record = kigaliData.find((k: any) => k.country_code === code);
-      if (!record) return { level: 'low', label: 'Low/None' };
-      if (record.kigali_party === 1) {
-        if (record.group_type && record.group_type.includes('A5')) {
-          return { level: 'medium', label: 'Medium/Partial' };
-        }
-        return { level: 'high', label: 'High/Active' };
-      }
-      return { level: 'critical', label: 'Critical' };
+      if (!record) return { level: 'nodata', label: 'No Data' };
+      return record.kigali_party === 1
+        ? { level: 'ratified', label: 'Ratified' }
+        : { level: 'notratified', label: 'Not Ratified' };
     }
 
     function getKigaliColor(level: string): string {
       switch (level) {
-        case 'high':     return '#2D5252'; // CCC dark teal
-        case 'medium':   return '#8BC34A'; // CCC green
-        case 'low':      return '#E89B8C'; // CCC coral
-        case 'critical': return '#E85A4F'; // CCC orange-red
-        default:         return '#e2e8f0';
+        case 'ratified':    return '#16a34a';
+        case 'notratified': return '#E85A4F';
+        default:            return '#e2e8f0';
       }
     }
 
@@ -284,7 +277,6 @@
           const country = countries.find((c: any) => c.country_code === k.country_code);
           if (!country || country.region !== kigaliRegionFilter) return false;
         }
-        if (kigaliGroupTypes.length > 0 && k.group_type && !kigaliGroupTypes.includes(k.group_type)) return false;
         return true;
       });
     }
@@ -293,14 +285,7 @@
       const filtered = getFilteredKigali();
       const kigaliParties = filtered.filter((k: any) => k.kigali_party === 1).length;
       const montrealParties = filtered.filter((k: any) => k.montreal_protocol_party === 1).length;
-      const article5 = filtered.filter((k: any) =>
-        k.group_type && (k.group_type.includes('A5') || k.group_type.includes('Article 5')) &&
-        !k.group_type.toLowerCase().includes('non')
-      ).length;
-      const nonArticle5 = filtered.filter((k: any) =>
-        k.group_type && k.group_type.toLowerCase().includes('non')
-      ).length;
-      return { kigaliParties, montrealParties, article5, nonArticle5, total: filtered.length };
+      return { kigaliParties, montrealParties, total: filtered.length };
     }
 
     // ── KPI DOM updater ───────────────────────────────────────────────────────
@@ -312,8 +297,6 @@
       };
       setEl('kigali-kpi-parties', kpis.kigaliParties);
       setEl('kigali-kpi-montreal', kpis.montrealParties);
-      setEl('kigali-kpi-article5', kpis.article5);
-      setEl('kigali-kpi-non-article5', kpis.nonArticle5);
     }
 
     // ── Legend & progress bar ─────────────────────────────────────────────────
@@ -321,11 +304,10 @@
       const legend = document.getElementById('kigali-legend');
       if (!legend) return;
       legend.innerHTML = `
-        <div class="legend-item"><div class="legend-color" style="background:#2D5252"></div>High/Active</div>
-        <div class="legend-item"><div class="legend-color" style="background:#8BC34A"></div>Medium/Partial</div>
-        <div class="legend-item"><div class="legend-color" style="background:#E89B8C"></div>Low/None</div>
-        <div class="legend-item"><div class="legend-color" style="background:#E85A4F"></div>Critical</div>
-      `;
+    <div class="legend-item"><div class="legend-color" style="background:#16a34a"></div>Ratified</div>
+    <div class="legend-item"><div class="legend-color" style="background:#E85A4F"></div>Not Ratified</div>
+    <div class="legend-item"><div class="legend-color" style="background:#e2e8f0"></div>No Data</div>
+  `;
     }
 
     function updateKigaliProgress() {
@@ -333,27 +315,21 @@
         const el = document.getElementById(id);
         if (el) el.style.width = `${pct}%`;
       };
-      const codes = new Set(countries.map((c: any) => c.country_code));
-      const total = codes.size;
-      const counts = { high: 0, medium: 0, low: 0, critical: 0 };
-      codes.forEach((code: any) => {
-        const status = getKigaliStatus(code);
-        if (status.level === 'high') counts.high += 1;
-        else if (status.level === 'medium') counts.medium += 1;
-        else if (status.level === 'low') counts.low += 1;
-        else if (status.level === 'critical') counts.critical += 1;
+      const total = countries.length;
+      let ratified = 0;
+      let notRatified = 0;
+      countries.forEach((c: any) => {
+        const status = getKigaliStatus(c.country_code);
+        if (status.level === 'ratified') ratified++;
+        else if (status.level === 'notratified') notRatified++;
       });
       if (!total) {
-        setWidth('kigali-progress-high', 0);
-        setWidth('kigali-progress-medium', 0);
-        setWidth('kigali-progress-low', 0);
-        setWidth('kigali-progress-critical', 0);
+        setWidth('kigali-progress-ratified', 0);
+        setWidth('kigali-progress-notratified', 0);
         return;
       }
-      setWidth('kigali-progress-high', (counts.high / total) * 100);
-      setWidth('kigali-progress-medium', (counts.medium / total) * 100);
-      setWidth('kigali-progress-low', (counts.low / total) * 100);
-      setWidth('kigali-progress-critical', (counts.critical / total) * 100);
+      setWidth('kigali-progress-ratified', (ratified / total) * 100);
+      setWidth('kigali-progress-notratified', (notRatified / total) * 100);
     }
 
     // ── Map ───────────────────────────────────────────────────────────────────
@@ -424,7 +400,7 @@
             const status = getKigaliStatus(code);
             tooltip.innerHTML = `
               <strong>${country?.country_name || code || 'Unknown'}</strong><br>
-              <span style="color:#94a3b8">Status: ${status.label}</span>
+              <span style="color:${status.level === 'ratified' ? '#4ade80' : '#f87171'}">${status.label}</span>
             `;
             (tooltip.style as any).opacity = '1';
             tooltip.style.left = (event.pageX + 10) + 'px';
@@ -797,7 +773,15 @@
             <div style="font-size:0.9rem;font-weight:700;color:#1e293b;">${groupType}</div>
           </div>
         </div>
-        ${timeline ? `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:0.5rem 0.75rem;margin-bottom:0.75rem;font-size:0.75rem;color:#92400e;"><i class="fa-solid fa-clock" style="margin-right:0.3rem;"></i>Phase-down timeline: ${timeline}</div>` : ''}
+        ${timeline ? `
+<div style="background:linear-gradient(135deg,#1a3a3a 0%,#2d5252 100%);border-radius:12px;padding:1rem 1.25rem;margin-bottom:0.75rem;box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+  <div style="font-size:0.75rem;font-weight:700;color:#8BC34A;margin-bottom:0.65rem;letter-spacing:0.5px;text-transform:uppercase;">
+    <i class="fa-solid fa-clock-rotate-left" style="margin-right:0.4rem;"></i>Phase-Down Timeline
+  </div>
+  <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+    ${timeline.split('\u00B7').map((m: string) => `<span style="background:rgba(255,255,255,0.15);color:#fff;padding:0.3rem 0.7rem;border-radius:20px;font-size:0.8rem;font-weight:600;white-space:nowrap;border:1px solid rgba(255,255,255,0.2);">${m.trim()}</span>`).join('')}
+  </div>
+</div>` : ''}
         ${bauDirect > 0 ? `
         <div style="margin-bottom:0.75rem;">
           <div style="font-size:0.75rem;font-weight:700;color:#3D6B6B;margin-bottom:0.4rem;"><i class="fa-solid fa-chart-line" style="margin-right:0.3rem;"></i>Direct Emissions (2030 Projections)</div>
@@ -829,50 +813,6 @@
 
     // ── Filters initialisation ────────────────────────────────────────────────
     function initKigaliFilters() {
-      // Group type toggles
-      const toggleContainer = document.getElementById('kigali-group-toggles');
-      if (toggleContainer) {
-        const groupTypes = new Set(kigaliData.map((k: any) => k.group_type).filter(Boolean));
-        kigaliGroupTypes = Array.from(groupTypes) as string[];
-        toggleContainer.innerHTML = '';
-        Array.from(groupTypes).sort().forEach((gt: any) => {
-          const btn = document.createElement('button');
-          btn.className = 'toggle-btn active';
-          btn.type = 'button';
-          btn.dataset.group = gt;
-          btn.textContent = gt;
-          btn.addEventListener('click', () => {
-            btn.classList.toggle('active');
-            if (btn.classList.contains('active')) {
-              if (!kigaliGroupTypes.includes(gt)) kigaliGroupTypes.push(gt);
-            } else {
-              kigaliGroupTypes = kigaliGroupTypes.filter((g: string) => g !== gt);
-            }
-            updateKigaliView();
-          });
-          toggleContainer.appendChild(btn);
-        });
-      }
-
-      // All / None buttons
-      const groupAll = document.getElementById('kigali-group-all');
-      if (groupAll) {
-        groupAll.addEventListener('click', () => {
-          const allGroups = [...new Set(kigaliData.map((k: any) => k.group_type).filter(Boolean))] as string[];
-          kigaliGroupTypes = allGroups;
-          document.querySelectorAll<HTMLButtonElement>('#kigali-group-toggles .toggle-btn').forEach(b => b.classList.add('active'));
-          updateKigaliView();
-        });
-      }
-      const groupNone = document.getElementById('kigali-group-none');
-      if (groupNone) {
-        groupNone.addEventListener('click', () => {
-          kigaliGroupTypes = [];
-          document.querySelectorAll<HTMLButtonElement>('#kigali-group-toggles .toggle-btn').forEach(b => b.classList.remove('active'));
-          updateKigaliView();
-        });
-      }
-
       // Market share appliance toggles (AC / Fridge)
       document.querySelectorAll<HTMLButtonElement>('.kigali-appliance-toggle').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -1179,24 +1119,8 @@
         <div id="kigali-legend" class="legend-items"></div>
       </div>
       <div class="progress-bar" id="kigali-progress">
-        <span class="progress-segment high" id="kigali-progress-high" title="Kigali Party (Non-A5)"></span>
-        <span class="progress-segment medium" id="kigali-progress-medium" title="Kigali Party (Article 5)"></span>
-        <span class="progress-segment low" id="kigali-progress-low" title="Montreal Only"></span>
-        <span class="progress-segment critical" id="kigali-progress-critical" title="Non-Party"></span>
-      </div>
-
-      <!-- Map Filters — light section below the map -->
-      <div class="kigali-filter-section">
-        <div style="font-size:0.8rem;color:#64748b;margin-bottom:0.5rem;">
-          <i class="fa-solid fa-circle-info" style="margin-right:0.35rem;"></i>
-          Filter countries on the map by group type:
-        </div>
-        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
-          <button id="kigali-group-all" class="kigali-filter-btn" type="button">All</button>
-          <button id="kigali-group-none" class="kigali-filter-btn kigali-filter-btn--outline" type="button">None</button>
-          <span style="width:1px;height:1.5rem;background:#e2e8f0;margin:0 0.25rem;"></span>
-          <div id="kigali-group-toggles" style="display:flex;gap:0.4rem;flex-wrap:wrap;"></div>
-        </div>
+        <span class="progress-segment" id="kigali-progress-ratified" title="Ratified" style="background:#16a34a;"></span>
+        <span class="progress-segment" id="kigali-progress-notratified" title="Not Ratified" style="background:#E85A4F;"></span>
       </div>
 
       <div id="kigali-country-detail" class="country-card-inline">
