@@ -1236,7 +1236,7 @@
       </div>
 
       <!-- Inverter map panel -->
-      <div style:display={activeMapView === 'inverter' ? 'block' : 'none'}>
+      <div style:display={activeMapView === 'inverter' ? 'block' : 'none'} style="padding-top: 1.5rem;">
         <div id="inverter-map-container" class="map-surface"></div>
         <div class="legend legend-row">
           <span class="legend-label">Inverter Share:</span>

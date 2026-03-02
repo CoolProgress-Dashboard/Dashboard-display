@@ -568,6 +568,7 @@
         policyMapType = mapType;
         if (!ndcMapSvg) return;
 
+        // Transition fill colors only — stroke is handled separately so highlights aren't lost
         ndcMapSvg.selectAll('.ndc-path')
           .transition()
           .duration(300)
@@ -595,12 +596,17 @@
               return ncapCountry ? '#3D6B6B' : '#E89B8C';
             }
             return '#e2e8f0';
-          })
+          });
+
+        // Apply stroke synchronously (not inside transition) so the selected-country
+        // highlight is never interpolated away during a fill-colour tab switch
+        const _sel = selectedPolicyCountry;
+        ndcMapSvg.selectAll('.ndc-path')
           .attr('stroke', function(this: any) {
-            return d3.select(this).attr('data-code') === selectedPolicyCountry ? '#0f172a' : '#cbd5e1';
+            return d3.select(this).attr('data-code') === _sel ? '#0f172a' : '#cbd5e1';
           })
           .attr('stroke-width', function(this: any) {
-            return d3.select(this).attr('data-code') === selectedPolicyCountry ? 2 : 0.5;
+            return d3.select(this).attr('data-code') === _sel ? 2 : 0.5;
           });
 
         updatePolicyLegend(mapType);
