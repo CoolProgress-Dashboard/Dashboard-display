@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { page } from '$app/stores';
   import { VIEW_META } from '$lib/components/shared/config';
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
@@ -116,6 +117,10 @@
 
   let revealed = false;
   let activeMapView: 'coverage' | 'inverter' = 'coverage';
+
+  // Country sync — exposed after D3 init
+  let _applyMepsCountry: ((code: string | null) => void) | null = null;
+  $: { const _c = $page?.url?.searchParams?.get('country') ?? null; if (_applyMepsCountry) _applyMepsCountry(_c); }
 
   onMount(() => {
     // Reveal animation timer
@@ -755,13 +760,19 @@
       }
     }
 
+    // ---- Map height constants: MEPS coverage is shorter (has appliance toggles above),
+    //      Inverter is taller (fewer controls, needs the extra space). ----
+    const MEPS_MAP_HEIGHT = 750;
+    const INVERTER_MAP_HEIGHT = 700;
+    const MAP_HEIGHT = INVERTER_MAP_HEIGHT; // fallback used when container is hidden at init
+
     // ---- MEPS choropleth D3 map ----
     async function initMepsMap(d3Lib: any, topojsonLib: any) {
       const container = document.getElementById('meps-map-container');
       if (!container) return;
 
       const width = container.clientWidth || 800;
-      const height = container.clientHeight || 400;
+      const height = container.clientHeight || MEPS_MAP_HEIGHT;
 
       mepsMapSvg = d3Lib.select('#meps-map-container')
         .append('svg')
@@ -771,8 +782,8 @@
         .attr('preserveAspectRatio', 'xMidYMid meet');
 
       const projection = d3Lib.geoNaturalEarth1()
-        .scale(width / 6)
-        .translate([width / 2, height / 1.8]);
+        .scale(width / 5.5)
+        .translate([width / 2, height / 1.9]);
 
       const path = d3Lib.geoPath().projection(projection);
 
@@ -785,11 +796,15 @@
           selectedMepsCountry = '';
           showGlobalMepsDetail();
           updateMepsView();
+          if (typeof (window as any).__dashboardClearCountry === 'function') {
+            (window as any).__dashboardClearCountry();
+          }
         });
 
       try {
         const world = await d3Lib.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json');
         const countriesGeo = topojsonLib.feature(world, world.objects.countries);
+        countriesGeo.features = countriesGeo.features.filter((d: any) => d.properties?.name !== 'Antarctica' && countryIdToCode[normalizeId(d.id)] !== 'ATA');
 
         mepsMapSvg.selectAll('path')
           .data(countriesGeo.features)
@@ -835,6 +850,9 @@
             selectedMepsCountry = code;
             updateMepsCountryDetail(code);
             updateMepsView();
+            if (typeof (window as any).__dashboardSetCountry === 'function') {
+              (window as any).__dashboardSetCountry(code);
+            }
           });
 
         updateMepsLegend();
@@ -850,7 +868,7 @@
       if (!container) return;
 
       const width = container.clientWidth || 800;
-      const height = container.clientHeight || 400;
+      const height = container.clientHeight || MAP_HEIGHT;
 
       // Build latest-reading-per-country lookup from the acInverterShare prop
       const latestByCountry = new Map<string, { pct: number; nonPct: number | null; year: string; confidence: string; name: string; _yearEnd: number }>();
@@ -890,14 +908,14 @@
         .attr('preserveAspectRatio', 'xMidYMid meet');
 
       const projection = d3Lib.geoNaturalEarth1()
-        .scale(width / 6)
-        .translate([width / 2, height / 1.8]);
+        .fitSize([width, height], { type: 'Sphere' });
 
       const path = d3Lib.geoPath().projection(projection);
 
       try {
         const world = await d3Lib.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json');
         const countriesGeo = topojsonLib.feature(world, world.objects.countries);
+        countriesGeo.features = countriesGeo.features.filter((d: any) => d.properties?.name !== 'Antarctica' && countryIdToCode[normalizeId(d.id)] !== 'ATA');
 
         svg.selectAll('path')
           .data(countriesGeo.features)
@@ -983,6 +1001,24 @@
         console.error('MepsPillar init error:', err);
       }
     })();
+
+      // ── Country sync (URL ↔ map) ──────────────────────────────────────────
+      function applyMepsCountry(code: string | null) {
+        if (!code) {
+          selectedMepsCountry = '';
+          showGlobalMepsDetail();
+          updateMepsView();
+          return;
+        }
+        const country = countries.find(c => c.country_code === code);
+        if (!country) return;
+        selectedMepsCountry = code;
+        updateMepsCountryDetail(code);
+        updateMepsView();
+      }
+      _applyMepsCountry = applyMepsCountry;
+      const _initMepsCountry = new URLSearchParams(window.location.search).get('country');
+      if (_initMepsCountry) applyMepsCountry(_initMepsCountry);
 
     // =========================================================
     // CLEANUP — dispose ECharts instances and observers
@@ -1179,7 +1215,7 @@
     {#if activeMapView === 'coverage'}
       <div class="meps-charts-section charts-section">
         {#if mepsShowRegionCard}
-          <div class="card-panel chart-card">
+          <div class="inverter-chart-flat">
             <div class="chart-card-header">
               <h3><i class="fa-solid fa-chart-bar" style="color: #8BC34A; margin-right: 0.5rem;"></i>MEPS &amp; Labels by Region</h3>
               <p class="chart-subtitle">Countries with MEPS vs Labels per region</p>
@@ -1189,7 +1225,7 @@
             </div>
           </div>
         {/if}
-        <div class="card-panel chart-card">
+        <div class="inverter-chart-flat">
           <div class="chart-card-header">
             <h3 id="meps-chart3-title"><i class="fa-solid fa-cogs" style="color: #8BC34A; margin-right: 0.5rem;"></i>Equipment Type Coverage</h3>
             <p class="chart-subtitle" id="meps-chart3-subtitle">Countries with MEPS vs Labels by appliance</p>
@@ -1201,7 +1237,7 @@
       </div>
     {:else}
       <div class="meps-charts-section charts-section">
-        <div class="card-panel chart-card">
+        <div class="inverter-chart-flat">
           <div class="chart-card-header">
             <h3><i class="fa-solid fa-snowflake" style="color: #3D6B6B; margin-right: 0.5rem;"></i>Inverter Share by Region</h3>
             <p class="chart-subtitle">Average share of variable-speed (inverter) ACs per region</p>
@@ -1210,7 +1246,7 @@
             <InverterByRegionChart data={inverterRegionData} />
           </div>
         </div>
-        <div class="card-panel chart-card">
+        <div class="inverter-chart-flat">
           <div class="chart-card-header">
             <h3><i class="fa-solid fa-ranking-star" style="color: #3D6B6B; margin-right: 0.5rem;"></i>Top Countries — Inverter Penetration</h3>
             <p class="chart-subtitle">Countries with highest variable-speed AC market share (latest data)</p>
@@ -1672,7 +1708,7 @@
     overflow: hidden;
   }
 
-  .meps-charts-section :global(.chart-card + .chart-card) {
+  .meps-charts-section .inverter-chart-flat + .inverter-chart-flat {
     margin-top: 1.25rem;
   }
 
@@ -1746,5 +1782,31 @@
     background: #f1f5f9;
     color: #3D6B6B;
     border-color: #cbd5e1;
+  }
+
+  /* ===========================
+     MAP HEIGHTS — each map gets its own explicit height so they appear
+     visually balanced despite different amounts of surrounding content.
+     A taller SVG viewBox = smaller-appearing countries (more white space around them).
+     MEPS coverage (many colored countries → appears large) → taller container (520px) to reduce visual weight.
+     Inverter/Variable Speed (sparse data) → shorter container (380px) to increase visual weight.
+     Both heights must stay in sync with MEPS_MAP_HEIGHT / INVERTER_MAP_HEIGHT in JS.
+     =========================== */
+  #meps-map-container {
+    height: 750px;
+  }
+
+  #inverter-map-container {
+    height: 700px;
+  }
+
+  /* ===========================
+     INVERTER / COVERAGE CHART FLAT WRAPPER
+     Replaces the card-panel wrapper for inverter AND coverage tab charts
+     so they sit directly on the section background without a box-in-box effect.
+     =========================== */
+  .inverter-chart-flat {
+    background: transparent;
+    padding: 0;
   }
 </style>

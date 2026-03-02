@@ -259,8 +259,8 @@
         min: minYear,
         max: maxYear,
         interval: 5,
-        nameTextStyle: { fontSize: 10, color: '#888' },
-        axisLabel: { fontSize: 10, color: '#666', formatter: (v: number) => String(v) },
+        nameTextStyle: { fontSize: 12, color: '#888' },
+        axisLabel: { fontSize: 13, color: '#666', formatter: (v: number) => String(v) },
         axisLine: { lineStyle: { color: '#e2e8f0' } },
         splitLine: { show: false },
       },
@@ -268,8 +268,8 @@
         type: 'value',
         name: yAxisLabel + directionNote,
         min: appliance === 'AC' ? 0 : undefined,
-        nameTextStyle: { fontSize: 10, color: '#888' },
-        axisLabel: { fontSize: 10, color: '#888', formatter: (v: number) => appliance === 'AC' ? v.toFixed(1) : String(Math.round(v)) },
+        nameTextStyle: { fontSize: 12, color: '#888' },
+        axisLabel: { fontSize: 13, color: '#888', formatter: (v: number) => appliance === 'AC' ? v.toFixed(1) : String(Math.round(v)) },
         splitLine: { lineStyle: { color: '#f1f5f9' } },
         axisLine: { show: false },
         inverse: !higherIsBetter,
@@ -321,14 +321,14 @@
       xAxis: {
         type: 'category',
         data: countries,
-        axisLabel: { fontSize: 10, color: '#666', rotate: 25, interval: 0 },
+        axisLabel: { fontSize: 13, color: '#666', rotate: 25, interval: 0 },
         axisLine: { lineStyle: { color: '#e2e8f0' } },
       },
       yAxis: {
         type: 'value',
         name: yAxisName,
-        nameTextStyle: { fontSize: 10, color: '#888' },
-        axisLabel: { fontSize: 10, color: '#888' },
+        nameTextStyle: { fontSize: 12, color: '#888' },
+        axisLabel: { fontSize: 13, color: '#888' },
         splitLine: { lineStyle: { color: '#f1f5f9' } },
         axisLine: { show: false },
       },
@@ -353,7 +353,7 @@
         label: {
           show: true,
           position: 'top',
-          fontSize: 10,
+          fontSize: 12,
           color: '#555',
           formatter: (p: any) => {
             const idx = p.dataIndex;

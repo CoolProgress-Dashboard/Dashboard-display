@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { page } from '$app/stores';
   import { VIEW_META } from '$lib/components/shared/config';
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
@@ -21,6 +22,15 @@
   export let accessForecast: AccessForecastRecord[] = [];
   /** Countries lookup (data.countries) */
   export let countries: Country[] = [];
+
+  // Exposed apply function — assigned after D3 init so reactive block can call it
+  let _applyCountry: ((code: string | null) => void) | null = null;
+
+  // React to URL country changes (sidebar selection or map click propagation)
+  $: {
+    const _code = $page?.url?.searchParams?.get('country') ?? null;
+    if (_applyCountry) _applyCountry(_code);
+  }
 
   // -------------------------------------------------------
   // Static config / story content
@@ -370,6 +380,7 @@
           selectedCountry = null;
           updateAccessViewingBadge();
           showGlobalAccessDetail();
+          syncAccessPanelVisibility();
           // Propagate reset to page-level global filter if available
           if (typeof (window as any).__dashboardClearCountry === 'function') {
             (window as any).__dashboardClearCountry();
@@ -423,6 +434,7 @@
             updateAccessViewingBadge();
             highlightAccessCountry(code);
             updateAccessCountryDetail(code, country);
+            syncAccessPanelVisibility();
             // Sync page-level global filter if available
             if (typeof (window as any).__dashboardSetCountry === 'function') {
               (window as any).__dashboardSetCountry(code);
@@ -842,6 +854,13 @@
       `;
     }
 
+    function syncAccessPanelVisibility() {
+      const timelineContainer = document.getElementById('access-timeline-container');
+      const countryDetail = document.getElementById('access-country-detail');
+      if (timelineContainer) timelineContainer.style.display = selectedCountry ? 'none' : '';
+      if (countryDetail) countryDetail.style.display = selectedCountry ? '' : 'none';
+    }
+
     // -------------------------------------------------------
     // Checkbox filter wiring
     // -------------------------------------------------------
@@ -899,6 +918,30 @@
     await initAccessMap();
     updateAccessCharts();
     showGlobalAccessDetail();
+    syncAccessPanelVisibility();
+
+      // Expose country-apply function for reactive URL sync
+      function applyCountry(code: string | null) {
+        if (!code) {
+          selectedCountry = null;
+          updateAccessViewingBadge();
+          showGlobalAccessDetail();
+          syncAccessPanelVisibility();
+          return;
+        }
+        const country = countries.find(c => c.country_code === code);
+        if (!country) return;
+        selectedCountry = code;
+        updateAccessViewingBadge();
+        highlightAccessCountry(code);
+        updateAccessCountryDetail(code, country);
+        syncAccessPanelVisibility();
+      }
+      _applyCountry = applyCountry;
+
+      // Apply country from URL on initial load
+      const _initialCountry = new URLSearchParams(window.location.search).get('country');
+      if (_initialCountry) applyCountry(_initialCountry);
 
     // -------------------------------------------------------
     // Cleanup
@@ -1072,33 +1115,33 @@
         <div class="checkbox-group">
           <span class="checkbox-label"><i class="fa-solid fa-earth-americas"></i> Region</span>
           <div class="checkbox-items" id="access-region-checks">
-            <label class="tick-box"><input type="checkbox" value="Africa" checked /><span class="tick-mark"></span>Africa</label>
-            <label class="tick-box"><input type="checkbox" value="Asia and the Middle East" checked /><span class="tick-mark"></span>Asia &amp; Middle East</label>
-            <label class="tick-box"><input type="checkbox" value="Latin America and the Caribbean" checked /><span class="tick-mark"></span>Latin America</label>
-            <label class="tick-box"><input type="checkbox" value="Oceania" checked /><span class="tick-mark"></span>Oceania</label>
+            <label class="tick-box" title="Sub-Saharan Africa and North Africa — largest high-risk population with significant infrastructure gaps."><input type="checkbox" value="Africa" checked /><span class="tick-mark"></span>Africa</label>
+            <label class="tick-box" title="South Asia, East Asia, Southeast Asia, and Middle East — fastest growing cooling demand regions."><input type="checkbox" value="Asia and the Middle East" checked /><span class="tick-mark"></span>Asia &amp; Middle East</label>
+            <label class="tick-box" title="Latin America and Caribbean — growing disparities between urban and rural cooling access."><input type="checkbox" value="Latin America and the Caribbean" checked /><span class="tick-mark"></span>Latin America</label>
+            <label class="tick-box" title="Pacific Island nations and Australia/New Zealand — vulnerable small island states."><input type="checkbox" value="Oceania" checked /><span class="tick-mark"></span>Oceania</label>
           </div>
         </div>
         <div class="checkbox-group">
-          <span class="checkbox-label"><i class="fa-solid fa-users"></i> Income Group</span>
+          <span class="checkbox-label"><i class="fa-solid fa-users"></i> Income Group <i class="fa-solid fa-circle-info" style="font-size:0.7rem;color:#94a3b8;margin-left:0.3rem;" title="Hover over each filter for more information"></i></span>
           <div class="checkbox-items" id="access-pop-checks">
-            <label class="tick-box"><input type="checkbox" value="Rural Poor" checked /><span class="tick-mark"></span>Rural Poor</label>
-            <label class="tick-box"><input type="checkbox" value="Urban Poor" checked /><span class="tick-mark"></span>Urban Poor</label>
-            <label class="tick-box"><input type="checkbox" value="Lower-Middle Income" checked /><span class="tick-mark"></span>Lower-Mid</label>
-            <label class="tick-box"><input type="checkbox" value="Middle-Income" checked /><span class="tick-mark"></span>Middle</label>
+            <label class="tick-box" title="Likely subsistence farmers without access to an intact cold chain; may lack access to electricity and properly stored vaccines. Income: less than $2.15/day in rural areas."><input type="checkbox" value="Rural Poor" checked /><span class="tick-mark"></span>Rural Poor</label>
+            <label class="tick-box" title="May have some access to electricity, but live in housing of poor quality; may have a refrigerator, but food often spoils due to intermittent power. Income: less than $2.15/day in urban/slum areas."><input type="checkbox" value="Urban Poor" checked /><span class="tick-mark"></span>Urban Poor</label>
+            <label class="tick-box" title="May purchase an affordable but likely inefficient air conditioner or refrigerator, raising energy consumption and GHG emissions. Income: less than $10/day outside poverty."><input type="checkbox" value="Lower-Middle Income" checked /><span class="tick-mark"></span>Lower-Mid</label>
+            <label class="tick-box" title="May be able to afford a more efficient air conditioner or minimize its use; may move to energy efficient housing and working environments. Income: between $10-$20/day."><input type="checkbox" value="Middle-Income" checked /><span class="tick-mark"></span>Middle</label>
           </div>
         </div>
         <div class="checkbox-group">
-          <span class="checkbox-label"><i class="fa-solid fa-triangle-exclamation"></i> Risk Level</span>
+          <span class="checkbox-label"><i class="fa-solid fa-triangle-exclamation"></i> Risk Level <i class="fa-solid fa-circle-info" style="font-size:0.7rem;color:#94a3b8;margin-left:0.3rem;" title="Hover over each filter for more information"></i></span>
           <div class="checkbox-items" id="access-impact-checks">
-            <label class="tick-box"><input type="checkbox" value="High" checked /><span class="tick-mark risk-high"></span>High</label>
-            <label class="tick-box"><input type="checkbox" value="Medium" checked /><span class="tick-mark risk-medium"></span>Medium</label>
-            <label class="tick-box"><input type="checkbox" value="Low" checked /><span class="tick-mark risk-low"></span>Low</label>
+            <label class="tick-box" title="HIGH RISK: Populations facing the most severe cooling vulnerability — lack of energy access, extreme poverty, high exposure to dangerous heat."><input type="checkbox" value="High" checked /><span class="tick-mark risk-high"></span>High</label>
+            <label class="tick-box" title="MEDIUM RISK: Populations on the brink of purchasing inefficient cooling devices; at risk of locking into high-emissions solutions without access to efficient alternatives."><input type="checkbox" value="Medium" checked /><span class="tick-mark risk-medium"></span>Medium</label>
+            <label class="tick-box" title="LOW RISK: Populations with growing access to cooling but still facing affordability and efficiency challenges."><input type="checkbox" value="Low" checked /><span class="tick-mark risk-low"></span>Low</label>
           </div>
         </div>
       </div>
 
       <!-- Global Timeline Chart (2013-2050) -->
-      <div class="card-panel" style="margin-top: 0.75rem;">
+      <div id="access-timeline-container" class="card-panel" style="margin-top: 0.75rem;">
         <div class="chart-card-header" style="padding: 0.75rem 1rem;">
           <h3 style="font-size: 0.88rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 0.4rem; margin: 0;">
             <i class="fa-solid fa-chart-area" style="color: #d97706;"></i>
@@ -1439,14 +1482,16 @@
   /* KPI panel */
   .kpi-panel { padding: 1rem 1.25rem; }
 
-  /* Tick-box filters */
+  /* Pill-style filters — matching Emissions green pill aesthetic */
   .access-checkboxes {
     display: flex;
-    gap: 1.5rem;
+    gap: 1.25rem;
     flex-wrap: wrap;
-    padding: 0.75rem 0.5rem 0.5rem;
-    border-top: 1px solid #f1f5f9;
+    padding: 1rem 1rem 0.875rem;
+    border-top: 1px solid #e2e8f0;
     margin-top: 0.5rem;
+    background: #f8fafb;
+    border-radius: 0 0 10px 10px;
   }
 
   .checkbox-group {
@@ -1457,81 +1502,68 @@
   }
 
   .checkbox-label {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 700;
-    color: #64748b;
+    color: #334155;
     display: flex;
     align-items: center;
     gap: 0.3rem;
     white-space: nowrap;
   }
 
-  .checkbox-label i { font-size: 0.65rem; opacity: 0.6; }
+  .checkbox-label i { font-size: 0.7rem; opacity: 0.7; }
 
   .checkbox-items {
     display: flex;
-    gap: 0.35rem;
+    gap: 0.4rem;
     flex-wrap: wrap;
   }
 
+  /* Pill button — unselected state: teal outline, light bg */
   .tick-box {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    font-size: 0.72rem;
-    color: #475569;
+    gap: 0;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #3D6B6B;
     cursor: pointer;
-    padding: 0.2rem 0.5rem;
-    border-radius: 5px;
-    border: 1px solid #e2e8f0;
-    background: #fafbfc;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    border: 1.5px solid #3D6B6B;
+    background: transparent;
     transition: all 0.15s ease;
     user-select: none;
     white-space: nowrap;
+    line-height: 1.4;
   }
 
-  .tick-box:hover { border-color: #d97706; background: #fffbf0; }
+  .tick-box:hover {
+    background: rgba(61, 107, 107, 0.1);
+    border-color: #2D5252;
+    color: #2D5252;
+  }
 
+  /* Pill button — selected state: filled teal, white text */
   .tick-box:has(input:checked) {
-    background: #fffbf0;
-    border-color: #d97706;
-    color: #92400e;
+    background: #3D6B6B;
+    border-color: #3D6B6B;
+    color: #ffffff;
     font-weight: 600;
+  }
+
+  .tick-box:has(input:checked):hover {
+    background: #2D5252;
+    border-color: #2D5252;
   }
 
   .tick-box input { display: none; }
 
-  .tick-mark {
-    width: 12px;
-    height: 12px;
-    border: 1.5px solid #cbd5e1;
-    border-radius: 3px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.15s ease;
-  }
+  /* Hide tick mark — pills are self-indicating */
+  .tick-mark { display: none; }
 
-  .tick-box:has(input:checked) .tick-mark {
-    background: #d97706;
-    border-color: #d97706;
-  }
-
-  .tick-box:has(input:checked) .tick-mark::after {
-    content: '\2713';
-    color: white;
-    font-size: 0.55rem;
-    font-weight: 900;
-    line-height: 1;
-  }
-
-  .tick-mark.risk-high { border-color: #fca5a5; }
-  .tick-box:has(input:checked) .tick-mark.risk-high { background: #ef4444; border-color: #ef4444; }
-  .tick-mark.risk-medium { border-color: #fcd34d; }
-  .tick-box:has(input:checked) .tick-mark.risk-medium { background: #f59e0b; border-color: #f59e0b; }
-  .tick-mark.risk-low { border-color: #86efac; }
-  .tick-box:has(input:checked) .tick-mark.risk-low { background: #22c55e; border-color: #22c55e; }
+  /* Risk level pills retain colour-coded active states */
+  .tick-box:has(input:checked) .tick-mark { display: none; }
 
   :global(.risk-dot) {
     display: inline-block;

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e6f7e"/>
+      <stop offset="100%" stop-color="#1a4a6e"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square background -->
+  <rect width="32" height="32" rx="7" ry="7" fill="url(#bg)"/>
+  <!-- Thermometer tube body -->
+  <rect x="14" y="5" width="4" height="14" rx="2" fill="white" opacity="0.9"/>
+  <!-- Thermometer bulb -->
+  <circle cx="16" cy="21" r="4" fill="white" opacity="0.9"/>
+  <!-- Downward arrow -->
+  <path d="M16 8 L16 16" stroke="#3DD68C" stroke-width="2" stroke-linecap="round"/>
+  <path d="M13 13 L16 17 L19 13" stroke="#3DD68C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

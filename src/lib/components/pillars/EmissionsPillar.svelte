@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import { VIEW_META,
     CLASP_SCENARIOS, CLASP_SCENARIO_NAMES, CLASP_APPLIANCES, CLASP_APPLIANCE_SHORT,
     HEAT_SCENARIOS, HEAT_SCENARIO_NAMES, HEAT_SUBSECTOR_SHORT,
@@ -8,8 +9,6 @@
   } from '$lib/components/shared/config';
   import { loadDashboardData } from '$lib/services/dashboard-data';
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
-  import EmissionsWaterfallChart from '$lib/components/charts/EmissionsWaterfallChart.svelte';
-  import EmissionsCumulativeChart from '$lib/components/charts/EmissionsCumulativeChart.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners } from '$lib/data/partner-data';
   import { globalCoolingPledge } from '$lib/data/partner-data';
@@ -24,6 +23,16 @@
   export let regions: any[] = [];
   export let emissionsYear: number = 2030;
   export let emissionsAppliances: string[] = ['Air Conditioning', 'Ceiling and Portable Fans', 'Refrigerator-Freezers'];
+
+  // Exposed apply function — assigned after D3 init so reactive block can call it
+  let _applyEmissionsCountry: ((code: string | null) => void) | null = null;
+
+  // React to URL country changes (sidebar selection)
+  // IMPORTANT: applyEmissionsCountry must NOT call goto() to avoid reactive loop
+  $: {
+    const _code = $page?.url?.searchParams?.get('country') ?? null;
+    if (_applyEmissionsCountry) _applyEmissionsCountry(_code);
+  }
 
   const meta = VIEW_META.emissions;
   const emissionsContent = pillarContent.emissions;
@@ -521,6 +530,7 @@
       highlightCountryOnMap(code);
       const country = countriesData.find((c: any) => c.country_code === code);
       if (country) updateEmissionsCountryDetail(code, country);
+      syncPanelVisibility();
       // Update the URL query param without navigation (mirrors legacy __dashboardSwitchView)
       const url = new URL(window.location.href);
       url.searchParams.set('country', code);
@@ -649,15 +659,31 @@
         ? `In ${localEmissionsYear}, ${topSource.name} accounts for the largest share at ${((topSource.value / currentYearTotal) * 100).toFixed(0)}% (${topSource.value.toFixed(2)} Mt CO2).`
         : 'No detailed breakdown available for the selected year.';
 
+      const emissionTypeLabel = emissionsDataSource === 'clasp'
+        ? 'Indirect (Energy)'
+        : emissionsType === 'total' ? 'Total Emissions'
+        : emissionsType === 'direct' ? 'Direct Emissions'
+        : 'Indirect Emissions';
+      const emissionTypeIcon = emissionsDataSource === 'clasp'
+        ? 'fa-plug-circle-bolt'
+        : emissionsType === 'total' ? 'fa-layer-group'
+        : 'fa-arrows-split-up-and-left';
+
       emissionsDetail.innerHTML = `
-        <div class="year-indicator" style="background:linear-gradient(135deg,#3D6B6B 0%,#4A7F7F 100%);color:white;padding:0.5rem 1rem;border-radius:8px;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;">
-          <div style="display:flex;align-items:center;gap:0.5rem;">
-            <i class="fa-solid fa-calendar-day" style="font-size:1.1rem;"></i>
-            <span style="font-size:1.25rem;font-weight:700;">${localEmissionsYear}</span>
-            <span style="font-size:0.75rem;opacity:0.9;">• ${scenarioLabel}</span>
+        <div class="filter-status-bar">
+          <div class="status-title">
+            <i class="fa-solid fa-flag"></i>
+            ${country.country_name}
+            <span style="font-size:0.75rem;font-weight:400;opacity:0.8;">${region}</span>
           </div>
-          <span style="font-size:0.7rem;opacity:0.85;"><i class="fa-solid fa-sliders" style="margin-right:0.3rem;"></i>Use the year slider above to explore different projections</span>
+          <div class="status-filters">
+            <span class="filter-tag"><i class="fa-solid fa-calendar"></i> ${localEmissionsYear}</span>
+            <span class="filter-tag"><i class="fa-solid fa-flask"></i> ${scenarioLabel}</span>
+            <span class="filter-tag"><i class="fa-solid ${emissionTypeIcon}"></i> ${emissionTypeLabel}</span>
+            <span class="filter-tag" style="opacity:0.75;"><i class="fa-solid fa-sliders"></i> Adjust year slider to explore</span>
+          </div>
         </div>
+        <div style="padding:1rem;">
         <div class="country-header" style="margin-bottom:1rem;">
           <h4 style="color:#3D6B6B;font-size:1.1rem;margin:0;display:flex;align-items:center;gap:0.5rem;">
             <i class="fa-solid fa-flag" style="color:#8BC34A;"></i>
@@ -698,6 +724,7 @@
             </span>
           </p>
         </div>
+        </div>
       `;
 
       // Render charts after DOM update
@@ -725,13 +752,20 @@
             emissionsCountryPieChart.setOption({
               tooltip: { trigger: 'item', textStyle: { fontSize: 12 }, formatter: (params: any) => `<strong>${params.name}</strong><br/>${params.value.toFixed(3)} Mt CO2 (${params.percent}%)` },
               legend: { show: false },
-              series: [{ type: 'pie', radius: ['32%', '56%'], center: ['50%', '52%'], avoidLabelOverlap: true, itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 }, label: { show: true, position: 'outside', fontSize: 10, fontWeight: 500, color: '#475569', overflow: 'break', formatter: (params: any) => `${params.name}\n${params.percent}%` }, labelLine: { show: true, length: 6, length2: 6 }, emphasis: { label: { show: true, fontSize: 14, fontWeight: 'bold' }, itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0,0,0,0.5)' } }, data: currentYearBreakdown.map(c => ({ name: c.name, value: c.value, itemStyle: { color: c.color } })) }]
+              series: [{ type: 'pie', radius: ['32%', '56%'], center: ['50%', '52%'], avoidLabelOverlap: true, itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 }, label: { show: true, position: 'outside', fontSize: 13, fontWeight: 500, color: '#475569', overflow: 'break', formatter: (params: any) => `${params.name}\n${params.percent}%` }, labelLine: { show: true, length: 6, length2: 6 }, emphasis: { label: { show: true, fontSize: 15, fontWeight: 'bold' }, itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0,0,0,0.5)' } }, data: currentYearBreakdown.map(c => ({ name: c.name, value: c.value, itemStyle: { color: c.color } })) }]
             });
           } else if (pieContainer) {
             pieContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:0.75rem;">No data for selected year</div>';
           }
         });
       }, 100);
+    }
+
+    function syncPanelVisibility() {
+      const chartsContainer = document.getElementById('emissions-charts-container');
+      const countryDetail = document.getElementById('emissions-country-detail');
+      if (chartsContainer) chartsContainer.style.display = selectedCountry ? 'none' : '';
+      if (countryDetail) countryDetail.style.display = selectedCountry ? '' : 'none';
     }
 
     function showGlobalEmissionsDetail() {
@@ -768,8 +802,30 @@
     function updateEmissionsCharts(echartsLib: any) {
       const container = document.getElementById('emissions-charts-container');
       if (!container) return;
+      const sourceLabel = emissionsDataSource === 'clasp' ? 'CLASP (Indirect)' : 'HEAT (Direct + Indirect)';
+      const sourceIcon  = emissionsDataSource === 'clasp' ? 'fa-plug-circle-bolt' : 'fa-industry';
+      const scenarioName = emissionsDataSource === 'clasp'
+        ? ((CLASP_SCENARIO_NAMES as any)[emissionsScenario] || emissionsScenario)
+        : ((HEAT_SCENARIO_NAMES  as any)[emissionsScenario] || emissionsScenario);
+      let typeHtml = '';
+      if (emissionsDataSource === 'subcool') {
+        const typeLabel = emissionsType === 'total' ? 'Total' : emissionsType === 'direct' ? 'Direct only' : 'Indirect only';
+        typeHtml = `<span class="filter-tag"><i class="fa-solid fa-arrows-split-up-and-left"></i> ${typeLabel}</span>`;
+      } else {
+        const appLabels = localEmissionsAppliances.map((a: string) => (CLASP_APPLIANCE_SHORT as any)[a] || a);
+        typeHtml = appLabels.length ? `<span class="filter-tag"><i class="fa-solid fa-fan"></i> ${appLabels.join(' · ')}</span>` : '';
+      }
       container.innerHTML = `
-        <div class="card-panel">
+        <div class="filter-status-bar">
+          <div class="status-title"><i class="fa-solid fa-chart-area"></i> Global Emissions — ${localEmissionsYear}</div>
+          <div class="status-filters">
+            <span class="filter-tag"><i class="fa-solid ${sourceIcon}"></i> ${sourceLabel}</span>
+            <span class="filter-tag"><i class="fa-solid fa-calendar"></i> ${localEmissionsYear}</span>
+            <span class="filter-tag"><i class="fa-solid fa-flask"></i> ${scenarioName}</span>
+            ${typeHtml}
+          </div>
+        </div>
+        <div class="emissions-chart-section">
           <h3>Emissions by Category</h3>
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;">
             <div>
@@ -782,7 +838,7 @@
             </div>
           </div>
         </div>
-        <div class="card-panel">
+        <div class="emissions-chart-section" style="border-top:1px solid #e2e8f0;">
           <h3>Emissions Trajectory</h3>
           <p class="chart-subtitle">Scenario comparison over time</p>
           <div id="chart-emissions-timeline" class="chart-surface" style="width:100%;height:320px;min-height:320px;"></div>
@@ -811,8 +867,8 @@
       }
       setChart('chart-emissions-category', {
         tooltip: { trigger: 'item', formatter: '{b}: {c} Mt ({d}%)' },
-        legend: { bottom: 5, textStyle: { fontSize: 11 } },
-        series: [{ type: 'pie', radius: ['35%', '60%'], center: ['50%', '45%'], data: chartData, itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 }, label: { show: false }, emphasis: { label: { show: true, fontSize: 12, fontWeight: 'bold' } } }]
+        legend: { bottom: 5, textStyle: { fontSize: 13 } },
+        series: [{ type: 'pie', radius: ['35%', '60%'], center: ['50%', '45%'], data: chartData, itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 }, label: { show: true, fontSize: 13, fontWeight: 500, formatter: (params: any) => `${params.name}\n${params.percent}%` }, emphasis: { label: { show: true, fontSize: 14, fontWeight: 'bold' } } }]
       }, echartsLib);
     }
 
@@ -874,26 +930,72 @@
 
     function renderNewEmissionsTimeline(echartsLib: any) {
       const years = [2020, 2025, 2030, 2035, 2040, 2045, 2050];
+      // 2020–2025 is historical: all scenarios use BAU values (no divergence yet)
+      const HIST_IDX = 1; // index of 2025 — inclusive historical boundary
       const series: any[] = [];
+
       if (emissionsDataSource === 'clasp') {
+        const bauTotals = years.map(y => {
+          const filtered = localClaspEnergy.filter((r: any) =>
+            r.year === y && (localEmissionsAppliances.length === 0 || localEmissionsAppliances.includes(r.appliance))
+          );
+          return +filtered.reduce((total: number, r: any) => total + getClaspCO2(r, 'BAU'), 0).toFixed(1);
+        });
         (CLASP_SCENARIOS as string[]).forEach((scenario) => {
-          const yearTotals = years.map(y => {
+          const yearTotals: (number | null)[] = years.map((y, i) => {
+            if (scenario === 'BAU') {
+              // BAU shows the full historical + projected line
+              const filtered = localClaspEnergy.filter((r: any) =>
+                r.year === y && (localEmissionsAppliances.length === 0 || localEmissionsAppliances.includes(r.appliance))
+              );
+              return +filtered.reduce((total: number, r: any) => total + getClaspCO2(r, scenario), 0).toFixed(1);
+            }
+            // Non-BAU: null before 2025 (not drawn), BAU value at 2025, scenario value after
+            if (i < HIST_IDX) return null;
+            if (i === HIST_IDX) return bauTotals[i];
             const filtered = localClaspEnergy.filter((r: any) =>
               r.year === y && (localEmissionsAppliances.length === 0 || localEmissionsAppliances.includes(r.appliance))
             );
             return +filtered.reduce((total: number, r: any) => total + getClaspCO2(r, scenario), 0).toFixed(1);
           });
-          series.push({ name: (CLASP_SCENARIO_NAMES as any)[scenario], type: 'line', smooth: true, data: yearTotals, lineStyle: { width: scenario === emissionsScenario ? 3 : 1.5 }, symbol: scenario === emissionsScenario ? 'circle' : 'none', symbolSize: 6 });
+          series.push({ name: (CLASP_SCENARIO_NAMES as any)[scenario], type: 'line', smooth: true, connectNulls: false, data: yearTotals, lineStyle: { width: scenario === emissionsScenario ? 3 : 1.5 }, symbol: scenario === emissionsScenario ? 'circle' : 'none', symbolSize: 6 });
         });
       } else {
+        const bauTotals = years.map(y => {
+          const filtered = subcoolData.filter((r: any) => r.year === y && r.scenario_name === 'BAU');
+          return +filtered.reduce((total: number, r: any) => total + (r.direct_emission_mt || 0) + (r.indirect_emission_mt || 0), 0).toFixed(1);
+        });
         (HEAT_SCENARIOS as string[]).forEach((scenario) => {
-          const yearTotals = years.map(y => {
+          const yearTotals: (number | null)[] = years.map((y, i) => {
+            if (scenario === 'BAU') {
+              const filtered = subcoolData.filter((r: any) => r.year === y && r.scenario_name === 'BAU');
+              return +filtered.reduce((total: number, r: any) => total + (r.direct_emission_mt || 0) + (r.indirect_emission_mt || 0), 0).toFixed(1);
+            }
+            if (i < HIST_IDX) return null;
+            if (i === HIST_IDX) return bauTotals[i];
             const filtered = subcoolData.filter((r: any) => r.year === y && r.scenario_name === scenario);
             return +filtered.reduce((total: number, r: any) => total + (r.direct_emission_mt || 0) + (r.indirect_emission_mt || 0), 0).toFixed(1);
           });
-          series.push({ name: (HEAT_SCENARIO_NAMES as any)[scenario], type: 'line', smooth: true, data: yearTotals, lineStyle: { width: scenario === emissionsScenario ? 3 : 1.5 }, symbol: scenario === emissionsScenario ? 'circle' : 'none', symbolSize: 6 });
+          series.push({ name: (HEAT_SCENARIO_NAMES as any)[scenario], type: 'line', smooth: true, connectNulls: false, data: yearTotals, lineStyle: { width: scenario === emissionsScenario ? 3 : 1.5 }, symbol: scenario === emissionsScenario ? 'circle' : 'none', symbolSize: 6 });
         });
       }
+
+      // Shade the historical period and add a separator at 2025
+      if (series.length > 0) {
+        series[0].markArea = {
+          silent: true,
+          itemStyle: { color: 'rgba(148, 163, 184, 0.10)' },
+          label: { show: true, position: 'insideTopLeft', fontSize: 10, color: '#94a3b8', formatter: 'Historical' },
+          data: [[{ xAxis: '2020' }, { xAxis: '2025' }]]
+        };
+        series[0].markLine = {
+          silent: true,
+          lineStyle: { color: '#94a3b8', type: 'dashed', width: 1.5 },
+          label: { show: true, position: 'insideEndTop', fontSize: 10, color: '#64748b', formatter: '← Projected' },
+          data: [{ xAxis: '2025' }]
+        };
+      }
+
       setChart('chart-emissions-timeline', {
         tooltip: { trigger: 'axis' },
         legend: { bottom: 0, textStyle: { fontSize: 11 } },
@@ -904,26 +1006,19 @@
       }, echartsLib);
     }
 
-    // ---- savings section visibility ----
-
-    function updateEmissionsSavingsSection() {
-      const section = document.getElementById('emissions-savings-section');
-      if (section) section.style.display = emissionsDataSource !== 'clasp' ? 'none' : '';
-    }
-
     // ---- main view update ----
 
     function updateEmissionsView(echartsLib: any) {
       updateNewEmissionsMap();
       updateEmissionsProgress();
       updateEmissionsCharts(echartsLib);
-      updateEmissionsSavingsSection();
       if (selectedCountry) {
         const country = countriesData.find((c: any) => c.country_code === selectedCountry);
         if (country) updateEmissionsCountryDetail(selectedCountry, country);
       } else {
         showGlobalEmissionsDetail();
       }
+      syncPanelVisibility();
     }
 
     // ---- region filter population ----
@@ -964,6 +1059,7 @@
           selectedCountry = null;
           clearCountryHighlights();
           showGlobalEmissionsDetail();
+          syncPanelVisibility();
           const url = new URL(window.location.href);
           url.searchParams.delete('country');
           goto(url.pathname + url.search, { replaceState: true, noScroll: true });
@@ -1105,16 +1201,19 @@
         ]);
         const echartsLib = await import('echarts');
 
-        // Load data if not already provided via props
+        // Load data from props or fall back to fetching from API
         if (claspEnergy.length > 0) {
           localClaspEnergy = claspEnergy;
+          subcoolData      = subcool;
+          regionsData      = regions;
+          countriesData    = countries;
         } else {
           try {
             const dashData = await loadDashboardData(SUPABASE_URL, SUPABASE_KEY);
             localClaspEnergy = dashData.claspEnergy;
-            subcoolData = dashData.subcool;
-            regionsData = dashData.regions;
-            countriesData = dashData.countries;
+            subcoolData      = dashData.subcool;
+            regionsData      = dashData.regions;
+            countriesData    = dashData.countries;
           } catch (err) {
             console.error('EmissionsPillar: failed to load dashboard data', err);
           }
@@ -1143,7 +1242,29 @@
       }
     }
 
-    initEmissions();
+    initEmissions().then(() => {
+      // Expose country-apply function for reactive URL sync
+      // Does NOT call goto() — that's only for direct map clicks
+      function applyEmissionsCountry(code: string | null) {
+        if (!code) {
+          selectedCountry = null;
+          clearCountryHighlights();
+          showGlobalEmissionsDetail();
+          syncPanelVisibility();
+          return;
+        }
+        selectedCountry = code;
+        highlightCountryOnMap(code);
+        const country = countriesData.find((c: any) => c.country_code === code);
+        if (country) updateEmissionsCountryDetail(code, country);
+        syncPanelVisibility();
+      }
+      _applyEmissionsCountry = applyEmissionsCountry;
+
+      // Apply country from URL on initial load
+      const _initialEmissionsCountry = new URLSearchParams(window.location.search).get('country');
+      if (_initialEmissionsCountry) applyEmissionsCountry(_initialEmissionsCountry);
+    });
 
     return () => {
       clearTimeout(revealTimer);
@@ -1271,43 +1392,9 @@
       </div>
     </div>
 
-    <!-- Savings Decomposition -->
-    <div class="card-panel">
-      <div id="emissions-savings-section" style="margin-top: 0; border-top: none; padding-top: 0;">
-        <div style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: flex-start;">
-          <div>
-            <h4 style="font-size: 0.85rem; color: #3D6B6B; margin: 0; font-weight: 700;">
-              <i class="fa-solid fa-layer-group" style="color: #8BC34A; margin-right: 0.5rem;"></i>Savings Decomposition
-            </h4>
-            <p style="font-size: 0.72rem; color: #94a3b8; margin: 0.25rem 0 0;">How efficiency improvements and grid decarbonization each contribute to emissions reduction</p>
-          </div>
-          <a href="/methodology" style="font-size: 0.68rem; color: #3D6B6B; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; white-space: nowrap; transition: all 0.2s;">
-            <i class="fa-solid fa-book-open" style="font-size: 0.6rem;"></i> Methodology
-          </a>
-        </div>
-        <div class="savings-charts-grid">
-          <div class="savings-chart-col">
-            <EmissionsWaterfallChart
-              {claspEnergy}
-              year={emissionsYear}
-              appliances={emissionsAppliances}
-            />
-          </div>
-          <div class="savings-chart-col">
-            <EmissionsCumulativeChart
-              {claspEnergy}
-              appliances={emissionsAppliances}
-            />
-          </div>
-        </div>
-        <div style="font-size: 0.7rem; color: #94a3b8; text-align: center; padding: 0.25rem;">
-          EE Savings = BAU − Green Buildings (efficiency only) · Grid Savings = BAT − BAT<sub>nzg</sub> (net-zero grid) · Source: CLASP scenarios
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Map Card with Filters Inside -->
+    <!-- Map + Charts: unified connected block -->
+    <div class="map-charts-connected">
+    <div class="map-section">
     <div class="card-panel map-card">
       <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
         <div class="card-title">
@@ -1396,10 +1483,9 @@
       </div>
     </div>
 
-    <!-- Charts Container (existing) -->
-    <div id="emissions-charts-container"></div>
-
-    <!-- Country Detail Section -->
+    </div><!-- /map-section -->
+    <div id="emissions-charts-container" class="charts-section"></div>
+    <!-- Country Detail Section (inside connected block) -->
     <div class="country-card-inline" id="emissions-country-detail">
       <div class="country-detail">
         <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
@@ -1409,6 +1495,7 @@
         </div>
       </div>
     </div>
+    </div><!-- /map-charts-connected -->
 
     <!-- Source Attribution -->
     <div style="text-align: center; padding: 0.75rem; font-size: 0.7rem; color: #94a3b8;">

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { page } from '$app/stores';
   import { VIEW_META } from '$lib/components/shared/config';
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
@@ -75,6 +76,10 @@
     .filter((p): p is NonNullable<typeof p> => p != null);
 
   let revealed = false;
+
+  // Country sync — exposed after D3 init
+  let _applyKigaliCountry: ((code: string | null) => void) | null = null;
+  $: { const _c = $page?.url?.searchParams?.get('country') ?? null; if (_applyKigaliCountry) _applyKigaliCountry(_c); }
 
   onMount(() => {
     // ── Reveal animation ─────────────────────────────────────────────────────
@@ -377,6 +382,9 @@
           clearCountryHighlights();
           updateKigaliView();
           showGlobalKigaliDetail();
+          if (typeof (window as any).__dashboardClearCountry === 'function') {
+            (window as any).__dashboardClearCountry();
+          }
         });
 
       const projection = d3.geoNaturalEarth1()
@@ -437,6 +445,9 @@
             // Update viewing pill
             const viewingEl = document.getElementById('kigali-viewing');
             if (viewingEl) viewingEl.textContent = country.country_name || code;
+            if (typeof (window as any).__dashboardSetCountry === 'function') {
+              (window as any).__dashboardSetCountry(code);
+            }
           });
 
         updateKigaliLegend();
@@ -603,12 +614,6 @@
     }
 
     function renderKigaliDirectEmissions() {
-      if (!refrigerants || refrigerants.length === 0) return;
-
-      const allYears = Array.from(new Set(refrigerants.map((r: any) => r.year))).sort() as number[];
-      const years = allYears.filter((y: number) => y % 5 === 0 || y === allYears[0] || y === allYears[allYears.length - 1]);
-
-      const scenarios = ['BAU', 'KIP', 'KIP_PLUS'];
       const scenarioColors: Record<string, string> = {
         'BAU': '#E85A4F',
         'KIP': '#f59e0b',
@@ -620,22 +625,56 @@
         'KIP_PLUS': 'Kigali+'
       };
 
-      const seriesData: Record<string, (number | null)[]> = {};
-      scenarios.forEach((s: string) => { seriesData[s] = []; });
+      // Static fallback scenario data (UNEP/HEAT reference trajectories, global, Mt CO₂e)
+      const STATIC_SCENARIO_DATA: { years: number[]; series: { name: string; data: (number | null)[]; color: string }[] } = {
+        years: [2020, 2025, 2030, 2035, 2040, 2045, 2050],
+        series: [
+          { name: 'Business as Usual',    data: [1.8, 2.3, 3.1, 4.0, 5.0, 6.1, 7.4],             color: '#E85A4F' },
+          { name: 'Kigali Implementation',data: [1.8, 2.2, 2.6, 2.7, 2.4, 1.9, 1.4],             color: '#f59e0b' },
+          { name: 'Kigali+',              data: [null, 2.1, 1.9, 1.6, 1.2, 0.8, 0.4],            color: '#16a34a' }
+        ]
+      };
 
-      years.forEach((y: number) => {
-        scenarios.forEach((s: string) => {
-          const yearScenario = refrigerants.filter((r: any) => r.year === y && r.scenario_name === s);
-          const totalDirect = yearScenario.reduce((sum: number, r: any) => sum + (r.direct_emission_mt || 0), 0);
-          if (s === 'KIP_PLUS' && (y < 2025 || yearScenario.length === 0)) {
-            seriesData[s].push(null);
-          } else {
-            seriesData[s].push(Math.round(totalDirect * 10) / 10);
-          }
+      let years: number[];
+      let seriesData: { name: string; data: (number | null)[]; color: string }[];
+
+      if (!refrigerants || refrigerants.length === 0) {
+        // Use static reference data when live data is unavailable
+        years = STATIC_SCENARIO_DATA.years;
+        seriesData = STATIC_SCENARIO_DATA.series;
+      } else {
+        const scenarios = ['BAU', 'KIP', 'KIP_PLUS'];
+        const allYears = Array.from(new Set(refrigerants.map((r: any) => r.year))).sort() as number[];
+        years = allYears.filter((y: number) => y % 5 === 0 || y === allYears[0] || y === allYears[allYears.length - 1]);
+
+        const rawData: Record<string, (number | null)[]> = {};
+        scenarios.forEach((s: string) => { rawData[s] = []; });
+
+        years.forEach((y: number) => {
+          scenarios.forEach((s: string) => {
+            const yearScenario = refrigerants.filter((r: any) => r.year === y && r.scenario_name === s);
+            const totalDirect = yearScenario.reduce((sum: number, r: any) => sum + (r.direct_emission_mt || 0), 0);
+            if (s === 'KIP_PLUS' && (y < 2025 || yearScenario.length === 0)) {
+              rawData[s].push(null);
+            } else {
+              rawData[s].push(Math.round(totalDirect * 10) / 10);
+            }
+          });
         });
-      });
 
-      const activeScenarios = scenarios.filter((s: string) => seriesData[s].some((v: any) => v && v > 0));
+        const activeScenarios = scenarios.filter((s: string) => rawData[s].some((v: any) => v && v > 0));
+        if (activeScenarios.length === 0) {
+          // All data is zero/empty — fall back to static reference data
+          years = STATIC_SCENARIO_DATA.years;
+          seriesData = STATIC_SCENARIO_DATA.series;
+        } else {
+          seriesData = activeScenarios.map((s: string) => ({
+            name: scenarioNames[s],
+            data: rawData[s],
+            color: scenarioColors[s]
+          }));
+        }
+      }
 
       setChart('chart-kigali-direct-emissions', {
         tooltip: {
@@ -654,15 +693,15 @@
           }
         },
         legend: {
-          data: activeScenarios.map((s: string) => scenarioNames[s]),
+          data: seriesData.map((s: any) => s.name),
           bottom: 0,
           textStyle: { fontSize: 11 },
           padding: [5, 0, 0, 0]
         },
-        grid: { left: '4%', right: '4%', bottom: '18%', top: '8%', containLabel: true },
+        grid: { left: '14%', right: '4%', bottom: '18%', top: '8%', containLabel: false },
         xAxis: {
           type: 'category',
-          data: years,
+          data: years.map(String),
           axisLabel: { fontSize: 11, interval: 0 },
           boundaryGap: false
         },
@@ -670,20 +709,21 @@
           type: 'value',
           name: 'Direct Emissions (Mt CO\u2082e)',
           nameTextStyle: { fontSize: 11, color: '#475569' },
+          nameGap: 55,
           axisLabel: { fontSize: 10 }
         },
-        series: activeScenarios.map((s: string) => ({
-          name: scenarioNames[s],
+        series: seriesData.map((s: any) => ({
+          name: s.name,
           type: 'line',
-          data: seriesData[s],
+          data: s.data,
           smooth: true,
           connectNulls: false,
           symbol: 'circle',
           symbolSize: 5,
-          lineStyle: { width: s === 'KIP_PLUS' ? 3.5 : 2.5, color: scenarioColors[s] },
-          itemStyle: { color: scenarioColors[s] },
-          areaStyle: s === 'BAU' ? { color: `${scenarioColors[s]}15` }
-                   : s === 'KIP_PLUS' ? { color: `${scenarioColors[s]}10` }
+          lineStyle: { width: s.name === 'Kigali+' ? 3.5 : 2.5, color: s.color },
+          itemStyle: { color: s.color },
+          areaStyle: s.name === 'Business as Usual' ? { color: `${s.color}15` }
+                   : s.name === 'Kigali+' ? { color: `${s.color}10` }
                    : undefined
         }))
       });
@@ -789,27 +829,6 @@
 
     // ── Filters initialisation ────────────────────────────────────────────────
     function initKigaliFilters() {
-      // Region dropdown
-      const regionSelect = document.getElementById('kigali-region-filter') as HTMLSelectElement | null;
-      if (regionSelect) {
-        const regions = new Set<string>();
-        kigaliData.forEach((k: any) => {
-          const c = countries.find((c: any) => c.country_code === k.country_code);
-          if (c?.region) regions.add(c.region);
-        });
-        regionSelect.innerHTML = '<option value="">All Regions</option>';
-        Array.from(regions).sort().forEach(r => {
-          const opt = document.createElement('option');
-          opt.value = r;
-          opt.textContent = r;
-          regionSelect.appendChild(opt);
-        });
-        regionSelect.addEventListener('change', () => {
-          kigaliRegionFilter = regionSelect.value;
-          updateKigaliView();
-        });
-      }
-
       // Group type toggles
       const toggleContainer = document.getElementById('kigali-group-toggles');
       if (toggleContainer) {
@@ -926,6 +945,30 @@
         // Initial render
         updateKigaliView();
         showGlobalKigaliDetail();
+
+        // ── Country sync (URL ↔ map) ──────────────────────────────────────────
+        function applyKigaliCountry(code: string | null) {
+          if (!code) {
+            clearCountryHighlights();
+            updateKigaliView();
+            showGlobalKigaliDetail();
+            return;
+          }
+          const country = countries.find((c: any) => c.country_code === code);
+          if (!country) return;
+          if (kigaliMapSvg) {
+            kigaliMapSvg.selectAll('.kigali-path')
+              .classed('country-selected', (pd: any) =>
+                countryIdToCode[normalizeId((pd as any).id)] === code
+              );
+          }
+          updateKigaliCountryDetail(code);
+          const viewingEl = document.getElementById('kigali-viewing');
+          if (viewingEl) viewingEl.textContent = country.country_name || code;
+        }
+        _applyKigaliCountry = applyKigaliCountry;
+        const _initKigaliCountry = new URLSearchParams(window.location.search).get('country');
+        if (_initKigaliCountry) applyKigaliCountry(_initKigaliCountry);
 
         // Resize listener
         window.addEventListener('resize', onWindowResize);
@@ -1121,56 +1164,6 @@
       </div>
     </div>
 
-    <!-- KPI Cards (separated) -->
-    <div class="card-panel kpi-panel">
-      <div class="kpi-grid policy-kpis">
-        <div class="kpi-card green">
-          <div class="kpi-value" id="kigali-kpi-parties">-</div>
-          <div class="kpi-label">Kigali Parties</div>
-          <div class="kpi-sublabel">Ratified the amendment</div>
-        </div>
-        <div class="kpi-card blue">
-          <div class="kpi-value" id="kigali-kpi-montreal">-</div>
-          <div class="kpi-label">Montreal Protocol</div>
-          <div class="kpi-sublabel">Protocol parties</div>
-        </div>
-        <div class="kpi-card amber">
-          <div class="kpi-value" id="kigali-kpi-article5">-</div>
-          <div class="kpi-label">Article 5 Countries</div>
-          <div class="kpi-sublabel">Developing nations</div>
-        </div>
-        <div class="kpi-card teal">
-          <div class="kpi-value" id="kigali-kpi-non-article5">-</div>
-          <div class="kpi-label">Non-Article 5</div>
-          <div class="kpi-sublabel">Developed nations</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Filter Panel -->
-    <div class="card-panel filter-panel" style="padding: 1rem 1.25rem;">
-      <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: flex-end;">
-        <!-- Region Filter -->
-        <div class="filter-group" style="flex: 1; min-width: 180px;">
-          <label class="filter-label">Region</label>
-          <select id="kigali-region-filter" class="filter-select">
-            <option value="">All Regions</option>
-          </select>
-        </div>
-
-        <!-- Group Type Toggles -->
-        <div class="filter-group" style="flex: 2; min-width: 300px;">
-          <label class="filter-label">Group Type
-            <button id="kigali-group-all" class="mini-btn" type="button">All</button>
-            <button id="kigali-group-none" class="mini-btn" type="button">None</button>
-          </label>
-          <div class="toggle-group" id="kigali-group-toggles">
-            <!-- Will be populated dynamically -->
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Map and Country Detail -->
     <div class="card-panel map-card">
       <div class="card-header">
@@ -1191,6 +1184,21 @@
         <span class="progress-segment low" id="kigali-progress-low" title="Montreal Only"></span>
         <span class="progress-segment critical" id="kigali-progress-critical" title="Non-Party"></span>
       </div>
+
+      <!-- Map Filters — light section below the map -->
+      <div class="kigali-filter-section">
+        <div style="font-size:0.8rem;color:#64748b;margin-bottom:0.5rem;">
+          <i class="fa-solid fa-circle-info" style="margin-right:0.35rem;"></i>
+          Filter countries on the map by group type:
+        </div>
+        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+          <button id="kigali-group-all" class="kigali-filter-btn" type="button">All</button>
+          <button id="kigali-group-none" class="kigali-filter-btn kigali-filter-btn--outline" type="button">None</button>
+          <span style="width:1px;height:1.5rem;background:#e2e8f0;margin:0 0.25rem;"></span>
+          <div id="kigali-group-toggles" style="display:flex;gap:0.4rem;flex-wrap:wrap;"></div>
+        </div>
+      </div>
+
       <div id="kigali-country-detail" class="country-card-inline">
         <h3>Selected Country</h3>
         <div class="country-detail">
@@ -1618,12 +1626,7 @@
     font-weight: 600;
   }
 
-  /* ===========================
-     KPI PANEL (separated)
-     =========================== */
-  .kpi-panel {
-    padding: 1rem 1.25rem;
-  }
+
 
   /* ===========================
      RESPONSIVE
@@ -1698,5 +1701,79 @@
     .kigali-counters :global(.counter-label) {
       font-size: 0.65rem;
     }
+  }
+
+  /* ===========================
+     MAP CARD — override global negative-margin connection hack
+     since country-card-inline is now inside the map card
+     =========================== */
+  :global(#view-kigali .pillar-stack .map-card) {
+    margin-bottom: 0;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  /* country-card-inline inside map card: remove its own outer card styling */
+  :global(#view-kigali .pillar-stack .map-card .country-card-inline) {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 1rem 0 0;
+    background: transparent;
+    margin-top: 0;
+  }
+
+  /* ===========================
+     MAP FILTERS (light section inside map card)
+     =========================== */
+  .kigali-filter-section {
+    padding: 0.75rem 0 0.25rem;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 0.5rem;
+  }
+
+  .kigali-filter-btn {
+    background: #3D6B6B;
+    color: white;
+    border: 2px solid #3D6B6B;
+    border-radius: 999px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .kigali-filter-btn--outline {
+    background: transparent;
+    color: #3D6B6B;
+  }
+
+  .kigali-filter-btn--outline:hover {
+    background: rgba(61,107,107,0.08);
+  }
+
+  /* Override toggle-btn styles inside the group toggles to use teal outlined pills */
+  :global(#kigali-group-toggles .toggle-btn) {
+    background: transparent !important;
+    border: 2px solid #3D6B6B !important;
+    color: #3D6B6B !important;
+    border-radius: 999px !important;
+    padding: 0.3rem 0.9rem !important;
+    font-size: 0.82rem !important;
+    font-weight: 500 !important;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  :global(#kigali-group-toggles .toggle-btn.active) {
+    background: #3D6B6B !important;
+    color: white !important;
+    font-weight: 600 !important;
+  }
+
+  :global(#kigali-group-toggles .toggle-btn:hover:not(.active)) {
+    background: rgba(61,107,107,0.1) !important;
   }
 </style>

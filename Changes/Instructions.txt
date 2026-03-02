@@ -1,23 +1,71 @@
-Photo Strategic Summary 1: 
+Screenshots 
 
-	- Edit the names from area 1 to match the ones on area 2. The same names of the pillars. 
+1. Emissions
 
-Photo Strategic Summary 2: 
-	- Make the font bigger and show the date bigger.
+2. Product Efficiency
+2.1 Avoid all these boxes one inside the other make everything on a white background like the map
+2.2 Make this map larger hidding the antartic it is not useful to show it. 
 
-Photo Overall 1:
-	- Remove this filter for all pillars and rearrange how the pane looks. 
+3 Refrigerant Transition
+3.1 make the Kigali + starting from 2025 like the others and make sure the title of the axis x can be seen the "D" is missing  
+3.2 the filters don´t do anything here. Make the Bottons green not the bar use as an example the image 1.2. Also the drop down list should be removed
 
-Photo Strategic Summary 3.1:
-	- When you click on the Botton marked in red and with a one. The page the user is redirected to, it is open with the view at the 	bottom of the page. (see Strategic Summary 3.2) it should be on the top of the page. 
-	
-Photo Emissions 1: 
-	- Make the overall font of the graphs a bit bigger. For number 1 add the legend of the y axis. For both 2 change the term "deep 	efficiency" for "high efficiency". 
+4 Access and Vulnerability
+4.1 add measges to the filters so that the user understands what are the different income groups and the risk level. Here some info RURAL
+POOR
+Likely to be subsistence 
+farmers without access to an 
+intact cold chain; 
+may lack access to electricity 
+and properly stored vaccines.
+MIDDLE
+INCOME
+May be able to afford a more efficient 
+air conditioner or minimize its use; 
+may move to energy efficient housing 
+and working environments.
+HIGH RISK
+MEDIUM RISK
+LOWRISK
+URBAN
+POOR
+May have some access to 
+electricity, but live in housing 
+of poor quality;
+may have a refrigerator, but 
+food often spoils due to 
+intermittent power.
+LOWER-MIDDLE
+INCOME
+May purchase an affordable thus 
+likely inefficient air conditioner or 
+refrigerator that raises energy 
+consumption and GHG emission
 
-Photo Emissions 2: 
-	- in 1 Make the color of low yellow instead of green. 
-	- in 2 change the way the bar is presented. Add the first and last years to the side and show the year shown on the top.
-	- in 3 the filters are not working. when you click on an appliance the data of this one should be then hidden or shown. However the 	data is not being really affected. see in the picture there non of the appliances are selected and still data is shown.
+Risk Spectrum	HIGH RISK	MEDIUM RISK	LOW RISK
+The Rural Poor lack access to electricity and live in extreme poverty. Many are likely to engage in subsistence farming but lack access to an intact cold chain that would enable them to sell their products further afield at a higher price. There may also be a lack of medical cold chains in rural poor communities, putting lives at risk from spoiled medicines and vaccines.
 
-Photo Emissions 3:
-	- Remove the this white bar and reduce the space between both elements. Overview and map
+The Urban Poor have limited or no access to electricity, and whose quality of housing is likely too poor to protect them from extreme heat. Their income may not be sufficient to purchase or run a fan. They may own or have access to a refrigerator, but intermittent electricity supplies may mean that food often spoils and there is a high risk of poor nutrition or food poisoning.	The Lower-Middle Income represent an increasingly affluent lower-middle income class that is on the brink of purchasing the lowest first-cost air conditioner or refrigerator on the market. Limited purchasing choices available to this group favour cooling devices that are likely affordable, but inefficient.	The Middle Income typically own an air conditioner and a refrigerator and may be able to afford more efficient ones. They may also be able to move to better-designed, more efficient housing and working environments, where they might also make conscious choices to minimize the use of or not own an air-conditioning unit.
+Risk Population	RURAL POOR	URBAN POOR	LOWER-MIDDLE INCOME	MIDDLE INCOME
+Risk Indicators	Lack of access to energy
+Living in rural areas on less than $2.15 a day	Lack of access to energy
+Living in poor urban areas or slums on less than $2.15 a day	Living on less than $10.00 a day outside of rural or urban poverty	Living between $10.01 and $20.00 a day
+2024 Access Gap	309,376,132	695,697,422	2,827,532,227	1,197,061,893
+2023 Access Gap	322,494,566	694,493,783	2,834,889,164	1,162,556,670
+Change	-13,118,434	1,203,639	-7,356,937	34,505,223
+Findings and Trends	Urban vs. Rural Risk: Urban populations face growing high-risk cooling vulnerability, while rural areas experience mixed trajectories in risk, depending on the region and country. Slow progress – or even backsliding - in electricity access exacerbates cooling vulnerability.
+
+Medium-Risk Group Growth: 2 billion people in the medium-risk group face a "double burden" of unaffordable or inefficient cooling options. This group is at risk of locking into ineficcient, but also high-emissions solutions, unless efficient, sustainable cooling is prioritized.
+
+Polarization by 2030: Projections show a rise in both high- and low-risk populations while medium-risk groups decline, creating growing inequality in cooling access. Countries like Brazil, Bangladesh, and Indonesia face widening disparities, requiring targeted interventions.
+
+Sub-Saharan Africa’s Persistent Vulnerability: Sub-Saharan Africa has the largest high-risk population, with limited growth in low-risk groups. Despite some medium-risk expansion, infrastructure gaps, poverty and pressure on urban systems continue to hinder progress, demanding urgent solutions.
+
+5 Policy Framework
+5.1 make the bar below the country boxes NOT ABOVE. 
+5.2 Remove these 2 graphs. Do not make again all this boxes inside boxes. Make a single box with a white background and add the graphs on top without an extra box
+5.3 replace Kigali by NCAP and put them on the same order as the filters above GCP. NDC, NCAP 
+
+6 Make the Icon look the same as the one of the CoolProgress Dashboard a thermometer with an arrow pointing down as in the picture
+
+
