@@ -305,8 +305,8 @@
       const legend = document.getElementById('kigali-legend');
       if (!legend) return;
       legend.innerHTML = `
-    <div class="legend-item"><div class="legend-color" style="background:#2D7D5A"></div>Ratified</div>
-    <div class="legend-item"><div class="legend-color" style="background:#C25B33"></div>Not Ratified</div>
+    <div class="legend-item"><div class="legend-color" style="background:#52B788"></div>Ratified</div>
+    <div class="legend-item"><div class="legend-color" style="background:#E07850"></div>Not Ratified</div>
     <div class="legend-item"><div class="legend-color" style="background:#E5E1D8"></div>No Data</div>
   `;
     }
@@ -1120,8 +1120,8 @@
         <div id="kigali-legend" class="legend-items"></div>
       </div>
       <div class="progress-bar" id="kigali-progress">
-        <span class="progress-segment" id="kigali-progress-ratified" title="Ratified" style="background:#2D7D5A;"></span>
-        <span class="progress-segment" id="kigali-progress-notratified" title="Not Ratified" style="background:#C25B33;"></span>
+        <span class="progress-segment" id="kigali-progress-ratified" title="Ratified" style="background:#52B788;"></span>
+        <span class="progress-segment" id="kigali-progress-notratified" title="Not Ratified" style="background:#E07850;"></span>
       </div>
 
       <div id="kigali-country-detail" class="country-card-inline">
