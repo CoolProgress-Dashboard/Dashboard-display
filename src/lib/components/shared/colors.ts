@@ -122,9 +122,9 @@ export const STATUS = {
   ADVANCED:   '#2D7D5A', // advanced / full
 } as const;
 
-// Binary yes/no — lighter tones for map fills
-export const YES = '#52B788';
-export const NO  = '#E07850';
+// Binary yes/no — modern vivid tones for map fills
+export const YES = '#10B981';
+export const NO  = '#F87171';
 
 // No data / missing
 export const NO_DATA = '#E5E1D8';
