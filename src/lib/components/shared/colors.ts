@@ -115,16 +115,16 @@ export const EMISSION = {
 // Status / policy coverage (5-level scale: worst → best)
 // ---------------------------------------------------------------------------
 export const STATUS = {
-  NONE:       '#C25B33', // no policy / critical
-  MINIMAL:    '#F0A47A', // minimal / limited
-  DEVELOPING: '#D4A843', // developing / partial
-  GOOD:       '#52B788', // good coverage
-  ADVANCED:   '#2D7D5A', // advanced / full
+  NONE:       '#E07868', // no policy / critical     — warm salmon
+  MINIMAL:    '#EEA080', // minimal / limited         — peach
+  DEVELOPING: '#D4A843', // developing / partial      — amber (unchanged)
+  GOOD:       '#6BADA0', // good coverage             — muted teal
+  ADVANCED:   '#4A9088', // advanced / full           — dark teal
 } as const;
 
-// Binary yes/no — modern vivid tones for map fills
-export const YES = '#10B981';
-export const NO  = '#F87171';
+// Binary yes/no — muted teal / warm salmon (Terra Nova screenshot palette)
+export const YES = '#6BADA0';
+export const NO  = '#E07868';
 
 // No data / missing
 export const NO_DATA = '#E5E1D8';

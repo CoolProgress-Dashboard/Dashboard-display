@@ -1222,10 +1222,10 @@
           <div id="meps-legend" class="legend-items"></div>
         </div>
         <div class="progress-bar" id="meps-progress">
-          <span class="progress-segment" id="meps-progress-both" title="MEPS & Labels" style="background:#2D7D5A"></span>
-          <span class="progress-segment" id="meps-progress-meps" title="MEPS Only" style="background:#52B788"></span>
+          <span class="progress-segment" id="meps-progress-both" title="MEPS & Labels" style="background:#4A9088"></span>
+          <span class="progress-segment" id="meps-progress-meps" title="MEPS Only" style="background:#6BADA0"></span>
           <span class="progress-segment" id="meps-progress-labels" title="Labels Only" style="background:#D4A843"></span>
-          <span class="progress-segment" id="meps-progress-critical" title="No Policies" style="background:#C25B33"></span>
+          <span class="progress-segment" id="meps-progress-critical" title="No Policies" style="background:#E07868"></span>
         </div>
       </div>
 
