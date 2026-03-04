@@ -7,12 +7,14 @@
     expandedId = expandedId === id ? null : id;
   }
 
+  import { STATUS } from '$lib/components/shared/colors';
+
   function getMepsColor(status: CountrySpotlight['mepsStatus']): string {
     switch (status) {
-      case 'advanced': return '#8BC34A';
-      case 'developing': return '#f59e0b';
-      case 'minimal': return '#E89B8C';
-      case 'none': return '#E85A4F';
+      case 'advanced': return STATUS.ADVANCED;
+      case 'developing': return STATUS.DEVELOPING;
+      case 'minimal': return STATUS.MINIMAL;
+      case 'none': return STATUS.NONE;
     }
   }
 

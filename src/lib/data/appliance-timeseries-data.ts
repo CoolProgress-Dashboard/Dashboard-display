@@ -251,9 +251,9 @@ export const applianceMilestones: ApplianceMilestone[] = [
 
 // Appliance display metadata
 export const APPLIANCE_META: Record<ApplianceType, { label: string; icon: string; color: string; colorRgba: string }> = {
-  AC: { label: 'Air Conditioners', icon: 'fa-solid fa-snowflake', color: '#3D6B6B', colorRgba: 'rgba(61, 107, 107,' },
-  DomRef: { label: 'Refrigerators', icon: 'fa-solid fa-temperature-low', color: '#2196F3', colorRgba: 'rgba(33, 150, 243,' },
-  Fans: { label: 'Fans', icon: 'fa-solid fa-fan', color: '#FF9800', colorRgba: 'rgba(255, 152, 0,' },
+  AC: { label: 'Air Conditioners', icon: 'fa-solid fa-snowflake', color: '#2D7D5A', colorRgba: 'rgba(45, 125, 90,' },
+  DomRef: { label: 'Refrigerators', icon: 'fa-solid fa-temperature-low', color: '#5A8FC2', colorRgba: 'rgba(90, 143, 194,' },
+  Fans: { label: 'Fans', icon: 'fa-solid fa-fan', color: '#D4A843', colorRgba: 'rgba(212, 168, 67,' },
 };
 
 export type MetricKey = 'stock' | 'energy' | 'emissions';

@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import mepsTimeline from '$lib/data/meps_timeline.json';
   import mepsLevels from '$lib/data/meps_levels.json';
+  import { COUNTRY_LINES, CHROME } from '$lib/components/shared/colors';
 
   let chartContainer: HTMLElement;
   let chartInstance: any;
@@ -18,22 +19,22 @@
   }
 
   const countryConfigs: CountryConfig[] = [
-    { code: 'IN', name: 'India', color: '#FF6B35', defaultOn: true },
-    { code: 'CN', name: 'China', color: '#DC2626', defaultOn: true },
-    { code: 'EU', name: 'EU', color: '#2563EB', defaultOn: true },
-    { code: 'US', name: 'USA (South)', color: '#059669', defaultOn: true },
-    { code: 'BR', name: 'Brazil', color: '#D97706', defaultOn: true },
-    { code: 'JP', name: 'Japan', color: '#7C3AED', defaultOn: false },
-    { code: 'KR', name: 'South Korea', color: '#0891B2', defaultOn: false },
-    { code: 'SA', name: 'Saudi Arabia', color: '#BE185D', defaultOn: false },
-    { code: 'ZA', name: 'South Africa', color: '#4F46E5', defaultOn: false },
-    { code: 'AU', name: 'Australia', color: '#0D9488', defaultOn: false },
-    { code: 'SG', name: 'Singapore', color: '#EA580C', defaultOn: false },
-    { code: 'NG', name: 'Nigeria', color: '#65A30D', defaultOn: false },
-    { code: 'SADC', name: 'SADC Region', color: '#9333EA', defaultOn: false },
-    { code: 'EAC', name: 'EAC Region', color: '#B45309', defaultOn: false },
-    { code: 'ECOWAS', name: 'ECOWAS Region', color: '#059669', defaultOn: false },
-    { code: 'ASEAN', name: 'ASEAN Region', color: '#0284C7', defaultOn: false },
+    { code: 'IN', name: 'India', color: COUNTRY_LINES['India'], defaultOn: true },
+    { code: 'CN', name: 'China', color: COUNTRY_LINES['China'], defaultOn: true },
+    { code: 'EU', name: 'EU', color: COUNTRY_LINES['EU'], defaultOn: true },
+    { code: 'US', name: 'USA (South)', color: COUNTRY_LINES['USA (South)'], defaultOn: true },
+    { code: 'BR', name: 'Brazil', color: COUNTRY_LINES['Brazil'], defaultOn: true },
+    { code: 'JP', name: 'Japan', color: COUNTRY_LINES['Japan'], defaultOn: false },
+    { code: 'KR', name: 'South Korea', color: COUNTRY_LINES['South Korea'], defaultOn: false },
+    { code: 'SA', name: 'Saudi Arabia', color: COUNTRY_LINES['Saudi Arabia'], defaultOn: false },
+    { code: 'ZA', name: 'South Africa', color: COUNTRY_LINES['South Africa'], defaultOn: false },
+    { code: 'AU', name: 'Australia', color: COUNTRY_LINES['Australia'], defaultOn: false },
+    { code: 'SG', name: 'Singapore', color: COUNTRY_LINES['Singapore'], defaultOn: false },
+    { code: 'NG', name: 'Nigeria', color: COUNTRY_LINES['Nigeria'], defaultOn: false },
+    { code: 'SADC', name: 'SADC Region', color: COUNTRY_LINES['SADC'], defaultOn: false },
+    { code: 'EAC', name: 'EAC Region', color: COUNTRY_LINES['EAC'], defaultOn: false },
+    { code: 'ECOWAS', name: 'ECOWAS Region', color: COUNTRY_LINES['ECOWAS'], defaultOn: false },
+    { code: 'ASEAN', name: 'ASEAN Region', color: COUNTRY_LINES['ASEAN'], defaultOn: false },
   ];
 
   // Track enabled countries
@@ -213,8 +214,8 @@
         name: heTarget.label,
         type: 'line',
         data: [[minYear, heTarget.value], [maxYear, heTarget.value]],
-        lineStyle: { width: 1.5, color: '#8BC34A', type: 'dotted' },
-        itemStyle: { color: '#8BC34A' },
+        lineStyle: { width: 1.5, color: '#52B788', type: 'dotted' },
+        itemStyle: { color: '#52B788' },
         symbol: 'none',
       });
     }
@@ -390,7 +391,7 @@
 <div class="meps-level-chart card-panel chart-card">
   <div class="chart-header">
     <div class="chart-title">
-      <i class="fa-solid fa-chart-line" style="color: #8BC34A; margin-right: 0.5rem;"></i>
+      <i class="fa-solid fa-chart-line" style="color: #52B788; margin-right: 0.5rem;"></i>
       MEPS Stringency Over Time
     </div>
     <span class="chart-subtitle">
@@ -623,7 +624,7 @@
     width: 12px;
     height: 12px;
     cursor: inherit;
-    accent-color: #3D6B6B;
+    accent-color: #2D7D5A;
   }
 
   .meps-country-dot {
@@ -680,7 +681,7 @@
   }
 
   .meps-legend-line.gcp {
-    border-top: 2px dotted #8BC34A;
+    border-top: 2px dotted #52B788;
   }
 
   /* Methodology */
@@ -692,7 +693,7 @@
   .meps-info-btn {
     font-size: 0.72rem;
     font-weight: 600;
-    color: #3D6B6B;
+    color: #2D7D5A;
     background: none;
     border: 1px solid #e2e8f0;
     border-radius: 999px;
@@ -707,13 +708,13 @@
 
   .meps-info-btn:hover {
     background: #f0f7f0;
-    border-color: #3D6B6B;
+    border-color: #2D7D5A;
   }
 
   .meps-methodology-card {
     background: linear-gradient(135deg, #f8fafb, #f0f7f0);
     border: 1px solid #e2e8f0;
-    border-left: 3px solid #8BC34A;
+    border-left: 3px solid #52B788;
     border-radius: 10px;
     padding: 0.75rem 1rem;
     margin: 0.5rem 0;
@@ -722,7 +723,7 @@
   .meps-methodology-card h4 {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #3D6B6B;
+    color: #2D7D5A;
     margin: 0 0 0.5rem;
     display: flex;
     align-items: center;
@@ -730,7 +731,7 @@
   }
 
   .meps-methodology-card h4 i {
-    color: #8BC34A;
+    color: #52B788;
   }
 
   .meps-methodology-card p {
@@ -791,15 +792,15 @@
   }
 
   .chart-source a {
-    color: #3D6B6B;
+    color: #2D7D5A;
     text-decoration: none;
-    border-bottom: 1px dotted rgba(61, 107, 107, 0.3);
+    border-bottom: 1px dotted rgba(45, 125, 90, 0.3);
     transition: color 0.2s ease;
   }
 
   .chart-source a:hover {
-    color: #2D5252;
-    border-bottom-color: #2D5252;
+    color: #1A5E40;
+    border-bottom-color: #1A5E40;
   }
 
   @media (max-width: 768px) {

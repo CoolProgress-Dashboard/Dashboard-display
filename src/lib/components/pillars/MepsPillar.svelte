@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { VIEW_META } from '$lib/components/shared/config';
+  import { STATUS, CHROME, NO_DATA, rgba } from '$lib/components/shared/colors';
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners } from '$lib/data/partner-data';
@@ -93,19 +94,19 @@
       icon: 'fa-chart-bar',
       title: 'MEPS & Labels by Region',
       description: 'See which regions lead in policy adoption',
-      color: '#3D6B6B'
+      color: '#2D7D5A'
     },
     {
       icon: 'fa-clock-rotate-left',
       title: 'MEPS Levels Over Time',
       description: 'Track how efficiency standards have evolved across major economies',
-      color: '#8BC34A'
+      color: '#52B788'
     },
     {
       icon: 'fa-cogs',
       title: 'Equipment Type Coverage',
       description: 'Compare policy coverage across AC, Fridges, and Fans',
-      color: '#4A7F7F'
+      color: '#2D7D5A'
     }
   ];
 
@@ -276,12 +277,12 @@
 
     function getMepsColor(level: string): string {
       switch (level) {
-        case 'both':     return '#8BC34A';
-        case 'meps':     return '#3D6B6B';
-        case 'labels':   return '#FFB74D';
-        case 'limited':  return '#E89B8C';
-        case 'critical': return '#E85A4F';
-        default:         return '#e2e8f0';
+        case 'both':     return STATUS.ADVANCED;
+        case 'meps':     return STATUS.GOOD;
+        case 'labels':   return STATUS.DEVELOPING;
+        case 'limited':  return STATUS.MINIMAL;
+        case 'critical': return STATUS.NONE;
+        default:         return NO_DATA;
       }
     }
 
@@ -323,10 +324,10 @@
       const legend = document.getElementById('meps-legend');
       if (!legend) return;
       legend.innerHTML = `
-        <div class="legend-item"><div class="legend-color" style="background:#8BC34A"></div>MEPS &amp; Labels</div>
-        <div class="legend-item"><div class="legend-color" style="background:#3D6B6B"></div>MEPS Only</div>
-        <div class="legend-item"><div class="legend-color" style="background:#FFB74D"></div>Labels Only</div>
-        <div class="legend-item"><div class="legend-color" style="background:#E85A4F"></div>No Policies</div>
+        <div class="legend-item"><div class="legend-color" style="background:${STATUS.ADVANCED}"></div>MEPS &amp; Labels</div>
+        <div class="legend-item"><div class="legend-color" style="background:${STATUS.GOOD}"></div>MEPS Only</div>
+        <div class="legend-item"><div class="legend-color" style="background:${STATUS.DEVELOPING}"></div>Labels Only</div>
+        <div class="legend-item"><div class="legend-color" style="background:${STATUS.NONE}"></div>No Policies</div>
       `;
     }
 
@@ -435,8 +436,8 @@
       if (!container) return;
       container.innerHTML = `
         <div class="country-placeholder" style="text-align:center;padding:2rem;color:#64748b;">
-          <i class="fa-solid fa-map-location-dot" style="font-size:2rem;color:#8BC34A;margin-bottom:0.75rem;display:block;"></i>
-          <h4 style="color:#3D6B6B;margin-bottom:0.5rem;">Select a Country</h4>
+          <i class="fa-solid fa-map-location-dot" style="font-size:2rem;color:${STATUS.ADVANCED};margin-bottom:0.75rem;display:block;"></i>
+          <h4 style="color:${STATUS.ADVANCED};margin-bottom:0.5rem;">Select a Country</h4>
           <p style="font-size:0.85rem;">Click on any country in the map above to view MEPS and labeling policy details.</p>
         </div>
       `;
@@ -454,9 +455,9 @@
         return;
       }
       container.innerHTML = `
-        <div style="background:linear-gradient(135deg,#3D6B6B 0%,#4A7F7F 100%);color:white;padding:0.75rem 1rem;border-radius:8px;margin-bottom:0.5rem;">
+        <div style="background:linear-gradient(135deg,${STATUS.ADVANCED} 0%,${STATUS.GOOD} 100%);color:white;padding:0.75rem 1rem;border-radius:8px;margin-bottom:0.5rem;">
           <h4 style="margin:0;font-size:1.1rem;display:flex;align-items:center;gap:0.5rem;">
-            <i class="fa-solid fa-location-dot" style="color:#8BC34A;"></i>
+            <i class="fa-solid fa-location-dot" style="color:#C8E8C4;"></i>
             ${country.country_name}
           </h4>
         </div>
@@ -470,18 +471,18 @@
       const countryName = country?.country_name || code;
       const equipTypes = ['Air Conditioning', 'Domestic Refrigeration', 'Fans'];
       const equipShort: Record<string, string> = { 'Air Conditioning': 'AC', 'Domestic Refrigeration': 'Fridge', 'Fans': 'Fans' };
-      const equipColors: Record<string, string> = { 'Air Conditioning': '#3D6B6B', 'Domestic Refrigeration': '#8BC34A', 'Fans': '#E89B8C' };
+      const equipColors: Record<string, string> = { 'Air Conditioning': '#2D7D5A', 'Domestic Refrigeration': '#52B788', 'Fans': '#D4A843' };
 
       // Update chart title elements
       const chart2Title = document.getElementById('meps-chart2-title');
       if (chart2Title) {
-        chart2Title.innerHTML = `<span style="background:linear-gradient(135deg,#3D6B6B,#4A7F7F);color:white;padding:0.25rem 0.6rem;border-radius:4px;margin-right:0.4rem;">${countryName}</span> Policy Timeline`;
+        chart2Title.innerHTML = `<span style="background:linear-gradient(135deg,${STATUS.ADVANCED},${STATUS.GOOD});color:white;padding:0.25rem 0.6rem;border-radius:4px;margin-right:0.4rem;">${countryName}</span> Policy Timeline`;
       }
       const setTitle = (id: string, text: string) => { const el = document.getElementById(id); if (el) el.textContent = text; };
       setTitle('meps-chart2-subtitle', 'When MEPS and Labels were introduced');
       const chart3Title = document.getElementById('meps-chart3-title');
       if (chart3Title) {
-        chart3Title.innerHTML = `<span style="background:linear-gradient(135deg,#3D6B6B,#4A7F7F);color:white;padding:0.25rem 0.6rem;border-radius:4px;margin-right:0.4rem;">${countryName}</span> Policy Details`;
+        chart3Title.innerHTML = `<span style="background:linear-gradient(135deg,${STATUS.ADVANCED},${STATUS.GOOD});color:white;padding:0.25rem 0.6rem;border-radius:4px;margin-right:0.4rem;">${countryName}</span> Policy Details`;
       }
       setTitle('meps-chart3-subtitle', 'Complete breakdown by appliance, instrument and status');
 
@@ -579,8 +580,8 @@
           html += `<div style="color:#94a3b8;font-size:0.8rem;font-style:italic;">No policies for this appliance</div>`;
         } else {
           html += `<div style="display:flex;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap;">
-            <div style="font-size:0.75rem;color:#334155;"><span style="color:#4A7F7F;font-weight:700;">${mepsR.length}</span> MEPS</div>
-            <div style="font-size:0.75rem;color:#334155;"><span style="color:#f59e0b;font-weight:700;">${labelsR.length}</span> Labels</div>
+            <div style="font-size:0.75rem;color:#334155;"><span style="color:${STATUS.ADVANCED};font-weight:700;">${mepsR.length}</span> MEPS</div>
+            <div style="font-size:0.75rem;color:#334155;"><span style="color:${STATUS.DEVELOPING};font-weight:700;">${labelsR.length}</span> Labels</div>
             <div style="font-size:0.75rem;color:#334155;"><span style="font-weight:600;">${mandatory}</span> Mandatory</div>
             <div style="font-size:0.75rem;color:#334155;"><span style="font-weight:600;">${voluntary}</span> Voluntary</div>
           </div>`;
@@ -596,10 +597,10 @@
             const truncName = name.length > 80 ? name.substring(0, 77) + '...' : name;
             const hasMep = isMepsRecord(r);
             const hasLbl = isLabelRecord(r);
-            const borderColor = hasMep ? '#4A7F7F' : '#f59e0b';
+            const borderColor = hasMep ? '#2D7D5A' : '#D4A843';
             const typeBadges: string[] = [];
-            if (hasMep) typeBadges.push(`<span style="font-size:0.65rem;background:#EBF4F4;color:#4A7F7F;padding:1px 5px;border-radius:3px;font-weight:600;">MEPS</span>`);
-            if (hasLbl) typeBadges.push(`<span style="font-size:0.65rem;background:#fef3c7;color:#d97706;padding:1px 5px;border-radius:3px;font-weight:600;">Label</span>`);
+            if (hasMep) typeBadges.push(`<span style="font-size:0.65rem;background:#EBF4EE;color:#2D7D5A;padding:1px 5px;border-radius:3px;font-weight:600;">MEPS</span>`);
+            if (hasLbl) typeBadges.push(`<span style="font-size:0.65rem;background:#fef3d0;color:#D4A843;padding:1px 5px;border-radius:3px;font-weight:600;">Label</span>`);
             const reqBadge = r.requirement_type ? `<span style="font-size:0.65rem;background:#f1f5f9;color:#475569;padding:1px 5px;border-radius:3px;">${r.requirement_type}</span>` : '';
             html += `<div style="border-left:3px solid ${borderColor};padding:0.35rem 0.5rem;margin-bottom:0.4rem;background:#fafafa;border-radius:0 4px 4px 0;">
               <div style="font-size:0.78rem;color:#1e293b;line-height:1.4;">${truncName}</div>
@@ -667,8 +668,8 @@
         xAxis: { type: 'category', data: allYears.map(String), axisLabel: { fontSize: 10, interval: 'auto' } },
         yAxis: { type: 'value', name: 'Cumulative', nameTextStyle: { fontSize: 11 } },
         series: [
-          { name: 'MEPS', type: 'line', data: cumMepsData, smooth: true, areaStyle: { opacity: 0.2 }, color: '#4A7F7F' },
-          { name: 'Labels', type: 'line', data: cumLabelsData, smooth: true, areaStyle: { opacity: 0.2 }, color: '#f59e0b' }
+          { name: 'MEPS', type: 'line', data: cumMepsData, smooth: true, areaStyle: { opacity: 0.2 }, color: '#2D7D5A' },
+          { name: 'Labels', type: 'line', data: cumLabelsData, smooth: true, areaStyle: { opacity: 0.2 }, color: '#D4A843' }
         ]
       });
 
@@ -898,17 +899,12 @@
         }
       });
 
-      function lerp(a: number, b: number, t: number) { return Math.round(a + (b - a) * t); }
       function getInverterColor(pct: number | null): string {
-        if (pct == null) return '#d0d0d0';
-        const t = Math.max(0, Math.min(100, pct)) / 100;
-        if (t <= 0.5) {
-          const f = t * 2;
-          return `rgb(${lerp(232, 245, f)},${lerp(90, 158, f)},${lerp(79, 11, f)})`;
-        } else {
-          const f = (t - 0.5) * 2;
-          return `rgb(${lerp(245, 74, f)},${lerp(158, 127, f)},${lerp(11, 127, f)})`;
-        }
+        if (pct == null) return NO_DATA;
+        if (pct >= 75) return STATUS.ADVANCED;   // forest green
+        if (pct >= 50) return STATUS.GOOD;        // mint
+        if (pct >= 25) return STATUS.DEVELOPING;  // amber
+        return STATUS.NONE;                        // terracotta
       }
 
       const svg = d3Lib.select('#inverter-map-container')
@@ -945,7 +941,7 @@
             const info = code ? latestByCountry.get(code) : null;
             let html = `<strong>${country?.country_name || info?.name || code || 'Unknown'}</strong><br>`;
             if (info) {
-              html += `<span style="color:#8BC34A;font-weight:600">Inverter: ${info.pct.toFixed(1)}%</span>`;
+              html += `<span style="color:${STATUS.ADVANCED};font-weight:600">Inverter: ${info.pct.toFixed(1)}%</span>`;
               if (info.nonPct != null) html += `<br><span style="color:#ddd;font-size:0.85em">Non-inverter: ${info.nonPct.toFixed(1)}%</span>`;
               if (info.year) html += `<br><span style="font-size:0.8em">Year: ${info.year}</span>`;
               if (info.confidence) html += `<br><span style="font-size:0.8em">Confidence: ${info.confidence}</span>`;
@@ -968,7 +964,7 @@
             <div class="legend-item"><div class="legend-color" style="background:${getInverterColor(90)}"></div>&gt;75% Inverter</div>
             <div class="legend-item"><div class="legend-color" style="background:${getInverterColor(50)}"></div>~50%</div>
             <div class="legend-item"><div class="legend-color" style="background:${getInverterColor(15)}"></div>&lt;25% Inverter</div>
-            <div class="legend-item"><div class="legend-color" style="background:#d0d0d0"></div>No Data</div>
+            <div class="legend-item"><div class="legend-color" style="background:${NO_DATA}"></div>No Data</div>
           `;
         }
       } catch (error) {
@@ -1180,9 +1176,7 @@
     </div>
 
     <!-- MEPS Stringency Chart (above map) -->
-    <div class="card-panel chart-card">
-      <MepsLevelChart />
-    </div>
+    <MepsLevelChart />
 
     <!-- Combined Map Card -->
     <div class="card-panel map-card">
@@ -1228,10 +1222,10 @@
           <div id="meps-legend" class="legend-items"></div>
         </div>
         <div class="progress-bar" id="meps-progress">
-          <span class="progress-segment" id="meps-progress-both" title="MEPS & Labels" style="background:#8BC34A"></span>
-          <span class="progress-segment" id="meps-progress-meps" title="MEPS Only" style="background:#3D6B6B"></span>
-          <span class="progress-segment" id="meps-progress-labels" title="Labels Only" style="background:#FFB74D"></span>
-          <span class="progress-segment" id="meps-progress-critical" title="No Policies" style="background:#ef4444"></span>
+          <span class="progress-segment" id="meps-progress-both" title="MEPS & Labels" style="background:#2D7D5A"></span>
+          <span class="progress-segment" id="meps-progress-meps" title="MEPS Only" style="background:#52B788"></span>
+          <span class="progress-segment" id="meps-progress-labels" title="Labels Only" style="background:#D4A843"></span>
+          <span class="progress-segment" id="meps-progress-critical" title="No Policies" style="background:#C25B33"></span>
         </div>
       </div>
 
@@ -1256,7 +1250,7 @@
         {#if mepsShowRegionCard}
           <div class="inverter-chart-flat">
             <div class="chart-card-header">
-              <h3><i class="fa-solid fa-chart-bar" style="color: #8BC34A; margin-right: 0.5rem;"></i>MEPS &amp; Labels by Region</h3>
+              <h3><i class="fa-solid fa-chart-bar" style="color: #2D7D5A; margin-right: 0.5rem;"></i>MEPS &amp; Labels by Region</h3>
               <p class="chart-subtitle">Countries with MEPS vs Labels per region</p>
             </div>
             <div class="chart-card-body">
@@ -1266,7 +1260,7 @@
         {/if}
         <div class="inverter-chart-flat">
           <div class="chart-card-header">
-            <h3 id="meps-chart3-title"><i class="fa-solid fa-cogs" style="color: #8BC34A; margin-right: 0.5rem;"></i>Equipment Type Coverage</h3>
+            <h3 id="meps-chart3-title"><i class="fa-solid fa-cogs" style="color: #2D7D5A; margin-right: 0.5rem;"></i>Equipment Type Coverage</h3>
             <p class="chart-subtitle" id="meps-chart3-subtitle">Countries with MEPS vs Labels by appliance</p>
           </div>
           <div class="chart-card-body">
@@ -1278,7 +1272,7 @@
       <div class="meps-charts-section charts-section">
         <div class="inverter-chart-flat">
           <div class="chart-card-header">
-            <h3><i class="fa-solid fa-snowflake" style="color: #3D6B6B; margin-right: 0.5rem;"></i>Inverter Share by Region</h3>
+            <h3><i class="fa-solid fa-snowflake" style="color: #2D7D5A; margin-right: 0.5rem;"></i>Inverter Share by Region</h3>
             <p class="chart-subtitle">Average share of variable-speed (inverter) ACs per region</p>
           </div>
           <div class="chart-card-body">
@@ -1287,7 +1281,7 @@
         </div>
         <div class="inverter-chart-flat">
           <div class="chart-card-header">
-            <h3><i class="fa-solid fa-ranking-star" style="color: #3D6B6B; margin-right: 0.5rem;"></i>Top Countries — Inverter Penetration</h3>
+            <h3><i class="fa-solid fa-ranking-star" style="color: #2D7D5A; margin-right: 0.5rem;"></i>Top Countries — Inverter Penetration</h3>
             <p class="chart-subtitle">Countries with highest variable-speed AC market share (latest data)</p>
           </div>
           <div class="chart-card-body">
@@ -1306,7 +1300,7 @@
       &middot;
       <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer" style="color: #64748b;">HEAT GmbH</a>
       &middot;
-      <a href="/methodology" style="color: #3D6B6B; font-weight: 600;">Methodology</a>
+      <a href="/methodology" style="color: #2D7D5A; font-weight: 600;">Methodology</a>
     </div>
   </div>
 </section>
@@ -1318,7 +1312,7 @@
      Uses light background with teal accent (matching MEPS pillar identity).
      =========================== */
   .meps-story-card {
-    border-left: 4px solid #1a6b5a;
+    border-left: 4px solid #2D7D5A;
     padding: 1.75rem;
     position: relative;
     overflow: visible;
@@ -1331,7 +1325,7 @@
     right: 0;
     width: 300px;
     height: 300px;
-    background: radial-gradient(circle, rgba(139, 195, 74, 0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(82, 183, 136, 0.06) 0%, transparent 70%);
     pointer-events: none;
   }
 
@@ -1376,9 +1370,9 @@
     line-height: 1.65;
     margin: 0 0 1.25rem;
     padding: 0.75rem 1rem;
-    background: #f8fafb;
+    background: #f5faf5;
     border-radius: 10px;
-    border-left: 3px solid #8BC34A;
+    border-left: 3px solid #2D7D5A;
     opacity: 0;
     transform: translateY(8px);
     transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
@@ -1413,8 +1407,8 @@
 
   /* Override AnimatedCounter glassmorphic style for light background */
   .meps-counters :global(.counter-card) {
-    background: linear-gradient(135deg, #f0f7f0 0%, #f5fafa 100%);
-    border: 1px solid rgba(61, 107, 107, 0.15);
+    background: linear-gradient(135deg, #f0f7f0 0%, #f5faf5 100%);
+    border: 1px solid rgba(45, 125, 90, 0.15);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     min-height: 100px;
@@ -1422,19 +1416,19 @@
   }
 
   .meps-counters :global(.counter-card:hover) {
-    background: linear-gradient(135deg, #e8f5e8 0%, #edf7f7 100%);
+    background: linear-gradient(135deg, #e8f5e8 0%, #edf7f0 100%);
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(61, 107, 107, 0.12);
+    box-shadow: 0 6px 20px rgba(45, 125, 90, 0.12);
   }
 
   .meps-counters :global(.counter-display) {
     font-size: 1.8rem;
-    color: #1a6b5a;
+    color: #2D7D5A;
   }
 
   .meps-counters :global(.counter-label) {
     font-size: 0.72rem;
-    color: #4A7F7F;
+    color: #2D7D5A;
   }
 
   .meps-counters :global(.counter-tooltip) {
@@ -1465,7 +1459,7 @@
   .meps-narrative-title {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #3D6B6B;
+    color: #2D7D5A;
     margin: 0 0 0.5rem;
     display: flex;
     align-items: center;
@@ -1473,7 +1467,7 @@
   }
 
   .meps-narrative-title i {
-    color: #8BC34A;
+    color: #2D7D5A;
     font-size: 0.85rem;
   }
 
@@ -1503,7 +1497,7 @@
   .meps-highlights-title {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #3D6B6B;
+    color: #2D7D5A;
     margin: 0 0 0.6rem;
     display: flex;
     align-items: center;
@@ -1511,7 +1505,7 @@
   }
 
   .meps-highlights-title i {
-    color: #8BC34A;
+    color: #2D7D5A;
     font-size: 0.85rem;
   }
 
@@ -1587,7 +1581,7 @@
   }
 
   .meps-partner-header > i {
-    color: #3D6B6B;
+    color: #2D7D5A;
     font-size: 0.8rem;
   }
 
@@ -1649,12 +1643,12 @@
   }
 
   .meps-source-footer a:hover {
-    color: #3D6B6B;
-    border-bottom-color: #3D6B6B;
+    color: #2D7D5A;
+    border-bottom-color: #2D7D5A;
   }
 
   .meps-source-footer a:last-child {
-    color: #3D6B6B;
+    color: #2D7D5A;
     font-weight: 600;
   }
 
@@ -1725,7 +1719,7 @@
 
   /* Charts section - constrain width */
   .meps-charts-section {
-    background: #fafafa;
+    background: #ffffff;
     padding: 1.25rem;
     border-radius: 0 0 16px 16px;
     border: 1px solid #e2e8f0;
@@ -1749,6 +1743,16 @@
 
   .meps-charts-section .inverter-chart-flat + .inverter-chart-flat {
     margin-top: 1.25rem;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 1.25rem;
+  }
+
+  /* Inside the white charts section, individual chart blocks are flat (no nested card) */
+  .meps-charts-section .inverter-chart-flat {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .card-subtitle-text {
@@ -1781,11 +1785,11 @@
 
   .map-view-description {
     font-size: 0.8rem;
-    color: #4A7F7F;
+    color: #2D7D5A;
     padding: 0.5rem 0.75rem;
-    background: #F5FAFA;
+    background: #F0F7F0;
     border-radius: 8px;
-    border-left: 3px solid #8BC34A;
+    border-left: 3px solid #2D7D5A;
   }
 
   /* Map view toggle buttons */
@@ -1845,7 +1849,10 @@
      so they sit directly on the section background without a box-in-box effect.
      =========================== */
   .inverter-chart-flat {
-    background: transparent;
-    padding: 0;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
   }
 </style>

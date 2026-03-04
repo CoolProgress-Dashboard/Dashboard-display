@@ -7,6 +7,7 @@
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners, globalCoolingPledge } from '$lib/data/partner-data';
   import type { NdcFilters } from '$lib/services/dashboard-types';
+  import { STATUS, CHROME, NO_DATA, YES, NO, rgba } from '$lib/components/shared/colors';
 
   export let active: boolean = false;
   export let onPillarInfoClick: (() => void) | null = null;
@@ -52,19 +53,19 @@
       icon: 'fa-file-contract',
       title: 'Kigali & GCP Status',
       description: 'Track ratification and pledge commitments by country',
-      color: '#22c55e'
+      color: '#2D7D5A'
     },
     {
       icon: 'fa-clipboard-list',
       title: 'NDC Cooling Mentions',
       description: 'Which countries integrate cooling into climate targets',
-      color: '#3b82f6'
+      color: '#5A8FC2'
     },
     {
       icon: 'fa-file-shield',
       title: 'NCAPs & Building Codes',
       description: 'National action plans and sector-specific regulations',
-      color: '#8b5cf6'
+      color: '#5A8FC2'
     }
   ];
 
@@ -283,10 +284,10 @@
       }
 
       function getNDCColor(status: string | null | undefined): string {
-        if (status === 'Mentioned') return '#2D5252';
-        if (status === 'Not mentioned') return '#E89B8C';
-        if (status === 'No NDC submitted') return '#E85A4F';
-        return '#e2e8f0';
+        if (status === 'Mentioned') return '#2D7D5A';
+        if (status === 'Not mentioned') return '#D4A843';
+        if (status === 'No NDC submitted') return '#C25B33';
+        return '#E5E1D8';
       }
 
       function getCountryNDCStatus(): Record<string, { name?: string | null; continent?: string | null; subregion?: string | null; status?: string | null; value?: number | null }> {
@@ -335,7 +336,7 @@
 
         if (policyMapType === 'gcp') {
           const pledgeRec = pledge.find((p: any) => p.country_code === code);
-          const statusColor = pledgeRec?.signatory === 1 ? '#2D5252' : '#E89B8C';
+          const statusColor = pledgeRec?.signatory === 1 ? '#2D7D5A' : '#C25B33';
           const statusText = pledgeRec?.signatory === 1 ? 'Signatory' : 'Non-Signatory';
           tooltip.innerHTML = `
             <strong>${countryName}</strong><br>
@@ -349,8 +350,8 @@
             tooltip.innerHTML = `<strong>${countryName}</strong><br><em>No NDC data</em>`;
           } else {
             const statusColor =
-              record.mention_status === 'Mentioned' ? '#2D5252' :
-              record.mention_status === 'Not mentioned' ? '#E89B8C' : '#E85A4F';
+              record.mention_status === 'Mentioned' ? '#2D7D5A' :
+              record.mention_status === 'Not mentioned' ? '#D4A843' : '#C25B33';
             tooltip.innerHTML = `
               <strong>${countryName}</strong><br>
               <span style="color: var(--text-secondary, #94a3b8)">${ndcType} | ${ndcCategory}</span><br>
@@ -364,7 +365,7 @@
           tooltip.innerHTML = `
             <strong>${countryName}</strong><br>
             <span style="color: var(--text-secondary, #94a3b8)">Kigali Amendment</span><br>
-            Status: <span style="color: ${isParty ? '#16a34a' : '#E89B8C'}">${isParty ? 'Ratified' : 'Not Ratified'}</span><br>
+            Status: <span style="color: ${isParty ? '#2D7D5A' : '#C25B33'}">${isParty ? 'Ratified' : 'Not Ratified'}</span><br>
             Region: ${region}
           `;
         } else {
@@ -374,7 +375,7 @@
             tooltip.innerHTML = `
               <strong>${countryName}</strong><br>
               <span style="color: var(--text-secondary, #94a3b8)">National Cooling Action Plan</span><br>
-              Status: <span style="color: #3D6B6B">Has NCAP</span><br>
+              Status: <span style="color: #2D7D5A">Has NCAP</span><br>
               ${ncapRecord.year ? 'Year: ' + ncapRecord.year + '<br>' : ''}
               Region: ${region}
             `;
@@ -382,7 +383,7 @@
             tooltip.innerHTML = `
               <strong>${countryName}</strong><br>
               <span style="color: var(--text-secondary, #94a3b8)">National Cooling Action Plan</span><br>
-              Status: <span style="color: #E89B8C">No NCAP</span><br>
+              Status: <span style="color: #C25B33">No NCAP</span><br>
               Region: ${region}
             `;
           }
@@ -429,8 +430,8 @@
         if (!container) return;
         container.innerHTML = `
           <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
-            <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #22c55e; margin-bottom: 0.75rem; display: block;"></i>
-            <h4 style="color: #166534; margin-bottom: 0.5rem;">Select a Country</h4>
+            <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #2D7D5A; margin-bottom: 0.75rem; display: block;"></i>
+            <h4 style="color: #2D7D5A; margin-bottom: 0.5rem;">Select a Country</h4>
             <p style="font-size: 0.85rem;">Click on any country in the map above to view policy framework details including GCP, NDC, and NCAP status.</p>
           </div>
         `;
@@ -454,24 +455,24 @@
         const ndcStatus = ndcRec?.mention_status ?? 'No data';
 
         container.innerHTML = `
-          <div style="background: #166534; color: #fff; border-radius: 8px 8px 0 0; padding: 0.5rem 0.75rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 700;">
+          <div style="background: #3D6B6B; color: #fff; border-radius: 8px 8px 0 0; padding: 0.5rem 0.75rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 700;">
             <i class="fa-solid fa-location-dot" style="font-size: 0.9rem;"></i>
             ${country.country_name || code}
           </div>
           <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
-            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.75rem;border-radius:8px;border:1px solid ${hasGCP ? '#86efac' : '#fecaca'}; background: ${hasGCP ? '#f0fdf4' : '#fef2f2'};">
-              <i class="fa-solid fa-handshake" style="color: ${hasGCP ? '#22c55e' : '#ef4444'}; font-size: 1.5rem;"></i>
-              <div style="font-weight: 700; color: ${hasGCP ? '#166534' : '#b91c1c'};">GCP</div>
+            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.75rem;border-radius:8px;border:1px solid ${hasGCP ? '#A8D5A2' : '#C25B33'}; background: ${hasGCP ? '#f0f7f0' : '#fdf0ec'};">
+              <i class="fa-solid fa-handshake" style="color: ${hasGCP ? '#2D7D5A' : '#C25B33'}; font-size: 1.5rem;"></i>
+              <div style="font-weight: 700; color: ${hasGCP ? '#2D7D5A' : '#8B2500'};">GCP</div>
               <div style="font-size: 0.8rem; color: #64748b;">${hasGCP ? 'Signatory' : 'Non-signatory'}</div>
             </div>
-            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.75rem;border-radius:8px;border:1px solid ${ndcStatus === 'Mentioned' ? '#86efac' : ndcStatus === 'Not mentioned' ? '#fecaca' : '#e2e8f0'}; background: ${ndcStatus === 'Mentioned' ? '#f0fdf4' : ndcStatus === 'Not mentioned' ? '#fef2f2' : '#f8fafc'};">
-              <i class="fa-solid fa-file-lines" style="color: ${ndcStatus === 'Mentioned' ? '#22c55e' : ndcStatus === 'Not mentioned' ? '#ef4444' : '#94a3b8'}; font-size: 1.5rem;"></i>
-              <div style="font-weight: 700; color: ${ndcStatus === 'Mentioned' ? '#166534' : ndcStatus === 'Not mentioned' ? '#b91c1c' : '#64748b'};">NDC</div>
+            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.75rem;border-radius:8px;border:1px solid ${ndcStatus === 'Mentioned' ? '#D4A843' : ndcStatus === 'Not mentioned' ? '#C25B33' : '#e2e8f0'}; background: ${ndcStatus === 'Mentioned' ? '#fef9ec' : ndcStatus === 'Not mentioned' ? '#fdf0ec' : '#f8fafc'};">
+              <i class="fa-solid fa-file-lines" style="color: ${ndcStatus === 'Mentioned' ? '#D4A843' : ndcStatus === 'Not mentioned' ? '#C25B33' : '#94a3b8'}; font-size: 1.5rem;"></i>
+              <div style="font-weight: 700; color: ${ndcStatus === 'Mentioned' ? '#8B6B00' : ndcStatus === 'Not mentioned' ? '#8B2500' : '#64748b'};">NDC</div>
               <div style="font-size: 0.8rem; color: #64748b;">${ndcStatus === 'Mentioned' ? 'Cooling Mentioned' : ndcStatus || 'No Data'}</div>
             </div>
-            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.75rem;border-radius:8px;border:1px solid ${hasNcap ? '#8b5cf6' : '#e2e8f0'}; background: ${hasNcap ? '#f5f3ff' : '#f8fafc'};">
-              <i class="fa-solid fa-file-shield" style="color: ${hasNcap ? '#8b5cf6' : '#94a3b8'}; font-size: 1.5rem;"></i>
-              <div style="font-weight: 700; color: ${hasNcap ? '#5b21b6' : '#94a3b8'};">NCAP</div>
+            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.75rem;border-radius:8px;border:1px solid ${hasNcap ? '#5A8FC2' : '#e2e8f0'}; background: ${hasNcap ? '#f0f0f7' : '#f8fafc'};">
+              <i class="fa-solid fa-file-shield" style="color: ${hasNcap ? '#5A8FC2' : '#94a3b8'}; font-size: 1.5rem;"></i>
+              <div style="font-weight: 700; color: ${hasNcap ? '#3B5A8B' : '#94a3b8'};">NCAP</div>
               <div style="font-size: 0.8rem; color: #64748b;">${hasNcap ? 'NCAP Developed' : 'No NCAP'}</div>
             </div>
           </div>
@@ -485,27 +486,27 @@
 
         if (mapType === 'kigali') {
           legendEl.innerHTML = `
-            <div class="legend-item"><div class="legend-color" style="background:#16a34a"></div>Ratified</div>
-            <div class="legend-item"><div class="legend-color" style="background:#E89B8C"></div>Not Ratified</div>
-            <div class="legend-item"><div class="legend-color" style="background:#e2e8f0"></div>No Data</div>
+            <div class="legend-item"><div class="legend-color" style="background:#2D7D5A"></div>Ratified</div>
+            <div class="legend-item"><div class="legend-color" style="background:#C25B33"></div>Not Ratified</div>
+            <div class="legend-item"><div class="legend-color" style="background:#E5E1D8"></div>No Data</div>
           `;
         } else if (mapType === 'gcp') {
           legendEl.innerHTML = `
-            <div class="legend-item"><div class="legend-color" style="background:#2D5252"></div>Signatory</div>
-            <div class="legend-item"><div class="legend-color" style="background:#E89B8C"></div>Non-Signatory</div>
-            <div class="legend-item"><div class="legend-color" style="background:#e2e8f0"></div>No Data</div>
+            <div class="legend-item"><div class="legend-color" style="background:#2D7D5A"></div>Signatory</div>
+            <div class="legend-item"><div class="legend-color" style="background:#C25B33"></div>Non-Signatory</div>
+            <div class="legend-item"><div class="legend-color" style="background:#E5E1D8"></div>No Data</div>
           `;
         } else if (mapType === 'ndc') {
           legendEl.innerHTML = `
-            <div class="legend-item"><div class="legend-color" style="background:#2D5252"></div>Mentioned</div>
-            <div class="legend-item"><div class="legend-color" style="background:#E89B8C"></div>Not Mentioned</div>
-            <div class="legend-item"><div class="legend-color" style="background:#E85A4F"></div>No NDC Submitted</div>
-            <div class="legend-item"><div class="legend-color" style="background:#e2e8f0"></div>No Data</div>
+            <div class="legend-item"><div class="legend-color" style="background:#2D7D5A"></div>Mentioned</div>
+            <div class="legend-item"><div class="legend-color" style="background:#D4A843"></div>Not Mentioned</div>
+            <div class="legend-item"><div class="legend-color" style="background:#C25B33"></div>No NDC Submitted</div>
+            <div class="legend-item"><div class="legend-color" style="background:#E5E1D8"></div>No Data</div>
           `;
         } else if (mapType === 'NCAP') {
           legendEl.innerHTML = `
-            <div class="legend-item"><div class="legend-color" style="background:#3D6B6B"></div>Has NCAP</div>
-            <div class="legend-item"><div class="legend-color" style="background:#E89B8C"></div>No NCAP</div>
+            <div class="legend-item"><div class="legend-color" style="background:#2D7D5A"></div>Has NCAP</div>
+            <div class="legend-item"><div class="legend-color" style="background:#C25B33"></div>No NCAP</div>
           `;
         }
       }
@@ -574,28 +575,28 @@
           .duration(300)
           .attr('fill', function(this: any) {
             const code = d3.select(this).attr('data-code');
-            if (!code) return '#e2e8f0';
+            if (!code) return '#E5E1D8';
 
             const country = countries.find((c: any) => c.country_code === code);
-            if (selectedRegion && country?.region !== selectedRegion) return '#e2e8f0';
+            if (selectedRegion && country?.region !== selectedRegion) return '#E5E1D8';
 
             if (mapType === 'kigali') {
               const kRec = kigali.find((k: any) => k.country_code === code);
-              if (!kRec) return '#e2e8f0';
-              return kRec.kigali_party === 1 ? '#16a34a' : '#E89B8C';
+              if (!kRec) return '#E5E1D8';
+              return kRec.kigali_party === 1 ? '#2D7D5A' : '#C25B33';
             } else if (mapType === 'gcp') {
               const pledgeRec = pledge.find((p: any) => p.country_code === code);
-              if (!pledgeRec) return '#e2e8f0';
-              return pledgeRec.signatory === 1 ? '#2D5252' : '#E89B8C';
+              if (!pledgeRec) return '#E5E1D8';
+              return pledgeRec.signatory === 1 ? '#2D7D5A' : '#C25B33';
             } else if (mapType === 'ndc') {
               const countryStatus = getCountryNDCStatus();
               const status = countryStatus[code];
               return getNDCColor(status ? status.status : null);
             } else if (mapType === 'NCAP') {
               const ncapCountry = ncap.find((n: any) => n.country_code === code);
-              return ncapCountry ? '#3D6B6B' : '#E89B8C';
+              return ncapCountry ? '#2D7D5A' : '#C25B33';
             }
-            return '#e2e8f0';
+            return '#E5E1D8';
           });
 
         // Apply stroke synchronously (not inside transition) so the selected-country
@@ -688,8 +689,8 @@
             radius: ['40%', '70%'],
             center: ['50%', '55%'],
             data: [
-              { value: kigaliParties, name: 'Ratified', itemStyle: { color: '#16a34a' } },
-              { value: nonParties, name: 'Not Ratified', itemStyle: { color: '#E89B8C' } }
+              { value: kigaliParties, name: 'Ratified', itemStyle: { color: '#2D7D5A' } },
+              { value: nonParties, name: 'Not Ratified', itemStyle: { color: '#C25B33' } }
             ],
             label: { formatter: '{b}\n{c} countries', fontSize: 12 },
             emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.2)' } }
@@ -710,8 +711,8 @@
           xAxis: { type: 'category', data: regionData.map(r => r.region), axisLabel: { rotate: 30, fontSize: 10 } },
           yAxis: { type: 'value', name: 'Countries' },
           series: [
-            { name: 'Ratified', type: 'bar', stack: 'total', data: regionData.map(r => r.ratified), itemStyle: { color: '#16a34a' } },
-            { name: 'Not Ratified', type: 'bar', stack: 'total', data: regionData.map(r => r.notRatified), itemStyle: { color: '#E89B8C' } }
+            { name: 'Ratified', type: 'bar', stack: 'total', data: regionData.map(r => r.ratified), itemStyle: { color: '#2D7D5A' } },
+            { name: 'Not Ratified', type: 'bar', stack: 'total', data: regionData.map(r => r.notRatified), itemStyle: { color: '#C25B33' } }
           ]
         });
 
@@ -720,7 +721,7 @@
           name: gt,
           value: kigali.filter((k: any) => k.group_type === gt && k.kigali_party === 1).length
         })).sort((a, b) => b.value - a.value);
-        const groupColors = ['#16a34a', '#3D6B6B', '#f59e0b', '#8BC34A'];
+        const groupColors = ['#2D7D5A', '#52B788', '#D4A843', '#A8D5A2'];
 
         setChart('chart-kigali-groups', {
           tooltip: { trigger: 'item', formatter: '{b}: {c} parties ({d}%)' },
@@ -742,8 +743,8 @@
           series: [{
             type: 'bar',
             data: [
-              { value: montrealParties, itemStyle: { color: '#3D6B6B' } },
-              { value: kigaliParties, itemStyle: { color: '#16a34a' } }
+              { value: montrealParties, itemStyle: { color: '#2D7D5A' } },
+              { value: kigaliParties, itemStyle: { color: '#52B788' } }
             ],
             barWidth: '40%',
             label: { show: true, position: 'top', formatter: '{c} parties', fontSize: 12 }
@@ -792,7 +793,7 @@
               type: 'bar',
               stack: 'total',
               data: gcpByRegion.map(r => r.signatories),
-              itemStyle: { color: '#22c55e', borderRadius: [0, 0, 0, 0] },
+              itemStyle: { color: '#2D7D5A', borderRadius: [0, 0, 0, 0] },
               label: { show: true, position: 'inside', color: '#fff', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' }
             },
             {
@@ -800,7 +801,7 @@
               type: 'bar',
               stack: 'total',
               data: gcpByRegion.map(r => r.nonSignatories),
-              itemStyle: { color: '#E89B8C', borderRadius: [0, 4, 4, 0] },
+              itemStyle: { color: '#C25B33', borderRadius: [0, 4, 4, 0] },
               label: { show: true, position: 'inside', color: '#7f1d1d', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' }
             }
           ]
@@ -826,12 +827,13 @@
           xAxis: { type: 'category', data: ndcEvolutionCategories.map(c => categoryAbbrev[c] || c), axisLabel: { color: '#475569', fontSize: 9, rotate: 25, interval: 0 } },
           yAxis: { type: 'value', name: 'Countries', nameTextStyle: { color: '#475569', fontSize: 11 }, axisLabel: { color: '#475569', fontSize: 10 } },
           series: [
-            { name: 'NDC 2.0', type: 'bar', data: ndc20Mentions, itemStyle: { color: '#94a3b8', borderRadius: [3, 3, 0, 0] }, barGap: '10%' },
-            { name: 'NDC 3.0', type: 'bar', data: ndc30Mentions, itemStyle: { color: '#16a34a', borderRadius: [3, 3, 0, 0] } }
+            { name: 'NDC 2.0', type: 'bar', data: ndc20Mentions, itemStyle: { color: CHROME.TEXT_MUTED, borderRadius: [3, 3, 0, 0] }, barGap: '10%' },
+            { name: 'NDC 3.0', type: 'bar', data: ndc30Mentions, itemStyle: { color: '#2D7D5A', borderRadius: [3, 3, 0, 0] } }
           ]
         });
 
         // Policy Coverage Depth pie
+        const totalCountries = countries.length;
         const coverageCount: Record<number, number> = { 0: 0, 1: 0, 2: 0, 3: 0 };
         countries.forEach((c: any) => {
           let depth = 0;
@@ -841,7 +843,7 @@
           coverageCount[depth]++;
         });
         const depthLabels = ['No Policy', '1 Instrument', '2 Instruments', 'All 3 (GCP+NDC+NCAP)'];
-        const depthColors = ['#e2e8f0', '#f59e0b', '#3D6B6B', '#16a34a'];
+        const depthColors = ['#E5E1D8', '#D4A843', '#52B788', '#2D7D5A'];
 
         setChart('chart-policy-depth', {
           tooltip: {
@@ -885,8 +887,8 @@
             axisTick: { show: false }
           },
           series: [
-            { name: `Mentioned ${ndcVersionLabel}`, type: 'bar', stack: 'total', data: mentionedCounts, itemStyle: { color: '#22c55e', borderRadius: [0, 0, 0, 0] }, label: { show: true, position: 'inside', color: '#fff', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } },
-            { name: `Not Mentioned ${ndcVersionLabel}`, type: 'bar', stack: 'total', data: notMentionedCounts, itemStyle: { color: '#ef4444', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'inside', color: '#fff', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } }
+            { name: `Mentioned ${ndcVersionLabel}`, type: 'bar', stack: 'total', data: mentionedCounts, itemStyle: { color: '#2D7D5A', borderRadius: [0, 0, 0, 0] }, label: { show: true, position: 'inside', color: '#fff', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } },
+            { name: `Not Mentioned ${ndcVersionLabel}`, type: 'bar', stack: 'total', data: notMentionedCounts, itemStyle: { color: '#C25B33', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'inside', color: '#fff', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } }
           ]
         });
 
@@ -901,7 +903,7 @@
           grid: { left: '3%', right: '3%', bottom: '15%', top: '8%', containLabel: true },
           xAxis: categoryAxis(ndcRegions),
           yAxis: valueAxis(),
-          series: [{ name: `Countries mentioning ${ndcCategory}`, type: 'bar', data: regionMentioned, itemStyle: { color: '#8BC34A' } }]
+          series: [{ name: `Countries mentioning ${ndcCategory}`, type: 'bar', data: regionMentioned, itemStyle: { color: '#A8D5A2' } }]
         });
 
         const ndc30Mentioned = ndcCategories.map(cat =>
@@ -928,8 +930,8 @@
             axisTick: { show: false }
           },
           series: [
-            { name: 'NDC 3.0', type: 'bar', data: ndc30Mentioned, itemStyle: { color: '#8BC34A', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } },
-            { name: 'Previous NDC (NDC 2.0)', type: 'bar', data: prevNdcMentioned, itemStyle: { color: '#94a3b8', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } }
+            { name: 'NDC 3.0', type: 'bar', data: ndc30Mentioned, itemStyle: { color: '#2D7D5A', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } },
+            { name: 'Previous NDC (NDC 2.0)', type: 'bar', data: prevNdcMentioned, itemStyle: { color: CHROME.TEXT_MUTED, borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } }
           ]
         });
 
@@ -942,8 +944,8 @@
           series: [{
             name: 'NDC 3.0 Status', type: 'pie', radius: ['35%', '60%'], center: ['50%', '45%'],
             data: [
-              { value: submittedCount, name: 'NDC 3.0 Submitted', itemStyle: { color: '#22c55e' } },
-              { value: notSubmittedCount, name: 'Not Submitted', itemStyle: { color: '#ef4444' } }
+              { value: submittedCount, name: 'NDC 3.0 Submitted', itemStyle: { color: '#2D7D5A' } },
+              { value: notSubmittedCount, name: 'Not Submitted', itemStyle: { color: '#C25B33' } }
             ]
           }]
         });
@@ -961,7 +963,7 @@
           grid: { left: '3%', right: '3%', bottom: '15%', top: '8%', containLabel: true },
           xAxis: categoryAxis(ncapRegions),
           yAxis: valueAxis(),
-          series: [{ name: 'Countries with NCAP', type: 'bar', data: ncapByRegion, itemStyle: { color: '#8b5cf6' } }]
+          series: [{ name: 'Countries with NCAP', type: 'bar', data: ncapByRegion, itemStyle: { color: '#5A8FC2' } }]
         });
 
         const ncapYears = ncap.map((n: any) => n.year).filter((y: any): y is number => y !== null && y !== undefined).sort((a: number, b: number) => a - b);
@@ -975,14 +977,14 @@
           grid: { left: '3%', right: '3%', bottom: '15%', top: '8%', containLabel: true },
           xAxis: categoryAxis(years2.map(String)),
           yAxis: valueAxis(),
-          series: [{ name: 'NCAPs Developed', type: 'bar', data: counts2, itemStyle: { color: '#a855f7' } }]
+          series: [{ name: 'NCAPs Developed', type: 'bar', data: counts2, itemStyle: { color: '#5A8FC2' } }]
         });
 
         const listEl = document.getElementById('ncap-countries-list');
         if (listEl) {
           const sortedNcap = [...ncap].sort((a: any, b: any) => a.country_name.localeCompare(b.country_name));
           listEl.innerHTML = sortedNcap.map((n: any) => `
-            <div class="ncap-country-card" style="background: #f8fafc; border-radius: 8px; padding: 0.75rem; border-left: 3px solid #8b5cf6;">
+            <div class="ncap-country-card" style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 8px; padding: 0.75rem; border-left: 3px solid #5A8FC2;">
               <div style="font-weight: 600; color: #1e293b;">${n.country_name}</div>
               <div style="font-size: 0.8rem; color: #64748b;">${n.year ? 'Adopted: ' + n.year : 'Year not specified'}</div>
             </div>
@@ -1004,22 +1006,22 @@
           container.innerHTML = `
             <div class="policy-charts-flat">
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-chart-pie" style="color:#16a34a;margin-right:0.5rem;"></i>Kigali Amendment Status</h3>
+                <h3><i class="fa-solid fa-chart-pie" style="color:#2D7D5A;margin-right:0.5rem;"></i>Kigali Amendment Status</h3>
                 <p class="chart-subtitle">${kigaliParties} of ${kigali.length} countries ratified</p>
                 <div id="chart-kigali-status" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-earth-americas" style="color:#16a34a;margin-right:0.5rem;"></i>Kigali Ratification by Region</h3>
+                <h3><i class="fa-solid fa-earth-americas" style="color:#2D7D5A;margin-right:0.5rem;"></i>Kigali Ratification by Region</h3>
                 <p class="chart-subtitle">Regional breakdown of parties</p>
                 <div id="chart-kigali-regions" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-users-rectangle" style="color:#3D6B6B;margin-right:0.5rem;"></i>Parties by Group Type</h3>
+                <h3><i class="fa-solid fa-users-rectangle" style="color:#2D7D5A;margin-right:0.5rem;"></i>Parties by Group Type</h3>
                 <p class="chart-subtitle">Article 5 Group 1, Group 2, Non-Article 5</p>
                 <div id="chart-kigali-groups" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-layer-group" style="color:#3D6B6B;margin-right:0.5rem;"></i>Treaty Coverage</h3>
+                <h3><i class="fa-solid fa-layer-group" style="color:#2D7D5A;margin-right:0.5rem;"></i>Treaty Coverage</h3>
                 <p class="chart-subtitle">Montreal Protocol vs Kigali Amendment</p>
                 <div id="chart-kigali-coverage" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
@@ -1035,7 +1037,7 @@
           container.innerHTML = `
             <div class="policy-charts-flat">
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-handshake" style="color:#22c55e;margin-right:0.5rem;"></i>GCP Signatories by Region</h3>
+                <h3><i class="fa-solid fa-handshake" style="color:#2D7D5A;margin-right:0.5rem;"></i>GCP Signatories by Region</h3>
                 <p class="chart-subtitle">${gcpSignatoryCount} countries have signed the Global Cooling Pledge — breakdown by world region</p>
                 <div id="chart-gcp-by-region" class="chart-surface" style="width:100%;height:320px;min-height:320px;"></div>
               </div>
@@ -1050,22 +1052,22 @@
           container.innerHTML = `
             <div class="policy-charts-flat">
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-tags" style="color:#3D6B6B;margin-right:0.5rem;"></i>NDC Cooling Mentions by Category</h3>
+                <h3><i class="fa-solid fa-tags" style="color:#2D7D5A;margin-right:0.5rem;"></i>NDC Cooling Mentions by Category</h3>
                 <p class="chart-subtitle">Excluding Kigali Amendment</p>
                 <div id="chart-ndc-categories" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-earth-americas" style="color:#3D6B6B;margin-right:0.5rem;"></i>NDC Status by Region</h3>
+                <h3><i class="fa-solid fa-earth-americas" style="color:#2D7D5A;margin-right:0.5rem;"></i>NDC Status by Region</h3>
                 <p class="chart-subtitle">Countries mentioning cooling</p>
                 <div id="chart-ndc-regions" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-code-compare" style="color:#8BC34A;margin-right:0.5rem;"></i>NDC 3.0 vs Previous NDC</h3>
+                <h3><i class="fa-solid fa-code-compare" style="color:#52B788;margin-right:0.5rem;"></i>NDC 3.0 vs Previous NDC</h3>
                 <p class="chart-subtitle">Comparison of cooling mentions</p>
                 <div id="chart-ndc-comparison" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-file-circle-check" style="color:#8BC34A;margin-right:0.5rem;"></i>NDC Submission Status</h3>
+                <h3><i class="fa-solid fa-file-circle-check" style="color:#52B788;margin-right:0.5rem;"></i>NDC Submission Status</h3>
                 <p class="chart-subtitle">Countries by submission status</p>
                 <div id="chart-ndc-submission" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
@@ -1080,19 +1082,19 @@
           container.innerHTML = `
             <div class="policy-charts-flat">
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-chart-bar" style="color:#3D6B6B;margin-right:0.5rem;"></i>NCAPs by Region</h3>
+                <h3><i class="fa-solid fa-chart-bar" style="color:#5A8FC2;margin-right:0.5rem;"></i>NCAPs by Region</h3>
                 <p class="chart-subtitle">Countries with National Cooling Action Plans</p>
                 <div id="chart-ncap-regions" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-clock-rotate-left" style="color:#3D6B6B;margin-right:0.5rem;"></i>NCAP Development Timeline</h3>
+                <h3><i class="fa-solid fa-clock-rotate-left" style="color:#5A8FC2;margin-right:0.5rem;"></i>NCAP Development Timeline</h3>
                 <p class="chart-subtitle">NCAPs by year of adoption</p>
                 <div id="chart-ncap-timeline" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
             </div>
             <div class="policy-charts-flat" style="margin-top:0;">
               <div class="policy-chart-item" style="grid-column: 1 / -1;">
-                <h3><i class="fa-solid fa-list-check" style="color:#8BC34A;margin-right:0.5rem;"></i>Countries with NCAPs</h3>
+                <h3><i class="fa-solid fa-list-check" style="color:#52B788;margin-right:0.5rem;"></i>Countries with NCAPs</h3>
                 <p class="chart-subtitle">List of countries that have developed National Cooling Action Plans</p>
                 <div id="ncap-countries-list" class="ncap-countries-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.75rem;padding:0.5rem 0;"></div>
               </div>
@@ -1165,13 +1167,13 @@
             .attr('stroke-width', 0.5)
             .attr('fill', (d: any) => {
               const code = countryIdToCode[normalizeId(d.id)];
-              if (!code) return '#e2e8f0';
+              if (!code) return '#E5E1D8';
               const country = countries.find((c: any) => c.country_code === code);
-              if (selectedRegion && country?.region !== selectedRegion) return '#e2e8f0';
+              if (selectedRegion && country?.region !== selectedRegion) return '#E5E1D8';
               // Initialize with GCP view (first active tab)
               const pledgeRec = pledge.find((p: any) => p.country_code === code);
-              if (!pledgeRec) return '#e2e8f0';
-              return pledgeRec.signatory === 1 ? '#2D5252' : '#E89B8C';
+              if (!pledgeRec) return '#E5E1D8';
+              return pledgeRec.signatory === 1 ? '#2D7D5A' : '#C25B33';
             })
             .on('mouseover', handlePolicyHover)
             .on('mouseout', handleOut)
@@ -1445,7 +1447,7 @@
         <button class="tab-btn policy-map-tab" data-map="ndc" type="button">NDC Cooling Mentions</button>
         <button class="tab-btn policy-map-tab" data-map="NCAP" type="button">NCAP</button>
       </div>
-      <div class="filters-help" style="font-size: 0.8rem; color: #3D6B6B; margin: 0.75rem 0; padding: 0.5rem 0.75rem; background: #F5FAFA; border-radius: 8px; border-left: 3px solid #22c55e;">
+      <div class="filters-help" style="font-size: 0.8rem; color: #2D7D5A; margin: 0.75rem 0; padding: 0.5rem 0.75rem; background: #F5FAFA; border-radius: 8px; border-left: 3px solid #2D7D5A;">
         <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
         <strong>Switch tabs</strong> to explore different policy frameworks: GCP signatories, NDC cooling mentions, or National Cooling Action Plans.
       </div>
@@ -1483,8 +1485,8 @@
     <div class="country-card-inline" id="policy-country-detail">
       <div class="country-detail">
         <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
-          <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #22c55e; margin-bottom: 0.75rem; display: block;"></i>
-          <h4 style="color: #166534; margin-bottom: 0.5rem;">Select a Country</h4>
+          <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #2D7D5A; margin-bottom: 0.75rem; display: block;"></i>
+          <h4 style="color: #2D7D5A; margin-bottom: 0.5rem;">Select a Country</h4>
           <p style="font-size: 0.85rem;">Click on any country in the map above to view policy framework details including GCP, NDC, and NCAP status.</p>
         </div>
       </div>
@@ -1503,7 +1505,7 @@
     </div>
 
     <!-- Charts Section -->
-    <div class="charts-section" style="background: #fafafa; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
+    <div class="charts-section" style="background: #ffffff; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
       <div id="policy-charts-container"></div>
     </div>
 
@@ -1520,7 +1522,7 @@
       &middot;
       <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer" style="color: #64748b;">HEAT GmbH</a>
       &middot;
-      <a href="/methodology" style="color: #3D6B6B; font-weight: 600;">Methodology</a>
+      <a href="/methodology" style="color: #2D7D5A; font-weight: 600;">Methodology</a>
     </div>
   </div>
 </section>
@@ -1531,7 +1533,7 @@
      Green accent (policy/governance identity).
      =========================== */
   .policy-story-card {
-    border-left: 4px solid #16a34a;
+    border-left: 4px solid #2D7D5A;
     padding: 1.75rem;
     position: relative;
     overflow: visible;
@@ -1544,7 +1546,7 @@
     right: 0;
     width: 300px;
     height: 300px;
-    background: radial-gradient(circle, rgba(22, 163, 74, 0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(45, 125, 90, 0.06) 0%, transparent 70%);
     pointer-events: none;
   }
 
@@ -1580,9 +1582,9 @@
     line-height: 1.65;
     margin: 0 0 1.25rem;
     padding: 0.75rem 1rem;
-    background: #f0fdf4;
+    background: #f0f7f0;
     border-radius: 10px;
-    border-left: 3px solid #16a34a;
+    border-left: 3px solid #2D7D5A;
     opacity: 0;
     transform: translateY(8px);
     transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
@@ -1607,8 +1609,8 @@
   .revealed .policy-counter-wrapper { opacity: 1; transform: translateY(0); }
 
   .policy-counters :global(.counter-card) {
-    background: linear-gradient(135deg, #f0fdf4 0%, #f0fdf4 100%);
-    border: 1px solid rgba(22, 163, 74, 0.15);
+    background: linear-gradient(135deg, #f0f7f0 0%, #f0f7f0 100%);
+    border: 1px solid rgba(45, 125, 90, 0.15);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     min-height: 100px;
@@ -1616,13 +1618,13 @@
   }
 
   .policy-counters :global(.counter-card:hover) {
-    background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
+    background: linear-gradient(135deg, #C8E8C4 0%, #f0f7f0 100%);
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(22, 163, 74, 0.12);
+    box-shadow: 0 6px 20px rgba(45, 125, 90, 0.12);
   }
 
-  .policy-counters :global(.counter-display) { font-size: 1.8rem; color: #166534; }
-  .policy-counters :global(.counter-label) { font-size: 0.72rem; color: #15803d; }
+  .policy-counters :global(.counter-display) { font-size: 1.8rem; color: #2D7D5A; }
+  .policy-counters :global(.counter-label) { font-size: 0.72rem; color: #2D7D5A; }
   .policy-counters :global(.counter-tooltip) { background: #0f172a !important; color: #ffffff !important; z-index: 99999; box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,0,0,0.3); opacity: 1 !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 
   /* Narrative */
@@ -1638,14 +1640,14 @@
   .policy-narrative-title {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #166534;
+    color: #2D7D5A;
     margin: 0 0 0.5rem;
     display: flex;
     align-items: center;
     gap: 0.4rem;
   }
 
-  .policy-narrative-title i { color: #22c55e; font-size: 0.85rem; }
+  .policy-narrative-title i { color: #2D7D5A; font-size: 0.85rem; }
 
   .policy-narrative p {
     font-size: 0.78rem;
@@ -1667,14 +1669,14 @@
   .policy-highlights-title {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #166534;
+    color: #2D7D5A;
     margin: 0 0 0.6rem;
     display: flex;
     align-items: center;
     gap: 0.4rem;
   }
 
-  .policy-highlights-title i { color: #22c55e; font-size: 0.85rem; }
+  .policy-highlights-title i { color: #2D7D5A; font-size: 0.85rem; }
 
   .policy-highlights-grid {
     display: grid;
@@ -1709,8 +1711,8 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
-    background: linear-gradient(135deg, #f0fdf4, #f0f7f4);
-    border: 1px solid #86efac;
+    background: linear-gradient(135deg, #f0f7f0, #f0f7f0);
+    border: 1px solid #A8D5A2;
     border-radius: 12px;
     margin: 0 0 1rem;
     opacity: 0;
@@ -1720,22 +1722,22 @@
 
   .revealed .policy-pledge-badge { opacity: 1; transform: translateY(0); }
 
-  .pledge-icon { font-size: 1.2rem; color: #16a34a; flex-shrink: 0; }
+  .pledge-icon { font-size: 1.2rem; color: #2D7D5A; flex-shrink: 0; }
   .pledge-content { flex: 1; min-width: 0; }
-  .pledge-content strong { display: block; font-size: 0.78rem; color: #15803d; margin-bottom: 0.15rem; }
+  .pledge-content strong { display: block; font-size: 0.78rem; color: #2D7D5A; margin-bottom: 0.15rem; }
   .pledge-content span { font-size: 0.72rem; color: #4ade80; }
 
   .pledge-link {
     font-size: 0.72rem;
     font-weight: 600;
-    color: #15803d;
+    color: #2D7D5A;
     text-decoration: none;
     white-space: nowrap;
-    border-bottom: 1px dashed #86efac;
+    border-bottom: 1px dashed #A8D5A2;
     transition: color 0.2s;
   }
 
-  .pledge-link:hover { color: #166534; }
+  .pledge-link:hover { color: #2D7D5A; }
 
   /* Partner bar */
   .policy-partner-bar {
@@ -1750,7 +1752,7 @@
   .revealed .policy-partner-bar { opacity: 1; transform: translateY(0); }
 
   .policy-partner-header { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.6rem; }
-  .policy-partner-header > i { color: #166534; font-size: 0.8rem; }
+  .policy-partner-header > i { color: #2D7D5A; font-size: 0.8rem; }
   .policy-partner-title { font-size: 0.78rem; font-weight: 700; color: #333; }
 
   .policy-partner-logos { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
@@ -1787,8 +1789,8 @@
     transition: color 0.2s ease, border-color 0.2s ease;
   }
 
-  .policy-source-footer a:hover { color: #166534; border-bottom-color: #166534; }
-  .policy-source-footer a:last-child { color: #166534; font-weight: 600; }
+  .policy-source-footer a:hover { color: #2D7D5A; border-bottom-color: #2D7D5A; }
+  .policy-source-footer a:last-child { color: #2D7D5A; font-weight: 600; }
 
   /* KPI panel */
   .kpi-panel { padding: 1rem 1.25rem; }
@@ -1809,7 +1811,7 @@
   .policy-chart-item h3 {
     font-size: 1rem;
     font-weight: 600;
-    color: #2D5252;
+    color: #2D7D5A;
     margin-bottom: 0.25rem;
   }
 

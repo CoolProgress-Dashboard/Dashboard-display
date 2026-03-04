@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { acStockData, acMilestones, acGrowthSummary } from '$lib/data/ac-growth-data';
+  import { SCENARIO, CHROME, areaGradient } from '$lib/components/shared/colors';
 
   let chartContainer: HTMLElement;
   let chartInstance: any;
@@ -60,19 +61,19 @@
         type: 'category',
         data: years,
         boundaryGap: false,
-        axisLabel: { fontSize: 10, color: '#666' },
+        axisLabel: { fontSize: 10, color: CHROME.AXIS_LABEL },
         axisLine: { lineStyle: { color: '#e2e8f0' } }
       },
       yAxis: {
         type: 'value',
         name: 'Millions of units',
-        nameTextStyle: { fontSize: 10, color: '#888' },
+        nameTextStyle: { fontSize: 10, color: CHROME.AXIS_LABEL },
         axisLabel: {
           fontSize: 10,
-          color: '#888',
+          color: CHROME.AXIS_LABEL,
           formatter: (v: number) => v >= 1000 ? `${(v / 1000).toFixed(1)}B` : `${v}M`
         },
-        splitLine: { lineStyle: { color: '#f1f5f9' } },
+        splitLine: { lineStyle: { color: CHROME.SPLIT_LINE } },
         axisLine: { show: false }
       },
       series: [
@@ -82,25 +83,16 @@
           data: historicalData,
           smooth: 0.5,
           connectNulls: false,
-          lineStyle: { width: 3, color: '#3D6B6B' },
-          itemStyle: { color: '#3D6B6B' },
-          areaStyle: {
-            color: {
-              type: 'linear',
-              x: 0, y: 0, x2: 0, y2: 1,
-              colorStops: [
-                { offset: 0, color: 'rgba(61, 107, 107, 0.25)' },
-                { offset: 1, color: 'rgba(61, 107, 107, 0.02)' }
-              ]
-            }
-          },
+          lineStyle: { width: 3, color: SCENARIO.HISTORICAL },
+          itemStyle: { color: SCENARIO.HISTORICAL },
+          areaStyle: { color: areaGradient(SCENARIO.HISTORICAL) },
           symbol: 'circle',
           symbolSize: 5,
           markLine: demarcationIdx >= 0 ? {
             silent: true,
             symbol: 'none',
             data: [{ xAxis: demarcationIdx }],
-            lineStyle: { color: '#94a3b8', width: 1, type: 'dashed' },
+            lineStyle: { color: CHROME.DEMARCATION, width: 1, type: 'dashed' },
             label: { show: false }
           } : undefined
         },
@@ -110,18 +102,9 @@
           data: projectedData,
           smooth: 0.5,
           connectNulls: false,
-          lineStyle: { width: 3, color: '#E89B8C', type: 'dashed' },
-          itemStyle: { color: '#E89B8C' },
-          areaStyle: {
-            color: {
-              type: 'linear',
-              x: 0, y: 0, x2: 0, y2: 1,
-              colorStops: [
-                { offset: 0, color: 'rgba(232, 155, 140, 0.2)' },
-                { offset: 1, color: 'rgba(232, 155, 140, 0.02)' }
-              ]
-            }
-          },
+          lineStyle: { width: 3, color: SCENARIO.PROJECTED, type: 'dashed' },
+          itemStyle: { color: SCENARIO.PROJECTED },
+          areaStyle: { color: areaGradient(SCENARIO.PROJECTED, 0.20) },
           symbol: 'circle',
           symbolSize: 5
         }
@@ -129,7 +112,7 @@
       legend: {
         data: ['Historical', 'Projected (IEA Baseline)'],
         bottom: 0,
-        textStyle: { fontSize: 11, color: '#666' }
+        textStyle: { fontSize: 11, color: CHROME.AXIS_LABEL }
       }
     };
 
@@ -186,7 +169,7 @@
   }
 
   .chart-title i {
-    color: #3D6B6B;
+    color: #2D7D5A;
   }
 
   .chart-subtitle-row {
@@ -205,11 +188,11 @@
   .chart-highlight {
     font-size: 0.72rem;
     font-weight: 700;
-    color: #E85A4F;
+    color: #C25B33;
     display: flex;
     align-items: center;
     gap: 0.3rem;
-    background: rgba(232, 90, 79, 0.08);
+    background: rgba(194, 91, 51, 0.08);
     padding: 0.2rem 0.6rem;
     border-radius: 999px;
   }
@@ -228,14 +211,14 @@
   }
 
   .chart-source a {
-    color: #3D6B6B;
+    color: #2D7D5A;
     text-decoration: none;
     border-bottom: 1px dotted rgba(61, 107, 107, 0.3);
     transition: color 0.2s ease;
   }
 
   .chart-source a:hover {
-    color: #2D5252;
-    border-bottom-color: #2D5252;
+    color: #1A5E56;
+    border-bottom-color: #1A5E56;
   }
 </style>

@@ -10,6 +10,7 @@
     POPULATION_CATEGORIES
   } from '$lib/components/shared/config';
   import type { AccessRecord, AccessForecastRecord, Country } from '$lib/services/dashboard-types';
+  import { SEQ, CAT, ACCESS_RISK, CHROME, NO_DATA, rgba } from '$lib/components/shared/colors';
 
   // -------------------------------------------------------
   // Props
@@ -66,19 +67,19 @@
       icon: 'fa-earth-americas',
       title: 'Cooling Access Map',
       description: 'Explore which countries face the largest cooling access gaps by population at risk',
-      color: '#E85A4F'
+      color: '#C25B33'
     },
     {
       icon: 'fa-chart-area',
       title: '2013\u20132050 Timeline',
       description: 'Unified historical and projected view of population at risk, stacked by income group',
-      color: '#f59e0b'
+      color: '#D4A843'
     },
     {
       icon: 'fa-map-location-dot',
       title: 'Country Deep-Dive',
       description: 'Click any country for detailed cooling gap breakdown by income group and risk level',
-      color: '#3D6B6B'
+      color: '#2D7D5A'
     }
   ];
 
@@ -184,7 +185,7 @@
     // Color / threshold config
     // -------------------------------------------------------
     const ACCESS_THRESHOLDS = [1e6, 5e6, 20e6, 50e6, 200e6, 500e6];
-    const ACCESS_COLORS = ['#FFFDE7', '#FFF59D', '#FFE082', '#FFB74D', '#FF7043', '#E53935', '#B71C1C'];
+    const ACCESS_COLORS = [...ACCESS_RISK];
     const ACCESS_LABELS = ['<1M', '1-5M', '5-20M', '20-50M', '50-200M', '200-500M', '>500M'];
 
     // -------------------------------------------------------
@@ -206,7 +207,7 @@
     }
 
     function getAccessColorByValue(value: number): string {
-      if (value <= 0) return '#e2e8f0';
+      if (value <= 0) return NO_DATA;
       for (let i = 0; i < ACCESS_THRESHOLDS.length; i++) {
         if (value < ACCESS_THRESHOLDS[i]) return ACCESS_COLORS[i];
       }
@@ -401,9 +402,9 @@
           .attr('data-code', (d: any) => countryIdToCode[normalizeId(d.id)] || '')
           .attr('fill', (d: any) => {
             const code = countryIdToCode[normalizeId(d.id)];
-            if (!code) return '#e2e8f0';
+            if (!code) return NO_DATA;
             const value = accessTotals[code];
-            if (value === undefined || value <= 0) return '#e2e8f0';
+            if (value === undefined || value <= 0) return NO_DATA;
             return getAccessColorByValue(value);
           })
           .on('mouseover', (event: MouseEvent, d: any) => {
@@ -461,9 +462,9 @@
         .duration(300)
         .attr('fill', function(this: any) {
           const code = d3.select(this).attr('data-code');
-          if (!code) return '#e2e8f0';
+          if (!code) return NO_DATA;
           const value = accessTotals[code];
-          if (value === undefined || value <= 0) return '#e2e8f0';
+          if (value === undefined || value <= 0) return NO_DATA;
           return getAccessColorByValue(value);
         });
 
@@ -518,10 +519,10 @@
       const years = Array.from(new Set(filtered.map(r => r.year))).sort((a, b) => a - b);
       const categories = ['Rural Poor', 'Urban Poor', 'Lower-Middle Income', 'Middle-Income'];
       const catColors: Record<string, string> = {
-        'Rural Poor': '#E85A4F',
-        'Urban Poor': '#22c55e',
-        'Lower-Middle Income': '#64748b',
-        'Middle-Income': '#f59e0b'
+        'Rural Poor': '#C25B33',
+        'Urban Poor': '#E07850',
+        'Lower-Middle Income': '#D4A843',
+        'Middle-Income': '#F5C44A'
       };
 
       const seriesData: Record<string, number[]> = {};
@@ -627,10 +628,10 @@
       const countryData = [...accessData, ...accessForecast].filter(r => r.country_code === code);
 
       const categoryColors: Record<string, string> = {
-        'Rural Poor': '#E85A4F',
-        'Urban Poor': '#E89B8C',
-        'Lower-Middle Income': '#8BC34A',
-        'Middle-Income': '#3D6B6B'
+        'Rural Poor': '#C25B33',
+        'Urban Poor': '#E07850',
+        'Lower-Middle Income': '#D4A843',
+        'Middle-Income': '#F5C44A'
       };
 
       // Build stacked data by category over 2013-2050 timeline
@@ -660,7 +661,7 @@
       const changePercent = baselineTotal > 0
         ? ((currentYearTotal - baselineTotal) / baselineTotal * 100).toFixed(1)
         : '0';
-      const changeColor = Number(changePercent) > 0 ? '#E85A4F' : '#8BC34A';
+      const changeColor = Number(changePercent) > 0 ? '#C25B33' : '#2D7D5A';
       const changeIcon = Number(changePercent) > 0 ? 'fa-arrow-up' : 'fa-arrow-down';
       const region = country.region || 'Global South';
       const trendDirection = Number(changePercent) > 0 ? 'increased' : 'decreased';
@@ -675,13 +676,13 @@
 
       accessDetail.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
-          <h4 style="color: #92400e; font-size: 1.1rem; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
-            <i class="fa-solid fa-flag" style="color: #f59e0b;"></i>
+          <h4 style="color: #8B5E3C; font-size: 1.1rem; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-flag" style="color: #D4A843;"></i>
             ${country.country_name}
             <span style="font-size: 0.75rem; font-weight: 400; color: #64748b; margin-left: 0.5rem;">${region}</span>
           </h4>
           <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
-            <span style="font-size: 0.8rem; color: #E85A4F; font-weight: 600;">
+            <span style="font-size: 0.8rem; color: #C25B33; font-weight: 600;">
               <i class="fa-solid fa-users" style="margin-right: 0.25rem;"></i>
               ${(currentYearTotal / 1e6).toFixed(1)}M at risk
             </span>
@@ -692,27 +693,27 @@
           </div>
         </div>
         <div class="country-charts-grid">
-          <div class="chart-box" style="background: #fafafa; border-radius: 8px; padding: 0.75rem;">
-            <div style="font-size: 0.75rem; font-weight: 600; color: #92400e; margin-bottom: 0.5rem;">
-              <i class="fa-solid fa-chart-area" style="margin-right: 0.3rem; color: #f59e0b;"></i>
+          <div class="chart-box" style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 8px; padding: 0.75rem;">
+            <div style="font-size: 0.75rem; font-weight: 600; color: #8B5E3C; margin-bottom: 0.5rem;">
+              <i class="fa-solid fa-chart-area" style="margin-right: 0.3rem; color: #D4A843;"></i>
               Population at Risk Over Time
             </div>
             <div class="access-stacked-chart" style="width: 100%; height: 200px;"></div>
           </div>
-          <div class="chart-box" style="background: #fafafa; border-radius: 8px; padding: 0.75rem;">
-            <div style="font-size: 0.75rem; font-weight: 600; color: #92400e; margin-bottom: 0.5rem;">
-              <i class="fa-solid fa-chart-pie" style="margin-right: 0.3rem; color: #f59e0b;"></i>
+          <div class="chart-box" style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 8px; padding: 0.75rem;">
+            <div style="font-size: 0.75rem; font-weight: 600; color: #8B5E3C; margin-bottom: 0.5rem;">
+              <i class="fa-solid fa-chart-pie" style="margin-right: 0.3rem; color: #D4A843;"></i>
               2024 Category Breakdown
             </div>
             <div class="access-pie-chart" style="width: 100%; height: 200px;"></div>
           </div>
         </div>
-        <div class="country-insight" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; padding: 1rem; border-left: 3px solid #f59e0b;">
-          <div style="font-size: 0.8rem; font-weight: 600; color: #92400e; margin-bottom: 0.5rem;">
-            <i class="fa-solid fa-lightbulb" style="color: #f59e0b; margin-right: 0.35rem;"></i>
+        <div class="country-insight" style="background: #ffffff; border-radius: 8px; padding: 1rem; border-left: 3px solid #D4A843; border: 1px solid #f1f5f9; border-left: 3px solid #D4A843;">
+          <div style="font-size: 0.8rem; font-weight: 600; color: #8B5E3C; margin-bottom: 0.5rem;">
+            <i class="fa-solid fa-lightbulb" style="color: #D4A843; margin-right: 0.35rem;"></i>
             Analysis for ${country.country_name}
           </div>
-          <p style="font-size: 0.85rem; color: #78350f; line-height: 1.6; margin: 0;">
+          <p style="font-size: 0.85rem; color: #6B4423; line-height: 1.6; margin: 0;">
             ${trendDescription} ${breakdownDescription}
             <span style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #64748b;">
               <em>Data: SEforALL Chilling Prospects (historical) &bull; HEAT projection (2025-2050)</em>
@@ -847,8 +848,8 @@
       if (!container) return;
       container.innerHTML = `
         <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
-          <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #f59e0b; margin-bottom: 0.75rem; display: block;"></i>
-          <h4 style="color: #92400e; margin-bottom: 0.5rem;">Select a Country</h4>
+          <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #D4A843; margin-bottom: 0.75rem; display: block;"></i>
+          <h4 style="color: #8B5E3C; margin-bottom: 0.5rem;">Select a Country</h4>
           <p style="font-size: 0.85rem;">Click on any country in the map above to view cooling access gap details and population breakdown.</p>
         </div>
       `;
@@ -1044,7 +1045,7 @@
 
       <!-- Cool Coalition reference -->
       <div class="access-cool-coalition">
-        <i class="fa-solid fa-people-group" style="color: #3D6B6B; margin-right: 0.5rem;"></i>
+        <i class="fa-solid fa-people-group" style="color: #2D7D5A; margin-right: 0.5rem;"></i>
         <span>
           <strong>UNEP Cool Coalition</strong> unites 100+ governments, cities, and businesses for clean, efficient, accessible cooling.
           <a href="https://coolcoalition.org/" target="_blank" rel="noopener noreferrer">Learn more</a>
@@ -1141,10 +1142,10 @@
       </div>
 
       <!-- Global Timeline Chart (2013-2050) -->
-      <div id="access-timeline-container" class="card-panel" style="margin-top: 0.75rem;">
+      <div id="access-timeline-container" style="margin-top: 0.75rem; border-top: 1px solid #f1f5f9; padding-top: 0.25rem;">
         <div class="chart-card-header" style="padding: 0.75rem 1rem;">
           <h3 style="font-size: 0.88rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 0.4rem; margin: 0;">
-            <i class="fa-solid fa-chart-area" style="color: #d97706;"></i>
+            <i class="fa-solid fa-chart-area" style="color: #D4A843;"></i>
             Population at Risk: 2013&ndash;2050
           </h3>
           <p style="font-size: 0.72rem; color: #94a3b8; margin: 0.2rem 0 0;">
@@ -1161,8 +1162,8 @@
     <div class="country-card-inline" id="access-country-detail">
       <div class="country-detail">
         <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
-          <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #f59e0b; margin-bottom: 0.75rem; display: block;"></i>
-          <h4 style="color: #92400e; margin-bottom: 0.5rem;">Select a Country</h4>
+          <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #D4A843; margin-bottom: 0.75rem; display: block;"></i>
+          <h4 style="color: #8B5E3C; margin-bottom: 0.5rem;">Select a Country</h4>
           <p style="font-size: 0.85rem;">Click on any country in the map above to view cooling access gap details and population breakdown.</p>
         </div>
       </div>
@@ -1179,7 +1180,7 @@
       &middot;
       <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer" style="color: #64748b;">HEAT GmbH</a>
       &middot;
-      <a href="/methodology" style="color: #3D6B6B; font-weight: 600;">Methodology</a>
+      <a href="/methodology" style="color: #2D7D5A; font-weight: 600;">Methodology</a>
     </div>
   </div>
 </section>
@@ -1190,7 +1191,7 @@
      Warm/amber accent (access & vulnerability identity).
      =========================== */
   .access-story-card {
-    border-left: 4px solid #d97706;
+    border-left: 4px solid #D4A843;
     padding: 1.75rem;
     position: relative;
     overflow: visible;
@@ -1203,7 +1204,7 @@
     right: 0;
     width: 300px;
     height: 300px;
-    background: radial-gradient(circle, rgba(217, 119, 6, 0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(212, 168, 67, 0.06) 0%, transparent 70%);
     pointer-events: none;
   }
 
@@ -1239,9 +1240,9 @@
     line-height: 1.65;
     margin: 0 0 1.25rem;
     padding: 0.75rem 1rem;
-    background: #fffbf0;
+    background: #faf8f0;
     border-radius: 10px;
-    border-left: 3px solid #d97706;
+    border-left: 3px solid #D4A843;
     opacity: 0;
     transform: translateY(8px);
     transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
@@ -1266,8 +1267,8 @@
   .revealed .access-counter-wrapper { opacity: 1; transform: translateY(0); }
 
   .access-counters :global(.counter-card) {
-    background: linear-gradient(135deg, #fffbf0 0%, #fef3e0 100%);
-    border: 1px solid rgba(217, 119, 6, 0.15);
+    background: linear-gradient(135deg, #faf8f0 0%, #f5f0e0 100%);
+    border: 1px solid rgba(212, 168, 67, 0.15);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     min-height: 100px;
@@ -1275,13 +1276,13 @@
   }
 
   .access-counters :global(.counter-card:hover) {
-    background: linear-gradient(135deg, #fef3e0 0%, #fde68a40 100%);
+    background: linear-gradient(135deg, #f0e8d0 0%, #f5f0e040 100%);
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(217, 119, 6, 0.12);
+    box-shadow: 0 6px 20px rgba(212, 168, 67, 0.12);
   }
 
-  .access-counters :global(.counter-display) { font-size: 1.8rem; color: #92400e; }
-  .access-counters :global(.counter-label) { font-size: 0.72rem; color: #b45309; }
+  .access-counters :global(.counter-display) { font-size: 1.8rem; color: #8B5E3C; }
+  .access-counters :global(.counter-label) { font-size: 0.72rem; color: #D4A843; }
   .access-counters :global(.counter-tooltip) { background: #0f172a !important; color: #ffffff !important; z-index: 99999; box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,0,0,0.3); opacity: 1 !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 
   /* Narrative */
@@ -1297,14 +1298,14 @@
   .access-narrative-title {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #92400e;
+    color: #8B5E3C;
     margin: 0 0 0.5rem;
     display: flex;
     align-items: center;
     gap: 0.4rem;
   }
 
-  .access-narrative-title i { color: #d97706; font-size: 0.85rem; }
+  .access-narrative-title i { color: #D4A843; font-size: 0.85rem; }
 
   .access-narrative p {
     font-size: 0.78rem;
@@ -1326,14 +1327,14 @@
   .access-highlights-title {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #92400e;
+    color: #8B5E3C;
     margin: 0 0 0.6rem;
     display: flex;
     align-items: center;
     gap: 0.4rem;
   }
 
-  .access-highlights-title i { color: #d97706; font-size: 0.85rem; }
+  .access-highlights-title i { color: #D4A843; font-size: 0.85rem; }
 
   .access-highlights-grid {
     display: grid;
@@ -1402,7 +1403,7 @@
     display: flex;
     align-items: center;
     padding: 0.6rem 0.75rem;
-    background: #f8fafb;
+    background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 10px;
     margin: 0 0 1rem;
@@ -1415,16 +1416,16 @@
 
   .revealed .access-cool-coalition { opacity: 1; transform: translateY(0); }
 
-  .access-cool-coalition strong { color: #3D6B6B; }
+  .access-cool-coalition strong { color: #2D7D5A; }
 
   .access-cool-coalition a {
-    color: #3D6B6B;
+    color: #2D7D5A;
     font-weight: 600;
     text-decoration: none;
-    border-bottom: 1px dashed #3D6B6B;
+    border-bottom: 1px dashed #2D7D5A;
   }
 
-  .access-cool-coalition a:hover { color: #2D5252; }
+  .access-cool-coalition a:hover { color: #1A5E43; }
 
   /* Partner bar */
   .access-partner-bar {
@@ -1439,7 +1440,7 @@
   .revealed .access-partner-bar { opacity: 1; transform: translateY(0); }
 
   .access-partner-header { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.6rem; }
-  .access-partner-header > i { color: #92400e; font-size: 0.8rem; }
+  .access-partner-header > i { color: #8B5E3C; font-size: 0.8rem; }
   .access-partner-title { font-size: 0.78rem; font-weight: 700; color: #333; }
 
   .access-partner-logos { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
@@ -1476,8 +1477,8 @@
     transition: color 0.2s ease, border-color 0.2s ease;
   }
 
-  .access-source-footer a:hover { color: #92400e; border-bottom-color: #92400e; }
-  .access-source-footer a:last-child { color: #92400e; font-weight: 600; }
+  .access-source-footer a:hover { color: #8B5E3C; border-bottom-color: #8B5E3C; }
+  .access-source-footer a:last-child { color: #8B5E3C; font-weight: 600; }
 
   /* KPI panel */
   .kpi-panel { padding: 1rem 1.25rem; }
@@ -1490,7 +1491,7 @@
     padding: 1rem 1rem 0.875rem;
     border-top: 1px solid #e2e8f0;
     margin-top: 0.5rem;
-    background: #f8fafb;
+    background: #ffffff;
     border-radius: 0 0 10px 10px;
   }
 
@@ -1540,8 +1541,8 @@
 
   .tick-box:hover {
     background: rgba(61, 107, 107, 0.1);
-    border-color: #2D5252;
-    color: #2D5252;
+    border-color: #2D5C5C;
+    color: #2D5C5C;
   }
 
   /* Pill button — selected state: filled teal, white text */
@@ -1553,8 +1554,8 @@
   }
 
   .tick-box:has(input:checked):hover {
-    background: #2D5252;
-    border-color: #2D5252;
+    background: #2D5C5C;
+    border-color: #2D5C5C;
   }
 
   .tick-box input { display: none; }

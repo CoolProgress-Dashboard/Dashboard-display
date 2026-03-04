@@ -5,6 +5,7 @@
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners, globalCoolingPledge } from '$lib/data/partner-data';
+  import { SEQ, SCENARIO, STATUS, CHROME, NO_DATA, YES, NO, rgba } from '$lib/components/shared/colors';
 
   export let active: boolean = false;
   export let onPillarInfoClick: (() => void) | null = null;
@@ -47,25 +48,25 @@
       icon: 'fa-temperature-arrow-up',
       title: 'GWP Comparison',
       description: 'See which refrigerants carry the highest climate impact',
-      color: '#E85A4F'
+      color: '#C25B33'
     },
     {
       icon: 'fa-chart-area',
       title: 'Transition Timeline',
       description: 'Track the shift from HFCs to natural refrigerants through 2050',
-      color: '#3D6B6B'
+      color: '#2D7D5A'
     },
     {
       icon: 'fa-earth-americas',
       title: 'Country Compliance',
       description: 'Map Kigali ratification and implementation progress worldwide',
-      color: '#8BC34A'
+      color: '#52B788'
     },
     {
       icon: 'fa-chart-line',
       title: 'Direct Emissions Trend',
       description: 'Compare BAU, Kigali, and Mitigation scenarios for refrigerant emissions',
-      color: '#4A7F7F'
+      color: '#2D7D5A'
     }
   ];
 
@@ -264,9 +265,9 @@
 
     function getKigaliColor(level: string): string {
       switch (level) {
-        case 'ratified':    return '#16a34a';
-        case 'notratified': return '#E85A4F';
-        default:            return '#e2e8f0';
+        case 'ratified':    return YES;
+        case 'notratified': return NO;
+        default:            return NO_DATA;
       }
     }
 
@@ -304,9 +305,9 @@
       const legend = document.getElementById('kigali-legend');
       if (!legend) return;
       legend.innerHTML = `
-    <div class="legend-item"><div class="legend-color" style="background:#16a34a"></div>Ratified</div>
-    <div class="legend-item"><div class="legend-color" style="background:#E85A4F"></div>Not Ratified</div>
-    <div class="legend-item"><div class="legend-color" style="background:#e2e8f0"></div>No Data</div>
+    <div class="legend-item"><div class="legend-color" style="background:#2D7D5A"></div>Ratified</div>
+    <div class="legend-item"><div class="legend-color" style="background:#C25B33"></div>Not Ratified</div>
+    <div class="legend-item"><div class="legend-color" style="background:#E5E1D8"></div>No Data</div>
   `;
     }
 
@@ -452,45 +453,45 @@
         '': {
           years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
           series: [
-            { name: 'R410A (GWP 2088)', data: [72, 52, 32, 18, 9, 4, 1],   color: '#E85A4F' },
-            { name: 'R32 (GWP 675)',    data: [22, 36, 42, 42, 35, 26, 18], color: '#f59e0b' },
-            { name: 'R290 (GWP 3)',     data: [4, 9, 20, 33, 48, 62, 73],   color: '#22c55e' },
+            { name: 'R410A (GWP 2088)', data: [72, 52, 32, 18, 9, 4, 1],   color: '#C25B33' },
+            { name: 'R32 (GWP 675)',    data: [22, 36, 42, 42, 35, 26, 18], color: '#D4A843' },
+            { name: 'R290 (GWP 3)',     data: [4, 9, 20, 33, 48, 62, 73],   color: '#2D7D5A' },
             { name: 'R22 (HCFC)',       data: [2, 3, 6, 7, 8, 8, 8],        color: '#94a3b8' }
           ]
         },
         'China': {
           years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
           series: [
-            { name: 'R410A (GWP 2088)', data: [65, 40, 20, 8, 3, 1, 0],    color: '#E85A4F' },
-            { name: 'R32 (GWP 675)',    data: [25, 38, 40, 35, 25, 15, 8],  color: '#f59e0b' },
-            { name: 'R290 (GWP 3)',     data: [8, 18, 35, 52, 68, 80, 88],  color: '#22c55e' },
+            { name: 'R410A (GWP 2088)', data: [65, 40, 20, 8, 3, 1, 0],    color: '#C25B33' },
+            { name: 'R32 (GWP 675)',    data: [25, 38, 40, 35, 25, 15, 8],  color: '#D4A843' },
+            { name: 'R290 (GWP 3)',     data: [8, 18, 35, 52, 68, 80, 88],  color: '#2D7D5A' },
             { name: 'R22 (HCFC)',       data: [2, 4, 5, 5, 4, 4, 4],        color: '#94a3b8' }
           ]
         },
         'India': {
           years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
           series: [
-            { name: 'R410A (GWP 2088)', data: [55, 42, 28, 15, 7, 3, 1],   color: '#E85A4F' },
-            { name: 'R32 (GWP 675)',    data: [30, 40, 42, 38, 30, 20, 12], color: '#f59e0b' },
-            { name: 'R290 (GWP 3)',     data: [5, 12, 24, 40, 56, 70, 80],  color: '#22c55e' },
+            { name: 'R410A (GWP 2088)', data: [55, 42, 28, 15, 7, 3, 1],   color: '#C25B33' },
+            { name: 'R32 (GWP 675)',    data: [30, 40, 42, 38, 30, 20, 12], color: '#D4A843' },
+            { name: 'R290 (GWP 3)',     data: [5, 12, 24, 40, 56, 70, 80],  color: '#2D7D5A' },
             { name: 'R22 (HCFC)',       data: [10, 6, 6, 7, 7, 7, 7],       color: '#94a3b8' }
           ]
         },
         'Europe': {
           years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
           series: [
-            { name: 'R410A (GWP 2088)', data: [55, 25, 10, 3, 1, 0, 0],    color: '#E85A4F' },
-            { name: 'R32 (GWP 675)',    data: [35, 50, 48, 40, 30, 18, 8],  color: '#f59e0b' },
-            { name: 'R290 (GWP 3)',     data: [8, 22, 38, 53, 65, 78, 88],  color: '#22c55e' },
+            { name: 'R410A (GWP 2088)', data: [55, 25, 10, 3, 1, 0, 0],    color: '#C25B33' },
+            { name: 'R32 (GWP 675)',    data: [35, 50, 48, 40, 30, 18, 8],  color: '#D4A843' },
+            { name: 'R290 (GWP 3)',     data: [8, 22, 38, 53, 65, 78, 88],  color: '#2D7D5A' },
             { name: 'R22 (HCFC)',       data: [2, 3, 4, 4, 4, 4, 4],        color: '#94a3b8' }
           ]
         },
         'Africa': {
           years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
           series: [
-            { name: 'R410A (GWP 2088)', data: [45, 48, 40, 28, 18, 10, 5], color: '#E85A4F' },
-            { name: 'R32 (GWP 675)',    data: [10, 22, 32, 38, 38, 32, 22], color: '#f59e0b' },
-            { name: 'R290 (GWP 3)',     data: [2, 5, 12, 22, 35, 50, 65],   color: '#22c55e' },
+            { name: 'R410A (GWP 2088)', data: [45, 48, 40, 28, 18, 10, 5], color: '#C25B33' },
+            { name: 'R32 (GWP 675)',    data: [10, 22, 32, 38, 38, 32, 22], color: '#D4A843' },
+            { name: 'R290 (GWP 3)',     data: [2, 5, 12, 22, 35, 50, 65],   color: '#2D7D5A' },
             { name: 'R22 (HCFC)',       data: [43, 25, 16, 12, 9, 8, 8],    color: '#94a3b8' }
           ]
         }
@@ -499,45 +500,45 @@
         '': {
           years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
           series: [
-            { name: 'R134a (GWP 1430)', data: [52, 38, 25, 15, 8, 4, 2],   color: '#E85A4F' },
-            { name: 'R600a (GWP 3)',    data: [42, 55, 65, 72, 78, 83, 87], color: '#22c55e' },
-            { name: 'R290 (GWP 3)',     data: [4, 5, 8, 11, 12, 11, 9],     color: '#8BC34A' },
+            { name: 'R134a (GWP 1430)', data: [52, 38, 25, 15, 8, 4, 2],   color: '#C25B33' },
+            { name: 'R600a (GWP 3)',    data: [42, 55, 65, 72, 78, 83, 87], color: '#2D7D5A' },
+            { name: 'R290 (GWP 3)',     data: [4, 5, 8, 11, 12, 11, 9],     color: '#52B788' },
             { name: 'HFC blends',       data: [2, 2, 2, 2, 2, 2, 2],        color: '#94a3b8' }
           ]
         },
         'China': {
           years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
           series: [
-            { name: 'R134a (GWP 1430)', data: [30, 18, 10, 5, 2, 1, 0],    color: '#E85A4F' },
-            { name: 'R600a (GWP 3)',    data: [62, 74, 82, 87, 90, 92, 93], color: '#22c55e' },
-            { name: 'R290 (GWP 3)',     data: [6, 6, 6, 6, 6, 5, 5],        color: '#8BC34A' },
+            { name: 'R134a (GWP 1430)', data: [30, 18, 10, 5, 2, 1, 0],    color: '#C25B33' },
+            { name: 'R600a (GWP 3)',    data: [62, 74, 82, 87, 90, 92, 93], color: '#2D7D5A' },
+            { name: 'R290 (GWP 3)',     data: [6, 6, 6, 6, 6, 5, 5],        color: '#52B788' },
             { name: 'HFC blends',       data: [2, 2, 2, 2, 2, 2, 2],        color: '#94a3b8' }
           ]
         },
         'India': {
           years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
           series: [
-            { name: 'R134a (GWP 1430)', data: [60, 45, 30, 18, 10, 5, 2],  color: '#E85A4F' },
-            { name: 'R600a (GWP 3)',    data: [35, 48, 60, 70, 78, 84, 88], color: '#22c55e' },
-            { name: 'R290 (GWP 3)',     data: [3, 5, 8, 10, 10, 9, 8],      color: '#8BC34A' },
+            { name: 'R134a (GWP 1430)', data: [60, 45, 30, 18, 10, 5, 2],  color: '#C25B33' },
+            { name: 'R600a (GWP 3)',    data: [35, 48, 60, 70, 78, 84, 88], color: '#2D7D5A' },
+            { name: 'R290 (GWP 3)',     data: [3, 5, 8, 10, 10, 9, 8],      color: '#52B788' },
             { name: 'HFC blends',       data: [2, 2, 2, 2, 2, 2, 2],        color: '#94a3b8' }
           ]
         },
         'Europe': {
           years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
           series: [
-            { name: 'R134a (GWP 1430)', data: [15, 8, 3, 1, 0, 0, 0],      color: '#E85A4F' },
-            { name: 'R600a (GWP 3)',    data: [78, 85, 90, 93, 95, 96, 96], color: '#22c55e' },
-            { name: 'R290 (GWP 3)',     data: [5, 5, 5, 4, 3, 2, 2],        color: '#8BC34A' },
+            { name: 'R134a (GWP 1430)', data: [15, 8, 3, 1, 0, 0, 0],      color: '#C25B33' },
+            { name: 'R600a (GWP 3)',    data: [78, 85, 90, 93, 95, 96, 96], color: '#2D7D5A' },
+            { name: 'R290 (GWP 3)',     data: [5, 5, 5, 4, 3, 2, 2],        color: '#52B788' },
             { name: 'HFC blends',       data: [2, 2, 2, 2, 2, 2, 2],        color: '#94a3b8' }
           ]
         },
         'Africa': {
           years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
           series: [
-            { name: 'R134a (GWP 1430)', data: [72, 60, 45, 32, 20, 12, 6], color: '#E85A4F' },
-            { name: 'R600a (GWP 3)',    data: [22, 32, 44, 55, 66, 75, 82], color: '#22c55e' },
-            { name: 'R290 (GWP 3)',     data: [3, 5, 8, 10, 11, 10, 9],     color: '#8BC34A' },
+            { name: 'R134a (GWP 1430)', data: [72, 60, 45, 32, 20, 12, 6], color: '#C25B33' },
+            { name: 'R600a (GWP 3)',    data: [22, 32, 44, 55, 66, 75, 82], color: '#2D7D5A' },
+            { name: 'R290 (GWP 3)',     data: [3, 5, 8, 10, 11, 10, 9],     color: '#52B788' },
             { name: 'HFC blends',       data: [3, 3, 3, 3, 3, 3, 3],        color: '#94a3b8' }
           ]
         }
@@ -591,9 +592,9 @@
 
     function renderKigaliDirectEmissions() {
       const scenarioColors: Record<string, string> = {
-        'BAU': '#E85A4F',
-        'KIP': '#f59e0b',
-        'KIP_PLUS': '#16a34a'
+        'BAU': SCENARIO.BAU,
+        'KIP': SCENARIO.KIP,
+        'KIP_PLUS': SCENARIO.KIP_PLUS
       };
       const scenarioNames: Record<string, string> = {
         'BAU': 'Business as Usual',
@@ -605,9 +606,9 @@
       const STATIC_SCENARIO_DATA: { years: number[]; series: { name: string; data: (number | null)[]; color: string }[] } = {
         years: [2020, 2025, 2030, 2035, 2040, 2045, 2050],
         series: [
-          { name: 'Business as Usual',    data: [1.8, 2.3, 3.1, 4.0, 5.0, 6.1, 7.4],             color: '#E85A4F' },
-          { name: 'Kigali Implementation',data: [1.8, 2.2, 2.6, 2.7, 2.4, 1.9, 1.4],             color: '#f59e0b' },
-          { name: 'Kigali+',              data: [null, 2.1, 1.9, 1.6, 1.2, 0.8, 0.4],            color: '#16a34a' }
+          { name: 'Business as Usual',    data: [1.8, 2.3, 3.1, 4.0, 5.0, 6.1, 7.4],             color: SCENARIO.BAU },
+          { name: 'Kigali Implementation',data: [1.8, 2.2, 2.6, 2.7, 2.4, 1.9, 1.4],             color: SCENARIO.KIP },
+          { name: 'Kigali+',              data: [null, 2.1, 1.9, 1.6, 1.2, 0.8, 0.4],            color: SCENARIO.KIP_PLUS }
         ]
       };
 
@@ -717,8 +718,8 @@
       if (!container) return;
       container.innerHTML = `
         <div class="country-placeholder" style="text-align:center;padding:2rem;color:#64748b;">
-          <i class="fa-solid fa-map-location-dot" style="font-size:2rem;color:#8BC34A;margin-bottom:0.75rem;display:block;"></i>
-          <h4 style="color:#2D5252;margin-bottom:0.5rem;">Select a Country</h4>
+          <i class="fa-solid fa-map-location-dot" style="font-size:2rem;color:#52B788;margin-bottom:0.75rem;display:block;"></i>
+          <h4 style="color:#2D5A3D;margin-bottom:0.5rem;">Select a Country</h4>
           <p style="font-size:0.85rem;">Click on any country in the map above to view Kigali Amendment and refrigerant transition details.</p>
         </div>
       `;
@@ -762,20 +763,20 @@
       }
 
       container.innerHTML = `
-        <h4 style="margin:0 0 0.75rem;color:#2D5252;font-size:1rem;">${country.country_name}</h4>
+        <h4 style="margin:0 0 0.75rem;color:#2D5A3D;font-size:1rem;">${country.country_name}</h4>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
-          <div style="background:#f8fafb;border-radius:8px;padding:0.6rem 0.75rem;border-left:3px solid ${kigaliRecord?.kigali_party === 1 ? '#22c55e' : '#ef4444'};">
+          <div style="background:#f8fafb;border-radius:8px;padding:0.6rem 0.75rem;border-left:3px solid ${kigaliRecord?.kigali_party === 1 ? '#2D7D5A' : '#C25B33'};">
             <div style="font-size:0.68rem;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Kigali Status</div>
-            <div style="font-size:0.9rem;font-weight:700;color:${kigaliRecord?.kigali_party === 1 ? '#166534' : '#dc2626'};">${kigaliStatus}</div>
+            <div style="font-size:0.9rem;font-weight:700;color:${kigaliRecord?.kigali_party === 1 ? '#2D7D5A' : '#C25B33'};">${kigaliStatus}</div>
           </div>
-          <div style="background:#f8fafb;border-radius:8px;padding:0.6rem 0.75rem;border-left:3px solid #3D6B6B;">
+          <div style="background:#f8fafb;border-radius:8px;padding:0.6rem 0.75rem;border-left:3px solid #2D7D5A;">
             <div style="font-size:0.68rem;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Group Type</div>
             <div style="font-size:0.9rem;font-weight:700;color:#1e293b;">${groupType}</div>
           </div>
         </div>
         ${timeline ? `
-<div style="background:linear-gradient(135deg,#1a3a3a 0%,#2d5252 100%);border-radius:12px;padding:1rem 1.25rem;margin-bottom:0.75rem;box-shadow:0 2px 8px rgba(0,0,0,0.15);">
-  <div style="font-size:0.75rem;font-weight:700;color:#8BC34A;margin-bottom:0.65rem;letter-spacing:0.5px;text-transform:uppercase;">
+<div style="background:linear-gradient(135deg,#1A3D2B 0%,#2D5A3D 100%);border-radius:12px;padding:1rem 1.25rem;margin-bottom:0.75rem;box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+  <div style="font-size:0.75rem;font-weight:700;color:#A8D5A2;margin-bottom:0.65rem;letter-spacing:0.5px;text-transform:uppercase;">
     <i class="fa-solid fa-clock-rotate-left" style="margin-right:0.4rem;"></i>Phase-Down Timeline
   </div>
   <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
@@ -784,26 +785,26 @@
 </div>` : ''}
         ${bauDirect > 0 ? `
         <div style="margin-bottom:0.75rem;">
-          <div style="font-size:0.75rem;font-weight:700;color:#3D6B6B;margin-bottom:0.4rem;"><i class="fa-solid fa-chart-line" style="margin-right:0.3rem;"></i>Direct Emissions (2030 Projections)</div>
+          <div style="font-size:0.75rem;font-weight:700;color:#2D7D5A;margin-bottom:0.4rem;"><i class="fa-solid fa-chart-line" style="margin-right:0.3rem;"></i>Direct Emissions (2030 Projections)</div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.4rem;">
-            <div style="text-align:center;background:#fef2f2;border-radius:6px;padding:0.4rem;">
-              <div style="font-size:0.65rem;color:#dc2626;">BAU</div>
+            <div style="text-align:center;background:#fdf0ec;border-radius:6px;padding:0.4rem;">
+              <div style="font-size:0.65rem;color:#C25B33;">BAU</div>
               <div style="font-size:0.85rem;font-weight:700;color:#991b1b;">${bauDirect.toFixed(2)} Mt</div>
             </div>
             <div style="text-align:center;background:#fefce8;border-radius:6px;padding:0.4rem;">
-              <div style="font-size:0.65rem;color:#d97706;">Kigali</div>
+              <div style="font-size:0.65rem;color:#D4A843;">Kigali</div>
               <div style="font-size:0.85rem;font-weight:700;color:#92400e;">${kipDirect.toFixed(2)} Mt</div>
-              <div style="font-size:0.6rem;color:#16a34a;">-${kipSavings}%</div>
+              <div style="font-size:0.6rem;color:#2D7D5A;">-${kipSavings}%</div>
             </div>
             <div style="text-align:center;background:linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%);border-radius:6px;padding:0.4rem;border:1px solid #bbf7d0;">
-              <div style="font-size:0.65rem;color:#16a34a;font-weight:600;">Kigali+</div>
-              <div style="font-size:0.85rem;font-weight:700;color:#166534;">${kippDirect.toFixed(2)} Mt</div>
-              <div style="font-size:0.6rem;color:#16a34a;font-weight:600;">-${kippSavings}%</div>
+              <div style="font-size:0.65rem;color:#2D7D5A;font-weight:600;">Kigali+</div>
+              <div style="font-size:0.85rem;font-weight:700;color:#2D7D5A;">${kippDirect.toFixed(2)} Mt</div>
+              <div style="font-size:0.6rem;color:#2D7D5A;font-weight:600;">-${kippSavings}%</div>
             </div>
           </div>
         </div>
         <div style="font-size:0.72rem;color:#64748b;">
-          <i class="fa-solid fa-bolt" style="color:#f59e0b;margin-right:0.3rem;"></i>Indirect (electricity): ${bauIndirect.toFixed(2)} Mt (2030 BAU)
+          <i class="fa-solid fa-bolt" style="color:#D4A843;margin-right:0.3rem;"></i>Indirect (electricity): ${bauIndirect.toFixed(2)} Mt (2030 BAU)
         </div>` : '<div style="font-size:0.75rem;color:#94a3b8;font-style:italic;">No Subcool model data available for this country.</div>'}
         <div style="margin-top:0.5rem;font-size:0.68rem;color:#94a3b8;">
           Montreal Protocol: ${montrealStatus} \u00B7 Source: UNEP Ozone Secretariat, HEAT Subcool Model
@@ -1056,13 +1057,13 @@
     <!-- TREND CHARTS FIRST (before map) -->
 
     <!-- Market Share Transition Timeline -->
-    <div class="card-panel chart-card">
+    <div class="chart-card">
       <div class="chart-card-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
         <div>
-          <h3><i class="fa-solid fa-chart-area" style="color: #3D6B6B; margin-right: 0.5rem;"></i>Market Share: Refrigerant Transition (2020–2050)</h3>
+          <h3><i class="fa-solid fa-chart-area" style="color: #2D7D5A; margin-right: 0.5rem;"></i>Market Share: Refrigerant Transition (2020–2050)</h3>
           <p class="chart-subtitle">Projected refrigerant market share by appliance type</p>
         </div>
-        <a href="/methodology#refrigerant-transition" style="font-size: 0.68rem; color: #3D6B6B; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; white-space: nowrap;">
+        <a href="/methodology#refrigerant-transition" style="font-size: 0.68rem; color: #2D7D5A; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; white-space: nowrap;">
           <i class="fa-solid fa-book-open" style="font-size: 0.6rem;"></i> Methodology
         </a>
       </div>
@@ -1089,13 +1090,13 @@
     </div>
 
     <!-- Direct Emissions Trend (Subcool BAU vs KIP vs KIP+) -->
-    <div class="card-panel chart-card">
+    <div class="chart-card">
       <div class="chart-card-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
         <div>
-          <h3><i class="fa-solid fa-chart-line" style="color: #4A7F7F; margin-right: 0.5rem;"></i>Direct Refrigerant Emissions by Scenario</h3>
+          <h3><i class="fa-solid fa-chart-line" style="color: #2D7D5A; margin-right: 0.5rem;"></i>Direct Refrigerant Emissions by Scenario</h3>
           <p class="chart-subtitle">Global direct (refrigerant) emissions: BAU vs Kigali Implementation vs Kigali+</p>
         </div>
-        <a href="/methodology#direct-emissions" style="font-size: 0.68rem; color: #3D6B6B; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; white-space: nowrap;">
+        <a href="/methodology#direct-emissions" style="font-size: 0.68rem; color: #2D7D5A; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; white-space: nowrap;">
           <i class="fa-solid fa-book-open" style="font-size: 0.6rem;"></i> Methodology
         </a>
       </div>
@@ -1119,8 +1120,8 @@
         <div id="kigali-legend" class="legend-items"></div>
       </div>
       <div class="progress-bar" id="kigali-progress">
-        <span class="progress-segment" id="kigali-progress-ratified" title="Ratified" style="background:#16a34a;"></span>
-        <span class="progress-segment" id="kigali-progress-notratified" title="Not Ratified" style="background:#E85A4F;"></span>
+        <span class="progress-segment" id="kigali-progress-ratified" title="Ratified" style="background:#2D7D5A;"></span>
+        <span class="progress-segment" id="kigali-progress-notratified" title="Not Ratified" style="background:#C25B33;"></span>
       </div>
 
       <div id="kigali-country-detail" class="country-card-inline">
@@ -1144,7 +1145,7 @@
       &middot;
       <a href="https://www.multilateralfund.org/OurWork/default.aspx" target="_blank" rel="noopener noreferrer" style="color: #64748b;">MLF</a>
       &middot;
-      <a href="/methodology" style="color: #3D6B6B; font-weight: 600;">Methodology</a>
+      <a href="/methodology" style="color: #2D7D5A; font-weight: 600;">Methodology</a>
     </div>
   </div>
 </section>
@@ -1155,7 +1156,7 @@
      Story-driven card with teal/green accent (Kigali pillar identity).
      =========================== */
   .kigali-story-card {
-    border-left: 4px solid #3D6B6B;
+    border-left: 4px solid #2D7D5A;
     padding: 1.75rem;
     position: relative;
     overflow: visible;
@@ -1168,7 +1169,7 @@
     right: 0;
     width: 300px;
     height: 300px;
-    background: radial-gradient(circle, rgba(61, 107, 107, 0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(45, 125, 90, 0.06) 0%, transparent 70%);
     pointer-events: none;
   }
 
@@ -1213,9 +1214,9 @@
     line-height: 1.65;
     margin: 0 0 1.25rem;
     padding: 0.75rem 1rem;
-    background: #f8fafb;
+    background: #f5faf5;
     border-radius: 10px;
-    border-left: 3px solid #3D6B6B;
+    border-left: 3px solid #2D7D5A;
     opacity: 0;
     transform: translateY(8px);
     transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
@@ -1248,8 +1249,8 @@
   }
 
   .kigali-counters :global(.counter-card) {
-    background: linear-gradient(135deg, #f0f7f4 0%, #f5fafa 100%);
-    border: 1px solid rgba(61, 107, 107, 0.15);
+    background: linear-gradient(135deg, #f0f7f0 0%, #f5faf5 100%);
+    border: 1px solid rgba(45, 125, 90, 0.15);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     min-height: 100px;
@@ -1259,17 +1260,17 @@
   .kigali-counters :global(.counter-card:hover) {
     background: linear-gradient(135deg, #e5f2ec 0%, #edf7f7 100%);
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(61, 107, 107, 0.12);
+    box-shadow: 0 6px 20px rgba(45, 125, 90, 0.12);
   }
 
   .kigali-counters :global(.counter-display) {
     font-size: 1.8rem;
-    color: #3D6B6B;
+    color: #2D7D5A;
   }
 
   .kigali-counters :global(.counter-label) {
     font-size: 0.72rem;
-    color: #4A7F7F;
+    color: #2D7D5A;
   }
 
   .kigali-counters :global(.counter-tooltip) {
@@ -1300,7 +1301,7 @@
   .kigali-narrative-title {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #3D6B6B;
+    color: #2D7D5A;
     margin: 0 0 0.5rem;
     display: flex;
     align-items: center;
@@ -1308,7 +1309,7 @@
   }
 
   .kigali-narrative-title i {
-    color: #8BC34A;
+    color: #52B788;
     font-size: 0.85rem;
   }
 
@@ -1337,7 +1338,7 @@
   .kigali-highlights-title {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #3D6B6B;
+    color: #2D7D5A;
     margin: 0 0 0.6rem;
     display: flex;
     align-items: center;
@@ -1345,7 +1346,7 @@
   }
 
   .kigali-highlights-title i {
-    color: #8BC34A;
+    color: #52B788;
     font-size: 0.85rem;
   }
 
@@ -1404,7 +1405,7 @@
     gap: 0.75rem;
     padding: 0.75rem 1rem;
     background: linear-gradient(135deg, #f0fdf4, #f0f7f4);
-    border: 1px solid #86efac;
+    border: 1px solid #A8D5A2;
     border-radius: 12px;
     margin: 0 0 1rem;
     opacity: 0;
@@ -1419,7 +1420,7 @@
 
   .pledge-icon {
     font-size: 1.2rem;
-    color: #16a34a;
+    color: #2D7D5A;
     flex-shrink: 0;
   }
 
@@ -1446,7 +1447,7 @@
     color: #15803d;
     text-decoration: none;
     white-space: nowrap;
-    border-bottom: 1px dashed #86efac;
+    border-bottom: 1px dashed #A8D5A2;
     transition: color 0.2s;
   }
 
@@ -1479,7 +1480,7 @@
   }
 
   .kigali-partner-header > i {
-    color: #3D6B6B;
+    color: #2D7D5A;
     font-size: 0.8rem;
   }
 
@@ -1541,12 +1542,12 @@
   }
 
   .kigali-source-footer a:hover {
-    color: #3D6B6B;
-    border-bottom-color: #3D6B6B;
+    color: #2D7D5A;
+    border-bottom-color: #2D7D5A;
   }
 
   .kigali-source-footer a:last-child {
-    color: #3D6B6B;
+    color: #2D7D5A;
     font-weight: 600;
   }
 
@@ -1658,9 +1659,9 @@
   }
 
   .kigali-filter-btn {
-    background: #3D6B6B;
+    background: #2D7D5A;
     color: white;
-    border: 2px solid #3D6B6B;
+    border: 2px solid #2D7D5A;
     border-radius: 999px;
     padding: 0.3rem 0.9rem;
     font-size: 0.82rem;
@@ -1671,18 +1672,18 @@
 
   .kigali-filter-btn--outline {
     background: transparent;
-    color: #3D6B6B;
+    color: #2D7D5A;
   }
 
   .kigali-filter-btn--outline:hover {
-    background: rgba(61,107,107,0.08);
+    background: rgba(45,125,90,0.08);
   }
 
   /* Override toggle-btn styles inside the group toggles to use teal outlined pills */
   :global(#kigali-group-toggles .toggle-btn) {
     background: transparent !important;
-    border: 2px solid #3D6B6B !important;
-    color: #3D6B6B !important;
+    border: 2px solid #2D7D5A !important;
+    color: #2D7D5A !important;
     border-radius: 999px !important;
     padding: 0.3rem 0.9rem !important;
     font-size: 0.82rem !important;

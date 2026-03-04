@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { APPLIANCE, SCENARIO, EMISSION, CHROME, areaGradient, rgba } from '$lib/components/shared/colors';
   import {
     applianceTimeseriesData,
     applianceMilestones,
@@ -153,7 +154,7 @@
           markLine: app === 'AC' && demarcationIdx >= 0 ? {
             silent: true, symbol: 'none',
             data: [{ xAxis: demarcationIdx }],
-            lineStyle: { color: '#94a3b8', width: 1, type: 'dashed' },
+            lineStyle: { color: CHROME.DEMARCATION, width: 1, type: 'dashed' },
             label: { show: false }
           } : undefined
         });
@@ -161,17 +162,20 @@
         // DECARB overlay for All view
         if (showDecarb) {
           const decarbData = getApplianceData(app, 'DECARB');
+          const bauAt2025 = data.find(d => d.year === 2025);
           series.push({
             name: meta.label + ' (Decarb)',
             type: 'line',
             data: years.map(y => {
+              if (y < 2025) return null;
+              // Branch from BAU value at 2025 so lines meet at the junction
+              if (y === 2025) return bauAt2025 ? (bauAt2025 as any)[field] : null;
               const pt = decarbData.find(d => d.year === y);
-              if (!pt || y < 2025) return null;
-              return (pt as any)[field];
+              return pt ? (pt as any)[field] : null;
             }),
             smooth: 0.5,
-            lineStyle: { width: 2, color: '#8BC34A', type: 'dashed' },
-            itemStyle: { color: '#8BC34A' },
+            lineStyle: { width: 2, color: SCENARIO.DECARB, type: 'dashed' },
+            itemStyle: { color: SCENARIO.DECARB },
             symbol: 'none',
             connectNulls: false,
           });
@@ -196,7 +200,7 @@
         markLine: demarcationIdx >= 0 ? {
           silent: true, symbol: 'none',
           data: [{ xAxis: demarcationIdx }],
-          lineStyle: { color: '#94a3b8', width: 1, type: 'dashed' },
+          lineStyle: { color: CHROME.DEMARCATION, width: 1, type: 'dashed' },
           label: { show: false }
         } : undefined
       });
@@ -210,7 +214,7 @@
           const pt = bauData.find(d => d.year === y);
           return pt ? pt.directEmissionMt : null;
         }),
-        itemStyle: { color: '#E85A4F', opacity: 0.7 },
+        itemStyle: { color: EMISSION.DIRECT, opacity: 0.7 },
         barWidth: '60%',
       });
 
@@ -228,7 +232,7 @@
             if (!pt || y < 2025) return null;
             return pt.indirectEmissionMt;
           }),
-          itemStyle: { color: '#8BC34A', opacity: 0.6 },
+          itemStyle: { color: '#A8D5A2', opacity: 0.6 },
           barWidth: '30%',
           barGap: '10%',
         });
@@ -243,22 +247,25 @@
             if (!pt || y < 2025) return null;
             return pt.directEmissionMt;
           }),
-          itemStyle: { color: '#689F38', opacity: 0.6 },
+          itemStyle: { color: '#A8D5A2', opacity: 0.6 },
           barWidth: '30%',
         });
 
         // DECARB total line overlay
+        const bauAt2025 = bauData.find(d => d.year === 2025);
         series.push({
           name: 'Kigali+ Total',
           type: 'line',
           data: years.map(y => {
+            if (y < 2025) return null;
+            // Branch from BAU total at 2025 so lines meet at the junction
+            if (y === 2025) return bauAt2025 ? bauAt2025.totalEmissionMt : null;
             const pt = decarbData.find(d => d.year === y);
-            if (!pt || y < 2025) return null;
-            return pt.totalEmissionMt;
+            return pt ? pt.totalEmissionMt : null;
           }),
           smooth: 0.5,
-          lineStyle: { width: 2.5, color: '#8BC34A', type: 'dashed' },
-          itemStyle: { color: '#8BC34A' },
+          lineStyle: { width: 2.5, color: SCENARIO.DECARB, type: 'dashed' },
+          itemStyle: { color: SCENARIO.DECARB },
           symbol: 'none',
           connectNulls: false,
         });
@@ -307,7 +314,7 @@
         markLine: demarcationIdx >= 0 ? {
           silent: true, symbol: 'none',
           data: [{ xAxis: demarcationIdx }],
-          lineStyle: { color: '#94a3b8', width: 1, type: 'dashed' },
+          lineStyle: { color: CHROME.DEMARCATION, width: 1, type: 'dashed' },
           label: { show: false }
         } : undefined
       });
@@ -318,14 +325,14 @@
         data: projectedData,
         smooth: 0.5,
         connectNulls: false,
-        lineStyle: { width: 3, color: '#E89B8C', type: 'dashed' },
-        itemStyle: { color: '#E89B8C' },
+        lineStyle: { width: 3, color: SCENARIO.PROJECTED, type: 'dashed' },
+        itemStyle: { color: SCENARIO.PROJECTED },
         areaStyle: {
           color: {
             type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(232, 155, 140, 0.2)' },
-              { offset: 1, color: 'rgba(232, 155, 140, 0.02)' },
+              { offset: 0, color: 'rgba(240, 164, 122, 0.2)' },
+              { offset: 1, color: 'rgba(240, 164, 122, 0.02)' },
             ]
           }
         },
@@ -336,23 +343,26 @@
       // DECARB overlay
       if (showDecarb) {
         const decarbData = getApplianceData(selectedAppliance, 'DECARB');
+        const bauAt2025 = data.find(d => d.year === 2025);
         series.push({
           name: 'Decarbonization Pathway',
           type: 'line',
           data: years.map(y => {
+            if (y < 2025) return null;
+            // Branch from the same BAU point at 2025 so all lines meet
+            if (y === 2025) return bauAt2025 ? (bauAt2025 as any)[field] : null;
             const pt = decarbData.find(d => d.year === y);
-            if (!pt || y < 2025) return null;
-            return (pt as any)[field];
+            return pt ? (pt as any)[field] : null;
           }),
           smooth: 0.5,
-          lineStyle: { width: 2.5, color: '#8BC34A', type: 'dashed' },
-          itemStyle: { color: '#8BC34A' },
+          lineStyle: { width: 2.5, color: SCENARIO.DECARB, type: 'dashed' },
+          itemStyle: { color: SCENARIO.DECARB },
           areaStyle: {
             color: {
               type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
               colorStops: [
-                { offset: 0, color: 'rgba(139, 195, 74, 0.12)' },
-                { offset: 1, color: 'rgba(139, 195, 74, 0.02)' },
+                { offset: 0, color: 'rgba(82, 183, 136, 0.12)' },
+                { offset: 1, color: 'rgba(82, 183, 136, 0.02)' },
               ]
             }
           },
@@ -395,7 +405,7 @@
               const dEntry = decarbData.find(d => d.year === year);
               if (dEntry) {
                 const reduction = Math.round((1 - dEntry.totalEmissionMt / entry.totalEmissionMt) * 100);
-                html += `<br/><span style="color:#689F38;font-size:0.85em;font-weight:600">Kigali+ Total: ${dEntry.totalEmissionMt.toLocaleString()} Mt (${reduction > 0 ? '-' : '+'}${Math.abs(reduction)}%)</span>`;
+                html += `<br/><span style="color:#52B788;font-size:0.85em;font-weight:600">Kigali+ Total: ${dEntry.totalEmissionMt.toLocaleString()} Mt (${reduction > 0 ? '-' : '+'}${Math.abs(reduction)}%)</span>`;
               }
             }
           }
@@ -444,22 +454,22 @@
         type: 'category',
         data: years,
         boundaryGap: false,
-        axisLabel: { fontSize: 10, color: '#666' },
-        axisLine: { lineStyle: { color: '#e2e8f0' } }
+        axisLabel: { fontSize: 10, color: CHROME.TEXT_SECONDARY },
+        axisLine: { lineStyle: { color: CHROME.SPLIT_LINE } }
       },
       yAxis: {
         type: 'value',
         name: METRIC_META[selectedMetric].yAxisLabel,
-        nameTextStyle: { fontSize: 10, color: '#888' },
-        axisLabel: { fontSize: 10, color: '#888', formatter: yAxisFormatter },
-        splitLine: { lineStyle: { color: '#f1f5f9' } },
+        nameTextStyle: { fontSize: 10, color: CHROME.TEXT_SECONDARY },
+        axisLabel: { fontSize: 10, color: CHROME.TEXT_SECONDARY, formatter: yAxisFormatter },
+        splitLine: { lineStyle: { color: CHROME.SPLIT_LINE } },
         axisLine: { show: false }
       },
       series,
       legend: {
         data: legendData,
         bottom: 0,
-        textStyle: { fontSize: 11, color: '#666' }
+        textStyle: { fontSize: 11, color: CHROME.TEXT_SECONDARY }
       }
     };
   }
@@ -607,7 +617,7 @@
   }
 
   .chart-title i {
-    color: #3D6B6B;
+    color: #2D7D5A;
   }
 
   .chart-subtitle-row {
@@ -626,11 +636,11 @@
   .chart-highlight {
     font-size: 0.72rem;
     font-weight: 700;
-    color: #E85A4F;
+    color: #C25B33;
     display: flex;
     align-items: center;
     gap: 0.3rem;
-    background: rgba(232, 90, 79, 0.08);
+    background: rgba(194, 91, 51, 0.08);
     padding: 0.2rem 0.6rem;
     border-radius: 999px;
   }
@@ -656,14 +666,14 @@
   }
 
   .chart-pill:hover {
-    border-color: #3D6B6B;
-    color: #3D6B6B;
+    border-color: #2D7D5A;
+    color: #2D7D5A;
   }
 
   .chart-pill.active {
-    background: #3D6B6B;
+    background: #2D7D5A;
     color: white;
-    border-color: #3D6B6B;
+    border-color: #2D7D5A;
   }
 
   .decarb-toggle {
@@ -675,7 +685,7 @@
   }
 
   .decarb-toggle input {
-    accent-color: #8BC34A;
+    accent-color: #52B788;
     cursor: pointer;
   }
 
@@ -699,9 +709,9 @@
   }
 
   .chart-source a {
-    color: #3D6B6B;
+    color: #2D7D5A;
     text-decoration: none;
-    border-bottom: 1px dotted rgba(61, 107, 107, 0.3);
+    border-bottom: 1px dotted rgba(45, 125, 90, 0.3);
     transition: color 0.2s ease;
   }
 
@@ -713,8 +723,8 @@
   /* Decarb Highlight */
   .decarb-highlight {
     background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
-    border: 1px solid #86efac;
-    border-left: 4px solid #22c55e;
+    border: 1px solid #A8D5A2;
+    border-left: 4px solid #2D7D5A;
     border-radius: 10px;
     padding: 0.75rem 1rem;
     margin-top: 0.75rem;
@@ -731,7 +741,7 @@
   }
 
   .decarb-highlight-header i {
-    color: #22c55e;
+    color: #52B788;
   }
 
   .decarb-kpi-row {
@@ -746,7 +756,7 @@
     padding: 0.4rem 0.3rem;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba(134, 239, 172, 0.4);
+    border: 1px solid rgba(168, 213, 162, 0.4);
   }
 
   .decarb-kpi.grand {
@@ -788,13 +798,13 @@
   }
 
   .decarb-tag.indirect {
-    background: rgba(61, 107, 107, 0.1);
-    color: #3D6B6B;
+    background: rgba(45, 125, 90, 0.1);
+    color: #2D7D5A;
   }
 
   .decarb-tag.direct {
-    background: rgba(232, 90, 79, 0.1);
-    color: #E85A4F;
+    background: rgba(194, 91, 51, 0.1);
+    color: #C25B33;
   }
 
   @media (max-width: 640px) {

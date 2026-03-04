@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { SAVINGS, CHROME } from '$lib/components/shared/colors';
 
   export let claspEnergy: any[] = [];
   export let year: number = 2030;
@@ -68,12 +69,12 @@
           type: 'bar',
           stack: 'waterfall',
           data: [
-            { value: bauTotal,       itemStyle: { color: '#E85A4F' } },
-            { value: -mepsSavings,   itemStyle: { color: '#8BC34A' } },
-            { value: -deepEeSavings, itemStyle: { color: '#66BB6A' } },
-            { value: -techSavings,   itemStyle: { color: '#43A047' } },
-            { value: -gridSavings,   itemStyle: { color: '#3D6B6B' } },
-            { value: remaining,      itemStyle: { color: '#f59e0b' } }
+            { value: bauTotal,       itemStyle: { color: SAVINGS.BAU } },
+            { value: -mepsSavings,   itemStyle: { color: SAVINGS.MEPS } },
+            { value: -deepEeSavings, itemStyle: { color: SAVINGS.HIGH_EFF } },
+            { value: -techSavings,   itemStyle: { color: SAVINGS.BAT } },
+            { value: -gridSavings,   itemStyle: { color: SAVINGS.GRID } },
+            { value: remaining,      itemStyle: { color: SAVINGS.NET } }
           ],
           label: {
             show: true,

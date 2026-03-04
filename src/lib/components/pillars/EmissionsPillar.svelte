@@ -7,6 +7,7 @@
     HEAT_SCENARIOS, HEAT_SCENARIO_NAMES, HEAT_SUBSECTOR_SHORT,
     SUPABASE_URL, SUPABASE_KEY
   } from '$lib/components/shared/config';
+  import { SEQ, APPLIANCE, EMISSION_APPLIANCE, ACCESS_RISK, SCENARIO, EMISSION, SAVINGS, STATUS, CHROME, NO_DATA, YES, NO, rgba } from '$lib/components/shared/colors';
   import { loadDashboardData } from '$lib/services/dashboard-data';
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
@@ -67,19 +68,19 @@
       icon: 'fa-chart-area',
       title: 'Emissions Trajectory',
       description: 'BAU vs DECARB pathways with savings decomposition',
-      color: '#E85A4F'
+      color: '#C25B33'
     },
     {
       icon: 'fa-layer-group',
       title: 'Savings Decomposition',
       description: 'Split savings into efficiency (MEPS) vs grid decarbonization',
-      color: '#8BC34A'
+      color: '#52B788'
     },
     {
       icon: 'fa-earth-americas',
       title: 'Country Deep-Dive',
       description: 'Click any country to see direct, indirect, and appliance breakdown',
-      color: '#3D6B6B'
+      color: '#2D7D5A'
     }
   ];
 
@@ -283,14 +284,14 @@
     }
 
     function getEmissionsColor(value: number, maxValue: number): string {
-      if (!value || value === 0) return '#e2e8f0';
+      if (!value || value === 0) return NO_DATA;
       const logValue = Math.log10(value + 1);
       const logMax = Math.log10(maxValue + 1);
       const ratio = logValue / logMax;
-      if (ratio < 0.25) return '#fef9c3';
-      if (ratio < 0.5)  return '#E89B8C';
-      if (ratio < 0.75) return '#E85A4F';
-      return '#D94539';
+      if (ratio < 0.25) return ACCESS_RISK[0]; // very light cream
+      if (ratio < 0.5)  return ACCESS_RISK[2]; // gold
+      if (ratio < 0.75) return ACCESS_RISK[4]; // mid orange
+      return ACCESS_RISK[6];                    // deep red
     }
 
     // ---- ECharts helpers ----
@@ -362,11 +363,11 @@
       const el = document.getElementById('emissions-legend');
       if (!el) return;
       el.innerHTML = `
-        <div class="legend-item"><div class="legend-color" style="background:#fef9c3"></div>Low</div>
-        <div class="legend-item"><div class="legend-color" style="background:#E89B8C"></div>Medium</div>
-        <div class="legend-item"><div class="legend-color" style="background:#E85A4F"></div>High</div>
-        <div class="legend-item"><div class="legend-color" style="background:#D94539"></div>Very High</div>
-        <div class="legend-item"><div class="legend-color" style="background:#e2e8f0"></div>No Data</div>
+        <div class="legend-item"><div class="legend-color" style="background:${ACCESS_RISK[0]}"></div>Low</div>
+        <div class="legend-item"><div class="legend-color" style="background:${ACCESS_RISK[2]}"></div>Medium</div>
+        <div class="legend-item"><div class="legend-color" style="background:${ACCESS_RISK[4]}"></div>High</div>
+        <div class="legend-item"><div class="legend-color" style="background:${ACCESS_RISK[6]}"></div>Very High</div>
+        <div class="legend-item"><div class="legend-color" style="background:${NO_DATA}"></div>No Data</div>
       `;
     }
 
@@ -374,7 +375,7 @@
       const container = document.getElementById('emissions-legend');
       if (!container) return;
       const thresholds = [0.25, 0.5, 0.75, 1.0];
-      const colors = ['#fef9c3', '#E89B8C', '#E85A4F', '#D94539'];
+      const colors = [ACCESS_RISK[0], ACCESS_RISK[2], ACCESS_RISK[4], ACCESS_RISK[6]];
       const labels = ['Low', 'Medium', 'High', 'Very High'];
       container.innerHTML = thresholds.map((t, i) => {
         const val = Math.pow(10, t * Math.log10(maxValue + 1)) - 1;
@@ -382,7 +383,7 @@
           <div class="legend-color" style="background:${colors[i]}"></div>
           ${labels[i]} (${val < 1 ? val.toFixed(2) : val.toFixed(0)}+)
         </div>`;
-      }).join('') + `<div class="legend-item"><div class="legend-color" style="background:#e2e8f0"></div>No Data</div>`;
+      }).join('') + `<div class="legend-item"><div class="legend-color" style="background:${NO_DATA}"></div>No Data</div>`;
     }
 
     function updateEmissionsProgress() {
@@ -423,7 +424,7 @@
         .duration(300)
         .attr('fill', function(this: Element) {
           const code = d3.select(this).attr('data-code');
-          if (!code) return '#e2e8f0';
+          if (!code) return NO_DATA;
           return getEmissionsColor(countryValues[code] || 0, maxValue);
         });
       updateNewEmissionsLegend(maxValue);
@@ -545,13 +546,13 @@
       const regionRec = regionsData.find((r: any) => r.country_code === code);
       const region = regionRec?.region || country.region || 'N/A';
       const applianceColors: Record<string, string> = {
-        'Air Conditioning': '#3D6B6B',
-        'Ceiling and Portable Fans': '#8BC34A',
-        'Refrigerator-Freezers': '#E89B8C',
-        'Split residential air conditioners': '#3D6B6B',
-        'Domestic refrigeration': '#E89B8C'
+        'Air Conditioning': EMISSION_APPLIANCE.AC,
+        'Ceiling and Portable Fans': EMISSION_APPLIANCE.FANS,
+        'Refrigerator-Freezers': EMISSION_APPLIANCE.FRIDGES,
+        'Split residential air conditioners': EMISSION_APPLIANCE.AC,
+        'Domestic refrigeration': EMISSION_APPLIANCE.FRIDGES
       };
-      const emissionTypeColors: Record<string, string> = { 'Direct': '#E85A4F', 'Indirect': '#3D6B6B' };
+      const emissionTypeColors: Record<string, string> = { 'Direct': EMISSION.DIRECT, 'Indirect': EMISSION.INDIRECT };
       let years: number[] = [];
       let stackedSeriesData: { name: string; data: number[]; color: string }[] = [];
       let currentYearBreakdown: { name: string; value: number; color: string }[] = [];
@@ -685,13 +686,13 @@
         </div>
         <div style="padding:1rem;">
         <div class="country-header" style="margin-bottom:1rem;">
-          <h4 style="color:#3D6B6B;font-size:1.1rem;margin:0;display:flex;align-items:center;gap:0.5rem;">
-            <i class="fa-solid fa-flag" style="color:#8BC34A;"></i>
+          <h4 style="color:#2D7D5A;font-size:1.1rem;margin:0;display:flex;align-items:center;gap:0.5rem;">
+            <i class="fa-solid fa-flag" style="color:#52B788;"></i>
             ${country.country_name}
             <span style="font-size:0.75rem;font-weight:400;color:#64748b;margin-left:0.5rem;">${region}</span>
           </h4>
           <div style="display:flex;gap:0.75rem;margin-top:0.5rem;flex-wrap:wrap;">
-            <span style="font-size:0.8rem;color:#E85A4F;font-weight:600;">
+            <span style="font-size:0.8rem;color:#C25B33;font-weight:600;">
               <i class="fa-solid fa-cloud" style="margin-right:0.25rem;"></i>${currentYearTotal.toFixed(2)} Mt CO2
             </span>
             <span style="font-size:0.8rem;color:${changeColor};font-weight:500;">
@@ -700,24 +701,24 @@
           </div>
         </div>
         <div class="country-charts-grid">
-          <div class="chart-box" style="background:#fafafa;border-radius:8px;padding:0.75rem;">
-            <div style="font-size:0.75rem;font-weight:600;color:#3D6B6B;margin-bottom:0.5rem;">
-              <i class="fa-solid fa-chart-area" style="margin-right:0.3rem;color:#8BC34A;"></i>${lineChartTitle}
+          <div class="chart-box" style="background:#ffffff;border:1px solid #f1f5f9;border-radius:8px;padding:0.75rem;">
+            <div style="font-size:0.75rem;font-weight:600;color:#2D7D5A;margin-bottom:0.5rem;">
+              <i class="fa-solid fa-chart-area" style="margin-right:0.3rem;color:#52B788;"></i>${lineChartTitle}
             </div>
             <div class="emissions-line-chart" style="width:100%;height:200px;"></div>
           </div>
-          <div class="chart-box" style="background:#fafafa;border-radius:8px;padding:0.75rem;">
-            <div style="font-size:0.75rem;font-weight:600;color:#3D6B6B;margin-bottom:0.5rem;">
-              <i class="fa-solid fa-chart-pie" style="margin-right:0.3rem;color:#8BC34A;"></i>${localEmissionsYear} Breakdown
+          <div class="chart-box" style="background:#ffffff;border:1px solid #f1f5f9;border-radius:8px;padding:0.75rem;">
+            <div style="font-size:0.75rem;font-weight:600;color:#2D7D5A;margin-bottom:0.5rem;">
+              <i class="fa-solid fa-chart-pie" style="margin-right:0.3rem;color:#52B788;"></i>${localEmissionsYear} Breakdown
             </div>
             <div class="emissions-pie-chart" style="width:100%;height:200px;"></div>
           </div>
         </div>
-        <div class="country-insight" style="background:linear-gradient(135deg,#EBF4F4 0%,#F5FAFA 100%);border-radius:8px;padding:1rem;border-left:3px solid #8BC34A;">
+        <div class="country-insight" style="background:#ffffff;border:1px solid #f1f5f9;border-radius:8px;padding:1rem;border-left:3px solid #52B788;">
           <div style="font-size:0.8rem;font-weight:600;color:#2D5252;margin-bottom:0.5rem;">
-            <i class="fa-solid fa-lightbulb" style="color:#8BC34A;margin-right:0.35rem;"></i>Analysis for ${country.country_name}
+            <i class="fa-solid fa-lightbulb" style="color:#52B788;margin-right:0.35rem;"></i>Analysis for ${country.country_name}
           </div>
-          <p style="font-size:0.85rem;color:#3D6B6B;line-height:1.6;margin:0;">
+          <p style="font-size:0.85rem;color:#2D7D5A;line-height:1.6;margin:0;">
             ${trendDescription} ${breakdownDescription}
             <span style="display:block;margin-top:0.5rem;font-size:0.75rem;color:#64748b;">
               <em>Data source: ${dataSourceLabel} • Scenario: ${scenarioLabel}</em>
@@ -780,16 +781,16 @@
       const globalTotal = (totals as { total: number }).total;
       emissionsDetail.innerHTML = `
         <div class="country-placeholder" style="text-align:center;padding:2.5rem 1.5rem;">
-          <i class="fa-solid fa-map-location-dot" style="font-size:3rem;color:#8BC34A;margin-bottom:1rem;display:block;"></i>
-          <h4 style="color:#3D6B6B;margin-bottom:0.75rem;font-size:1.1rem;">Select a Country</h4>
+          <i class="fa-solid fa-map-location-dot" style="font-size:3rem;color:#52B788;margin-bottom:1rem;display:block;"></i>
+          <h4 style="color:#2D7D5A;margin-bottom:0.75rem;font-size:1.1rem;">Select a Country</h4>
           <p style="font-size:0.9rem;color:#64748b;line-height:1.5;max-width:280px;margin:0 auto 1.25rem;">
             Click on any country in the map above to view detailed emissions breakdown and trends.
           </p>
-          <div style="background:linear-gradient(135deg,#EBF4F4 0%,#F5FAFA 100%);border-radius:10px;padding:1rem;border-left:3px solid #8BC34A;">
+          <div style="background:linear-gradient(135deg,#EBF4F4 0%,#F5FAFA 100%);border-radius:10px;padding:1rem;border-left:3px solid #52B788;">
             <div style="font-size:0.75rem;color:#64748b;margin-bottom:0.5rem;">
               <i class="fa-solid fa-globe" style="margin-right:0.35rem;"></i>Global Total (${localEmissionsYear} • ${scenarioLabel})
             </div>
-            <div style="font-size:1.5rem;font-weight:700;color:#3D6B6B;">
+            <div style="font-size:1.5rem;font-weight:700;color:#2D7D5A;">
               ${globalTotal.toFixed(1)} Mt CO<sub>2</sub>
             </div>
           </div>
@@ -852,17 +853,29 @@
     }
 
     function renderEmissionsCategoryChart(echartsLib: any) {
-      const chartData: { name: string; value: number }[] = [];
+      const PIE_COLORS: Record<string, string> = {
+        'AC':           EMISSION_APPLIANCE.AC,
+        'Fans':         EMISSION_APPLIANCE.FANS,
+        'Refrigerators':EMISSION_APPLIANCE.FRIDGES,
+        'Refrigeration':EMISSION_APPLIANCE.FRIDGES,
+      };
+      const chartData: { name: string; value: number; itemStyle: { color: string } }[] = [];
       if (emissionsDataSource === 'clasp') {
         const totals = getEmissionsTotals() as { byAppliance: Record<string, number> };
         Object.entries(totals.byAppliance).forEach(([app, val]) => {
-          if ((val as number) > 0) chartData.push({ name: (CLASP_APPLIANCE_SHORT as any)[app] || app, value: +((val as number).toFixed(2)) });
+          if ((val as number) > 0) {
+            const name = (CLASP_APPLIANCE_SHORT as any)[app] || app;
+            chartData.push({ name, value: +((val as number).toFixed(2)), itemStyle: { color: PIE_COLORS[name] ?? EMISSION_APPLIANCE.AC } });
+          }
         });
       } else {
         const totals = getEmissionsTotals() as { bySubsector: Record<string, { direct: number; indirect: number }> };
         Object.entries(totals.bySubsector).forEach(([sub, val]) => {
           const total = (val as any).direct + (val as any).indirect;
-          if (total > 0) chartData.push({ name: (HEAT_SUBSECTOR_SHORT as any)[sub] || sub, value: +total.toFixed(2) });
+          if (total > 0) {
+            const name = (HEAT_SUBSECTOR_SHORT as any)[sub] || sub;
+            chartData.push({ name, value: +total.toFixed(2), itemStyle: { color: PIE_COLORS[name] ?? EMISSION_APPLIANCE.AC } });
+          }
         });
       }
       setChart('chart-emissions-category', {
@@ -903,10 +916,10 @@
           xAxis: { type: 'value', name: 'Mt CO₂ saved', nameLocation: 'middle', nameGap: 25, axisLabel: { fontSize: 10 } },
           yAxis: { type: 'category', data: countryNames, axisLabel: { fontSize: 10, width: 80, overflow: 'truncate' } },
           series: [
-            { name: 'MEPS & Labels',   type: 'bar', stack: 'savings', data: top10.map(c => +c.mepsSavings.toFixed(1)),   itemStyle: { color: '#8BC34A', borderRadius: 0 }, emphasis: { focus: 'series' } },
-            { name: 'High Efficiency', type: 'bar', stack: 'savings', data: top10.map(c => +c.deepEeSavings.toFixed(1)), itemStyle: { color: '#66BB6A', borderRadius: 0 }, emphasis: { focus: 'series' } },
-            { name: 'Best Available',  type: 'bar', stack: 'savings', data: top10.map(c => +c.batSavings.toFixed(1)),    itemStyle: { color: '#43A047', borderRadius: 0 }, emphasis: { focus: 'series' } },
-            { name: 'Grid Decarb',     type: 'bar', stack: 'savings', data: top10.map(c => +c.gridSavings.toFixed(1)),   itemStyle: { color: '#3D6B6B', borderRadius: [0, 3, 3, 0] }, emphasis: { focus: 'series' } }
+            { name: 'MEPS & Labels',   type: 'bar', stack: 'savings', data: top10.map(c => +c.mepsSavings.toFixed(1)),   itemStyle: { color: SAVINGS.MEPS,     borderRadius: 0 }, emphasis: { focus: 'series' } },
+            { name: 'High Efficiency', type: 'bar', stack: 'savings', data: top10.map(c => +c.deepEeSavings.toFixed(1)), itemStyle: { color: SAVINGS.HIGH_EFF,  borderRadius: 0 }, emphasis: { focus: 'series' } },
+            { name: 'Best Available',  type: 'bar', stack: 'savings', data: top10.map(c => +c.batSavings.toFixed(1)),    itemStyle: { color: SAVINGS.BAT,      borderRadius: 0 }, emphasis: { focus: 'series' } },
+            { name: 'Grid Decarb',     type: 'bar', stack: 'savings', data: top10.map(c => +c.gridSavings.toFixed(1)),   itemStyle: { color: SAVINGS.GRID,     borderRadius: [0, 3, 3, 0] }, emphasis: { focus: 'series' } }
           ]
         }, echartsLib);
       } else {
@@ -921,8 +934,8 @@
           xAxis: { type: 'value', name: 'Mt CO₂', nameLocation: 'middle', nameGap: 25, axisLabel: { fontSize: 10 } },
           yAxis: { type: 'category', data: countryData.map(d => d.name), axisLabel: { fontSize: 10, width: 80, overflow: 'truncate' } },
           series: [
-            { name: 'Direct',   type: 'bar', stack: 'emissions', data: countryData.map(d => d.direct),   itemStyle: { color: '#E85A4F' }, emphasis: { focus: 'series' } },
-            { name: 'Indirect', type: 'bar', stack: 'emissions', data: countryData.map(d => d.indirect), itemStyle: { color: '#3D6B6B', borderRadius: [0, 3, 3, 0] }, emphasis: { focus: 'series' } }
+            { name: 'Direct',   type: 'bar', stack: 'emissions', data: countryData.map(d => d.direct),   itemStyle: { color: EMISSION.DIRECT },                          emphasis: { focus: 'series' } },
+            { name: 'Indirect', type: 'bar', stack: 'emissions', data: countryData.map(d => d.indirect), itemStyle: { color: EMISSION.INDIRECT, borderRadius: [0, 3, 3, 0] }, emphasis: { focus: 'series' } }
           ]
         }, echartsLib);
       }
@@ -941,6 +954,12 @@
           );
           return +filtered.reduce((total: number, r: any) => total + getClaspCO2(r, 'BAU'), 0).toFixed(1);
         });
+        const CLASP_LINE_COLORS: Record<string, string> = {
+          BAU: SCENARIO.BAU,       // terracotta — worst
+          GB:  SCENARIO.KIP,       // amber — better
+          NZH: SCENARIO.NZH,       // mint — good
+          BAT: SCENARIO.BAT,       // forest green — best
+        };
         (CLASP_SCENARIOS as string[]).forEach((scenario) => {
           const yearTotals: (number | null)[] = years.map((y, i) => {
             if (scenario === 'BAU') {
@@ -958,13 +977,19 @@
             );
             return +filtered.reduce((total: number, r: any) => total + getClaspCO2(r, scenario), 0).toFixed(1);
           });
-          series.push({ name: (CLASP_SCENARIO_NAMES as any)[scenario], type: 'line', smooth: true, connectNulls: false, data: yearTotals, lineStyle: { width: scenario === emissionsScenario ? 3 : 1.5 }, symbol: scenario === emissionsScenario ? 'circle' : 'none', symbolSize: 6 });
+          const lineColor = CLASP_LINE_COLORS[scenario] ?? SCENARIO.BAU;
+          series.push({ name: (CLASP_SCENARIO_NAMES as any)[scenario], type: 'line', smooth: true, connectNulls: false, data: yearTotals, lineStyle: { width: scenario === emissionsScenario ? 3 : 1.5, color: lineColor }, itemStyle: { color: lineColor }, symbol: scenario === emissionsScenario ? 'circle' : 'none', symbolSize: 6 });
         });
       } else {
         const bauTotals = years.map(y => {
           const filtered = subcoolData.filter((r: any) => r.year === y && r.scenario_name === 'BAU');
           return +filtered.reduce((total: number, r: any) => total + (r.direct_emission_mt || 0) + (r.indirect_emission_mt || 0), 0).toFixed(1);
         });
+        const HEAT_LINE_COLORS: Record<string, string> = {
+          BAU:     SCENARIO.BAU,       // terracotta — worst
+          KIP:     SCENARIO.KIP,       // amber — middle
+          KIP_PLUS:SCENARIO.KIP_PLUS,  // forest green — best
+        };
         (HEAT_SCENARIOS as string[]).forEach((scenario) => {
           const yearTotals: (number | null)[] = years.map((y, i) => {
             if (scenario === 'BAU') {
@@ -976,7 +1001,8 @@
             const filtered = subcoolData.filter((r: any) => r.year === y && r.scenario_name === scenario);
             return +filtered.reduce((total: number, r: any) => total + (r.direct_emission_mt || 0) + (r.indirect_emission_mt || 0), 0).toFixed(1);
           });
-          series.push({ name: (HEAT_SCENARIO_NAMES as any)[scenario], type: 'line', smooth: true, connectNulls: false, data: yearTotals, lineStyle: { width: scenario === emissionsScenario ? 3 : 1.5 }, symbol: scenario === emissionsScenario ? 'circle' : 'none', symbolSize: 6 });
+          const lineColor = HEAT_LINE_COLORS[scenario] ?? SCENARIO.BAU;
+          series.push({ name: (HEAT_SCENARIO_NAMES as any)[scenario], type: 'line', smooth: true, connectNulls: false, data: yearTotals, lineStyle: { width: scenario === emissionsScenario ? 3 : 1.5, color: lineColor }, itemStyle: { color: lineColor }, symbol: scenario === emissionsScenario ? 'circle' : 'none', symbolSize: 6 });
         });
       }
 
@@ -984,7 +1010,7 @@
       if (series.length > 0) {
         series[0].markArea = {
           silent: true,
-          itemStyle: { color: 'rgba(148, 163, 184, 0.10)' },
+          itemStyle: { color: 'rgba(168, 213, 162, 0.10)' },
           label: { show: true, position: 'insideTopLeft', fontSize: 10, color: '#94a3b8', formatter: 'Historical' },
           data: [[{ xAxis: '2020' }, { xAxis: '2025' }]]
         };
@@ -1401,7 +1427,7 @@
           <i class="fa-solid fa-earth-americas"></i>
           CO2 Emissions by Country
         </div>
-        <a href="/methodology#emissions-map" style="font-size: 0.68rem; color: #3D6B6B; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; white-space: nowrap;">
+        <a href="/methodology#emissions-map" style="font-size: 0.68rem; color: #2D7D5A; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; white-space: nowrap;">
           <i class="fa-solid fa-book-open" style="font-size: 0.6rem;"></i> Methodology
         </a>
       </div>
@@ -1414,15 +1440,15 @@
         <div id="emissions-legend" class="legend-items"></div>
       </div>
       <div class="progress-bar" id="emissions-progress">
-        <span class="progress-segment" id="emissions-progress-low" style="background: #fef9c3;"></span>
-        <span class="progress-segment" id="emissions-progress-medium" style="background: #E89B8C;"></span>
-        <span class="progress-segment" id="emissions-progress-high" style="background: #E85A4F;"></span>
-        <span class="progress-segment" id="emissions-progress-critical" style="background: #D94539;"></span>
+        <span class="progress-segment" id="emissions-progress-low" style="background: #F0F7F0;"></span>
+        <span class="progress-segment" id="emissions-progress-medium" style="background: #A8D5A2;"></span>
+        <span class="progress-segment" id="emissions-progress-high" style="background: #C25B33;"></span>
+        <span class="progress-segment" id="emissions-progress-critical" style="background: #8B2500;"></span>
       </div>
 
       <!-- Filters Inside Map Card -->
       <div class="map-filters" id="emissions-filters-panel">
-        <div class="filters-help" style="font-size: 0.8rem; color: #4A7F7F; margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; background: #F5FAFA; border-radius: 8px; border-left: 3px solid #8BC34A;">
+        <div class="filters-help" style="font-size: 0.8rem; color: #2D7D5A; margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; background: #F5FAFA; border-radius: 8px; border-left: 3px solid #52B788;">
           <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
           <strong>Customize your view:</strong> These filters control all data displayed on the map, charts, and KPIs above. Adjust the source, year, scenario, and appliances to explore different emission projections.
         </div>
@@ -1489,8 +1515,8 @@
     <div class="country-card-inline" id="emissions-country-detail">
       <div class="country-detail">
         <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
-          <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #8BC34A; margin-bottom: 0.75rem; display: block;"></i>
-          <h4 style="color: #3D6B6B; margin-bottom: 0.5rem;">Select a Country</h4>
+          <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #52B788; margin-bottom: 0.75rem; display: block;"></i>
+          <h4 style="color: #2D7D5A; margin-bottom: 0.5rem;">Select a Country</h4>
           <p style="font-size: 0.85rem;">Click on any country in the map above to view detailed emission breakdowns and projections.</p>
         </div>
       </div>
@@ -1508,7 +1534,7 @@
       &middot;
       <a href="https://www.iea.org/reports/world-energy-outlook-2025" target="_blank" rel="noopener noreferrer" style="color: #64748b;">IEA STEPS</a>
       &middot;
-      <a href="/methodology" style="color: #3D6B6B; font-weight: 600;">Methodology</a>
+      <a href="/methodology" style="color: #2D7D5A; font-weight: 600;">Methodology</a>
     </div>
   </div>
 </section>
@@ -1519,7 +1545,7 @@
      Rich narrative card with red/orange accent (matching emissions pillar identity).
      =========================== */
   .emissions-story-card {
-    border-left: 4px solid #E85A4F;
+    border-left: 4px solid #C25B33;
     padding: 1.75rem;
     position: relative;
     overflow: visible;
@@ -1532,7 +1558,7 @@
     right: 0;
     width: 300px;
     height: 300px;
-    background: radial-gradient(circle, rgba(232, 90, 79, 0.06) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(194, 91, 51, 0.06) 0%, transparent 70%);
     pointer-events: none;
   }
 
@@ -1577,9 +1603,9 @@
     line-height: 1.65;
     margin: 0 0 1.25rem;
     padding: 0.75rem 1rem;
-    background: #fef8f8;
+    background: #fdf6f0;
     border-radius: 10px;
-    border-left: 3px solid #E85A4F;
+    border-left: 3px solid #C25B33;
     opacity: 0;
     transform: translateY(8px);
     transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
@@ -1612,8 +1638,8 @@
   }
 
   .emissions-counters :global(.counter-card) {
-    background: linear-gradient(135deg, #fef5f4 0%, #fefafa 100%);
-    border: 1px solid rgba(232, 90, 79, 0.15);
+    background: linear-gradient(135deg, #fdf6f0 0%, #fafaf5 100%);
+    border: 1px solid rgba(194, 91, 51, 0.15);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     min-height: 100px;
@@ -1621,19 +1647,19 @@
   }
 
   .emissions-counters :global(.counter-card:hover) {
-    background: linear-gradient(135deg, #fdeeed 0%, #fef5f4 100%);
+    background: linear-gradient(135deg, #faf0e8 0%, #fdf6f0 100%);
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(232, 90, 79, 0.12);
+    box-shadow: 0 6px 20px rgba(194, 91, 51, 0.12);
   }
 
   .emissions-counters :global(.counter-display) {
     font-size: 1.8rem;
-    color: #D94539;
+    color: #C25B33;
   }
 
   .emissions-counters :global(.counter-label) {
     font-size: 0.72rem;
-    color: #8B4513;
+    color: #8B5E3C;
   }
 
   .emissions-counters :global(.counter-tooltip) {
@@ -1664,7 +1690,7 @@
   .emissions-narrative-title {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #8B4513;
+    color: #8B5E3C;
     margin: 0 0 0.5rem;
     display: flex;
     align-items: center;
@@ -1672,7 +1698,7 @@
   }
 
   .emissions-narrative-title i {
-    color: #E85A4F;
+    color: #C25B33;
     font-size: 0.85rem;
   }
 
@@ -1701,7 +1727,7 @@
   .emissions-highlights-title {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #8B4513;
+    color: #8B5E3C;
     margin: 0 0 0.6rem;
     display: flex;
     align-items: center;
@@ -1709,7 +1735,7 @@
   }
 
   .emissions-highlights-title i {
-    color: #E85A4F;
+    color: #C25B33;
     font-size: 0.85rem;
   }
 
@@ -1855,7 +1881,7 @@
   }
 
   .emissions-partner-header > i {
-    color: #3D6B6B;
+    color: #2D7D5A;
     font-size: 0.8rem;
   }
 
@@ -1917,12 +1943,12 @@
   }
 
   .emissions-source-footer a:hover {
-    color: #3D6B6B;
-    border-bottom-color: #3D6B6B;
+    color: #2D7D5A;
+    border-bottom-color: #2D7D5A;
   }
 
   .emissions-source-footer a:last-child {
-    color: #3D6B6B;
+    color: #2D7D5A;
     font-weight: 600;
   }
 

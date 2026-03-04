@@ -1183,7 +1183,7 @@ select {
 .chart-card-header {
   padding: 1rem 1.25rem 0.5rem;
   border-bottom: 1px solid #f1f5f9;
-  background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
+  background: #ffffff;
 }
 
 .chart-card-header h3 {
@@ -1206,7 +1206,7 @@ select {
 
 .chart-card-body {
   padding: 1rem 1.25rem;
-  background: #fafafa;
+  background: #ffffff;
   width: 100%;
   min-width: 0;
   overflow: hidden;

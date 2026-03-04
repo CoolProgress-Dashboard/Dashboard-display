@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount, afterUpdate } from 'svelte';
+  import { STATUS, CHROME } from '$lib/components/shared/colors';
 
   export let regionData: Array<{ name: string; meps: number; labels: number; total: number }> = [];
 
@@ -44,7 +45,7 @@
           name: 'MEPS',
           type: 'bar',
           data: data.map(r => Math.round((r.meps / (r.total || 1)) * 100)),
-          color: '#4A7F7F',
+          color: STATUS.ADVANCED,
           barGap: '10%',
           label: { show: true, position: 'top', fontSize: 13, fontWeight: 'bold', formatter: (p: any) => p.value + '%' }
         },
@@ -52,7 +53,7 @@
           name: 'Labels',
           type: 'bar',
           data: data.map(r => Math.round((r.labels / (r.total || 1)) * 100)),
-          color: '#f59e0b',
+          color: '#D4A843',
           label: { show: true, position: 'top', fontSize: 13, fontWeight: 'bold', formatter: (p: any) => p.value + '%' }
         }
       ]

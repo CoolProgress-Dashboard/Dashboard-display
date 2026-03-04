@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount, afterUpdate } from 'svelte';
+  import { STATUS, CHROME } from '$lib/components/shared/colors';
 
   export let data: Array<{ name: string; avg: number }> = [];
 
@@ -34,7 +35,7 @@
         data: sorted.map(r => ({
           value: r.avg,
           itemStyle: {
-            color: r.avg >= 75 ? '#3D6B6B' : r.avg >= 50 ? '#8BC34A' : r.avg >= 25 ? '#f59e0b' : '#E85A4F'
+            color: r.avg >= 75 ? STATUS.ADVANCED : r.avg >= 50 ? STATUS.GOOD : r.avg >= 25 ? STATUS.DEVELOPING : STATUS.NONE
           }
         })),
         label: {

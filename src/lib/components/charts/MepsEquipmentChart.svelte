@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount, afterUpdate } from 'svelte';
+  import { STATUS, CHROME } from '$lib/components/shared/colors';
 
   export let equipment: Array<{ type: string; meps: number; labels: number }> = [];
   export let countryHtml: string = '';
@@ -35,14 +36,14 @@
           name: 'MEPS',
           type: 'bar',
           data: mepsData,
-          color: '#4A7F7F',
+          color: STATUS.ADVANCED,
           barGap: '10%'
         },
         {
           name: 'Labels',
           type: 'bar',
           data: labelsData,
-          color: '#f59e0b'
+          color: '#D4A843'
         }
       ]
     };

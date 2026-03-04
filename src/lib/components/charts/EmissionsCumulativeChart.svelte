@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { SAVINGS, CHROME, areaGradient } from '$lib/components/shared/colors';
 
   export let claspEnergy: any[] = [];
   export let appliances: string[] = ['Air Conditioning', 'Ceiling and Portable Fans', 'Refrigerator-Freezers'];
@@ -73,7 +74,7 @@
           areaStyle: { opacity: 0.6 },
           data: cumulMEPS,
           smooth: true,
-          itemStyle: { color: '#8BC34A' }
+          itemStyle: { color: SAVINGS.MEPS }
         },
         {
           name: 'High Efficiency',
@@ -82,7 +83,7 @@
           areaStyle: { opacity: 0.6 },
           data: cumulDeepEE,
           smooth: true,
-          itemStyle: { color: '#66BB6A' }
+          itemStyle: { color: SAVINGS.HIGH_EFF }
         },
         {
           name: 'Grid Decarbonization',
@@ -91,7 +92,7 @@
           areaStyle: { opacity: 0.5 },
           data: cumulGrid,
           smooth: true,
-          itemStyle: { color: '#3D6B6B' }
+          itemStyle: { color: SAVINGS.BAT }
         }
       ]
     };

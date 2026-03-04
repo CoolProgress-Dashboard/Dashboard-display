@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { peakLoadByProjected, globalBaselineAvg } from '$lib/data/peak-load-data';
+  import { DIV, CHROME, rgba } from '$lib/components/shared/colors';
 
   let chartContainer: HTMLElement;
   let chartInstance: any;
@@ -27,7 +28,7 @@
           }
           if (entry) {
             const growth = entry.projectedPercent - entry.baselinePercent;
-            html += `<span style="color:#8BC34A">Growth: +${growth} pp</span><br/>`;
+            html += `<span style="color:#52B788">Growth: +${growth} pp</span><br/>`;
             html += `<span style="color:#999;font-size:11px">${entry.source}</span>`;
           }
           return html;
@@ -36,7 +37,7 @@
       legend: {
         data: ['Baseline (2016-2018)', 'Projected (2050)'],
         bottom: 0,
-        textStyle: { fontSize: 11, color: '#666' }
+        textStyle: { fontSize: 11, color: CHROME.AXIS_LABEL }
       },
       grid: {
         left: '3%',
@@ -50,7 +51,7 @@
         data: countries,
         axisLabel: {
           fontSize: 10,
-          color: '#666',
+          color: CHROME.AXIS_LABEL,
           rotate: 30,
           interval: 0
         },
@@ -59,14 +60,14 @@
       yAxis: {
         type: 'value',
         name: '% of peak load',
-        nameTextStyle: { fontSize: 10, color: '#888' },
+        nameTextStyle: { fontSize: 10, color: CHROME.AXIS_LABEL },
         max: 70,
         axisLabel: {
           fontSize: 10,
-          color: '#888',
+          color: CHROME.AXIS_LABEL,
           formatter: '{value}%'
         },
-        splitLine: { lineStyle: { color: '#f1f5f9' } },
+        splitLine: { lineStyle: { color: CHROME.SPLIT_LINE } },
         axisLine: { show: false }
       },
       series: [
@@ -80,8 +81,8 @@
               type: 'linear',
               x: 0, y: 0, x2: 0, y2: 1,
               colorStops: [
-                { offset: 0, color: '#4A7F7F' },
-                { offset: 1, color: '#3D6B6B' }
+                { offset: 0, color: DIV.COOL_DARK },
+                { offset: 1, color: '#1A5E56' }
               ]
             },
             borderRadius: [4, 4, 0, 0]
@@ -97,8 +98,8 @@
               type: 'linear',
               x: 0, y: 0, x2: 0, y2: 1,
               colorStops: [
-                { offset: 0, color: '#E89B8C' },
-                { offset: 1, color: '#E85A4F' }
+                { offset: 0, color: DIV.WARM_LIGHT },
+                { offset: 1, color: DIV.WARM_MID }
               ]
             },
             borderRadius: [4, 4, 0, 0]
@@ -114,9 +115,9 @@
               formatter: `Global avg ${globalBaselineAvg.percent}%`,
               position: 'end',
               fontSize: 10,
-              color: '#888'
+              color: CHROME.AXIS_LABEL
             },
-            lineStyle: { type: 'dashed', color: '#94a3b8' }
+            lineStyle: { type: 'dashed', color: CHROME.DEMARCATION }
           }
         ]
       }
@@ -169,7 +170,7 @@
   }
 
   .chart-title i {
-    color: #3D6B6B;
+    color: #2D7D5A;
   }
 
   .chart-subtitle {
@@ -193,14 +194,14 @@
   }
 
   .chart-source a {
-    color: #3D6B6B;
+    color: #2D7D5A;
     text-decoration: none;
     border-bottom: 1px dotted rgba(61, 107, 107, 0.3);
     transition: color 0.2s ease;
   }
 
   .chart-source a:hover {
-    color: #2D5252;
-    border-bottom-color: #2D5252;
+    color: #1A5E56;
+    border-bottom-color: #1A5E56;
   }
 </style>
