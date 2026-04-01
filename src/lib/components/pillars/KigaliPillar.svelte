@@ -5,6 +5,7 @@
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners, globalCoolingPledge } from '$lib/data/partner-data';
+  import PillarHeader from '$lib/components/shared/PillarHeader.svelte';
   import { SEQ, SCENARIO, STATUS, CHROME, NO_DATA, YES, NO, rgba } from '$lib/components/shared/colors';
 
   export let active: boolean = false;
@@ -943,23 +944,17 @@
 
 <section id="view-kigali" class="view-section" class:active>
   <div class="pillar-stack">
+    <!-- Pillar Header -->
+    <PillarHeader
+      pillarId="kigali"
+      headline={meta.headline}
+      subhead={meta.subhead}
+      entryStat={kigaliContent.entryStat ?? ''}
+      onInfo={onPillarInfoClick}
+    />
+
     <!-- Story Card -->
     <div class="card-panel kigali-story-card" class:revealed>
-      <!-- Header -->
-      <div class="kigali-story-header">
-        <div class="kigali-story-text">
-          <h1 class="kigali-headline">{meta.headline}</h1>
-          <p class="kigali-subhead">{meta.subhead}</p>
-        </div>
-        <div class="pillar-story-actions">
-          <span class="last-updated-label"></span>
-          {#if onPillarInfoClick}
-            <button class="pillar-info-btn" type="button" on:click={onPillarInfoClick}>
-              <i class="fa-solid fa-circle-info"></i> Pillar Information
-            </button>
-          {/if}
-        </div>
-      </div>
 
       <!-- Plain-language intro for non-specialists -->
       <div class="kigali-intro-explainer">

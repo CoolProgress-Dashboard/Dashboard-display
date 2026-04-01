@@ -6,6 +6,7 @@
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners } from '$lib/data/partner-data';
+  import PillarHeader from '$lib/components/shared/PillarHeader.svelte';
   import MepsLevelChart from '$lib/components/charts/MepsLevelChart.svelte';
   import MepsByRegionChart from '$lib/components/charts/MepsByRegionChart.svelte';
   import MepsEquipmentChart from '$lib/components/charts/MepsEquipmentChart.svelte';
@@ -1076,23 +1077,17 @@
 
 <section id="view-meps" class="view-section" class:active>
   <div class="pillar-stack">
-    <!-- Redesigned Story Card -->
+    <!-- Pillar Header -->
+    <PillarHeader
+      pillarId="meps"
+      headline={meta.headline}
+      subhead={meta.subhead}
+      entryStat={mepsContent.entryStat ?? ''}
+      onInfo={onPillarInfoClick}
+    />
+
+    <!-- Story Card -->
     <div class="card-panel meps-story-card" class:revealed>
-      <!-- Header area -->
-      <div class="meps-story-header">
-        <div class="meps-story-text">
-          <h1 class="meps-headline">{meta.headline}</h1>
-          <p class="meps-subhead">{meta.subhead}</p>
-        </div>
-        <div class="pillar-story-actions">
-          <span class="last-updated-label"></span>
-          {#if onPillarInfoClick}
-            <button class="pillar-info-btn" type="button" on:click={onPillarInfoClick}>
-              <i class="fa-solid fa-circle-info"></i> Pillar Information
-            </button>
-          {/if}
-        </div>
-      </div>
 
       <!-- Plain-language explainer — what MEPS and labels actually do -->
       <div class="meps-explainer">

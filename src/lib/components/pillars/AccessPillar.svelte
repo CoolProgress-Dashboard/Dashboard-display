@@ -5,6 +5,7 @@
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners, globalCoolingPledge } from '$lib/data/partner-data';
+  import PillarHeader from '$lib/components/shared/PillarHeader.svelte';
   import {
     ACCESS_ALL_YEARS,
     POPULATION_CATEGORIES
@@ -969,23 +970,17 @@
 
 <section id="view-access" class="view-section" class:active>
   <div class="pillar-stack">
+    <!-- Pillar Header -->
+    <PillarHeader
+      pillarId="access"
+      headline={meta.headline}
+      subhead={meta.subhead}
+      entryStat={accessContent.entryStat ?? ''}
+      onInfo={onPillarInfoClick}
+    />
+
     <!-- Story Card -->
     <div class="card-panel access-story-card" class:revealed>
-      <!-- Header -->
-      <div class="access-story-header">
-        <div class="access-story-text">
-          <h1 class="access-headline">{meta.headline}</h1>
-          <p class="access-subhead">{meta.subhead}</p>
-        </div>
-        <div class="pillar-story-actions">
-          <span class="last-updated-label"></span>
-          {#if onPillarInfoClick}
-            <button class="pillar-info-btn" type="button" on:click={onPillarInfoClick}>
-              <i class="fa-solid fa-circle-info"></i> Pillar Information
-            </button>
-          {/if}
-        </div>
-      </div>
 
       <!-- Human-right lead statement -->
       <p class="access-rights-lead">Access to cooling is not a luxury — it is a human right.</p>

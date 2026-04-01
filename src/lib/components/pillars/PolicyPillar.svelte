@@ -6,6 +6,7 @@
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners, globalCoolingPledge } from '$lib/data/partner-data';
+  import PillarHeader from '$lib/components/shared/PillarHeader.svelte';
   import type { NdcFilters } from '$lib/services/dashboard-types';
   import { STATUS, CHROME, NO_DATA, YES, NO, rgba } from '$lib/components/shared/colors';
 
@@ -1327,23 +1328,17 @@
 
 <section id="view-policy" class="view-section" class:active>
   <div class="pillar-stack">
+    <!-- Pillar Header -->
+    <PillarHeader
+      pillarId="policy"
+      headline={meta.headline}
+      subhead={meta.subhead}
+      entryStat={policyContent.entryStat ?? ''}
+      onInfo={onPillarInfoClick}
+    />
+
     <!-- Story Card -->
     <div class="card-panel policy-story-card" class:revealed>
-      <!-- Header -->
-      <div class="policy-story-header">
-        <div class="policy-story-text">
-          <h1 class="policy-headline">{meta.headline}</h1>
-          <p class="policy-subhead">{meta.subhead}</p>
-        </div>
-        <div class="pillar-story-actions">
-          <span class="last-updated-label"></span>
-          {#if onPillarInfoClick}
-            <button class="pillar-info-btn" type="button" on:click={onPillarInfoClick}>
-              <i class="fa-solid fa-circle-info"></i> Pillar Information
-            </button>
-          {/if}
-        </div>
-      </div>
 
       <!-- GCP intro — plain language, before data -->
       <div class="policy-gcp-intro">

@@ -12,6 +12,7 @@
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners } from '$lib/data/partner-data';
+  import PillarHeader from '$lib/components/shared/PillarHeader.svelte';
   import { globalCoolingPledge } from '$lib/data/partner-data';
 
   export let active: boolean = false;
@@ -1305,23 +1306,17 @@
 
 <section id="view-emissions" class="view-section" class:active>
   <div class="pillar-stack">
+    <!-- Pillar Header -->
+    <PillarHeader
+      pillarId="emissions"
+      headline={meta.headline}
+      subhead={meta.subhead}
+      entryStat={emissionsContent.entryStat ?? ''}
+      onInfo={onPillarInfoClick}
+    />
+
     <!-- Story-Driven Card -->
     <div class="card-panel emissions-story-card" class:revealed>
-      <!-- Header -->
-      <div class="emissions-story-header">
-        <div class="emissions-story-text">
-          <h1 class="emissions-headline">{meta.headline}</h1>
-          <p class="emissions-subhead">{meta.subhead}</p>
-        </div>
-        <div class="pillar-story-actions">
-          <span class="last-updated-label"></span>
-          {#if onPillarInfoClick}
-            <button class="pillar-info-btn" type="button" on:click={onPillarInfoClick}>
-              <i class="fa-solid fa-circle-info"></i> Pillar Information
-            </button>
-          {/if}
-        </div>
-      </div>
 
       <!-- Story hook narrative -->
       <p class="emissions-story-hook">{emissionsContent.storyHook}</p>
