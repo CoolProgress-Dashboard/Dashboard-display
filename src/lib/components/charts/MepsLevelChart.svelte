@@ -232,7 +232,7 @@
           const seriesName = params.seriesName.replace(' (projected)', '');
           const isProjected = params.seriesName.includes('projected');
 
-          let html = `<strong>${seriesName}</strong> (${year})${isProjected ? ' <em style="color:#94a3b8">projected</em>' : ''}<br/>`;
+          let html = `<strong>${seriesName}</strong> (${year})${isProjected ? ' <em style="color:#94a3b8">staged / future effective date</em>' : ''}<br/>`;
           html += `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${params.color};margin-right:4px;"></span>`;
           html += `${metricLabel}: <strong>${val.toFixed(appliance === 'AC' ? 2 : 0)}</strong><br/>`;
 
@@ -446,10 +446,10 @@
   {#if selectedAppliance === 'AC' || selectedAppliance === 'Refrigerator'}
     <div class="meps-legend-note">
       <span class="meps-legend-item">
-        <span class="meps-legend-line solid"></span> Historical
+        <span class="meps-legend-line solid"></span> Currently Effective
       </span>
       <span class="meps-legend-item">
-        <span class="meps-legend-line dashed"></span> Projected/Planned
+        <span class="meps-legend-line dashed"></span> Adopted — future effective date
       </span>
       {#if selectedAppliance === 'AC'}
         <span class="meps-legend-item">
@@ -466,6 +466,10 @@
           <span class="meps-legend-line gcp"></span> U4E High Efficiency (EEI 50)
         </span>
       {/if}
+    </div>
+    <div class="meps-adopted-note">
+      <i class="fa-solid fa-circle-info"></i>
+      Only officially adopted or effective standards are shown. Aspirational targets not yet legislated are excluded.
     </div>
   {/if}
 
@@ -682,6 +686,18 @@
 
   .meps-legend-line.gcp {
     border-top: 2px dotted #52B788;
+  }
+
+  .meps-adopted-note {
+    text-align: center;
+    font-size: 0.65rem;
+    color: #94a3b8;
+    margin-top: 0.25rem;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
   }
 
   /* Methodology */

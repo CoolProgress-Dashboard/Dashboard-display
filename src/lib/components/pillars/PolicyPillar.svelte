@@ -449,32 +449,44 @@
 
         const pledgeRec = pledge.find((p: any) => p.country_code === code);
         const ndcRec = getNdcRecord(code, getNdcFilters());
-        const hasNcap = ncap.some((n: any) => n.country_code === code);
+        const ncapRec = ncap.find((n: any) => n.country_code === code);
+        const hasNcap = !!ncapRec;
 
         const hasGCP = pledgeRec && pledgeRec.signatory === 1;
         const ndcStatus = ndcRec?.mention_status ?? 'No data';
+        const ncapYear = ncapRec?.year ? ` (${ncapRec.year})` : '';
+
+        const ndcBorder = ndcStatus === 'Mentioned' ? '#D4A843' : '#e2e8f0';
+        const ndcBg     = ndcStatus === 'Mentioned' ? '#fef9ec' : '#f8fafc';
+        const ndcIcon   = ndcStatus === 'Mentioned' ? '#D4A843' : '#94a3b8';
+        const ndcTitle  = ndcStatus === 'Mentioned' ? '#8B6B00' : '#64748b';
+        const ndcLabel  = ndcStatus === 'Mentioned' ? 'Cooling Mentioned' : ndcStatus === 'Not mentioned' ? 'Not yet mentioned' : (ndcStatus || 'No Data');
 
         container.innerHTML = `
           <div style="background: #3D6B6B; color: #fff; border-radius: 8px 8px 0 0; padding: 0.5rem 0.75rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 700;">
             <i class="fa-solid fa-location-dot" style="font-size: 0.9rem;"></i>
             ${country.country_name || code}
           </div>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 0.6rem;">
             <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.75rem;border-radius:8px;border:1px solid ${hasGCP ? '#6BADA0' : '#e2e8f0'}; background: ${hasGCP ? '#f0faf6' : '#f8fafc'};">
               <i class="fa-solid fa-handshake" style="color: ${hasGCP ? '#6BADA0' : '#94a3b8'}; font-size: 1.5rem;"></i>
               <div style="font-weight: 700; color: ${hasGCP ? '#4A9088' : '#64748b'};">GCP</div>
-              <div style="font-size: 0.8rem; color: #64748b;">${hasGCP ? 'Signatory' : 'Non-signatory'}</div>
+              <div style="font-size: 0.75rem; color: #64748b;">${hasGCP ? 'Signatory' : 'Not signed'}</div>
             </div>
-            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.75rem;border-radius:8px;border:1px solid ${ndcStatus === 'Mentioned' ? '#D4A843' : ndcStatus === 'Not mentioned' ? '#C25B33' : '#e2e8f0'}; background: ${ndcStatus === 'Mentioned' ? '#fef9ec' : ndcStatus === 'Not mentioned' ? '#fdf0ec' : '#f8fafc'};">
-              <i class="fa-solid fa-file-lines" style="color: ${ndcStatus === 'Mentioned' ? '#D4A843' : ndcStatus === 'Not mentioned' ? '#C25B33' : '#94a3b8'}; font-size: 1.5rem;"></i>
-              <div style="font-weight: 700; color: ${ndcStatus === 'Mentioned' ? '#8B6B00' : ndcStatus === 'Not mentioned' ? '#8B2500' : '#64748b'};">NDC</div>
-              <div style="font-size: 0.8rem; color: #64748b;">${ndcStatus === 'Mentioned' ? 'Cooling Mentioned' : ndcStatus || 'No Data'}</div>
+            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.75rem;border-radius:8px;border:1px solid ${ndcBorder}; background: ${ndcBg};">
+              <i class="fa-solid fa-file-lines" style="color: ${ndcIcon}; font-size: 1.5rem;"></i>
+              <div style="font-weight: 700; color: ${ndcTitle};">NDC</div>
+              <div style="font-size: 0.75rem; color: #64748b;">${ndcLabel}</div>
             </div>
             <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.75rem;border-radius:8px;border:1px solid ${hasNcap ? '#5A8FC2' : '#e2e8f0'}; background: ${hasNcap ? '#f0f0f7' : '#f8fafc'};">
               <i class="fa-solid fa-file-shield" style="color: ${hasNcap ? '#5A8FC2' : '#94a3b8'}; font-size: 1.5rem;"></i>
               <div style="font-weight: 700; color: ${hasNcap ? '#3B5A8B' : '#94a3b8'};">NCAP</div>
-              <div style="font-size: 0.8rem; color: #64748b;">${hasNcap ? 'NCAP Developed' : 'No NCAP'}</div>
+              <div style="font-size: 0.75rem; color: #64748b;">${hasNcap ? 'Developed' + ncapYear : 'No NCAP yet'}</div>
             </div>
+          </div>
+          <div style="font-size: 0.7rem; color: #94a3b8; display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <a href="https://unfccc.int/NDCREG" target="_blank" rel="noopener noreferrer" style="color:#5A8FC2;text-decoration:none;"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.65rem;"></i> NDC Registry</a>
+            <a href="https://www.coolcoalition.org" target="_blank" rel="noopener noreferrer" style="color:#5A8FC2;text-decoration:none;"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.65rem;"></i> Cool Coalition</a>
           </div>
         `;
       }

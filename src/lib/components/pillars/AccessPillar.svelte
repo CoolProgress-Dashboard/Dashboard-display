@@ -1104,6 +1104,64 @@
       <p class="access-humidity-note"><i class="fa-solid fa-circle-info"></i> The maps and data on this dashboard reflect heat risk. Humidity data is not yet integrated — areas with moderate temperature but high humidity may be more dangerous than the data suggests.</p>
     </aside>
 
+    <!-- Solutions Layer -->
+    <div class="card-panel access-solutions-card">
+      <div class="access-solutions-header">
+        <div class="access-solutions-icon"><i class="fa-solid fa-lightbulb"></i></div>
+        <div>
+          <strong>How is the access gap being addressed?</strong>
+          <span>Closing the gap sustainably requires going beyond individual air conditioners.</span>
+        </div>
+      </div>
+
+      <div class="access-solutions-grid">
+        <div class="access-solution-item">
+          <div class="access-solution-icon" style="--sol-color: #2D7D5A;">
+            <i class="fa-solid fa-house"></i>
+          </div>
+          <div class="access-solution-text">
+            <strong>Passive Cooling</strong>
+            <p>Cool roofs, shading, natural ventilation, and urban green spaces can reduce indoor temperatures by 5–8°C at near-zero operating cost — the first line of defence before mechanical cooling is needed.</p>
+          </div>
+        </div>
+
+        <div class="access-solution-item">
+          <div class="access-solution-icon" style="--sol-color: #5A8FC2;">
+            <i class="fa-solid fa-city"></i>
+          </div>
+          <div class="access-solution-text">
+            <strong>District &amp; Shared Cooling</strong>
+            <p>Centralised district cooling systems and community cooling centers deliver thermal comfort more efficiently than millions of individual units — particularly viable in dense urban settlements.</p>
+          </div>
+        </div>
+
+        <div class="access-solution-item">
+          <div class="access-solution-icon" style="--sol-color: #D4A843;">
+            <i class="fa-solid fa-solar-panel"></i>
+          </div>
+          <div class="access-solution-text">
+            <strong>Solar Cold Chains</strong>
+            <p>Solar-powered refrigeration for vaccines, medicines, and food is transforming rural access in off-grid communities across Africa and South Asia — decoupling cold storage from unreliable grid power.</p>
+          </div>
+        </div>
+
+        <div class="access-solution-item">
+          <div class="access-solution-icon" style="--sol-color: #C25B33;">
+            <i class="fa-solid fa-scale-balanced"></i>
+          </div>
+          <div class="access-solution-text">
+            <strong>Policy &amp; Finance</strong>
+            <p>The Global Cooling Pledge, National Cooling Action Plans, and climate finance from the Green Climate Fund are directing resources toward equitable access — linking cooling to NDC commitments and SDG targets.</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="access-solutions-note">
+        <i class="fa-solid fa-arrow-right"></i>
+        A rights-based approach recognises that access to cooling is essential for health, food security, and economic participation in a warming world — not a luxury reserved for wealthy households.
+      </p>
+    </div>
+
     <!-- Map Card with Filters Inside -->
     <div class="card-panel map-card">
       <div class="card-header">
@@ -1346,6 +1404,115 @@
   }
 
   .access-humidity-note i { color: #5A8FC2; flex-shrink: 0; margin-top: 0.15rem; }
+
+  /* --- Solutions layer card --- */
+  .access-solutions-card {
+    padding: 1.25rem 1.5rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+  }
+
+  .access-solutions-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .access-solutions-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: color-mix(in srgb, #D4A843 12%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #D4A843;
+    font-size: 1rem;
+  }
+
+  .access-solutions-header strong {
+    display: block;
+    font-size: 0.9rem;
+    color: #1e293b;
+    margin-bottom: 0.2rem;
+  }
+
+  .access-solutions-header span {
+    font-size: 0.78rem;
+    color: #64748b;
+  }
+
+  .access-solutions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  .access-solution-item {
+    display: flex;
+    gap: 0.6rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem 0.85rem;
+  }
+
+  .access-solution-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--sol-color) 10%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--sol-color);
+    font-size: 0.85rem;
+    margin-top: 0.1rem;
+  }
+
+  .access-solution-text strong {
+    display: block;
+    font-size: 0.82rem;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+  }
+
+  .access-solution-text p {
+    font-size: 0.75rem;
+    color: #475569;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .access-solutions-note {
+    font-size: 0.78rem;
+    color: #475569;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0.6rem 0.85rem;
+    background: #fff;
+    border-radius: 8px;
+    border-left: 3px solid #C25B33;
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .access-solutions-note i {
+    color: #C25B33;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+  }
+
+  @media (max-width: 680px) {
+    .access-solutions-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 
   .access-story-hook {
     font-size: 0.82rem;

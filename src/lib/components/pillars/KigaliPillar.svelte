@@ -266,7 +266,7 @@
     function getKigaliColor(level: string): string {
       switch (level) {
         case 'ratified':    return YES;
-        case 'notratified': return NO;
+        case 'notratified': return '#e5e7eb';
         default:            return NO_DATA;
       }
     }
@@ -306,7 +306,7 @@
       if (!legend) return;
       legend.innerHTML = `
     <div class="legend-item"><div class="legend-color" style="background:#6BADA0"></div>Ratified</div>
-    <div class="legend-item"><div class="legend-color" style="background:#E07868"></div>Not Ratified</div>
+    <div class="legend-item"><div class="legend-color" style="background:#e5e7eb;border:1px solid #cbd5e1;"></div>Not yet ratified</div>
     <div class="legend-item"><div class="legend-color" style="background:#E5E1D8"></div>No Data</div>
   `;
     }
@@ -765,9 +765,9 @@
       container.innerHTML = `
         <h4 style="margin:0 0 0.75rem;color:#2D5A3D;font-size:1rem;">${country.country_name}</h4>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
-          <div style="background:#f8fafb;border-radius:8px;padding:0.6rem 0.75rem;border-left:3px solid ${kigaliRecord?.kigali_party === 1 ? '#6BADA0' : '#E07868'};">
+          <div style="background:#f8fafb;border-radius:8px;padding:0.6rem 0.75rem;border-left:3px solid ${kigaliRecord?.kigali_party === 1 ? '#6BADA0' : '#94a3b8'};">
             <div style="font-size:0.68rem;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Kigali Status</div>
-            <div style="font-size:0.9rem;font-weight:700;color:${kigaliRecord?.kigali_party === 1 ? '#6BADA0' : '#E07868'};">${kigaliStatus}</div>
+            <div style="font-size:0.9rem;font-weight:700;color:${kigaliRecord?.kigali_party === 1 ? '#6BADA0' : '#64748b'};">${kigaliStatus}</div>
           </div>
           <div style="background:#f8fafb;border-radius:8px;padding:0.6rem 0.75rem;border-left:3px solid #6BADA0;">
             <div style="font-size:0.68rem;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Group Type</div>
@@ -1203,7 +1203,7 @@
       </div>
       <div class="progress-bar" id="kigali-progress">
         <span class="progress-segment" id="kigali-progress-ratified" title="Ratified" style="background:#6BADA0;"></span>
-        <span class="progress-segment" id="kigali-progress-notratified" title="Not Ratified" style="background:#E07868;"></span>
+        <span class="progress-segment" id="kigali-progress-notratified" title="Not yet ratified" style="background:#cbd5e1;"></span>
       </div>
 
       <div id="kigali-country-detail" class="country-card-inline">
