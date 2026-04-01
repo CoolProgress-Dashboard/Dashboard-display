@@ -55,24 +55,24 @@ export const pillarContent: PillarContentMap = {
 			'The choices made in the next five years determine which pathway we follow.',
 		heroStats: [
 			{
-				value: '2,401',
-				label: 'Mt CO\u2082e today (2025)',
-				context: 'Total cooling emissions in 2025: AC (1,741), Refrigerators (440), Fans (220). Source: HEAT + CLASP models.'
-			},
-			{
-				value: '73%',
-				label: 'reduction achievable by 2050',
-				context: 'DECARB pathway: efficiency (CLASP GB) + Kigali (HEAT MIT) + grid decarbonization (IEA STEPS) = 1,554 vs 6,009 Mt BAU'
+				value: '~3 billion',
+				label: 'more ACs expected by 2050',
+				context: 'Under business-as-usual, the global AC stock will grow from ~2 billion today to ~5 billion by 2050 — mostly in the hottest, fastest-growing markets. Source: IEA.'
 			},
 			{
 				value: '1.2B',
 				label: 'people lack adequate cooling',
-				context: 'More than 1.2 billion people in low- and middle-income countries face dangerous heat without access to cooling. Source: SEforALL.'
+				context: 'More than 1.2 billion people in low- and middle-income countries face dangerous heat without access to cooling. Source: SEforALL Chilling Prospects 2025.'
+			},
+			{
+				value: '73%',
+				label: 'emissions reduction achievable',
+				context: 'DECARB pathway: efficiency (CLASP GB) + Kigali phase-down (HEAT MIT) + grid decarbonization (IEA STEPS) = 1,554 vs 6,009 Mt BAU by 2050.'
 			},
 			{
 				value: '71',
-				label: 'Global Cooling Pledge nations',
-				context: '71 countries committed to the Global Cooling Pledge at COP28 in Dubai. 49 have MEPS, 37 include cooling in NDCs.'
+				label: 'nations signed the Cooling Pledge',
+				context: '71 countries committed to the Global Cooling Pledge at COP28 in Dubai — covering efficiency, refrigerant transition, and expanded access.'
 			}
 		]
 	},

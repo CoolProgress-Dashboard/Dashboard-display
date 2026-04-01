@@ -5,6 +5,7 @@
   export let onNavigate: (pillar: string) => void = (pillar) => goto(`/dashboard/${pillar}`);
 
   import HeroSection from '$lib/components/hero/HeroSection.svelte';
+  import FourPillarFramework from '$lib/components/overview/FourPillarFramework.svelte';
   import CountrySpotlight from '$lib/components/charts/CountrySpotlight.svelte';
   import PeakLoadChart from '$lib/components/charts/PeakLoadChart.svelte';
   import ApplianceGrowthChart from '$lib/components/charts/ApplianceGrowthChart.svelte';
@@ -29,6 +30,9 @@
   <div class="overview-single-col">
     <!-- Animated Hero Banner -->
     <HeroSection on:navigate={(e) => onNavigate(e.detail)} />
+
+    <!-- Four Pathway Framework -->
+    <FourPillarFramework on:navigate={(e) => onNavigate(e.detail)} />
 
     <!-- Appliance Growth Chart (multi-toggle: AC, DomRef, Fans) -->
     <ApplianceGrowthChart />

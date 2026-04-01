@@ -92,6 +92,7 @@
   // Reveal animation state
   // -------------------------------------------------------
   let revealed = false;
+  let showAdvancedFilters = false;
 
   // -------------------------------------------------------
   // ISO numeric → alpha-3 code mapping (complete)
@@ -986,6 +987,9 @@
         </div>
       </div>
 
+      <!-- Human-right lead statement -->
+      <p class="access-rights-lead">Access to cooling is not a luxury — it is a human right.</p>
+
       <!-- Story hook narrative -->
       <p class="access-story-hook">{accessContent.storyHook}</p>
 
@@ -1087,6 +1091,19 @@
     </div>
 
 
+    <!-- Humidity & Wet-Bulb Callout -->
+    <aside class="card-panel access-humidity-card">
+      <div class="access-humidity-header">
+        <div class="access-humidity-icon"><i class="fa-solid fa-droplet"></i></div>
+        <div>
+          <h3 class="access-humidity-title">Why Humidity Makes Heat More Dangerous</h3>
+          <p class="access-humidity-sub">Heat alone does not tell the full story. The combination of high heat and high humidity is what kills.</p>
+        </div>
+      </div>
+      <p class="access-humidity-body">The human body cools itself by sweating. But sweating only works when the air can absorb that moisture. In high humidity, sweat cannot evaporate — and the body loses its ability to regulate temperature. At a wet-bulb temperature of around 35°C (a combination of roughly 46°C air temperature at 50% humidity, or lower temperatures at higher humidity), the human body cannot survive outdoors for more than a few hours, even in shade. This threshold is being crossed more frequently in South Asia, the Persian Gulf, and parts of sub-Saharan Africa.</p>
+      <p class="access-humidity-note"><i class="fa-solid fa-circle-info"></i> The maps and data on this dashboard reflect heat risk. Humidity data is not yet integrated — areas with moderate temperature but high humidity may be more dangerous than the data suggests.</p>
+    </aside>
+
     <!-- Map Card with Filters Inside -->
     <div class="card-panel map-card">
       <div class="card-header">
@@ -1122,6 +1139,16 @@
             <label class="tick-box" title="Pacific Island nations and Australia/New Zealand — vulnerable small island states."><input type="checkbox" value="Oceania" checked /><span class="tick-mark"></span>Oceania</label>
           </div>
         </div>
+        <button
+          class="access-advanced-toggle"
+          type="button"
+          on:click={() => showAdvancedFilters = !showAdvancedFilters}
+        >
+          <i class="fa-solid {showAdvancedFilters ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>
+          {showAdvancedFilters ? 'Hide' : 'Show'} income &amp; risk filters
+        </button>
+
+        {#if showAdvancedFilters}
         <div class="checkbox-group">
           <span class="checkbox-label"><i class="fa-solid fa-users"></i> Income Group <i class="fa-solid fa-circle-info" style="font-size:0.7rem;color:#94a3b8;margin-left:0.3rem;" title="Hover over each filter for more information"></i></span>
           <div class="checkbox-items" id="access-pop-checks">
@@ -1139,6 +1166,7 @@
             <label class="tick-box" title="LOW RISK: Populations with growing access to cooling but still facing affordability and efficiency challenges."><input type="checkbox" value="Low" checked /><span class="tick-mark risk-low"></span>Low</label>
           </div>
         </div>
+        {/if}
       </div>
 
       <!-- Global Timeline Chart (2013-2050) -->
@@ -1233,6 +1261,91 @@
     line-height: 1.5;
     margin: 0;
   }
+
+  /* --- Human-right lead --- */
+  .access-rights-lead {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #C25B33;
+    line-height: 1.4;
+    margin: 0 0 0.85rem;
+    padding: 0.75rem 1rem;
+    background: rgba(194, 91, 51, 0.06);
+    border-left: 3px solid #C25B33;
+    border-radius: 6px;
+  }
+
+  /* --- Advanced filter toggle --- */
+  .access-advanced-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #2D7D5A;
+    background: rgba(45, 125, 90, 0.06);
+    border: 1px solid rgba(45, 125, 90, 0.2);
+    border-radius: 999px;
+    padding: 0.35rem 0.85rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s ease;
+    margin-bottom: 0.5rem;
+  }
+
+  .access-advanced-toggle:hover {
+    background: rgba(45, 125, 90, 0.12);
+  }
+
+  /* --- Humidity callout card --- */
+  .access-humidity-card {
+    padding: 1.4rem 1.6rem;
+    border-left: 4px solid #5A8FC2;
+    background: #f0f7ff;
+  }
+
+  .access-humidity-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .access-humidity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(90, 143, 194, 0.15);
+    color: #5A8FC2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .access-humidity-title { font-size: 1rem; font-weight: 700; color: #0f172a; margin: 0 0 0.3rem; }
+  .access-humidity-sub   { font-size: 0.82rem; color: #475569; margin: 0; line-height: 1.5; }
+
+  .access-humidity-body {
+    font-size: 0.83rem;
+    color: #334155;
+    line-height: 1.65;
+    margin: 0 0 0.75rem;
+  }
+
+  .access-humidity-note {
+    font-size: 0.78rem;
+    color: #64748b;
+    line-height: 1.55;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    margin: 0;
+    font-style: italic;
+  }
+
+  .access-humidity-note i { color: #5A8FC2; flex-shrink: 0; margin-top: 0.15rem; }
 
   .access-story-hook {
     font-size: 0.82rem;

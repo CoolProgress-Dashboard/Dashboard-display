@@ -336,7 +336,7 @@
 
         if (policyMapType === 'gcp') {
           const pledgeRec = pledge.find((p: any) => p.country_code === code);
-          const statusColor = pledgeRec?.signatory === 1 ? '#6BADA0' : '#E07868';
+          const statusColor = pledgeRec?.signatory === 1 ? '#6BADA0' : '#94a3b8';
           const statusText = pledgeRec?.signatory === 1 ? 'Signatory' : 'Non-Signatory';
           tooltip.innerHTML = `
             <strong>${countryName}</strong><br>
@@ -460,9 +460,9 @@
             ${country.country_name || code}
           </div>
           <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
-            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.75rem;border-radius:8px;border:1px solid ${hasGCP ? '#6BADA0' : '#E07868'}; background: ${hasGCP ? '#f0faf6' : '#fff1f1'};">
-              <i class="fa-solid fa-handshake" style="color: ${hasGCP ? '#6BADA0' : '#E07868'}; font-size: 1.5rem;"></i>
-              <div style="font-weight: 700; color: ${hasGCP ? '#4A9088' : '#dc2626'};">GCP</div>
+            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.75rem;border-radius:8px;border:1px solid ${hasGCP ? '#6BADA0' : '#e2e8f0'}; background: ${hasGCP ? '#f0faf6' : '#f8fafc'};">
+              <i class="fa-solid fa-handshake" style="color: ${hasGCP ? '#6BADA0' : '#94a3b8'}; font-size: 1.5rem;"></i>
+              <div style="font-weight: 700; color: ${hasGCP ? '#4A9088' : '#64748b'};">GCP</div>
               <div style="font-size: 0.8rem; color: #64748b;">${hasGCP ? 'Signatory' : 'Non-signatory'}</div>
             </div>
             <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.75rem;border-radius:8px;border:1px solid ${ndcStatus === 'Mentioned' ? '#D4A843' : ndcStatus === 'Not mentioned' ? '#C25B33' : '#e2e8f0'}; background: ${ndcStatus === 'Mentioned' ? '#fef9ec' : ndcStatus === 'Not mentioned' ? '#fdf0ec' : '#f8fafc'};">
@@ -493,7 +493,7 @@
         } else if (mapType === 'gcp') {
           legendEl.innerHTML = `
             <div class="legend-item"><div class="legend-color" style="background:#6BADA0"></div>Signatory</div>
-            <div class="legend-item"><div class="legend-color" style="background:#E07868"></div>Non-Signatory</div>
+            <div class="legend-item"><div class="legend-color" style="background:#e5e7eb"></div>Non-Signatory</div>
             <div class="legend-item"><div class="legend-color" style="background:#E5E1D8"></div>No Data</div>
           `;
         } else if (mapType === 'ndc') {
@@ -587,7 +587,7 @@
             } else if (mapType === 'gcp') {
               const pledgeRec = pledge.find((p: any) => p.country_code === code);
               if (!pledgeRec) return '#E5E1D8';
-              return pledgeRec.signatory === 1 ? '#6BADA0' : '#E07868';
+              return pledgeRec.signatory === 1 ? '#6BADA0' : '#e5e7eb';
             } else if (mapType === 'ndc') {
               const countryStatus = getCountryNDCStatus();
               const status = countryStatus[code];
@@ -1333,6 +1333,37 @@
         </div>
       </div>
 
+      <!-- GCP intro — plain language, before data -->
+      <div class="policy-gcp-intro">
+        <div class="policy-gcp-intro-header">
+          <div class="policy-gcp-intro-icon"><i class="fa-solid fa-handshake-angle"></i></div>
+          <div>
+            <strong>The Global Cooling Pledge</strong> — the most important high-level political signal on cooling to date.
+          </div>
+        </div>
+        <p>Launched at COP28 in Dubai in December 2023, the Global Cooling Pledge is a voluntary commitment by national governments to act on cooling across three areas: energy efficiency of cooling equipment, refrigerant transition, and sustainable cooling access for vulnerable populations. As of 2026, 71 countries have signed.</p>
+        <p>The pledge matters because cooling has historically been invisible in climate policy. A signature here is a signal that a country intends to include cooling in its national climate strategy — through NDCs, National Cooling Action Plans, or domestic legislation. The data below tracks how far countries are turning that signal into action.</p>
+        <div class="policy-framework-row">
+          <div class="policy-framework-item">
+            <i class="fa-solid fa-handshake"></i>
+            <strong>Global Cooling Pledge</strong>
+            <span>High-level political commitment (COP28)</span>
+          </div>
+          <i class="fa-solid fa-arrow-right policy-framework-arrow"></i>
+          <div class="policy-framework-item">
+            <i class="fa-solid fa-file-contract"></i>
+            <strong>NDCs</strong>
+            <span>Legally binding national climate targets</span>
+          </div>
+          <i class="fa-solid fa-arrow-right policy-framework-arrow"></i>
+          <div class="policy-framework-item">
+            <i class="fa-solid fa-map"></i>
+            <strong>NCAPs</strong>
+            <span>National Cooling Action Plans — roadmaps</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Story hook -->
       <p class="policy-story-hook">{policyContent.storyHook}</p>
 
@@ -1574,6 +1605,74 @@
     font-size: 0.85rem;
     line-height: 1.5;
     margin: 0;
+  }
+
+  /* GCP intro block */
+  .policy-gcp-intro {
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    padding: 1rem 1.25rem;
+    margin: 0 0 1.25rem;
+  }
+
+  .policy-gcp-intro-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .policy-gcp-intro-header i {
+    color: #5A8FC2;
+    font-size: 1.1rem;
+  }
+
+  .policy-gcp-intro-header strong {
+    font-size: 0.9rem;
+    color: #1e293b;
+  }
+
+  .policy-gcp-intro p {
+    font-size: 0.82rem;
+    color: #475569;
+    line-height: 1.65;
+    margin: 0 0 0.6rem;
+  }
+
+  .policy-gcp-intro p:last-of-type {
+    margin-bottom: 0.75rem;
+  }
+
+  .policy-framework-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  .policy-framework-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.78rem;
+    color: #334155;
+    font-weight: 500;
+  }
+
+  .policy-framework-item i {
+    color: #5A8FC2;
+    font-size: 0.8rem;
+  }
+
+  .policy-framework-arrow {
+    color: #94a3b8;
+    font-size: 0.75rem;
   }
 
   .policy-story-hook {

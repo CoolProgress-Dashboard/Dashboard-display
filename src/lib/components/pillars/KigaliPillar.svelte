@@ -961,6 +961,39 @@
         </div>
       </div>
 
+      <!-- Plain-language intro for non-specialists -->
+      <div class="kigali-intro-explainer">
+        <p>Refrigerants are the gases that make air conditioners and refrigerators work. They circulate inside the equipment, absorbing and releasing heat. The problem: they leak — during manufacturing, servicing, and at end-of-life — and many are extremely potent greenhouse gases, thousands of times more warming than CO₂.</p>
+        <p>The good news: there are proven, climate-safe alternatives. The Kigali Amendment to the Montreal Protocol creates a legally binding schedule for countries to phase down the most harmful refrigerants and transition to lower-impact options.</p>
+      </div>
+
+      <!-- Transition stages stepper -->
+      <div class="kigali-stepper">
+        <div class="kigali-step">
+          <div class="kigali-step-dot current"></div>
+          <div class="kigali-step-label">
+            <span class="kigali-step-stage">Today</span>
+            <span class="kigali-step-desc">High-GWP HFCs (R-410A, R-134a) dominate most markets</span>
+          </div>
+        </div>
+        <div class="kigali-step-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+        <div class="kigali-step">
+          <div class="kigali-step-dot transition"></div>
+          <div class="kigali-step-label">
+            <span class="kigali-step-stage">Transition</span>
+            <span class="kigali-step-desc">Lower-GWP HFCs (R-32) and HFO blends (&lt;150 GWP)</span>
+          </div>
+        </div>
+        <div class="kigali-step-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+        <div class="kigali-step">
+          <div class="kigali-step-dot target"></div>
+          <div class="kigali-step-label">
+            <span class="kigali-step-stage">Target</span>
+            <span class="kigali-step-desc">Natural refrigerants — R-290 (propane), CO₂, ammonia — near-zero climate impact</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Story hook narrative -->
       <p class="kigali-story-hook">{kigaliContent.storyHook}</p>
 
@@ -1105,6 +1138,55 @@
       </div>
     </div>
 
+    <!-- Lifecycle Refrigerant Management -->
+    <div class="card-panel kigali-lifecycle-card">
+      <div class="kigali-lifecycle-header">
+        <div class="kigali-lifecycle-icon"><i class="fa-solid fa-recycle"></i></div>
+        <div>
+          <h3 class="kigali-lifecycle-title">Beyond Phase-Down: Lifecycle Refrigerant Management</h3>
+          <p class="kigali-lifecycle-sub">Phase-down stops new high-GWP gases entering the market. But large quantities are already installed in equipment worldwide — and most will leak or be vented unless actively managed.</p>
+        </div>
+      </div>
+      <div class="kigali-lifecycle-grid">
+        <div class="kigali-lifecycle-item">
+          <i class="fa-solid fa-wrench"></i>
+          <strong>Leak prevention</strong>
+          <span>Regular maintenance, better fittings, and leak detection systems reduce emissions from equipment in use.</span>
+        </div>
+        <div class="kigali-lifecycle-item">
+          <i class="fa-solid fa-box-archive"></i>
+          <strong>End-of-life recovery</strong>
+          <span>Capturing refrigerant when equipment is scrapped prevents venting. Requires collection infrastructure and trained technicians.</span>
+        </div>
+        <div class="kigali-lifecycle-item">
+          <i class="fa-solid fa-industry"></i>
+          <strong>Reclamation &amp; destruction</strong>
+          <span>Recovered gases can be purified for reuse or destroyed. Destruction facilities remain scarce in many regions.</span>
+        </div>
+      </div>
+      <p class="kigali-lifecycle-note">
+        <i class="fa-solid fa-circle-info"></i>
+        Lifecycle refrigerant management is under-addressed but offers major near-term mitigation potential.
+        See: <a href="https://www.ccacoalition.org/resources/guidance-sustainable-cooling-approaches-enhanced-ndcs" target="_blank" rel="noopener noreferrer">CCAC Guidance on Sustainable Cooling</a>
+        · <a href="https://kigalisim.org/" target="_blank" rel="noopener noreferrer">Kigali SIM</a>
+      </p>
+    </div>
+
+    <!-- Safety & Deployment Considerations -->
+    <aside class="card-panel kigali-safety-card">
+      <div class="kigali-safety-header">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <strong>Responsible Deployment: What to Know</strong>
+      </div>
+      <p>Some low-GWP alternatives come with additional considerations. This is not a reason to avoid the transition — it is a reason to do it carefully and with the right support.</p>
+      <ul class="kigali-safety-list">
+        <li><strong>Flammability (A2L/A3 refrigerants):</strong> R-32 and R-290 are mildly or highly flammable. This requires updated building codes, installation standards, and technician training — all well-established in countries where these refrigerants are already widely used.</li>
+        <li><strong>PFAS concerns (some HFOs):</strong> Certain HFO refrigerants contain per- and polyfluoroalkyl substances. Natural refrigerants (R-290, CO₂, ammonia) avoid this issue entirely.</li>
+        <li><strong>High pressure (CO₂):</strong> R-744 operates at much higher pressures than conventional refrigerants, requiring specialized equipment and training.</li>
+      </ul>
+      <p class="kigali-safety-footer">These factors are manageable with proper standards, training, and technology selection. They are already addressed in markets that have moved furthest on the transition.</p>
+    </aside>
+
     <!-- Map and Country Detail -->
     <div class="card-panel map-card">
       <div class="card-header">
@@ -1208,6 +1290,182 @@
   /* ===========================
      STORY HOOK
      =========================== */
+  /* --- Non-specialist intro --- */
+  .kigali-intro-explainer {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 3px solid #5A8FC2;
+    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
+    margin: 0 0 1rem;
+    font-size: 0.82rem;
+    color: #334155;
+    line-height: 1.65;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .kigali-intro-explainer p { margin: 0; }
+
+  /* --- Transition stepper --- */
+  .kigali-stepper {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin: 0 0 1rem;
+    flex-wrap: wrap;
+  }
+
+  .kigali-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    flex: 1;
+    min-width: 140px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.75rem;
+  }
+
+  .kigali-step-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+  .kigali-step-dot.current    { background: #C25B33; }
+  .kigali-step-dot.transition { background: #D4A843; }
+  .kigali-step-dot.target     { background: #2D7D5A; }
+
+  .kigali-step-label { display: flex; flex-direction: column; gap: 0.2rem; }
+  .kigali-step-stage { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; }
+  .kigali-step-desc  { font-size: 0.78rem; color: #334155; line-height: 1.4; }
+
+  .kigali-step-arrow {
+    color: #94a3b8;
+    font-size: 0.7rem;
+    margin-top: 1rem;
+    flex-shrink: 0;
+  }
+
+  /* --- Lifecycle card --- */
+  .kigali-lifecycle-card { padding: 1.4rem 1.6rem; }
+
+  .kigali-lifecycle-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .kigali-lifecycle-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(45, 125, 90, 0.1);
+    color: #2D7D5A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .kigali-lifecycle-title { font-size: 1rem; font-weight: 700; color: #0f172a; margin: 0 0 0.3rem; }
+  .kigali-lifecycle-sub   { font-size: 0.82rem; color: #475569; margin: 0; line-height: 1.55; }
+
+  .kigali-lifecycle-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .kigali-lifecycle-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.85rem;
+    font-size: 0.8rem;
+    color: #334155;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    line-height: 1.5;
+  }
+
+  .kigali-lifecycle-item i { color: #2D7D5A; font-size: 0.9rem; margin-bottom: 0.1rem; }
+  .kigali-lifecycle-item strong { font-size: 0.82rem; color: #1e293b; }
+  .kigali-lifecycle-item span { color: #64748b; }
+
+  .kigali-lifecycle-note {
+    font-size: 0.78rem;
+    color: #64748b;
+    line-height: 1.55;
+    margin: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+
+  .kigali-lifecycle-note i { color: #5A8FC2; flex-shrink: 0; margin-top: 0.15rem; }
+  .kigali-lifecycle-note a { color: #2D7D5A; }
+
+  /* --- Safety aside --- */
+  .kigali-safety-card {
+    padding: 1.25rem 1.5rem;
+    border-left: 4px solid #D4A843;
+    background: #fffdf5;
+  }
+
+  .kigali-safety-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    color: #92400e;
+  }
+
+  .kigali-safety-header i { color: #D4A843; }
+
+  .kigali-safety-card p {
+    font-size: 0.82rem;
+    color: #475569;
+    line-height: 1.6;
+    margin: 0 0 0.75rem;
+  }
+
+  .kigali-safety-list {
+    margin: 0 0 0.75rem;
+    padding-left: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .kigali-safety-list li {
+    font-size: 0.8rem;
+    color: #475569;
+    line-height: 1.55;
+  }
+
+  .kigali-safety-footer {
+    font-size: 0.78rem;
+    color: #64748b;
+    font-style: italic;
+    margin-bottom: 0 !important;
+  }
+
+  @media (max-width: 768px) {
+    .kigali-lifecycle-grid { grid-template-columns: 1fr; }
+    .kigali-stepper { flex-direction: column; }
+    .kigali-step-arrow { transform: rotate(90deg); align-self: center; }
+  }
+
   .kigali-story-hook {
     font-size: 0.82rem;
     color: #475569;

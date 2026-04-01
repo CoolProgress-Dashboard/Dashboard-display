@@ -1094,6 +1094,28 @@
         </div>
       </div>
 
+      <!-- Plain-language explainer — what MEPS and labels actually do -->
+      <div class="meps-explainer">
+        <div class="meps-explainer-item">
+          <div class="meps-explainer-icon"><i class="fa-solid fa-gauge-high"></i></div>
+          <div>
+            <strong>Minimum Energy Performance Standards (MEPS)</strong> set the efficiency floor: the least efficient product that can legally be sold. They remove inefficient equipment from the market entirely.
+          </div>
+        </div>
+        <div class="meps-explainer-item">
+          <div class="meps-explainer-icon"><i class="fa-solid fa-tag"></i></div>
+          <div>
+            <strong>Energy labels</strong> inform consumers and drive demand for better products. Labels without binding standards still leave the market open to the cheapest, least efficient units.
+          </div>
+        </div>
+        <div class="meps-explainer-item">
+          <div class="meps-explainer-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+          <div>
+            <strong>Together</strong> they reduce energy bills, lower grid stress, support government procurement and rebates, and prevent locking in decades of energy waste from long-lived equipment.
+          </div>
+        </div>
+      </div>
+
       <!-- Story hook narrative -->
       <p class="meps-story-hook">{mepsContent.storyHook}</p>
 
@@ -1364,6 +1386,40 @@
   /* ===========================
      STORY HOOK (narrative paragraph below headline)
      =========================== */
+  .meps-explainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin: 0 0 1rem;
+  }
+
+  .meps-explainer-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 0.82rem;
+    color: #334155;
+    line-height: 1.6;
+  }
+
+  .meps-explainer-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: rgba(45, 125, 90, 0.1);
+    color: #2D7D5A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
   .meps-story-hook {
     font-size: 0.82rem;
     color: #475569;
