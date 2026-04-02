@@ -1000,7 +1000,7 @@
         </a>
       </div>
       <div class="chart-card-body">
-        <div id="chart-kigali-direct-emissions" class="chart-surface" style="width: 100%; height: 380px; min-height: 380px;"></div>
+        <div id="chart-kigali-direct-emissions" class="chart-surface" style="width: 100%; height: 300px; min-height: 300px;"></div>
       </div>
       <p class="kigali-chart-caption">Full Kigali implementation cuts direct refrigerant emissions by over 80% from BAU levels. Combining the phase-down with higher efficiency standards (Kigali+) delivers the deepest reductions — avoiding roughly 1 GtCO₂e per year by 2050.</p>
     </div>
@@ -1009,7 +1009,7 @@
          CHAPTER 2 — THE SOLUTION
          The Kigali Amendment and the transition pathway
          ═══════════════════════════════════════════════════ -->
-    <div class="kigali-chapter-card">
+    <div class="kigali-chapter-card" class:revealed>
       <div class="kigali-chapter-label solution-label">
         <span class="chapter-num">02</span>
         <span class="chapter-title-text">The Solution</span>
@@ -1114,7 +1114,7 @@
         </div>
       </div>
       <div class="chart-card-body">
-        <div id="chart-kigali-transition" class="chart-surface" style="width: 100%; height: 340px; min-height: 340px;"></div>
+        <div id="chart-kigali-transition" class="chart-surface" style="width: 100%; height: 300px; min-height: 300px;"></div>
         <div style="font-size: 0.68rem; color: #94a3b8; text-align: center; padding: 0.5rem;">
           Sources: UNEP Ozone Secretariat · IIR · JARN · HEAT GmbH modelling
         </div>
@@ -1126,7 +1126,7 @@
          CHAPTER 3 — GLOBAL PROGRESS
          Ratification status and compliance tracking
          ═══════════════════════════════════════════════════ -->
-    <div class="kigali-chapter-card">
+    <div class="kigali-chapter-card" class:revealed>
       <div class="kigali-chapter-label progress-label">
         <span class="chapter-num">03</span>
         <span class="chapter-title-text">Global Progress</span>
@@ -1243,7 +1243,7 @@
          CHAPTER 5 — THE WAY FORWARD
          Conclusion, pledge alignment, and resources
          ═══════════════════════════════════════════════════ -->
-    <div class="kigali-chapter-card">
+    <div class="kigali-chapter-card" class:revealed>
       <div class="kigali-chapter-label resources-label">
         <span class="chapter-num">05</span>
         <span class="chapter-title-text">The Way Forward</span>
@@ -1307,13 +1307,21 @@
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     padding: 1.5rem 1.75rem;
-    margin-bottom: 0.85rem;
     opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition: opacity 0.4s ease;
   }
 
   .kigali-chapter-card.revealed {
+    opacity: 1;
+  }
+
+  /* All revealed-dependent children inside chapter cards become visible */
+  .kigali-chapter-card.revealed .kigali-story-hook,
+  .kigali-chapter-card.revealed .kigali-counter-wrapper,
+  .kigali-chapter-card.revealed .kigali-narrative,
+  .kigali-chapter-card.revealed .kigali-pledge-badge,
+  .kigali-chapter-card.revealed .kigali-partner-bar,
+  .kigali-chapter-card.revealed .kigali-source-footer {
     opacity: 1;
     transform: none;
   }
@@ -1324,12 +1332,12 @@
     align-items: center;
     gap: 0.5rem;
     border-radius: 999px;
-    padding: 0.3rem 0.85rem 0.3rem 0.35rem;
+    padding: 0.3rem 0.9rem 0.3rem 0.35rem;
     margin-bottom: 0.9rem;
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.07em;
+    letter-spacing: 0.06em;
   }
 
   .chapter-num {
@@ -1380,7 +1388,7 @@
 
   /* Chapter heading */
   .kigali-chapter-heading {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 800;
     color: #0f172a;
     line-height: 1.3;
@@ -1390,7 +1398,7 @@
 
   .kigali-chapter-intro,
   .kigali-chapter-text {
-    font-size: 0.82rem;
+    font-size: 0.9rem;
     color: #475569;
     line-height: 1.7;
     margin: 0 0 0.85rem;
@@ -1417,21 +1425,21 @@
   }
 
   .kps-value {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 800;
     color: #0f172a;
     margin-bottom: 0.1rem;
   }
 
   .kps-gwp {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: #C25B33;
     margin-bottom: 0.35rem;
   }
 
   .kps-label {
-    font-size: 0.72rem;
+    font-size: 0.8rem;
     color: #64748b;
     line-height: 1.5;
   }
@@ -1441,8 +1449,7 @@
     background: #fff;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    padding: 0 0 1rem;
-    margin-bottom: 0.85rem;
+    padding: 0 0 0.85rem;
     overflow: hidden;
   }
 
@@ -1450,12 +1457,12 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: #334155;
     background: #f8fafc;
     border-bottom: 1px solid #e2e8f0;
-    padding: 0.7rem 1.25rem;
+    padding: 0.65rem 1.25rem;
   }
 
   .bridge-num {
@@ -1469,12 +1476,12 @@
   }
 
   .kigali-chart-caption {
-    font-size: 0.75rem;
+    font-size: 0.82rem;
     color: #64748b;
     font-style: italic;
     line-height: 1.6;
-    margin: 0.5rem 1.25rem 0;
-    padding-top: 0.5rem;
+    margin: 0.35rem 1.25rem 0;
+    padding-top: 0.45rem;
     border-top: 1px solid #f1f5f9;
   }
 
@@ -1642,7 +1649,7 @@
   }
 
   .kigali-stages-intro {
-    font-size: 0.78rem;
+    font-size: 0.88rem;
     color: #475569;
     margin: 0 0 1rem;
     line-height: 1.6;
@@ -1677,9 +1684,9 @@
   }
 
   .kigali-stage-milestones li {
-    font-size: 0.72rem;
+    font-size: 0.8rem;
     color: #334155;
-    line-height: 1.45;
+    line-height: 1.5;
   }
 
   .kigali-stage-milestones strong {
@@ -1687,7 +1694,7 @@
   }
 
   .kigali-stage-note {
-    font-size: 0.68rem;
+    font-size: 0.78rem;
     color: #64748b;
     font-style: italic;
     margin: 0;
@@ -1817,11 +1824,11 @@
   }
 
   .kigali-story-hook {
-    font-size: 0.82rem;
-    color: #475569;
-    line-height: 1.65;
-    margin: 0 0 1.25rem;
-    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    color: #334155;
+    line-height: 1.7;
+    margin: 0.75rem 0 1rem;
+    padding: 0.85rem 1.1rem;
     background: #f5faf5;
     border-radius: 10px;
     border-left: 3px solid #2D7D5A;
@@ -2240,6 +2247,10 @@
      MAP CARD — override global negative-margin connection hack
      since country-card-inline is now inside the map card
      =========================== */
+  :global(#view-kigali .pillar-stack) {
+    gap: 0.85rem;
+  }
+
   :global(#view-kigali .pillar-stack .map-card) {
     margin-bottom: 0;
     border-bottom-left-radius: 16px;
