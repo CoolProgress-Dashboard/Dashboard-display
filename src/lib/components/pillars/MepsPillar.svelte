@@ -1137,6 +1137,7 @@
           The Standards Gap
         </h3>
         <p>{mepsContent.keyNarrative}</p>
+        <p class="story-call-to-insight">{mepsContent.callToInsight}</p>
       </div>
 
       <!-- Chart highlights -->
@@ -1201,6 +1202,28 @@
     <!-- MEPS Stringency Chart (above map) -->
     <MepsLevelChart />
 
+    <!-- Regional Spotlights -->
+    <div class="meps-regional-spotlights">
+      <div class="meps-regional-card">
+        <div class="meps-regional-icon" style="color: #D4A843">
+          <i class="fa-solid fa-earth-asia"></i>
+        </div>
+        <div class="meps-regional-body">
+          <strong class="meps-regional-title">ASEAN Harmonization</strong>
+          <p>Southeast Asian economies are converging on shared MEPS frameworks through the ASEAN Economic Community. Thailand and Vietnam lead with mandatory inverter-class standards for room ACs. The Philippines updated its MEPS in 2023 to cover split ACs above 2 HP. Indonesia is implementing tiered efficiency labels linked to a future MEPS floor. CLASP and U4E are supporting the region toward common test protocols — a prerequisite for cross-border market harmonization that would allow manufacturers to produce to a single regional standard.</p>
+        </div>
+      </div>
+      <div class="meps-regional-card">
+        <div class="meps-regional-icon" style="color: #2D7D5A">
+          <i class="fa-solid fa-earth-africa"></i>
+        </div>
+        <div class="meps-regional-body">
+          <strong class="meps-regional-title">Africa — Leapfrogging the Efficiency Gap</strong>
+          <p>The ECOWAS Regional Centre for Renewable Energy and Energy Efficiency (ECREEE) has established a regional MEPS framework for West Africa, with Ghana, Senegal, and Côte d'Ivoire as early adopters. Rwanda became the first East African country to adopt ambitious AC MEPS aligned with the U4E Model Regulation Guidelines — a global best-practice standard. The African Union, through the African Energy Commission (AFREC), is advancing continental energy efficiency policy. These early movers demonstrate that leapfrogging to high-efficiency standards is possible without decades of incremental improvement, and is critical to avoiding a locked-in efficiency deficit as cooling demand grows fastest on the continent.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Combined Map Card -->
     <div class="card-panel map-card">
       <div class="card-header combined-map-header">
@@ -1248,7 +1271,7 @@
           <span class="progress-segment" id="meps-progress-both" title="MEPS & Labels" style="background:#4A9088"></span>
           <span class="progress-segment" id="meps-progress-meps" title="MEPS Only" style="background:#6BADA0"></span>
           <span class="progress-segment" id="meps-progress-labels" title="Labels Only" style="background:#D4A843"></span>
-          <span class="progress-segment" id="meps-progress-critical" title="No Policies" style="background:#E07868"></span>
+          <span class="progress-segment" id="meps-progress-critical" title="No Policies" style="background:#cbd5e1"></span>
         </div>
       </div>
 
@@ -1771,6 +1794,52 @@
 
     .meps-counters :global(.counter-label) {
       font-size: 0.65rem;
+    }
+  }
+
+  /* Regional spotlight cards */
+  .meps-regional-spotlights {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .meps-regional-card {
+    display: flex;
+    gap: 0.75rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    align-items: flex-start;
+  }
+
+  .meps-regional-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    opacity: 0.75;
+  }
+
+  .meps-regional-title {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.35rem;
+  }
+
+  .meps-regional-body p {
+    font-size: 0.75rem;
+    color: #475569;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .meps-regional-spotlights {
+      grid-template-columns: 1fr;
     }
   }
 

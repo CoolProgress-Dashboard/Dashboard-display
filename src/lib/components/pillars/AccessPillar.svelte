@@ -1011,6 +1011,7 @@
           The Human Cost
         </h3>
         <p>{accessContent.keyNarrative}</p>
+        <p class="story-call-to-insight">{accessContent.callToInsight}</p>
       </div>
 
       <!-- Chart highlights -->

@@ -1015,6 +1015,7 @@
           The Transition Pathway
         </h3>
         <p>{kigaliContent.keyNarrative}</p>
+        <p class="story-call-to-insight">{kigaliContent.callToInsight}</p>
       </div>
 
       <!-- Chart highlights -->
@@ -1087,6 +1088,49 @@
     <!-- Insight bridge + Further Reading -->
     <PillarInsight insight={meta.insight} color="#5A8FC2" />
     <FurtherReading sources={meta.sources} color="#5A8FC2" />
+
+    <!-- Two-stage HFC phase-down explainer -->
+    <div class="kigali-stages-card">
+      <div class="kigali-stages-header">
+        <i class="fa-solid fa-layer-group"></i>
+        <h3>The Two-Stage HFC Phase-Down</h3>
+      </div>
+      <p class="kigali-stages-intro">The Kigali Amendment does not set a single global schedule — it creates staggered obligations based on development status and baseline consumption.</p>
+      <div class="kigali-stages-grid">
+        <div class="kigali-stage-item">
+          <div class="kigali-stage-label" style="background: #5A8FC2; color: #fff;">Non-Article 5 (Developed)</div>
+          <ul class="kigali-stage-milestones">
+            <li><strong>2019</strong> — HFC consumption freeze at baseline</li>
+            <li><strong>2024</strong> — Reduce to 60% of baseline</li>
+            <li><strong>2029</strong> — Reduce to 30% of baseline</li>
+            <li><strong>2036</strong> — Reduce to 15% of baseline (long-term level)</li>
+          </ul>
+          <p class="kigali-stage-note">Includes EU, USA, Japan, Australia, and most OECD countries.</p>
+        </div>
+        <div class="kigali-stage-item">
+          <div class="kigali-stage-label" style="background: #4A9088; color: #fff;">Article 5 Group 1 (Most Developing)</div>
+          <ul class="kigali-stage-milestones">
+            <li><strong>2024</strong> — HFC consumption freeze at baseline</li>
+            <li><strong>2029</strong> — Reduce to 90% of baseline</li>
+            <li><strong>2035</strong> — Reduce to 70% of baseline</li>
+            <li><strong>2040</strong> — Reduce to 50% of baseline</li>
+            <li><strong>2045</strong> — Reduce to 20% of baseline (long-term level)</li>
+          </ul>
+          <p class="kigali-stage-note">Includes most African, Latin American, and Southeast Asian countries.</p>
+        </div>
+        <div class="kigali-stage-item">
+          <div class="kigali-stage-label" style="background: #6BADA0; color: #fff;">Article 5 Group 2 (High-Baseline Developing)</div>
+          <ul class="kigali-stage-milestones">
+            <li><strong>2028</strong> — HFC consumption freeze at baseline</li>
+            <li><strong>2032</strong> — Reduce to 90% of baseline</li>
+            <li><strong>2037</strong> — Reduce to 70% of baseline</li>
+            <li><strong>2042</strong> — Reduce to 50% of baseline</li>
+            <li><strong>2047</strong> — Reduce to 15% of baseline (long-term level)</li>
+          </ul>
+          <p class="kigali-stage-note">Includes India, Pakistan, Iran, Iraq, Saudi Arabia, Kuwait, UAE, and Bahrain.</p>
+        </div>
+      </div>
+    </div>
 
     <!-- TREND CHARTS FIRST (before map) -->
 
@@ -1350,6 +1394,91 @@
     font-size: 0.7rem;
     margin-top: 1rem;
     flex-shrink: 0;
+  }
+
+  /* --- Two-stage phase-down explainer --- */
+  .kigali-stages-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem 1.4rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .kigali-stages-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+    color: #5A8FC2;
+    font-size: 0.9rem;
+  }
+
+  .kigali-stages-header h3 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+  }
+
+  .kigali-stages-intro {
+    font-size: 0.78rem;
+    color: #475569;
+    margin: 0 0 1rem;
+    line-height: 1.6;
+  }
+
+  .kigali-stages-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+
+  .kigali-stage-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .kigali-stage-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.4rem 0.75rem;
+    letter-spacing: 0.01em;
+  }
+
+  .kigali-stage-milestones {
+    list-style: none;
+    margin: 0;
+    padding: 0.6rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .kigali-stage-milestones li {
+    font-size: 0.72rem;
+    color: #334155;
+    line-height: 1.45;
+  }
+
+  .kigali-stage-milestones strong {
+    color: #0f172a;
+  }
+
+  .kigali-stage-note {
+    font-size: 0.68rem;
+    color: #64748b;
+    font-style: italic;
+    margin: 0;
+    padding: 0.4rem 0.75rem 0.6rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  @media (max-width: 768px) {
+    .kigali-stages-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   /* --- Lifecycle card --- */

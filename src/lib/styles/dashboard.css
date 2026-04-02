@@ -4907,3 +4907,16 @@ input[type='range']::-moz-range-thumb {
   background: rgba(255, 107, 53, 0.08);
   color: #d45a2a;
 }
+
+/* ─── Shared: pillar story call-to-insight conclusion paragraph ─── */
+.story-call-to-insight {
+  font-size: 0.8rem;
+  color: #334155;
+  line-height: 1.7;
+  margin: 0.75rem 0 0;
+  padding: 0.75rem 1rem;
+  background: #f8fafc;
+  border-left: 3px solid #cbd5e1;
+  border-radius: 0 6px 6px 0;
+  font-style: italic;
+}

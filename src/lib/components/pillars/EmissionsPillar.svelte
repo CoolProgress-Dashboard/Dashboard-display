@@ -1344,6 +1344,7 @@
           The Vicious Cycle
         </h3>
         <p>{emissionsContent.keyNarrative}</p>
+        <p class="story-call-to-insight">{emissionsContent.callToInsight}</p>
       </div>
 
       <!-- Chart highlights -->
