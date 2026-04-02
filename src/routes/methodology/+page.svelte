@@ -30,6 +30,7 @@
       <li><a href="#meps">MEPS & Labels Methodology</a></li>
       <li><a href="#kigali">Kigali Tracking Methodology</a></li>
       <li><a href="#access">Access & Vulnerability Methodology</a></li>
+      <li><a href="#policy">Policy Framework Methodology</a></li>
       <li><a href="#limitations">Methodology Notes & Scope</a></li>
     </ol>
   </nav>
@@ -276,7 +277,45 @@
     </ul>
   </section>
 
-  <!-- Section 7: Methodology Notes -->
+  <!-- Section 7: Policy -->
+  <section class="meth-section" id="policy">
+    <h2><i class="fa-solid fa-landmark"></i> Policy Framework Methodology</h2>
+    <p>
+      The policy pillar tracks four interconnected instruments: the Global Cooling Pledge (GCP),
+      Nationally Determined Contributions (NDCs), National Cooling Action Plans (NCAPs), and Kigali
+      Amendment ratification. Together these form the enabling framework for the cooling transition.
+    </p>
+
+    <div class="meth-subsection">
+      <h3>Global Cooling Pledge</h3>
+      <ul>
+        <li><strong>Source:</strong> Cool Coalition signatory registry (as of COP28, December 2023)</li>
+        <li><strong>Coverage:</strong> 71 signatory countries tracked; updated as new signatories join</li>
+        <li><strong>Note:</strong> Signing the pledge is a political commitment, not a legally binding obligation. Dashboard tracks commitment, not verified implementation.</li>
+      </ul>
+    </div>
+
+    <div class="meth-subsection">
+      <h3>NDC Cooling Mentions</h3>
+      <ul>
+        <li><strong>Source:</strong> CLASP NDC Appliance Efficiency Toolkit analysis; supplemented by Climate Policy Radar</li>
+        <li><strong>Method:</strong> Text analysis of submitted NDC documents for explicit mentions of cooling, refrigerants, MEPS, or the Kigali Amendment</li>
+        <li><strong>Categories:</strong> Mentioned / Not mentioned / No NDC submitted / No data</li>
+        <li><strong>Limitation:</strong> Qualitative text matching — a mention does not indicate a quantified target or funded commitment. NDC quality analysis is outside current scope.</li>
+      </ul>
+    </div>
+
+    <div class="meth-subsection">
+      <h3>National Cooling Action Plans (NCAPs)</h3>
+      <ul>
+        <li><strong>Source:</strong> UNEP Cool Coalition NCAP tracker; national government publications</li>
+        <li><strong>Coverage:</strong> Approximately 20 completed NCAPs tracked as of Q1 2026; additional plans under development</li>
+        <li><strong>Scope:</strong> Dashboard records NCAP existence and year — detailed plan assessment (quality, implementation status) is outside current scope</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Section 8: Methodology Notes -->
   <section class="meth-section" id="limitations">
     <h2><i class="fa-solid fa-circle-info"></i> Methodology Notes & Scope</h2>
     <div class="limitations-list">
@@ -291,6 +330,23 @@
         The MEPS database is updated annually in alignment with CLASP data releases. The 2026 update
         incorporates recent standard revisions across 10 priority markets including India, the EU,
         China, Brazil, and Saudi Arabia.
+      </div>
+      <div class="limitation">
+        <strong>MEPS stringency comparisons:</strong>
+        Cross-country efficiency comparisons require caution. Countries use different metrics (CSPF,
+        EER, ISEER, SEER2, APF), different test methods, different climate zone assumptions, and
+        different capacity class definitions. CoolProgress harmonizes to ISO CSPF equivalents using
+        published conversion factors, but residual methodological differences remain. The visual
+        approach for cross-country stringency comparison has been developed with CLASP and is subject
+        to validation with LBNL before wider publication.
+      </div>
+      <div class="limitation">
+        <strong>Regulatory timeline — adopted vs effective:</strong>
+        The MEPS timeline chart distinguishes between regulations that are currently in force (solid
+        line) and regulations that have been officially adopted but carry a future effective date or
+        staged compliance schedule (dashed line). Purely aspirational targets that have not been
+        legislated are excluded. "Adopted" means a formal regulatory decision exists; "effective"
+        means the requirement applies to products sold today.
       </div>
       <div class="limitation">
         <strong>Fan emission pathway:</strong>
@@ -658,6 +714,34 @@
   }
 
   .source-card a:hover { text-decoration: underline; }
+
+  /* Policy sub-sections */
+  .meth-subsection {
+    margin: 1rem 0 0.5rem;
+    padding: 0.75rem 1rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+  }
+
+  .meth-subsection h3 {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #3D6B6B;
+    margin: 0 0 0.5rem;
+  }
+
+  .meth-subsection ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    font-size: 0.83rem;
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  .meth-subsection ul li {
+    margin-bottom: 0.25rem;
+  }
 
   /* Limitations */
   .limitations-list {
