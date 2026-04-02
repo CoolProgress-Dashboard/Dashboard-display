@@ -60,7 +60,7 @@
   .pillar-header {
     background: var(--pillar-dim);
     border-left: 4px solid var(--pillar-color);
-    border-radius: 0 12px 12px 0;
+    border-radius: 12px;
     padding: 1.25rem 1.5rem 1.1rem;
     margin-bottom: 0.85rem;
     position: relative;
