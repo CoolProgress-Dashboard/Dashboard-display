@@ -7,6 +7,8 @@
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners, globalCoolingPledge } from '$lib/data/partner-data';
   import PillarHeader from '$lib/components/shared/PillarHeader.svelte';
+  import PillarInsight from '$lib/components/shared/PillarInsight.svelte';
+  import FurtherReading from '$lib/components/shared/FurtherReading.svelte';
   import type { NdcFilters } from '$lib/services/dashboard-types';
   import { STATUS, CHROME, NO_DATA, YES, NO, rgba } from '$lib/components/shared/colors';
 
@@ -1469,6 +1471,10 @@
       </div>
     </div>
 
+
+    <!-- Insight bridge + Further Reading -->
+    <PillarInsight insight={meta.insight} color="#3D6B6B" />
+    <FurtherReading sources={meta.sources} color="#3D6B6B" />
 
     <!-- Map Card with Tabs -->
     <div class="card-panel map-card">

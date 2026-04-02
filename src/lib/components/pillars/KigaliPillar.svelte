@@ -6,6 +6,8 @@
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners, globalCoolingPledge } from '$lib/data/partner-data';
   import PillarHeader from '$lib/components/shared/PillarHeader.svelte';
+  import PillarInsight from '$lib/components/shared/PillarInsight.svelte';
+  import FurtherReading from '$lib/components/shared/FurtherReading.svelte';
   import { SEQ, SCENARIO, STATUS, CHROME, NO_DATA, YES, NO, rgba } from '$lib/components/shared/colors';
 
   export let active: boolean = false;
@@ -1081,6 +1083,10 @@
         <a href="/methodology">Methodology</a>
       </div>
     </div>
+
+    <!-- Insight bridge + Further Reading -->
+    <PillarInsight insight={meta.insight} color="#5A8FC2" />
+    <FurtherReading sources={meta.sources} color="#5A8FC2" />
 
     <!-- TREND CHARTS FIRST (before map) -->
 

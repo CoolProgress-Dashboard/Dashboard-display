@@ -13,6 +13,8 @@
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners } from '$lib/data/partner-data';
   import PillarHeader from '$lib/components/shared/PillarHeader.svelte';
+  import PillarInsight from '$lib/components/shared/PillarInsight.svelte';
+  import FurtherReading from '$lib/components/shared/FurtherReading.svelte';
   import { globalCoolingPledge } from '$lib/data/partner-data';
 
   export let active: boolean = false;
@@ -1412,6 +1414,10 @@
         <a href="/methodology">Methodology</a>
       </div>
     </div>
+
+    <!-- Insight bridge + Further Reading -->
+    <PillarInsight insight={meta.insight} color="#C25B33" />
+    <FurtherReading sources={meta.sources} color="#C25B33" />
 
     <!-- Map + Charts: unified connected block -->
     <div class="map-charts-connected">

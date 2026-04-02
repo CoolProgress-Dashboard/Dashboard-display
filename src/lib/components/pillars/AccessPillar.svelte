@@ -6,6 +6,8 @@
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners, globalCoolingPledge } from '$lib/data/partner-data';
   import PillarHeader from '$lib/components/shared/PillarHeader.svelte';
+  import PillarInsight from '$lib/components/shared/PillarInsight.svelte';
+  import FurtherReading from '$lib/components/shared/FurtherReading.svelte';
   import {
     ACCESS_ALL_YEARS,
     POPULATION_CATEGORIES
@@ -1085,6 +1087,10 @@
       </div>
     </div>
 
+
+    <!-- Insight bridge + Further Reading -->
+    <PillarInsight insight={meta.insight} color="#2D7D5A" />
+    <FurtherReading sources={meta.sources} color="#2D7D5A" />
 
     <!-- Humidity & Wet-Bulb Callout -->
     <aside class="card-panel access-humidity-card">

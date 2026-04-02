@@ -7,6 +7,8 @@
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners } from '$lib/data/partner-data';
   import PillarHeader from '$lib/components/shared/PillarHeader.svelte';
+  import PillarInsight from '$lib/components/shared/PillarInsight.svelte';
+  import FurtherReading from '$lib/components/shared/FurtherReading.svelte';
   import MepsLevelChart from '$lib/components/charts/MepsLevelChart.svelte';
   import MepsByRegionChart from '$lib/components/charts/MepsByRegionChart.svelte';
   import MepsEquipmentChart from '$lib/components/charts/MepsEquipmentChart.svelte';
@@ -1191,6 +1193,10 @@
         <a href="/methodology">Methodology</a>
       </div>
     </div>
+
+    <!-- Insight bridge + Further Reading -->
+    <PillarInsight insight={meta.insight} color="#D4A843" />
+    <FurtherReading sources={meta.sources} color="#D4A843" />
 
     <!-- MEPS Stringency Chart (above map) -->
     <MepsLevelChart />
