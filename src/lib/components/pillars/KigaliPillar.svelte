@@ -1178,55 +1178,6 @@
       <p class="kigali-chart-caption">By 2035, natural refrigerants should lead new equipment sales in developed markets. China and India are already manufacturing R-290 split ACs at scale. The rate of adoption in developing markets will determine whether phase-down targets are met.</p>
     </div>
 
-    <!-- Lifecycle Refrigerant Management (part of The Way Forward) -->
-    <div class="card-panel kigali-lifecycle-card">
-      <div class="kigali-lifecycle-header">
-        <div class="kigali-lifecycle-icon"><i class="fa-solid fa-recycle"></i></div>
-        <div>
-          <h3 class="kigali-lifecycle-title">Beyond Phase-Down: Lifecycle Refrigerant Management</h3>
-          <p class="kigali-lifecycle-sub">Phase-down stops new high-GWP gases entering the market. But large quantities are already installed in equipment worldwide — and most will leak or be vented unless actively managed.</p>
-        </div>
-      </div>
-      <div class="kigali-lifecycle-grid">
-        <div class="kigali-lifecycle-item">
-          <i class="fa-solid fa-wrench"></i>
-          <strong>Leak prevention</strong>
-          <span>Regular maintenance, better fittings, and leak detection systems reduce emissions from equipment in use.</span>
-        </div>
-        <div class="kigali-lifecycle-item">
-          <i class="fa-solid fa-box-archive"></i>
-          <strong>End-of-life recovery</strong>
-          <span>Capturing refrigerant when equipment is scrapped prevents venting. Requires collection infrastructure and trained technicians.</span>
-        </div>
-        <div class="kigali-lifecycle-item">
-          <i class="fa-solid fa-industry"></i>
-          <strong>Reclamation &amp; destruction</strong>
-          <span>Recovered gases can be purified for reuse or destroyed. Destruction facilities remain scarce in many regions.</span>
-        </div>
-      </div>
-      <p class="kigali-lifecycle-note">
-        <i class="fa-solid fa-circle-info"></i>
-        Lifecycle refrigerant management is under-addressed but offers major near-term mitigation potential.
-        See: <a href="https://www.ccacoalition.org/resources/guidance-sustainable-cooling-approaches-enhanced-ndcs" target="_blank" rel="noopener noreferrer">CCAC Guidance on Sustainable Cooling</a>
-        · <a href="https://kigalisim.org/" target="_blank" rel="noopener noreferrer">Kigali SIM</a>
-      </p>
-    </div>
-
-    <!-- Safety & Deployment (part of The Way Forward) -->
-    <aside class="card-panel kigali-safety-card">
-      <div class="kigali-safety-header">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-        <strong>Responsible Deployment: What to Know</strong>
-      </div>
-      <p>Some low-GWP alternatives come with additional considerations. This is not a reason to avoid the transition — it is a reason to do it carefully and with the right support.</p>
-      <ul class="kigali-safety-list">
-        <li><strong>Flammability (A2L/A3 refrigerants):</strong> R-32 and R-290 are mildly or highly flammable. This requires updated building codes, installation standards, and technician training — all well-established in countries where these refrigerants are already widely used.</li>
-        <li><strong>PFAS concerns (some HFOs):</strong> Certain HFO refrigerants contain per- and polyfluoroalkyl substances. Natural refrigerants (R-290, CO₂, ammonia) avoid this issue entirely.</li>
-        <li><strong>High pressure (CO₂):</strong> R-744 operates at much higher pressures than conventional refrigerants, requiring specialized equipment and training.</li>
-      </ul>
-      <p class="kigali-safety-footer">These factors are manageable with proper standards, training, and technology selection. They are already addressed in markets that have moved furthest on the transition.</p>
-    </aside>
-
     <!-- ═══════════════════════════════════════════════════
          LEARN MORE — Resources + further reading
          ═══════════════════════════════════════════════════ -->
@@ -1236,6 +1187,55 @@
         <span class="chapter-title-text">Learn More</span>
       </div>
       <h2 class="kigali-chapter-heading">Go deeper on the refrigerant transition</h2>
+
+      <!-- Lifecycle Refrigerant Management -->
+      <div class="card-panel kigali-lifecycle-card">
+        <div class="kigali-lifecycle-header">
+          <div class="kigali-lifecycle-icon"><i class="fa-solid fa-recycle"></i></div>
+          <div>
+            <h3 class="kigali-lifecycle-title">Beyond Phase-Down: Lifecycle Refrigerant Management</h3>
+            <p class="kigali-lifecycle-sub">Phase-down stops new high-GWP gases entering the market. But large quantities are already installed in equipment worldwide — and most will leak or be vented unless actively managed.</p>
+          </div>
+        </div>
+        <div class="kigali-lifecycle-grid">
+          <div class="kigali-lifecycle-item">
+            <i class="fa-solid fa-wrench"></i>
+            <strong>Leak prevention</strong>
+            <span>Regular maintenance, better fittings, and leak detection systems reduce emissions from equipment in use.</span>
+          </div>
+          <div class="kigali-lifecycle-item">
+            <i class="fa-solid fa-box-archive"></i>
+            <strong>End-of-life recovery</strong>
+            <span>Capturing refrigerant when equipment is scrapped prevents venting. Requires collection infrastructure and trained technicians.</span>
+          </div>
+          <div class="kigali-lifecycle-item">
+            <i class="fa-solid fa-industry"></i>
+            <strong>Reclamation &amp; destruction</strong>
+            <span>Recovered gases can be purified for reuse or destroyed. Destruction facilities remain scarce in many regions.</span>
+          </div>
+        </div>
+        <p class="kigali-lifecycle-note">
+          <i class="fa-solid fa-circle-info"></i>
+          Lifecycle refrigerant management is under-addressed but offers major near-term mitigation potential.
+          See: <a href="https://www.ccacoalition.org/resources/guidance-sustainable-cooling-approaches-enhanced-ndcs" target="_blank" rel="noopener noreferrer">CCAC Guidance on Sustainable Cooling</a>
+          · <a href="https://kigalisim.org/" target="_blank" rel="noopener noreferrer">Kigali SIM</a>
+        </p>
+      </div>
+
+      <!-- Safety & Deployment -->
+      <aside class="card-panel kigali-safety-card">
+        <div class="kigali-safety-header">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <strong>Responsible Deployment: What to Know</strong>
+        </div>
+        <p>Some low-GWP alternatives come with additional considerations. This is not a reason to avoid the transition — it is a reason to do it carefully and with the right support.</p>
+        <ul class="kigali-safety-list">
+          <li><strong>Flammability (A2L/A3 refrigerants):</strong> R-32 and R-290 are mildly or highly flammable. This requires updated building codes, installation standards, and technician training — all well-established in countries where these refrigerants are already widely used.</li>
+          <li><strong>PFAS concerns (some HFOs):</strong> Certain HFO refrigerants contain per- and polyfluoroalkyl substances. Natural refrigerants (R-290, CO₂, ammonia) avoid this issue entirely.</li>
+          <li><strong>High pressure (CO₂):</strong> R-744 operates at much higher pressures than conventional refrigerants, requiring specialized equipment and training.</li>
+        </ul>
+        <p class="kigali-safety-footer">These factors are manageable with proper standards, training, and technology selection. They are already addressed in markets that have moved furthest on the transition.</p>
+      </aside>
 
       <!-- Cooling Pledge Badge -->
       <div class="kigali-pledge-badge">
