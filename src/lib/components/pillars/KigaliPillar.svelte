@@ -956,13 +956,12 @@
     />
 
     <!-- ═══════════════════════════════════════════════════
-         CHAPTER 1 — THE PROBLEM
-         What HFCs are and why they matter
+         CHAPTER 1 — THE CHALLENGE
          ═══════════════════════════════════════════════════ -->
     <div class="kigali-chapter-card" class:revealed>
       <div class="kigali-chapter-label problem-label">
         <span class="chapter-num">01</span>
-        <span class="chapter-title-text">The Problem</span>
+        <span class="chapter-title-text">The Challenge</span>
       </div>
       <h2 class="kigali-chapter-heading">Refrigerants are leaking the climate away</h2>
       <p class="kigali-chapter-intro">Refrigerants are the gases that make air conditioners and refrigerators work. They circulate inside the equipment, absorbing and releasing heat. The problem: they leak — during manufacturing, servicing, and at end-of-life — and most of the gases used today are extremely potent greenhouse gases, thousands of times more warming than CO₂.</p>
@@ -1006,16 +1005,70 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════
-         CHAPTER 2 — THE SOLUTION
-         The Kigali Amendment and the transition pathway
+         CHAPTER 2 — GLOBAL PROGRESS
+         How far the world has come on ratification
+         ═══════════════════════════════════════════════════ -->
+    <div class="kigali-chapter-card" class:revealed>
+      <div class="kigali-chapter-label progress-label">
+        <span class="chapter-num">02</span>
+        <span class="chapter-title-text">Global Progress</span>
+      </div>
+      <h2 class="kigali-chapter-heading">172 parties, 95% of global HFC consumption covered</h2>
+      <p class="kigali-chapter-intro">As of February 2026, 172 countries have ratified the Kigali Amendment — but ratification is only the first step. The real test is whether national phase-down schedules translate into converted manufacturing lines, updated safety codes, and recovery infrastructure for legacy gases.</p>
+
+      <!-- Animated stat cards -->
+      <div class="kigali-counters">
+        {#each kigaliStats as stat, i}
+          <div class="kigali-counter-wrapper" style="transition-delay: {200 + i * 100}ms">
+            <AnimatedCounter
+              value={stat.value}
+              label={stat.label}
+              context={stat.context}
+              duration={1800 + i * 150}
+            />
+          </div>
+        {/each}
+      </div>
+    </div>
+
+    <!-- Map under Chapter 2 -->
+    <div class="card-panel map-card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fa-solid fa-flask"></i>
+          Kigali Amendment Ratification Status
+        </div>
+        <span class="viewing-pill">Viewing: <strong id="kigali-viewing">Global</strong></span>
+      </div>
+      <div id="kigali-map-container" class="map-surface"></div>
+      <div class="legend legend-row">
+        <span class="legend-label">Status:</span>
+        <div id="kigali-legend" class="legend-items"></div>
+      </div>
+      <div class="progress-bar" id="kigali-progress">
+        <span class="progress-segment" id="kigali-progress-ratified" title="Ratified" style="background:#6BADA0;"></span>
+        <span class="progress-segment" id="kigali-progress-notratified" title="Not yet ratified" style="background:#cbd5e1;"></span>
+      </div>
+      <div id="kigali-country-detail" class="country-card-inline">
+        <h3>Selected Country</h3>
+        <div class="country-detail">
+          <h4>Select a country</h4>
+          <p class="side-muted">Click on a country in the map to see Kigali details, refrigerant mix, and saving potential.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         CHAPTER 3 — THE WAY FORWARD
+         Solution: Kigali Amendment + transition plan + implementation
          ═══════════════════════════════════════════════════ -->
     <div class="kigali-chapter-card" class:revealed>
       <div class="kigali-chapter-label solution-label">
-        <span class="chapter-num">02</span>
-        <span class="chapter-title-text">The Solution</span>
+        <span class="chapter-num">03</span>
+        <span class="chapter-title-text">The Way Forward</span>
       </div>
       <h2 class="kigali-chapter-heading">The Kigali Amendment: a legally binding phase-down</h2>
-      <p class="kigali-chapter-intro">The good news: there are proven, climate-safe alternatives. The Kigali Amendment to the Montreal Protocol, adopted in 2016, creates a legally binding schedule for countries to phase down the most harmful HFCs by over 80%.</p>
+      <p class="kigali-chapter-intro">There are proven, climate-safe alternatives to high-GWP refrigerants. The Kigali Amendment to the Montreal Protocol, adopted in 2016, creates a legally binding schedule for countries to phase down the most harmful HFCs by over 80% — and sets out a clear pathway to natural refrigerants.</p>
       <p class="kigali-chapter-text">{kigaliContent.keyNarrative}</p>
 
       <!-- Transition pathway stepper -->
@@ -1048,9 +1101,9 @@
       <!-- Two-stage phase-down schedule -->
       <div class="kigali-stages-inner">
         <h3 class="kigali-stages-inner-title">
-          <i class="fa-solid fa-layer-group"></i> The Two-Stage Phase-Down Schedule
+          <i class="fa-solid fa-layer-group"></i> The Phase-Down Schedule
         </h3>
-        <p class="kigali-stages-intro">The Kigali Amendment creates staggered obligations based on development status and baseline HFC consumption — not a single global timetable.</p>
+        <p class="kigali-stages-intro">The Kigali Amendment creates staggered obligations based on development status — not a single global timetable.</p>
         <div class="kigali-stages-grid">
           <div class="kigali-stage-item">
             <div class="kigali-stage-label" style="background: #5A8FC2; color: #fff;">Non-Article 5 (Developed)</div>
@@ -1084,14 +1137,17 @@
           </div>
         </div>
       </div>
+
+      <!-- callToInsight conclusion -->
+      <p class="story-call-to-insight">{kigaliContent.callToInsight}</p>
     </div>
 
-    <!-- DATA 2: Market share transition — the solution in action -->
+    <!-- Market share transition: the solution in action -->
     <div class="kigali-story-bridge">
       <div class="kigali-bridge-label">
         <span class="bridge-num">DATA</span>
         <i class="fa-solid fa-chart-area"></i>
-        The market is shifting — tracking refrigerant transitions through 2050
+        The market is already shifting — refrigerant transitions through 2050
       </div>
       <div class="chart-card-header" style="padding: 1rem 1rem 0; display: flex; justify-content: space-between; align-items: flex-start;">
         <p class="chart-subtitle">Projected refrigerant market share by appliance type</p>
@@ -1122,46 +1178,7 @@
       <p class="kigali-chart-caption">By 2035, natural refrigerants should lead new equipment sales in developed markets. China and India are already manufacturing R-290 split ACs at scale. The rate of adoption in developing markets will determine whether phase-down targets are met.</p>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════
-         CHAPTER 3 — GLOBAL PROGRESS
-         Ratification status and compliance tracking
-         ═══════════════════════════════════════════════════ -->
-    <div class="kigali-chapter-card" class:revealed>
-      <div class="kigali-chapter-label progress-label">
-        <span class="chapter-num">03</span>
-        <span class="chapter-title-text">Global Progress</span>
-      </div>
-      <h2 class="kigali-chapter-heading">172 parties, 95% of global HFC consumption covered</h2>
-      <p class="kigali-chapter-intro">As of February 2026, 172 countries have ratified the Kigali Amendment — but ratification is only the first step. The real test is whether national phase-down schedules translate into converted manufacturing lines, updated safety codes, and recovery infrastructure for legacy gases.</p>
-
-      <!-- Animated stat cards -->
-      <div class="kigali-counters">
-        {#each kigaliStats as stat, i}
-          <div class="kigali-counter-wrapper" style="transition-delay: {200 + i * 100}ms">
-            <AnimatedCounter
-              value={stat.value}
-              label={stat.label}
-              context={stat.context}
-              duration={1800 + i * 150}
-            />
-          </div>
-        {/each}
-      </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════════════
-         CHAPTER 4 — RESPONSIBLE IMPLEMENTATION
-         Beyond phase-down: lifecycle management
-         ═══════════════════════════════════════════════════ -->
-    <div class="kigali-chapter-label-strip">
-      <div class="kigali-chapter-label implementation-label">
-        <span class="chapter-num">04</span>
-        <span class="chapter-title-text">Responsible Implementation</span>
-      </div>
-      <p class="kigali-chapter-strip-text">Ratification is necessary but not sufficient. Converting manufacturing lines, updating safety codes, training technicians, and building recovery infrastructure for legacy gases are what make the transition real.</p>
-    </div>
-
-    <!-- Lifecycle Refrigerant Management -->
+    <!-- Lifecycle Refrigerant Management (part of The Way Forward) -->
     <div class="card-panel kigali-lifecycle-card">
       <div class="kigali-lifecycle-header">
         <div class="kigali-lifecycle-icon"><i class="fa-solid fa-recycle"></i></div>
@@ -1195,7 +1212,7 @@
       </p>
     </div>
 
-    <!-- Safety & Deployment Considerations -->
+    <!-- Safety & Deployment (part of The Way Forward) -->
     <aside class="card-panel kigali-safety-card">
       <div class="kigali-safety-header">
         <i class="fa-solid fa-triangle-exclamation"></i>
@@ -1210,46 +1227,15 @@
       <p class="kigali-safety-footer">These factors are manageable with proper standards, training, and technology selection. They are already addressed in markets that have moved furthest on the transition.</p>
     </aside>
 
-    <!-- Map: shown under Chapter 3 Global Progress -->
-    <div class="card-panel map-card">
-      <div class="card-header">
-        <div class="card-title">
-          <i class="fa-solid fa-flask"></i>
-          Kigali Amendment Ratification Status
-        </div>
-        <span class="viewing-pill">Viewing: <strong id="kigali-viewing">Global</strong></span>
-      </div>
-      <div id="kigali-map-container" class="map-surface"></div>
-      <div class="legend legend-row">
-        <span class="legend-label">Status:</span>
-        <div id="kigali-legend" class="legend-items"></div>
-      </div>
-      <div class="progress-bar" id="kigali-progress">
-        <span class="progress-segment" id="kigali-progress-ratified" title="Ratified" style="background:#6BADA0;"></span>
-        <span class="progress-segment" id="kigali-progress-notratified" title="Not yet ratified" style="background:#cbd5e1;"></span>
-      </div>
-
-      <div id="kigali-country-detail" class="country-card-inline">
-        <h3>Selected Country</h3>
-        <div class="country-detail">
-          <h4>Select a country</h4>
-          <p class="side-muted">Click on a country in the map to see Kigali details, refrigerant mix, and saving potential.</p>
-        </div>
-      </div>
-    </div>
-
-
     <!-- ═══════════════════════════════════════════════════
-         CHAPTER 5 — THE WAY FORWARD
-         Conclusion, pledge alignment, and resources
+         LEARN MORE — Resources + further reading
          ═══════════════════════════════════════════════════ -->
-    <div class="kigali-chapter-card" class:revealed>
+    <div class="kigali-chapter-card kigali-learn-more-card" class:revealed>
       <div class="kigali-chapter-label resources-label">
-        <span class="chapter-num">05</span>
-        <span class="chapter-title-text">The Way Forward</span>
+        <i class="fa-solid fa-books" style="margin-right: 0.2rem;"></i>
+        <span class="chapter-title-text">Learn More</span>
       </div>
-      <h2 class="kigali-chapter-heading">What success looks like</h2>
-      <p class="story-call-to-insight">{kigaliContent.callToInsight}</p>
+      <h2 class="kigali-chapter-heading">Go deeper on the refrigerant transition</h2>
 
       <!-- Cooling Pledge Badge -->
       <div class="kigali-pledge-badge">
