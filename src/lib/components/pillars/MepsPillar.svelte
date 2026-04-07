@@ -1079,19 +1079,14 @@
 
 <section id="view-meps" class="view-section" class:active>
   <div class="pillar-stack">
-    <!-- Pillar Header -->
-    <PillarHeader
-      pillarId="meps"
-      headline={meta.headline}
-      subhead={meta.subhead}
-      entryStat={mepsContent.entryStat ?? ''}
-      onInfo={onPillarInfoClick}
-    />
+    <!-- ═══ Ch01 THE CHALLENGE ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(212,168,67,0.10); color: #D4A843;">
+        <span class="chapter-num" style="background: #D4A843; color: #fff;">01</span>
+        <span class="chapter-title-text">The Challenge</span>
+      </div>
+      <h2 class="chapter-heading">Most of the world still buys inefficient cooling equipment.</h2>
 
-    <!-- Story Card -->
-    <div class="card-panel meps-story-card" class:revealed>
-
-      <!-- Plain-language explainer — what MEPS and labels actually do -->
       <div class="meps-explainer">
         <div class="meps-explainer-item">
           <div class="meps-explainer-icon"><i class="fa-solid fa-gauge-high"></i></div>
@@ -1113,10 +1108,8 @@
         </div>
       </div>
 
-      <!-- Story hook narrative -->
-      <p class="meps-story-hook">{mepsContent.storyHook}</p>
+      <p class="chapter-intro">{mepsContent.storyHook}</p>
 
-      <!-- Animated stat cards -->
       <div class="meps-counters">
         {#each mepsStats as stat, i}
           <div class="meps-counter-wrapper" style="transition-delay: {200 + i * 100}ms">
@@ -1129,39 +1122,71 @@
           </div>
         {/each}
       </div>
+    </div>
 
-      <!-- Key narrative paragraph -->
-      <div class="meps-narrative">
-        <h3 class="meps-narrative-title">
-          <i class="fa-solid fa-lightbulb"></i>
-          The Standards Gap
-        </h3>
-        <p>{mepsContent.keyNarrative}</p>
-        <p class="story-call-to-insight">{mepsContent.callToInsight}</p>
+    <!-- ═══ Ch02 GLOBAL COVERAGE ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(45,125,90,0.10); color: #2D7D5A;">
+        <span class="chapter-num" style="background: #2D7D5A; color: #fff;">02</span>
+        <span class="chapter-title-text">Global Coverage</span>
+      </div>
+      <h2 class="chapter-heading">Progress is real — but deeply uneven across regions.</h2>
+
+      <div class="meps-highlights-grid">
+        {#each chartHighlights as highlight}
+          <div class="meps-highlight-card">
+            <div class="meps-highlight-icon" style="color: {highlight.color}">
+              <i class="fa-solid {highlight.icon}"></i>
+            </div>
+            <div class="meps-highlight-text">
+              <strong>{highlight.title}</strong>
+              <span>{highlight.description}</span>
+            </div>
+          </div>
+        {/each}
       </div>
 
-      <!-- Chart highlights -->
-      <div class="meps-chart-highlights">
-        <h3 class="meps-highlights-title">
-          <i class="fa-solid fa-chart-simple"></i>
-          What the Data Shows
-        </h3>
-        <div class="meps-highlights-grid">
-          {#each chartHighlights as highlight}
-            <div class="meps-highlight-card">
-              <div class="meps-highlight-icon" style="color: {highlight.color}">
-                <i class="fa-solid {highlight.icon}"></i>
-              </div>
-              <div class="meps-highlight-text">
-                <strong>{highlight.title}</strong>
-                <span>{highlight.description}</span>
-              </div>
-            </div>
-          {/each}
+      <div class="meps-regional-spotlights">
+        <div class="meps-regional-card">
+          <div class="meps-regional-icon" style="color: #D4A843">
+            <i class="fa-solid fa-earth-asia"></i>
+          </div>
+          <div class="meps-regional-body">
+            <strong class="meps-regional-title">ASEAN Harmonization</strong>
+            <p>Southeast Asian economies are converging on shared MEPS frameworks through the ASEAN Economic Community. Thailand and Vietnam lead with mandatory inverter-class standards for room ACs. The Philippines updated its MEPS in 2023 to cover split ACs above 2 HP. Indonesia is implementing tiered efficiency labels linked to a future MEPS floor. CLASP and U4E are supporting the region toward common test protocols — a prerequisite for cross-border market harmonization that would allow manufacturers to produce to a single regional standard.</p>
+          </div>
+        </div>
+        <div class="meps-regional-card">
+          <div class="meps-regional-icon" style="color: #2D7D5A">
+            <i class="fa-solid fa-earth-africa"></i>
+          </div>
+          <div class="meps-regional-body">
+            <strong class="meps-regional-title">Africa — Leapfrogging the Efficiency Gap</strong>
+            <p>The ECOWAS Regional Centre for Renewable Energy and Energy Efficiency (ECREEE) has established a regional MEPS framework for West Africa, with Ghana, Senegal, and Côte d'Ivoire as early adopters. Rwanda became the first East African country to adopt ambitious AC MEPS aligned with the U4E Model Regulation Guidelines — a global best-practice standard. The African Union, through the African Energy Commission (AFREC), is advancing continental energy efficiency policy. These early movers demonstrate that leapfrogging to high-efficiency standards is possible without decades of incremental improvement, and is critical to avoiding a locked-in efficiency deficit as cooling demand grows fastest on the continent.</p>
+          </div>
         </div>
       </div>
+    </div>
 
-      <!-- Partner logos bar -->
+    <!-- ═══ Ch03 THE WAY FORWARD ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(90,143,194,0.10); color: #5A8FC2;">
+        <span class="chapter-num" style="background: #5A8FC2; color: #fff;">03</span>
+        <span class="chapter-title-text">The Way Forward</span>
+      </div>
+      <h2 class="chapter-heading">Closing the standards gap before markets lock in inefficiency.</h2>
+      <p class="chapter-intro">{mepsContent.keyNarrative}</p>
+      <p class="story-call-to-insight">{mepsContent.callToInsight}</p>
+    </div>
+
+    <!-- ═══ LEARN MORE ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(61,107,107,0.10); color: #3D6B6B;">
+        <i class="fa-solid fa-books" style="margin-right: 0.2rem;"></i>
+        <span class="chapter-title-text">Learn More</span>
+      </div>
+      <h2 class="chapter-heading">Go deeper on efficiency standards</h2>
+
       <div class="meps-partner-bar">
         <div class="meps-partner-header">
           <i class="fa-solid fa-handshake"></i>
@@ -1169,20 +1194,13 @@
         </div>
         <div class="meps-partner-logos">
           {#each mepsPartners as partner (partner.id)}
-            <a
-              href={partner.coolingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="meps-partner-logo"
-              title={partner.fullName}
-            >
+            <a href={partner.coolingUrl} target="_blank" rel="noopener noreferrer" class="meps-partner-logo" title={partner.fullName}>
               <img src={partner.logoPath} alt={partner.name} />
             </a>
           {/each}
         </div>
       </div>
 
-      <!-- Source attribution footer -->
       <div class="meps-source-footer">
         Sources:
         <a href="https://cprc-clasp.ngo/" target="_blank" rel="noopener noreferrer">CLASP CPRC</a>
@@ -1195,34 +1213,8 @@
       </div>
     </div>
 
-    <!-- Insight bridge + Further Reading -->
-    <PillarInsight insight={meta.insight} color="#D4A843" />
-    <FurtherReading sources={meta.sources} color="#D4A843" />
-
     <!-- MEPS Stringency Chart (above map) -->
     <MepsLevelChart />
-
-    <!-- Regional Spotlights -->
-    <div class="meps-regional-spotlights">
-      <div class="meps-regional-card">
-        <div class="meps-regional-icon" style="color: #D4A843">
-          <i class="fa-solid fa-earth-asia"></i>
-        </div>
-        <div class="meps-regional-body">
-          <strong class="meps-regional-title">ASEAN Harmonization</strong>
-          <p>Southeast Asian economies are converging on shared MEPS frameworks through the ASEAN Economic Community. Thailand and Vietnam lead with mandatory inverter-class standards for room ACs. The Philippines updated its MEPS in 2023 to cover split ACs above 2 HP. Indonesia is implementing tiered efficiency labels linked to a future MEPS floor. CLASP and U4E are supporting the region toward common test protocols — a prerequisite for cross-border market harmonization that would allow manufacturers to produce to a single regional standard.</p>
-        </div>
-      </div>
-      <div class="meps-regional-card">
-        <div class="meps-regional-icon" style="color: #2D7D5A">
-          <i class="fa-solid fa-earth-africa"></i>
-        </div>
-        <div class="meps-regional-body">
-          <strong class="meps-regional-title">Africa — Leapfrogging the Efficiency Gap</strong>
-          <p>The ECOWAS Regional Centre for Renewable Energy and Energy Efficiency (ECREEE) has established a regional MEPS framework for West Africa, with Ghana, Senegal, and Côte d'Ivoire as early adopters. Rwanda became the first East African country to adopt ambitious AC MEPS aligned with the U4E Model Regulation Guidelines — a global best-practice standard. The African Union, through the African Energy Commission (AFREC), is advancing continental energy efficiency policy. These early movers demonstrate that leapfrogging to high-efficiency standards is possible without decades of incremental improvement, and is critical to avoiding a locked-in efficiency deficit as cooling demand grows fastest on the continent.</p>
-        </div>
-      </div>
-    </div>
 
     <!-- Combined Map Card -->
     <div class="card-panel map-card">

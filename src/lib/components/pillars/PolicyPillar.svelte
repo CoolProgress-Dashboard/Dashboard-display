@@ -1330,19 +1330,14 @@
 
 <section id="view-policy" class="view-section" class:active>
   <div class="pillar-stack">
-    <!-- Pillar Header -->
-    <PillarHeader
-      pillarId="policy"
-      headline={meta.headline}
-      subhead={meta.subhead}
-      entryStat={policyContent.entryStat ?? ''}
-      onInfo={onPillarInfoClick}
-    />
+    <!-- ═══ Ch01 THE LANDSCAPE ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(61,107,107,0.10); color: #3D6B6B;">
+        <span class="chapter-num" style="background: #3D6B6B; color: #fff;">01</span>
+        <span class="chapter-title-text">The Landscape</span>
+      </div>
+      <h2 class="chapter-heading">Cooling has historically been invisible in climate policy — that is changing.</h2>
 
-    <!-- Story Card -->
-    <div class="card-panel policy-story-card" class:revealed>
-
-      <!-- GCP intro — plain language, before data -->
       <div class="policy-gcp-intro">
         <div class="policy-gcp-intro-header">
           <div class="policy-gcp-intro-icon"><i class="fa-solid fa-handshake-angle"></i></div>
@@ -1373,10 +1368,8 @@
         </div>
       </div>
 
-      <!-- Story hook -->
-      <p class="policy-story-hook">{policyContent.storyHook}</p>
+      <p class="chapter-intro">{policyContent.storyHook}</p>
 
-      <!-- Animated stat cards -->
       <div class="policy-counters">
         {#each policyStats as stat, i}
           <div class="policy-counter-wrapper" style="transition-delay: {200 + i * 100}ms">
@@ -1389,39 +1382,42 @@
           </div>
         {/each}
       </div>
+    </div>
 
-      <!-- Key narrative -->
-      <div class="policy-narrative">
-        <h3 class="policy-narrative-title">
-          <i class="fa-solid fa-scale-balanced"></i>
-          The Policy Puzzle
-        </h3>
-        <p>{policyContent.keyNarrative}</p>
-        <p class="story-call-to-insight">{policyContent.callToInsight}</p>
+    <!-- ═══ Ch02 WHERE THINGS STAND ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(45,125,90,0.10); color: #2D7D5A;">
+        <span class="chapter-num" style="background: #2D7D5A; color: #fff;">02</span>
+        <span class="chapter-title-text">Where Things Stand</span>
       </div>
+      <h2 class="chapter-heading">Pledges are up — but implementation lags on every measure.</h2>
 
-      <!-- Chart highlights -->
-      <div class="policy-chart-highlights">
-        <h3 class="policy-highlights-title">
-          <i class="fa-solid fa-chart-simple"></i>
-          What the Data Shows
-        </h3>
-        <div class="policy-highlights-grid">
-          {#each chartHighlights as highlight}
-            <div class="policy-highlight-card">
-              <div class="policy-highlight-icon" style="color: {highlight.color}">
-                <i class="fa-solid {highlight.icon}"></i>
-              </div>
-              <div class="policy-highlight-text">
-                <strong>{highlight.title}</strong>
-                <span>{highlight.description}</span>
-              </div>
+      <div class="policy-highlights-grid">
+        {#each chartHighlights as highlight}
+          <div class="policy-highlight-card">
+            <div class="policy-highlight-icon" style="color: {highlight.color}">
+              <i class="fa-solid {highlight.icon}"></i>
             </div>
-          {/each}
-        </div>
+            <div class="policy-highlight-text">
+              <strong>{highlight.title}</strong>
+              <span>{highlight.description}</span>
+            </div>
+          </div>
+        {/each}
       </div>
 
-      <!-- Cooling Pledge Badge -->
+      <p class="chapter-text">{policyContent.keyNarrative}</p>
+    </div>
+
+    <!-- ═══ Ch03 TURNING SIGNALS INTO ACTION ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(90,143,194,0.10); color: #5A8FC2;">
+        <span class="chapter-num" style="background: #5A8FC2; color: #fff;">03</span>
+        <span class="chapter-title-text">Turning Signals into Action</span>
+      </div>
+      <h2 class="chapter-heading">From pledge to plan — what effective cooling policy looks like.</h2>
+      <p class="story-call-to-insight">{policyContent.callToInsight}</p>
+
       <div class="policy-pledge-badge">
         <div class="pledge-icon"><i class="fa-solid fa-handshake-angle"></i></div>
         <div class="pledge-content">
@@ -1435,8 +1431,16 @@
         </div>
         <a href={globalCoolingPledge.progressReportUrl} target="_blank" rel="noopener noreferrer" class="pledge-link">Progress Report</a>
       </div>
+    </div>
 
-      <!-- Partner logos bar -->
+    <!-- ═══ LEARN MORE ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(61,107,107,0.10); color: #3D6B6B;">
+        <i class="fa-solid fa-books" style="margin-right: 0.2rem;"></i>
+        <span class="chapter-title-text">Learn More</span>
+      </div>
+      <h2 class="chapter-heading">Go deeper on cooling policy frameworks</h2>
+
       <div class="policy-partner-bar">
         <div class="policy-partner-header">
           <i class="fa-solid fa-handshake"></i>
@@ -1444,20 +1448,13 @@
         </div>
         <div class="policy-partner-logos">
           {#each policyPartners as partner (partner.id)}
-            <a
-              href={partner.coolingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="policy-partner-logo"
-              title={partner.fullName}
-            >
+            <a href={partner.coolingUrl} target="_blank" rel="noopener noreferrer" class="policy-partner-logo" title={partner.fullName}>
               <img src={partner.logoPath} alt={partner.name} />
             </a>
           {/each}
         </div>
       </div>
 
-      <!-- Source attribution -->
       <div class="policy-source-footer">
         Sources:
         <a href="https://coolcoalition.org/global-cooling-pledge/" target="_blank" rel="noopener noreferrer">Cool Coalition</a>
@@ -1471,11 +1468,6 @@
         <a href="/methodology">Methodology</a>
       </div>
     </div>
-
-
-    <!-- Insight bridge + Further Reading -->
-    <PillarInsight insight={meta.insight} color="#3D6B6B" />
-    <FurtherReading sources={meta.sources} color="#3D6B6B" />
 
     <!-- Map Card with Tabs -->
     <div class="card-panel map-card">

@@ -1308,22 +1308,15 @@
 
 <section id="view-emissions" class="view-section" class:active>
   <div class="pillar-stack">
-    <!-- Pillar Header -->
-    <PillarHeader
-      pillarId="emissions"
-      headline={meta.headline}
-      subhead={meta.subhead}
-      entryStat={emissionsContent.entryStat ?? ''}
-      onInfo={onPillarInfoClick}
-    />
+    <!-- ═══ Ch01 THE CHALLENGE ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(194,91,51,0.10); color: #C25B33;">
+        <span class="chapter-num" style="background: #C25B33; color: #fff;">01</span>
+        <span class="chapter-title-text">The Challenge</span>
+      </div>
+      <h2 class="chapter-heading">Cooling demand is rising — and so are the emissions that power it.</h2>
+      <p class="chapter-intro">{emissionsContent.storyHook}</p>
 
-    <!-- Story-Driven Card -->
-    <div class="card-panel emissions-story-card" class:revealed>
-
-      <!-- Story hook narrative -->
-      <p class="emissions-story-hook">{emissionsContent.storyHook}</p>
-
-      <!-- Animated stat cards -->
       <div class="emissions-counters">
         {#each emissionsStats as stat, i}
           <div class="emissions-counter-wrapper" style="transition-delay: {200 + i * 100}ms">
@@ -1336,43 +1329,43 @@
           </div>
         {/each}
       </div>
+    </div>
 
-      <!-- Key narrative -->
-      <div class="emissions-narrative">
-        <h3 class="emissions-narrative-title">
-          <i class="fa-solid fa-fire-flame-curved"></i>
-          The Vicious Cycle
-        </h3>
-        <p>{emissionsContent.keyNarrative}</p>
-        <p class="story-call-to-insight">{emissionsContent.callToInsight}</p>
+    <!-- ═══ Ch02 WHAT THE DATA SHOWS ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(45,125,90,0.10); color: #2D7D5A;">
+        <span class="chapter-num" style="background: #2D7D5A; color: #fff;">02</span>
+        <span class="chapter-title-text">What the Data Shows</span>
       </div>
+      <h2 class="chapter-heading">Three interlocking crises — energy, climate, and health.</h2>
 
-      <!-- Chart highlights -->
-      <div class="emissions-chart-highlights">
-        <h3 class="emissions-highlights-title">
-          <i class="fa-solid fa-chart-simple"></i>
-          What the Data Shows
-        </h3>
-        <div class="emissions-highlights-grid">
-          {#each chartHighlights as highlight}
-            <div class="emissions-highlight-card">
-              <div class="emissions-highlight-icon" style="color: {highlight.color}">
-                <i class="fa-solid {highlight.icon}"></i>
-              </div>
-              <div class="emissions-highlight-text">
-                <strong>{highlight.title}</strong>
-                <span>{highlight.description}</span>
-              </div>
+      <div class="emissions-highlights-grid">
+        {#each chartHighlights as highlight}
+          <div class="emissions-highlight-card">
+            <div class="emissions-highlight-icon" style="color: {highlight.color}">
+              <i class="fa-solid {highlight.icon}"></i>
             </div>
-          {/each}
-        </div>
+            <div class="emissions-highlight-text">
+              <strong>{highlight.title}</strong>
+              <span>{highlight.description}</span>
+            </div>
+          </div>
+        {/each}
       </div>
+    </div>
 
-      <!-- Cooling Pledge Badge -->
+    <!-- ═══ Ch03 THE WAY FORWARD ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(90,143,194,0.10); color: #5A8FC2;">
+        <span class="chapter-num" style="background: #5A8FC2; color: #fff;">03</span>
+        <span class="chapter-title-text">The Way Forward</span>
+      </div>
+      <h2 class="chapter-heading">Breaking the vicious cycle of heat, demand, and emissions.</h2>
+      <p class="chapter-intro">{emissionsContent.keyNarrative}</p>
+      <p class="story-call-to-insight">{emissionsContent.callToInsight}</p>
+
       <div class="cooling-pledge-badge">
-        <div class="pledge-icon">
-          <i class="fa-solid fa-handshake-angle"></i>
-        </div>
+        <div class="pledge-icon"><i class="fa-solid fa-handshake-angle"></i></div>
         <div class="pledge-content">
           <strong>Global Cooling Pledge Alignment</strong>
           <span>Target: {globalCoolingPledge.targetEmissionReduction} from BAU &middot; {globalCoolingPledge.signatoryCountries} signatory nations &middot; {globalCoolingPledge.targetEfficiencyIncrease}</span>
@@ -1381,8 +1374,16 @@
           Progress Report <i class="fa-solid fa-arrow-up-right-from-square"></i>
         </a>
       </div>
+    </div>
 
-      <!-- Partner logos bar -->
+    <!-- ═══ LEARN MORE ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(61,107,107,0.10); color: #3D6B6B;">
+        <i class="fa-solid fa-books" style="margin-right: 0.2rem;"></i>
+        <span class="chapter-title-text">Learn More</span>
+      </div>
+      <h2 class="chapter-heading">Go deeper on cooling and climate</h2>
+
       <div class="emissions-partner-bar">
         <div class="emissions-partner-header">
           <i class="fa-solid fa-handshake"></i>
@@ -1390,20 +1391,13 @@
         </div>
         <div class="emissions-partner-logos">
           {#each emissionsPartners as partner (partner.id)}
-            <a
-              href={partner.coolingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="emissions-partner-logo"
-              title={partner.fullName}
-            >
+            <a href={partner.coolingUrl} target="_blank" rel="noopener noreferrer" class="emissions-partner-logo" title={partner.fullName}>
               <img src={partner.logoPath} alt={partner.name} />
             </a>
           {/each}
         </div>
       </div>
 
-      <!-- Source attribution footer -->
       <div class="emissions-source-footer">
         Sources:
         <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">CLASP Mepsy (indirect)</a>
@@ -1415,10 +1409,6 @@
         <a href="/methodology">Methodology</a>
       </div>
     </div>
-
-    <!-- Insight bridge + Further Reading -->
-    <PillarInsight insight={meta.insight} color="#C25B33" />
-    <FurtherReading sources={meta.sources} color="#C25B33" />
 
     <!-- Map + Charts: unified connected block -->
     <div class="map-charts-connected">

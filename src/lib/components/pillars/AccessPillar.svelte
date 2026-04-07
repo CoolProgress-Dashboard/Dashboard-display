@@ -972,25 +972,15 @@
 
 <section id="view-access" class="view-section" class:active>
   <div class="pillar-stack">
-    <!-- Pillar Header -->
-    <PillarHeader
-      pillarId="access"
-      headline={meta.headline}
-      subhead={meta.subhead}
-      entryStat={accessContent.entryStat ?? ''}
-      onInfo={onPillarInfoClick}
-    />
+    <!-- ═══ Ch01 THE CHALLENGE ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(45,125,90,0.10); color: #2D7D5A;">
+        <span class="chapter-num" style="background: #2D7D5A; color: #fff;">01</span>
+        <span class="chapter-title-text">The Challenge</span>
+      </div>
+      <h2 class="chapter-heading">Access to cooling is not a luxury — it is a human right.</h2>
+      <p class="chapter-intro">{accessContent.storyHook}</p>
 
-    <!-- Story Card -->
-    <div class="card-panel access-story-card" class:revealed>
-
-      <!-- Human-right lead statement -->
-      <p class="access-rights-lead">Access to cooling is not a luxury — it is a human right.</p>
-
-      <!-- Story hook narrative -->
-      <p class="access-story-hook">{accessContent.storyHook}</p>
-
-      <!-- Animated stat cards -->
       <div class="access-counters">
         {#each accessStats as stat, i}
           <div class="access-counter-wrapper" style="transition-delay: {200 + i * 100}ms">
@@ -1004,38 +994,49 @@
         {/each}
       </div>
 
-      <!-- Key narrative -->
-      <div class="access-narrative">
-        <h3 class="access-narrative-title">
-          <i class="fa-solid fa-heart-pulse"></i>
-          The Human Cost
-        </h3>
-        <p>{accessContent.keyNarrative}</p>
-        <p class="story-call-to-insight">{accessContent.callToInsight}</p>
-      </div>
+      <p class="chapter-text">{accessContent.keyNarrative}</p>
+    </div>
 
-      <!-- Chart highlights -->
-      <div class="access-chart-highlights">
-        <h3 class="access-highlights-title">
-          <i class="fa-solid fa-chart-simple"></i>
-          What the Data Shows
-        </h3>
-        <div class="access-highlights-grid">
-          {#each chartHighlights as highlight}
-            <div class="access-highlight-card">
-              <div class="access-highlight-icon" style="color: {highlight.color}">
-                <i class="fa-solid {highlight.icon}"></i>
-              </div>
-              <div class="access-highlight-text">
-                <strong>{highlight.title}</strong>
-                <span>{highlight.description}</span>
-              </div>
+    <!-- ═══ Ch02 WHO IS MOST AFFECTED ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(45,125,90,0.10); color: #2D7D5A;">
+        <span class="chapter-num" style="background: #2D7D5A; color: #fff;">02</span>
+        <span class="chapter-title-text">Who Is Most Affected</span>
+      </div>
+      <h2 class="chapter-heading">Heat stress hits hardest where cooling is least affordable.</h2>
+
+      <div class="access-highlights-grid">
+        {#each chartHighlights as highlight}
+          <div class="access-highlight-card">
+            <div class="access-highlight-icon" style="color: {highlight.color}">
+              <i class="fa-solid {highlight.icon}"></i>
             </div>
-          {/each}
-        </div>
+            <div class="access-highlight-text">
+              <strong>{highlight.title}</strong>
+              <span>{highlight.description}</span>
+            </div>
+          </div>
+        {/each}
       </div>
 
-      <!-- Cooling Pledge Badge -->
+      <div class="access-cool-coalition">
+        <i class="fa-solid fa-people-group" style="color: #2D7D5A; margin-right: 0.5rem;"></i>
+        <span>
+          <strong>UNEP Cool Coalition</strong> unites 100+ governments, cities, and businesses for clean, efficient, accessible cooling.
+          <a href="https://coolcoalition.org/" target="_blank" rel="noopener noreferrer">Learn more</a>
+        </span>
+      </div>
+    </div>
+
+    <!-- ═══ Ch03 THE WAY FORWARD ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(90,143,194,0.10); color: #5A8FC2;">
+        <span class="chapter-num" style="background: #5A8FC2; color: #fff;">03</span>
+        <span class="chapter-title-text">The Way Forward</span>
+      </div>
+      <h2 class="chapter-heading">Sustainable cooling for all — fast enough to matter.</h2>
+      <p class="story-call-to-insight">{accessContent.callToInsight}</p>
+
       <div class="access-pledge-badge">
         <div class="pledge-icon"><i class="fa-solid fa-handshake-angle"></i></div>
         <div class="pledge-content">
@@ -1044,17 +1045,16 @@
         </div>
         <a href={globalCoolingPledge.progressReportUrl} target="_blank" rel="noopener noreferrer" class="pledge-link">Progress Report</a>
       </div>
+    </div>
 
-      <!-- Cool Coalition reference -->
-      <div class="access-cool-coalition">
-        <i class="fa-solid fa-people-group" style="color: #2D7D5A; margin-right: 0.5rem;"></i>
-        <span>
-          <strong>UNEP Cool Coalition</strong> unites 100+ governments, cities, and businesses for clean, efficient, accessible cooling.
-          <a href="https://coolcoalition.org/" target="_blank" rel="noopener noreferrer">Learn more</a>
-        </span>
+    <!-- ═══ LEARN MORE ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(61,107,107,0.10); color: #3D6B6B;">
+        <i class="fa-solid fa-books" style="margin-right: 0.2rem;"></i>
+        <span class="chapter-title-text">Learn More</span>
       </div>
+      <h2 class="chapter-heading">Go deeper on cooling access and vulnerability</h2>
 
-      <!-- Partner logos bar -->
       <div class="access-partner-bar">
         <div class="access-partner-header">
           <i class="fa-solid fa-handshake"></i>
@@ -1062,20 +1062,13 @@
         </div>
         <div class="access-partner-logos">
           {#each accessPartners as partner (partner.id)}
-            <a
-              href={partner.coolingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="access-partner-logo"
-              title={partner.fullName}
-            >
+            <a href={partner.coolingUrl} target="_blank" rel="noopener noreferrer" class="access-partner-logo" title={partner.fullName}>
               <img src={partner.logoPath} alt={partner.name} />
             </a>
           {/each}
         </div>
       </div>
 
-      <!-- Source attribution -->
       <div class="access-source-footer">
         Sources:
         <a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer">SEforALL Chilling Prospects</a>
@@ -1087,11 +1080,6 @@
         <a href="/methodology">Methodology</a>
       </div>
     </div>
-
-
-    <!-- Insight bridge + Further Reading -->
-    <PillarInsight insight={meta.insight} color="#2D7D5A" />
-    <FurtherReading sources={meta.sources} color="#2D7D5A" />
 
     <!-- Humidity & Wet-Bulb Callout -->
     <aside class="card-panel access-humidity-card">
