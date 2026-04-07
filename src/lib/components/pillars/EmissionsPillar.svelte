@@ -1331,86 +1331,7 @@
       </div>
     </div>
 
-    <!-- ═══ Ch02 WHAT THE DATA SHOWS ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(45,125,90,0.10); color: #2D7D5A;">
-        <span class="chapter-num" style="background: #2D7D5A; color: #fff;">02</span>
-        <span class="chapter-title-text">What the Data Shows</span>
-      </div>
-      <h2 class="chapter-heading">Three interlocking crises — energy, climate, and health.</h2>
-
-      <div class="emissions-highlights-grid">
-        {#each chartHighlights as highlight}
-          <div class="emissions-highlight-card">
-            <div class="emissions-highlight-icon" style="color: {highlight.color}">
-              <i class="fa-solid {highlight.icon}"></i>
-            </div>
-            <div class="emissions-highlight-text">
-              <strong>{highlight.title}</strong>
-              <span>{highlight.description}</span>
-            </div>
-          </div>
-        {/each}
-      </div>
-    </div>
-
-    <!-- ═══ Ch03 THE WAY FORWARD ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(90,143,194,0.10); color: #5A8FC2;">
-        <span class="chapter-num" style="background: #5A8FC2; color: #fff;">03</span>
-        <span class="chapter-title-text">The Way Forward</span>
-      </div>
-      <h2 class="chapter-heading">Breaking the vicious cycle of heat, demand, and emissions.</h2>
-      <p class="chapter-intro">{emissionsContent.keyNarrative}</p>
-      <p class="story-call-to-insight">{emissionsContent.callToInsight}</p>
-
-      <div class="cooling-pledge-badge">
-        <div class="pledge-icon"><i class="fa-solid fa-handshake-angle"></i></div>
-        <div class="pledge-content">
-          <strong>Global Cooling Pledge Alignment</strong>
-          <span>Target: {globalCoolingPledge.targetEmissionReduction} from BAU &middot; {globalCoolingPledge.signatoryCountries} signatory nations &middot; {globalCoolingPledge.targetEfficiencyIncrease}</span>
-        </div>
-        <a href={globalCoolingPledge.progressReportUrl} target="_blank" rel="noopener noreferrer" class="pledge-link">
-          Progress Report <i class="fa-solid fa-arrow-up-right-from-square"></i>
-        </a>
-      </div>
-    </div>
-
-    <!-- ═══ LEARN MORE ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(61,107,107,0.10); color: #3D6B6B;">
-        <i class="fa-solid fa-books" style="margin-right: 0.2rem;"></i>
-        <span class="chapter-title-text">Learn More</span>
-      </div>
-      <h2 class="chapter-heading">Go deeper on cooling and climate</h2>
-
-      <div class="emissions-partner-bar">
-        <div class="emissions-partner-header">
-          <i class="fa-solid fa-handshake"></i>
-          <span class="emissions-partner-title">Data Partners</span>
-        </div>
-        <div class="emissions-partner-logos">
-          {#each emissionsPartners as partner (partner.id)}
-            <a href={partner.coolingUrl} target="_blank" rel="noopener noreferrer" class="emissions-partner-logo" title={partner.fullName}>
-              <img src={partner.logoPath} alt={partner.name} />
-            </a>
-          {/each}
-        </div>
-      </div>
-
-      <div class="emissions-source-footer">
-        Sources:
-        <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">CLASP Mepsy (indirect)</a>
-        &middot;
-        <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH (direct)</a>
-        &middot;
-        <a href="https://www.iea.org/reports/world-energy-outlook-2025" target="_blank" rel="noopener noreferrer">IEA STEPS (grid)</a>
-        &middot;
-        <a href="/methodology">Methodology</a>
-      </div>
-    </div>
-
-    <!-- Map + Charts: unified connected block -->
+    <!-- DATA: CO2 Emissions Map & Charts -->
     <div class="map-charts-connected">
     <div class="map-section">
     <div class="card-panel map-card">
@@ -1514,6 +1435,85 @@
       </div>
     </div>
     </div><!-- /map-charts-connected -->
+
+    <!-- ═══ Ch02 WHAT THE DATA SHOWS ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(45,125,90,0.10); color: #2D7D5A;">
+        <span class="chapter-num" style="background: #2D7D5A; color: #fff;">02</span>
+        <span class="chapter-title-text">What the Data Shows</span>
+      </div>
+      <h2 class="chapter-heading">Three interlocking crises — energy, climate, and health.</h2>
+
+      <div class="emissions-highlights-grid">
+        {#each chartHighlights as highlight}
+          <div class="emissions-highlight-card">
+            <div class="emissions-highlight-icon" style="color: {highlight.color}">
+              <i class="fa-solid {highlight.icon}"></i>
+            </div>
+            <div class="emissions-highlight-text">
+              <strong>{highlight.title}</strong>
+              <span>{highlight.description}</span>
+            </div>
+          </div>
+        {/each}
+      </div>
+    </div>
+
+    <!-- ═══ Ch03 THE WAY FORWARD ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(90,143,194,0.10); color: #5A8FC2;">
+        <span class="chapter-num" style="background: #5A8FC2; color: #fff;">03</span>
+        <span class="chapter-title-text">The Way Forward</span>
+      </div>
+      <h2 class="chapter-heading">Breaking the vicious cycle of heat, demand, and emissions.</h2>
+      <p class="chapter-intro">{emissionsContent.keyNarrative}</p>
+      <p class="story-call-to-insight">{emissionsContent.callToInsight}</p>
+
+      <div class="cooling-pledge-badge">
+        <div class="pledge-icon"><i class="fa-solid fa-handshake-angle"></i></div>
+        <div class="pledge-content">
+          <strong>Global Cooling Pledge Alignment</strong>
+          <span>Target: {globalCoolingPledge.targetEmissionReduction} from BAU &middot; {globalCoolingPledge.signatoryCountries} signatory nations &middot; {globalCoolingPledge.targetEfficiencyIncrease}</span>
+        </div>
+        <a href={globalCoolingPledge.progressReportUrl} target="_blank" rel="noopener noreferrer" class="pledge-link">
+          Progress Report <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- ═══ LEARN MORE ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(61,107,107,0.10); color: #3D6B6B;">
+        <i class="fa-solid fa-books" style="margin-right: 0.2rem;"></i>
+        <span class="chapter-title-text">Learn More</span>
+      </div>
+      <h2 class="chapter-heading">Go deeper on cooling and climate</h2>
+
+      <div class="emissions-partner-bar">
+        <div class="emissions-partner-header">
+          <i class="fa-solid fa-handshake"></i>
+          <span class="emissions-partner-title">Data Partners</span>
+        </div>
+        <div class="emissions-partner-logos">
+          {#each emissionsPartners as partner (partner.id)}
+            <a href={partner.coolingUrl} target="_blank" rel="noopener noreferrer" class="emissions-partner-logo" title={partner.fullName}>
+              <img src={partner.logoPath} alt={partner.name} />
+            </a>
+          {/each}
+        </div>
+      </div>
+
+      <div class="emissions-source-footer">
+        Sources:
+        <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">CLASP Mepsy (indirect)</a>
+        &middot;
+        <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH (direct)</a>
+        &middot;
+        <a href="https://www.iea.org/reports/world-energy-outlook-2025" target="_blank" rel="noopener noreferrer">IEA STEPS (grid)</a>
+        &middot;
+        <a href="/methodology">Methodology</a>
+      </div>
+    </div>
 
     <!-- Source Attribution -->
     <div style="text-align: center; padding: 0.75rem; font-size: 0.7rem; color: #94a3b8;">

@@ -1124,6 +1124,9 @@
       </div>
     </div>
 
+    <!-- DATA: MEPS Stringency Chart -->
+    <MepsLevelChart />
+
     <!-- ═══ Ch02 GLOBAL COVERAGE ═══ -->
     <div class="chapter-card" class:revealed>
       <div class="chapter-label" style="background: rgba(45,125,90,0.10); color: #2D7D5A;">
@@ -1168,55 +1171,7 @@
       </div>
     </div>
 
-    <!-- ═══ Ch03 THE WAY FORWARD ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(90,143,194,0.10); color: #5A8FC2;">
-        <span class="chapter-num" style="background: #5A8FC2; color: #fff;">03</span>
-        <span class="chapter-title-text">The Way Forward</span>
-      </div>
-      <h2 class="chapter-heading">Closing the standards gap before markets lock in inefficiency.</h2>
-      <p class="chapter-intro">{mepsContent.keyNarrative}</p>
-      <p class="story-call-to-insight">{mepsContent.callToInsight}</p>
-    </div>
-
-    <!-- ═══ LEARN MORE ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(61,107,107,0.10); color: #3D6B6B;">
-        <i class="fa-solid fa-books" style="margin-right: 0.2rem;"></i>
-        <span class="chapter-title-text">Learn More</span>
-      </div>
-      <h2 class="chapter-heading">Go deeper on efficiency standards</h2>
-
-      <div class="meps-partner-bar">
-        <div class="meps-partner-header">
-          <i class="fa-solid fa-handshake"></i>
-          <span class="meps-partner-title">Data Partners</span>
-        </div>
-        <div class="meps-partner-logos">
-          {#each mepsPartners as partner (partner.id)}
-            <a href={partner.coolingUrl} target="_blank" rel="noopener noreferrer" class="meps-partner-logo" title={partner.fullName}>
-              <img src={partner.logoPath} alt={partner.name} />
-            </a>
-          {/each}
-        </div>
-      </div>
-
-      <div class="meps-source-footer">
-        Sources:
-        <a href="https://cprc-clasp.ngo/" target="_blank" rel="noopener noreferrer">CLASP CPRC</a>
-        &middot;
-        <a href="https://united4efficiency.org/resources/model-regulation-guidelines/" target="_blank" rel="noopener noreferrer">U4E Model Regulations</a>
-        &middot;
-        <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH</a>
-        &middot;
-        <a href="/methodology">Methodology</a>
-      </div>
-    </div>
-
-    <!-- MEPS Stringency Chart (above map) -->
-    <MepsLevelChart />
-
-    <!-- Combined Map Card -->
+    <!-- DATA: MEPS & Inverter Map -->
     <div class="card-panel map-card">
       <div class="card-header combined-map-header">
         <!-- Description highlight box — always on top -->
@@ -1328,6 +1283,51 @@
         </div>
       </div>
     {/if}
+
+    <!-- ═══ Ch03 THE WAY FORWARD ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(90,143,194,0.10); color: #5A8FC2;">
+        <span class="chapter-num" style="background: #5A8FC2; color: #fff;">03</span>
+        <span class="chapter-title-text">The Way Forward</span>
+      </div>
+      <h2 class="chapter-heading">Closing the standards gap before markets lock in inefficiency.</h2>
+      <p class="chapter-intro">{mepsContent.keyNarrative}</p>
+      <p class="story-call-to-insight">{mepsContent.callToInsight}</p>
+    </div>
+
+    <!-- ═══ LEARN MORE ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(61,107,107,0.10); color: #3D6B6B;">
+        <i class="fa-solid fa-books" style="margin-right: 0.2rem;"></i>
+        <span class="chapter-title-text">Learn More</span>
+      </div>
+      <h2 class="chapter-heading">Go deeper on efficiency standards</h2>
+
+      <div class="meps-partner-bar">
+        <div class="meps-partner-header">
+          <i class="fa-solid fa-handshake"></i>
+          <span class="meps-partner-title">Data Partners</span>
+        </div>
+        <div class="meps-partner-logos">
+          {#each mepsPartners as partner (partner.id)}
+            <a href={partner.coolingUrl} target="_blank" rel="noopener noreferrer" class="meps-partner-logo" title={partner.fullName}>
+              <img src={partner.logoPath} alt={partner.name} />
+            </a>
+          {/each}
+        </div>
+      </div>
+
+      <div class="meps-source-footer">
+        Sources:
+        <a href="https://cprc-clasp.ngo/" target="_blank" rel="noopener noreferrer">CLASP CPRC</a>
+        &middot;
+        <a href="https://united4efficiency.org/resources/model-regulation-guidelines/" target="_blank" rel="noopener noreferrer">U4E Model Regulations</a>
+        &middot;
+        <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH</a>
+        &middot;
+        <a href="/methodology">Methodology</a>
+      </div>
+    </div>
 
     <!-- Source Attribution -->
     <div style="text-align: center; padding: 0.75rem; font-size: 0.7rem; color: #94a3b8;">

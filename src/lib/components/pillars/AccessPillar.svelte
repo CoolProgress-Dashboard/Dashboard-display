@@ -997,6 +997,20 @@
       <p class="chapter-text">{accessContent.keyNarrative}</p>
     </div>
 
+    <!-- DATA: Why Humidity Matters -->
+    <!-- Humidity & Wet-Bulb Callout -->
+    <aside class="card-panel access-humidity-card">
+      <div class="access-humidity-header">
+        <div class="access-humidity-icon"><i class="fa-solid fa-droplet"></i></div>
+        <div>
+          <h3 class="access-humidity-title">Why Humidity Makes Heat More Dangerous</h3>
+          <p class="access-humidity-sub">Heat alone does not tell the full story. The combination of high heat and high humidity is what kills.</p>
+        </div>
+      </div>
+      <p class="access-humidity-body">The human body cools itself by sweating. But sweating only works when the air can absorb that moisture. In high humidity, sweat cannot evaporate — and the body loses its ability to regulate temperature. At a wet-bulb temperature of around 35°C (a combination of roughly 46°C air temperature at 50% humidity, or lower temperatures at higher humidity), the human body cannot survive outdoors for more than a few hours, even in shade. This threshold is being crossed more frequently in South Asia, the Persian Gulf, and parts of sub-Saharan Africa.</p>
+      <p class="access-humidity-note"><i class="fa-solid fa-circle-info"></i> The maps and data on this dashboard reflect heat risk. Humidity data is not yet integrated — areas with moderate temperature but high humidity may be more dangerous than the data suggests.</p>
+    </aside>
+
     <!-- ═══ Ch02 WHO IS MOST AFFECTED ═══ -->
     <div class="chapter-card" class:revealed>
       <div class="chapter-label" style="background: rgba(45,125,90,0.10); color: #2D7D5A;">
@@ -1028,72 +1042,7 @@
       </div>
     </div>
 
-    <!-- ═══ Ch03 THE WAY FORWARD ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(90,143,194,0.10); color: #5A8FC2;">
-        <span class="chapter-num" style="background: #5A8FC2; color: #fff;">03</span>
-        <span class="chapter-title-text">The Way Forward</span>
-      </div>
-      <h2 class="chapter-heading">Sustainable cooling for all — fast enough to matter.</h2>
-      <p class="story-call-to-insight">{accessContent.callToInsight}</p>
-
-      <div class="access-pledge-badge">
-        <div class="pledge-icon"><i class="fa-solid fa-handshake-angle"></i></div>
-        <div class="pledge-content">
-          <strong>Global Cooling Pledge Alignment</strong>
-          <span>Target: {globalCoolingPledge.targetEmissionReduction} from BAU &middot; {globalCoolingPledge.signatoryCountries} signatory nations &middot; Expand sustainable cooling access</span>
-        </div>
-        <a href={globalCoolingPledge.progressReportUrl} target="_blank" rel="noopener noreferrer" class="pledge-link">Progress Report</a>
-      </div>
-    </div>
-
-    <!-- ═══ LEARN MORE ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(61,107,107,0.10); color: #3D6B6B;">
-        <i class="fa-solid fa-books" style="margin-right: 0.2rem;"></i>
-        <span class="chapter-title-text">Learn More</span>
-      </div>
-      <h2 class="chapter-heading">Go deeper on cooling access and vulnerability</h2>
-
-      <div class="access-partner-bar">
-        <div class="access-partner-header">
-          <i class="fa-solid fa-handshake"></i>
-          <span class="access-partner-title">Data Partners</span>
-        </div>
-        <div class="access-partner-logos">
-          {#each accessPartners as partner (partner.id)}
-            <a href={partner.coolingUrl} target="_blank" rel="noopener noreferrer" class="access-partner-logo" title={partner.fullName}>
-              <img src={partner.logoPath} alt={partner.name} />
-            </a>
-          {/each}
-        </div>
-      </div>
-
-      <div class="access-source-footer">
-        Sources:
-        <a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer">SEforALL Chilling Prospects</a>
-        &middot;
-        <a href="https://coolcoalition.org/" target="_blank" rel="noopener noreferrer">UNEP Cool Coalition</a>
-        &middot;
-        <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH</a>
-        &middot;
-        <a href="/methodology">Methodology</a>
-      </div>
-    </div>
-
-    <!-- Humidity & Wet-Bulb Callout -->
-    <aside class="card-panel access-humidity-card">
-      <div class="access-humidity-header">
-        <div class="access-humidity-icon"><i class="fa-solid fa-droplet"></i></div>
-        <div>
-          <h3 class="access-humidity-title">Why Humidity Makes Heat More Dangerous</h3>
-          <p class="access-humidity-sub">Heat alone does not tell the full story. The combination of high heat and high humidity is what kills.</p>
-        </div>
-      </div>
-      <p class="access-humidity-body">The human body cools itself by sweating. But sweating only works when the air can absorb that moisture. In high humidity, sweat cannot evaporate — and the body loses its ability to regulate temperature. At a wet-bulb temperature of around 35°C (a combination of roughly 46°C air temperature at 50% humidity, or lower temperatures at higher humidity), the human body cannot survive outdoors for more than a few hours, even in shade. This threshold is being crossed more frequently in South Asia, the Persian Gulf, and parts of sub-Saharan Africa.</p>
-      <p class="access-humidity-note"><i class="fa-solid fa-circle-info"></i> The maps and data on this dashboard reflect heat risk. Humidity data is not yet integrated — areas with moderate temperature but high humidity may be more dangerous than the data suggests.</p>
-    </aside>
-
+    <!-- DATA: Solutions & Access Map -->
     <!-- Solutions Layer -->
     <div class="card-panel access-solutions-card">
       <div class="access-solutions-header">
@@ -1245,7 +1194,58 @@
       </div>
     </div>
 
+    <!-- ═══ Ch03 THE WAY FORWARD ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(90,143,194,0.10); color: #5A8FC2;">
+        <span class="chapter-num" style="background: #5A8FC2; color: #fff;">03</span>
+        <span class="chapter-title-text">The Way Forward</span>
+      </div>
+      <h2 class="chapter-heading">Sustainable cooling for all — fast enough to matter.</h2>
+      <p class="story-call-to-insight">{accessContent.callToInsight}</p>
 
+      <div class="access-pledge-badge">
+        <div class="pledge-icon"><i class="fa-solid fa-handshake-angle"></i></div>
+        <div class="pledge-content">
+          <strong>Global Cooling Pledge Alignment</strong>
+          <span>Target: {globalCoolingPledge.targetEmissionReduction} from BAU &middot; {globalCoolingPledge.signatoryCountries} signatory nations &middot; Expand sustainable cooling access</span>
+        </div>
+        <a href={globalCoolingPledge.progressReportUrl} target="_blank" rel="noopener noreferrer" class="pledge-link">Progress Report</a>
+      </div>
+    </div>
+
+    <!-- ═══ LEARN MORE ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div class="chapter-label" style="background: rgba(61,107,107,0.10); color: #3D6B6B;">
+        <i class="fa-solid fa-books" style="margin-right: 0.2rem;"></i>
+        <span class="chapter-title-text">Learn More</span>
+      </div>
+      <h2 class="chapter-heading">Go deeper on cooling access and vulnerability</h2>
+
+      <div class="access-partner-bar">
+        <div class="access-partner-header">
+          <i class="fa-solid fa-handshake"></i>
+          <span class="access-partner-title">Data Partners</span>
+        </div>
+        <div class="access-partner-logos">
+          {#each accessPartners as partner (partner.id)}
+            <a href={partner.coolingUrl} target="_blank" rel="noopener noreferrer" class="access-partner-logo" title={partner.fullName}>
+              <img src={partner.logoPath} alt={partner.name} />
+            </a>
+          {/each}
+        </div>
+      </div>
+
+      <div class="access-source-footer">
+        Sources:
+        <a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer">SEforALL Chilling Prospects</a>
+        &middot;
+        <a href="https://coolcoalition.org/" target="_blank" rel="noopener noreferrer">UNEP Cool Coalition</a>
+        &middot;
+        <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH</a>
+        &middot;
+        <a href="/methodology">Methodology</a>
+      </div>
+    </div>
 
     <!-- Source Attribution -->
     <div class="access-source" style="text-align: center; padding: 0.75rem; font-size: 0.7rem; color: #94a3b8;">

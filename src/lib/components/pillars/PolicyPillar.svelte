@@ -1409,6 +1409,80 @@
       <p class="chapter-text">{policyContent.keyNarrative}</p>
     </div>
 
+    <!-- DATA: Policy Maps & Charts -->
+    <div class="card-panel map-card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fa-solid fa-scale-balanced"></i>
+          Policy Framework Status by Country
+        </div>
+        <span class="viewing-pill">Viewing: <strong id="policy-viewing">Global</strong></span>
+      </div>
+      <!-- TABS: GCP → NDC → NCAP (Kigali is in Kigali pillar) -->
+      <div class="policy-tabs">
+        <button class="tab-btn policy-map-tab active" data-map="gcp" type="button">Global Cooling Pledge</button>
+        <button class="tab-btn policy-map-tab" data-map="ndc" type="button">NDC Cooling Mentions</button>
+        <button class="tab-btn policy-map-tab" data-map="NCAP" type="button">NCAP</button>
+      </div>
+      <div class="filters-help" style="font-size: 0.8rem; color: #2D7D5A; margin: 0.75rem 0; padding: 0.5rem 0.75rem; background: #F5FAFA; border-radius: 8px; border-left: 3px solid #2D7D5A;">
+        <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
+        <strong>Switch tabs</strong> to explore different policy frameworks: GCP signatories, NDC cooling mentions, or National Cooling Action Plans.
+      </div>
+      <!-- NDC Filters -->
+      <div class="policy-filters" id="policy-ndc-filters">
+        <div class="filter-row" style="gap: 1rem;">
+          <div class="filter-group">
+            <label class="filter-label" for="policy-ndc-type">NDC Version</label>
+            <select id="policy-ndc-type" class="filter-select">
+              <!-- Options populated dynamically -->
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label" for="policy-ndc-category">Category</label>
+            <select id="policy-ndc-category" class="filter-select">
+              <!-- Options populated dynamically -->
+            </select>
+          </div>
+        </div>
+      </div>
+      <div id="ndc-map-container" class="map-surface"></div>
+      <div class="legend legend-row">
+        <span class="legend-label">Status:</span>
+        <div id="ndc-legend" class="legend-items"></div>
+      </div>
+      <div class="progress-bar ndc-progress">
+        <span class="progress-segment ndc-mentioned" id="ndc-progress-mentioned"></span>
+        <span class="progress-segment ndc-not" id="ndc-progress-not"></span>
+        <span class="progress-segment ndc-no-ndc" id="ndc-progress-no-ndc"></span>
+        <span class="progress-segment ndc-no-data" id="ndc-progress-no-data"></span>
+      </div>
+    </div>
+
+    <div class="country-card-inline" id="policy-country-detail">
+      <div class="country-detail">
+        <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
+          <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #2D7D5A; margin-bottom: 0.75rem; display: block;"></i>
+          <h4 style="color: #2D7D5A; margin-bottom: 0.5rem;">Select a Country</h4>
+          <p style="font-size: 0.85rem;">Click on any country in the map above to view policy framework details including GCP, NDC, and NCAP status.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-status-bar policy-theme" id="policy-filter-bar">
+      <div class="status-title">
+        <i class="fa-solid fa-file-signature"></i>
+        <span id="policy-status-title">Policy Framework Analysis</span>
+      </div>
+      <div class="status-filters">
+        <span class="filter-tag" id="policy-filter-tab"><i class="fa-solid fa-file-contract"></i> Global Cooling Pledge</span>
+        <span class="filter-tag" id="policy-filter-region"><i class="fa-solid fa-earth-americas"></i> All Regions</span>
+      </div>
+    </div>
+
+    <div class="charts-section" style="background: #ffffff; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
+      <div id="policy-charts-container"></div>
+    </div>
+
     <!-- ═══ Ch03 TURNING SIGNALS INTO ACTION ═══ -->
     <div class="chapter-card" class:revealed>
       <div class="chapter-label" style="background: rgba(90,143,194,0.10); color: #5A8FC2;">
@@ -1467,83 +1541,6 @@
         &middot;
         <a href="/methodology">Methodology</a>
       </div>
-    </div>
-
-    <!-- Map Card with Tabs -->
-    <div class="card-panel map-card">
-      <div class="card-header">
-        <div class="card-title">
-          <i class="fa-solid fa-scale-balanced"></i>
-          Policy Framework Status by Country
-        </div>
-        <span class="viewing-pill">Viewing: <strong id="policy-viewing">Global</strong></span>
-      </div>
-      <!-- TABS: GCP → NDC → NCAP (Kigali is in Kigali pillar) -->
-      <div class="policy-tabs">
-        <button class="tab-btn policy-map-tab active" data-map="gcp" type="button">Global Cooling Pledge</button>
-        <button class="tab-btn policy-map-tab" data-map="ndc" type="button">NDC Cooling Mentions</button>
-        <button class="tab-btn policy-map-tab" data-map="NCAP" type="button">NCAP</button>
-      </div>
-      <div class="filters-help" style="font-size: 0.8rem; color: #2D7D5A; margin: 0.75rem 0; padding: 0.5rem 0.75rem; background: #F5FAFA; border-radius: 8px; border-left: 3px solid #2D7D5A;">
-        <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
-        <strong>Switch tabs</strong> to explore different policy frameworks: GCP signatories, NDC cooling mentions, or National Cooling Action Plans.
-      </div>
-      <!-- NDC Filters -->
-      <div class="policy-filters" id="policy-ndc-filters">
-        <div class="filter-row" style="gap: 1rem;">
-          <div class="filter-group">
-            <label class="filter-label" for="policy-ndc-type">NDC Version</label>
-            <select id="policy-ndc-type" class="filter-select">
-              <!-- Options populated dynamically -->
-            </select>
-          </div>
-          <div class="filter-group">
-            <label class="filter-label" for="policy-ndc-category">Category</label>
-            <select id="policy-ndc-category" class="filter-select">
-              <!-- Options populated dynamically -->
-            </select>
-          </div>
-        </div>
-      </div>
-      <div id="ndc-map-container" class="map-surface"></div>
-      <div class="legend legend-row">
-        <span class="legend-label">Status:</span>
-        <div id="ndc-legend" class="legend-items"></div>
-      </div>
-      <div class="progress-bar ndc-progress">
-        <span class="progress-segment ndc-mentioned" id="ndc-progress-mentioned"></span>
-        <span class="progress-segment ndc-not" id="ndc-progress-not"></span>
-        <span class="progress-segment ndc-no-ndc" id="ndc-progress-no-ndc"></span>
-        <span class="progress-segment ndc-no-data" id="ndc-progress-no-data"></span>
-      </div>
-    </div>
-
-    <!-- Country Detail -->
-    <div class="country-card-inline" id="policy-country-detail">
-      <div class="country-detail">
-        <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
-          <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #2D7D5A; margin-bottom: 0.75rem; display: block;"></i>
-          <h4 style="color: #2D7D5A; margin-bottom: 0.5rem;">Select a Country</h4>
-          <p style="font-size: 0.85rem;">Click on any country in the map above to view policy framework details including GCP, NDC, and NCAP status.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Filter Status Bar (always visible) -->
-    <div class="filter-status-bar policy-theme" id="policy-filter-bar">
-      <div class="status-title">
-        <i class="fa-solid fa-file-signature"></i>
-        <span id="policy-status-title">Policy Framework Analysis</span>
-      </div>
-      <div class="status-filters">
-        <span class="filter-tag" id="policy-filter-tab"><i class="fa-solid fa-file-contract"></i> Global Cooling Pledge</span>
-        <span class="filter-tag" id="policy-filter-region"><i class="fa-solid fa-earth-americas"></i> All Regions</span>
-      </div>
-    </div>
-
-    <!-- Charts Section -->
-    <div class="charts-section" style="background: #ffffff; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
-      <div id="policy-charts-container"></div>
     </div>
 
     <!-- Source Attribution -->
