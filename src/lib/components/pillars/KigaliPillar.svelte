@@ -946,14 +946,6 @@
 
 <section id="view-kigali" class="view-section" class:active>
   <div class="pillar-stack">
-    <!-- Pillar Header -->
-    <PillarHeader
-      pillarId="kigali"
-      headline={meta.headline}
-      subhead={meta.subhead}
-      entryStat={kigaliContent.entryStat ?? ''}
-      onInfo={onPillarInfoClick}
-    />
 
     <!-- ═══════════════════════════════════════════════════
          CHAPTER 1 — THE CHALLENGE
@@ -1263,9 +1255,6 @@
       </div>
     </div>
 
-    <!-- Insight bridge + Further Reading -->
-    <PillarInsight insight={meta.insight} color="#5A8FC2" />
-    <FurtherReading sources={meta.sources} color="#5A8FC2" />
 
     <!-- Source Attribution -->
     <div style="text-align: center; padding: 0.75rem; font-size: 0.7rem; color: #94a3b8;">
