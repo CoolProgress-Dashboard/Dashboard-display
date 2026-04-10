@@ -707,8 +707,6 @@ select {
 
 .pillar-stack .country-card-inline {
   margin-top: 0;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
 }
 
 /* KPI Box with Header */
@@ -1412,17 +1410,15 @@ select {
 }
 
 .country-card-inline {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 1.25rem;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+  background: transparent;
+  border: none;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  border-radius: 0;
+  padding: 1.25rem 0;
+  box-shadow: none;
 }
 
-/* Remove bottom radius when followed by filter-status-bar */
 .country-card-inline:has(+ .filter-status-bar) {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
   border-bottom: none;
 }
 
