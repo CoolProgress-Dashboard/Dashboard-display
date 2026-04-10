@@ -461,22 +461,22 @@
         const ndcLabel  = ndcStatus === 'Mentioned' ? 'Cooling Mentioned' : ndcStatus === 'Not mentioned' ? 'Not yet mentioned' : (ndcStatus || 'No Data');
 
         container.innerHTML = `
-          <div style="background: #0369a1; color: #fff; border-radius: 8px 8px 0 0; padding: 0.5rem 0.75rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 700;">
+          <div style="background: #0369a1; color: #fff; border-radius: 0; padding: 0.5rem 0.75rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 700;">
             <i class="fa-solid fa-location-dot" style="font-size: 0.9rem;"></i>
             ${country.country_name || code}
           </div>
           <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 0.6rem;">
-            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.75rem;border-radius:8px;border:1px solid ${hasGCP ? '#6BADA0' : '#e2e8f0'}; background: ${hasGCP ? '#f0faf6' : '#f8fafc'};">
+            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.5rem 0;border:none;border-top:1px solid rgba(0,0,0,0.06);background:transparent;">
               <i class="fa-solid fa-handshake" style="color: ${hasGCP ? '#6BADA0' : '#94a3b8'}; font-size: 1.5rem;"></i>
               <div style="font-weight: 700; color: ${hasGCP ? '#4A9088' : '#64748b'};">GCP</div>
               <div style="font-size: 0.75rem; color: #64748b;">${hasGCP ? 'Signatory' : 'Not signed'}</div>
             </div>
-            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.75rem;border-radius:8px;border:1px solid ${ndcBorder}; background: ${ndcBg};">
+            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.5rem 0;border:none;border-top:1px solid rgba(0,0,0,0.06);background:transparent;">
               <i class="fa-solid fa-file-lines" style="color: ${ndcIcon}; font-size: 1.5rem;"></i>
               <div style="font-weight: 700; color: ${ndcTitle};">NDC</div>
               <div style="font-size: 0.75rem; color: #64748b;">${ndcLabel}</div>
             </div>
-            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.75rem;border-radius:8px;border:1px solid ${hasNcap ? '#5A8FC2' : '#e2e8f0'}; background: ${hasNcap ? '#f0f0f7' : '#f8fafc'};">
+            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.5rem 0;border:none;border-top:1px solid rgba(0,0,0,0.06);background:transparent;">
               <i class="fa-solid fa-file-shield" style="color: ${hasNcap ? '#5A8FC2' : '#94a3b8'}; font-size: 1.5rem;"></i>
               <div style="font-weight: 700; color: ${hasNcap ? '#3B5A8B' : '#94a3b8'};">NCAP</div>
               <div style="font-size: 0.75rem; color: #64748b;">${hasNcap ? 'Developed' + ncapYear : 'No NCAP yet'}</div>
@@ -994,7 +994,7 @@
         if (listEl) {
           const sortedNcap = [...ncap].sort((a: any, b: any) => a.country_name.localeCompare(b.country_name));
           listEl.innerHTML = sortedNcap.map((n: any) => `
-            <div class="ncap-country-card" style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 8px; padding: 0.75rem; border-left: 3px solid #5A8FC2;">
+            <div class="ncap-country-card" style="background: transparent; border: none; border-top: 1px solid rgba(0,0,0,0.06); padding: 0.75rem 0 0.75rem 1rem; border-left: 3px solid #5A8FC2;">
               <div style="font-weight: 600; color: #1e293b;">${n.country_name}</div>
               <div style="font-size: 0.8rem; color: #64748b;">${n.year ? 'Adopted: ' + n.year : 'Year not specified'}</div>
             </div>

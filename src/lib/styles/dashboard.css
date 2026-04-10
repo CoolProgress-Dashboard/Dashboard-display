@@ -1312,10 +1312,10 @@ select {
   margin-top: 0;
 }
 
-/* Charts section within connected container — flush white, no gray */
+/* Charts section within connected container — flat, no box */
 .map-charts-connected .charts-section {
   padding: 0;
-  background: #ffffff;
+  background: transparent;
 }
 
 /* Individual chart sections inside the connected block */

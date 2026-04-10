@@ -705,20 +705,20 @@
           </div>
         </div>
         <div class="country-charts-grid">
-          <div class="chart-box" style="background:#ffffff;border:1px solid #f1f5f9;border-radius:8px;padding:0.75rem;">
+          <div class="chart-box" style="background:transparent;border:none;border-top:1px solid rgba(0,0,0,0.06);padding:0.75rem 0;">
             <div style="font-size:0.75rem;font-weight:600;color:#0369a1;margin-bottom:0.5rem;">
               <i class="fa-solid fa-chart-area" style="margin-right:0.3rem;color:#52B788;"></i>${lineChartTitle}
             </div>
             <div class="emissions-line-chart" style="width:100%;height:200px;"></div>
           </div>
-          <div class="chart-box" style="background:#ffffff;border:1px solid #f1f5f9;border-radius:8px;padding:0.75rem;">
+          <div class="chart-box" style="background:transparent;border:none;border-top:1px solid rgba(0,0,0,0.06);padding:0.75rem 0;">
             <div style="font-size:0.75rem;font-weight:600;color:#0369a1;margin-bottom:0.5rem;">
               <i class="fa-solid fa-chart-pie" style="margin-right:0.3rem;color:#52B788;"></i>${localEmissionsYear} Breakdown
             </div>
             <div class="emissions-pie-chart" style="width:100%;height:200px;"></div>
           </div>
         </div>
-        <div class="country-insight" style="background:#ffffff;border:1px solid #f1f5f9;border-radius:8px;padding:1rem;border-left:3px solid #52B788;">
+        <div class="country-insight" style="background:transparent;border:none;border-top:1px solid rgba(0,0,0,0.06);padding:1rem 0 1rem 1rem;border-left:3px solid #52B788;">
           <div style="font-size:0.8rem;font-weight:600;color:#2D5252;margin-bottom:0.5rem;">
             <i class="fa-solid fa-lightbulb" style="color:#52B788;margin-right:0.35rem;"></i>Analysis for ${country.country_name}
           </div>

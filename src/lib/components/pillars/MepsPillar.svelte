@@ -575,7 +575,7 @@
         const revisedYears = appRecs.map(r => r.year_revised).filter(Boolean) as number[];
         const firstAdopted = adoptedYears.length ? Math.min(...adoptedYears) : null;
         const lastRevised = revisedYears.length ? Math.max(...revisedYears) : null;
-        html += `<div style="border:1px solid #e2e8f0;border-radius:0.5rem;padding:1rem;border-top:3px solid ${color};">`;
+        html += `<div style="border:none;border-top:1px solid rgba(0,0,0,0.06);padding:1rem 0;border-left:none;">`;
         html += `<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
           <span style="font-weight:700;font-size:0.95rem;color:${color}">${et}</span>
           <span style="margin-left:auto;font-size:0.75rem;color:#64748b;background:#f1f5f9;padding:2px 8px;border-radius:10px;">${appRecs.length} ${appRecs.length === 1 ? 'policy' : 'policies'}</span>
@@ -606,7 +606,7 @@
             if (hasMep) typeBadges.push(`<span style="font-size:0.65rem;background:#EBF4EE;color:#2D7D5A;padding:1px 5px;border-radius:3px;font-weight:600;">MEPS</span>`);
             if (hasLbl) typeBadges.push(`<span style="font-size:0.65rem;background:#fef3d0;color:#D4A843;padding:1px 5px;border-radius:3px;font-weight:600;">Label</span>`);
             const reqBadge = r.requirement_type ? `<span style="font-size:0.65rem;background:#f1f5f9;color:#475569;padding:1px 5px;border-radius:3px;">${r.requirement_type}</span>` : '';
-            html += `<div style="border-left:3px solid ${borderColor};padding:0.35rem 0.5rem;margin-bottom:0.4rem;background:#fafafa;border-radius:0 4px 4px 0;">
+            html += `<div style="border-left:3px solid ${borderColor};padding:0.35rem 0 0.35rem 0.5rem;margin-bottom:0.4rem;background:transparent;border-radius:0;">
               <div style="font-size:0.78rem;color:#1e293b;line-height:1.4;">${truncName}</div>
               <div style="display:flex;gap:0.4rem;align-items:center;margin-top:0.2rem;flex-wrap:wrap;">
                 ${typeBadges.join('')}
@@ -1707,13 +1707,12 @@
     }
   }
 
-  /* Charts section - constrain width */
+  /* Charts section - flat, no box */
   .meps-charts-section {
-    background: #ffffff;
-    padding: 1.25rem;
-    border-radius: 0 0 16px 16px;
-    border: 1px solid #e2e8f0;
-    border-top: none;
+    background: transparent;
+    padding: 1.25rem 0;
+    border-radius: 0;
+    border: none;
     box-sizing: border-box;
     max-width: 100%;
     overflow: hidden;
