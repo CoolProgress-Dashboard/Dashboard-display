@@ -371,7 +371,7 @@
     <p>
       <strong>CoolProgress</strong> is developed by
       <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH</a>
-      in partnership with CLASP, IEA, SEforALL, UNEP, GIZ Proklima, Cool Coalition, and the Clean Cooling Collaborative.
+      in partnership with CLASP, IEA, SEforALL, UNEP, GIZ Proklima, and Cool Coalition.
     </p>
     <p class="meth-version">Methodology version 2.0 &middot; February 2026</p>
   </footer>

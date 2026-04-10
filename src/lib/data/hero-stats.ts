@@ -1,6 +1,5 @@
-// hero-stats.ts - CCC Impact Numbers for Hero Section
+// hero-stats.ts - Hero Section Statistics
 // Sources:
-//   - Clean Cooling Collaborative: https://www.cleancoolingcollaborative.org/the-challenge/
 //   - IEA Future of Cooling (2018): https://www.iea.org/reports/the-future-of-cooling
 //   - SE4ALL Chilling Prospects (2025): https://www.seforall.org/data-stories/chilling-prospects-2025
 

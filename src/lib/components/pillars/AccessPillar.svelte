@@ -697,14 +697,14 @@
           </div>
         </div>
         <div class="country-charts-grid">
-          <div class="chart-box" style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 8px; padding: 0.75rem;">
+          <div class="chart-box" style="background: transparent; border: none; border-top: 1px solid rgba(0,0,0,0.06); padding: 0.75rem 0;">
             <div style="font-size: 0.75rem; font-weight: 600; color: #8B5E3C; margin-bottom: 0.5rem;">
               <i class="fa-solid fa-chart-area" style="margin-right: 0.3rem; color: #D4A843;"></i>
               Population at Risk Over Time
             </div>
             <div class="access-stacked-chart" style="width: 100%; height: 200px;"></div>
           </div>
-          <div class="chart-box" style="background: #ffffff; border: 1px solid #f1f5f9; border-radius: 8px; padding: 0.75rem;">
+          <div class="chart-box" style="background: transparent; border: none; border-top: 1px solid rgba(0,0,0,0.06); padding: 0.75rem 0;">
             <div style="font-size: 0.75rem; font-weight: 600; color: #8B5E3C; margin-bottom: 0.5rem;">
               <i class="fa-solid fa-chart-pie" style="margin-right: 0.3rem; color: #D4A843;"></i>
               2024 Category Breakdown
@@ -712,7 +712,7 @@
             <div class="access-pie-chart" style="width: 100%; height: 200px;"></div>
           </div>
         </div>
-        <div class="country-insight" style="background: #ffffff; border-radius: 8px; padding: 1rem; border-left: 3px solid #D4A843; border: 1px solid #f1f5f9; border-left: 3px solid #D4A843;">
+        <div class="country-insight" style="background: transparent; border-radius: 0; padding: 1rem 0 1rem 1rem; border: none; border-left: 3px solid #D4A843;">
           <div style="font-size: 0.8rem; font-weight: 600; color: #8B5E3C; margin-bottom: 0.5rem;">
             <i class="fa-solid fa-lightbulb" style="color: #D4A843; margin-right: 0.35rem;"></i>
             Analysis for ${country.country_name}
@@ -972,14 +972,12 @@
 
 <section id="view-access" class="view-section" class:active>
   <div class="pillar-stack">
+
     <!-- ═══ Ch01 THE CHALLENGE ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(45,125,90,0.10); color: #2D7D5A;">
-        <span class="chapter-num" style="background: #2D7D5A; color: #fff;">01</span>
-        <span class="chapter-title-text">The Challenge</span>
-      </div>
-      <h2 class="chapter-heading">Access to cooling is not a luxury — it is a human right.</h2>
-      <p class="chapter-intro">{accessContent.storyHook}</p>
+    <div class="access-narrative-section" class:revealed>
+      <span class="access-eyebrow">The Challenge</span>
+      <h2 class="access-section-title">Access to cooling is not a luxury — it is a human right.</h2>
+      <p class="access-body-text">As global temperatures break records, the "cooling gap" has become a matter of survival, particularly for the 1.2 billion people identified in the SEforALL Chilling Prospects 2025/2026 data as being at high risk.</p>
 
       <div class="access-counters">
         {#each accessStats as stat, i}
@@ -994,12 +992,34 @@
         {/each}
       </div>
 
-      <p class="chapter-text">{accessContent.keyNarrative}</p>
+      <!-- 4-card impact grid -->
+      <div class="access-impact-grid">
+        <div class="access-impact-card">
+          <div class="access-impact-icon"><i class="fa-solid fa-heart-crack"></i></div>
+          <h4 class="access-impact-title">The Human Cost</h4>
+          <p class="access-impact-body">Heat is now the leading weather-related cause of death. In the summer of 2024 alone, over 62,700 heat-related deaths were recorded in Europe. In the Global South, where data is often under-reported, the impact is even more severe, particularly in dense informal settlements that act as "heat traps."</p>
+        </div>
+        <div class="access-impact-card">
+          <div class="access-impact-icon"><i class="fa-solid fa-briefcase"></i></div>
+          <h4 class="access-impact-title">Economic Fragility</h4>
+          <p class="access-impact-body">Heat stress is a direct threat to global labour. The ILO estimates that by 2030, the world could lose 2.2% of total working hours — equivalent to 80 million full-time jobs — due to extreme heat, concentrated in agriculture and construction across South Asia and Africa.</p>
+        </div>
+        <div class="access-impact-card">
+          <div class="access-impact-icon"><i class="fa-solid fa-temperature-low"></i></div>
+          <h4 class="access-impact-title">The Cold Chain Crisis</h4>
+          <p class="access-impact-body">In rural communities, a lack of cooling results in up to 40% post-harvest food loss and breakdown of life-saving vaccine chains. For these populations, sustainable cooling is the difference between economic stability and deep poverty.</p>
+        </div>
+        <div class="access-impact-card">
+          <div class="access-impact-icon"><i class="fa-solid fa-person-dress"></i></div>
+          <h4 class="access-impact-title">Gender &amp; Vulnerability</h4>
+          <p class="access-impact-body">Women and children face disproportionate risks. Women often bear the "indoor heat burden" in poorly ventilated homes, while children under five and the elderly are physiologically more vulnerable to heatstroke and dehydration.</p>
+        </div>
+      </div>
     </div>
 
     <!-- DATA: Why Humidity Matters -->
     <!-- Humidity & Wet-Bulb Callout -->
-    <aside class="card-panel access-humidity-card">
+    <aside class="access-humidity-card">
       <div class="access-humidity-header">
         <div class="access-humidity-icon"><i class="fa-solid fa-droplet"></i></div>
         <div>
@@ -1012,12 +1032,9 @@
     </aside>
 
     <!-- ═══ Ch02 WHO IS MOST AFFECTED ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(45,125,90,0.10); color: #2D7D5A;">
-        <span class="chapter-num" style="background: #2D7D5A; color: #fff;">02</span>
-        <span class="chapter-title-text">Who Is Most Affected</span>
-      </div>
-      <h2 class="chapter-heading">Heat stress hits hardest where cooling is least affordable.</h2>
+    <div class="access-narrative-section" style="border-top: 1px solid rgba(0,0,0,0.06);" class:revealed>
+      <span class="access-eyebrow">Who Is Most Affected</span>
+      <h2 class="access-section-title">Heat stress hits hardest where cooling is least affordable.</h2>
 
       <div class="access-highlights-grid">
         {#each chartHighlights as highlight}
@@ -1034,71 +1051,12 @@
       </div>
 
       <div class="access-cool-coalition">
-        <i class="fa-solid fa-people-group" style="color: #2D7D5A; margin-right: 0.5rem;"></i>
+        <i class="fa-solid fa-people-group" style="color: #0369a1; margin-right: 0.5rem;"></i>
         <span>
           <strong>UNEP Cool Coalition</strong> unites 100+ governments, cities, and businesses for clean, efficient, accessible cooling.
           <a href="https://coolcoalition.org/" target="_blank" rel="noopener noreferrer">Learn more</a>
         </span>
       </div>
-    </div>
-
-    <!-- DATA: Solutions & Access Map -->
-    <!-- Solutions Layer -->
-    <div class="card-panel access-solutions-card">
-      <div class="access-solutions-header">
-        <div class="access-solutions-icon"><i class="fa-solid fa-lightbulb"></i></div>
-        <div>
-          <strong>How is the access gap being addressed?</strong>
-          <span>Closing the gap sustainably requires going beyond individual air conditioners.</span>
-        </div>
-      </div>
-
-      <div class="access-solutions-grid">
-        <div class="access-solution-item">
-          <div class="access-solution-icon" style="--sol-color: #2D7D5A;">
-            <i class="fa-solid fa-house"></i>
-          </div>
-          <div class="access-solution-text">
-            <strong>Passive Cooling</strong>
-            <p>Cool roofs, shading, natural ventilation, and urban green spaces can reduce indoor temperatures by 5–8°C at near-zero operating cost — the first line of defence before mechanical cooling is needed.</p>
-          </div>
-        </div>
-
-        <div class="access-solution-item">
-          <div class="access-solution-icon" style="--sol-color: #5A8FC2;">
-            <i class="fa-solid fa-city"></i>
-          </div>
-          <div class="access-solution-text">
-            <strong>District &amp; Shared Cooling</strong>
-            <p>Centralised district cooling systems and community cooling centers deliver thermal comfort more efficiently than millions of individual units — particularly viable in dense urban settlements.</p>
-          </div>
-        </div>
-
-        <div class="access-solution-item">
-          <div class="access-solution-icon" style="--sol-color: #D4A843;">
-            <i class="fa-solid fa-solar-panel"></i>
-          </div>
-          <div class="access-solution-text">
-            <strong>Solar Cold Chains</strong>
-            <p>Solar-powered refrigeration for vaccines, medicines, and food is transforming rural access in off-grid communities across Africa and South Asia — decoupling cold storage from unreliable grid power.</p>
-          </div>
-        </div>
-
-        <div class="access-solution-item">
-          <div class="access-solution-icon" style="--sol-color: #C25B33;">
-            <i class="fa-solid fa-scale-balanced"></i>
-          </div>
-          <div class="access-solution-text">
-            <strong>Policy &amp; Finance</strong>
-            <p>The Global Cooling Pledge, National Cooling Action Plans, and climate finance from the Green Climate Fund are directing resources toward equitable access — linking cooling to NDC commitments and SDG targets.</p>
-          </div>
-        </div>
-      </div>
-
-      <p class="access-solutions-note">
-        <i class="fa-solid fa-arrow-right"></i>
-        A rights-based approach recognises that access to cooling is essential for health, food security, and economic participation in a warming world — not a luxury reserved for wealthy households.
-      </p>
     </div>
 
     <!-- Map Card with Filters Inside -->
@@ -1113,6 +1071,7 @@
       <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem; padding: 0 0.5rem;">
         Population lacking sustainable cooling access (millions). Click a country for details.
       </div>
+      <p class="chart-hint">Hover over a country to see the population at risk and risk level breakdown. Click a country to explore income group and time-series detail.</p>
       <div id="access-map-container" class="map-surface"></div>
       <div class="legend legend-row">
         <span class="legend-label">Population at Risk:</span>
@@ -1178,6 +1137,7 @@
           </p>
         </div>
         <div class="chart-card-body">
+          <p class="chart-hint">Use the filters on the left to focus on specific regions, income groups, or risk levels.</p>
           <div id="chart-access-timeline" class="chart-surface" style="width: 100%; height: 400px; min-height: 400px;"></div>
         </div>
       </div>
@@ -1194,14 +1154,37 @@
       </div>
     </div>
 
-    <!-- ═══ Ch03 THE WAY FORWARD ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(90,143,194,0.10); color: #5A8FC2;">
-        <span class="chapter-num" style="background: #5A8FC2; color: #fff;">03</span>
-        <span class="chapter-title-text">The Way Forward</span>
+    <!-- ═══ THE WAY FORWARD ═══ -->
+    <div class="access-narrative-section" style="border-top: 1px solid rgba(0,0,0,0.06);" class:revealed>
+      <span class="access-eyebrow">The Way Forward</span>
+      <h2 class="access-section-title">Sustainable Cooling for All: Fast Enough to Matter</h2>
+      <p class="access-body-text">Closing the global cooling access gap sustainably requires moving beyond individual air conditioners. To meet climate targets while protecting 1.2 billion vulnerable people, strategies must be prioritised that provide relief at near-zero operating costs.</p>
+
+      <!-- 4-card strategy grid -->
+      <div class="access-impact-grid">
+        <div class="access-impact-card">
+          <div class="access-impact-icon" style="background: rgba(217,119,6,0.1); color: #d97706;"><i class="fa-solid fa-sun"></i></div>
+          <h4 class="access-impact-title">Passive Cooling &amp; Material Innovation</h4>
+          <p class="access-impact-body">Cool roofs, shading, and natural ventilation can reduce indoor temperatures by 5–8°C. New Passive Daytime Radiative Cooling (PDRC) materials are scaling globally, reflecting over 96% of sunlight and reducing building energy consumption by up to 20%.</p>
+        </div>
+        <div class="access-impact-card">
+          <div class="access-impact-icon" style="background: rgba(22,163,74,0.1); color: #16a34a;"><i class="fa-solid fa-tree"></i></div>
+          <h4 class="access-impact-title">Urban Green Infrastructure</h4>
+          <p class="access-impact-body">Expanding tree cover and urban green spaces saves lives. Increasing urban tree cover by 10% could prevent up to 25% of heat-related deaths during extreme events by mitigating the Urban Heat Island effect.</p>
+        </div>
+        <div class="access-impact-card">
+          <div class="access-impact-icon" style="background: rgba(3,105,161,0.1); color: #0369a1;"><i class="fa-solid fa-building-columns"></i></div>
+          <h4 class="access-impact-title">District &amp; Shared Cooling</h4>
+          <p class="access-impact-body">District Cooling Systems reduce carbon emissions by up to 40% compared to conventional AC. By delivering chilled water through centralised networks, cities eliminate the need for millions of individual inefficient units.</p>
+        </div>
+        <div class="access-impact-card">
+          <div class="access-impact-icon" style="background: rgba(234,179,8,0.1); color: #ca8a04;"><i class="fa-solid fa-solar-panel"></i></div>
+          <h4 class="access-impact-title">Solar-Powered Cold Chains</h4>
+          <p class="access-impact-body">Decentralised solar cooling is transforming food security. Solar-powered cold rooms can reduce post-harvest spoilage from 17% to just 4%, boosting farmer incomes by 30%.</p>
+        </div>
       </div>
-      <h2 class="chapter-heading">Sustainable cooling for all — fast enough to matter.</h2>
-      <p class="story-call-to-insight">{accessContent.callToInsight}</p>
+
+      <p class="access-body-text" style="margin-top: 8px;">A rights-based approach to cooling recognises that access is a prerequisite for health, food security, and economic participation. By integrating these shared and passive solutions into NDCs, we can break the vicious cycle of emissions and heat, ensuring that cooling is sustainable, equitable, and fast enough to matter.</p>
 
       <div class="access-pledge-badge">
         <div class="pledge-icon"><i class="fa-solid fa-handshake-angle"></i></div>
@@ -1213,13 +1196,37 @@
       </div>
     </div>
 
-    <!-- ═══ LEARN MORE ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(61,107,107,0.10); color: #3D6B6B;">
-        <i class="fa-solid fa-books" style="margin-right: 0.2rem;"></i>
-        <span class="chapter-title-text">Learn More</span>
+    <!-- ═══ RESOURCES ═══ -->
+    <div class="access-narrative-section access-resources-section" style="border-top: 1px solid rgba(0,0,0,0.06);" class:revealed>
+      <span class="access-eyebrow">Go Deeper</span>
+      <h2 class="access-section-title">Resources on Cooling Access &amp; Vulnerability</h2>
+
+      <div class="access-resources-grid">
+        <a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer" class="access-resource-card">
+          <strong class="access-resource-title">Chilling Prospects (SEforALL)</strong>
+          <span class="access-resource-desc">The lead resource for tracking the 1.2 billion people who lack access to cooling. Vital for understanding the human cost of the cooling gap.</span>
+        </a>
+        <a href="https://www.unep.org/resources/report/roadmap-extreme-heat-protection" target="_blank" rel="noopener noreferrer" class="access-resource-card">
+          <strong class="access-resource-title">UNEP/ASEAN: Roadmap for Extreme Heat Protection</strong>
+          <span class="access-resource-desc">Technical roadmap for a "Passive First" design philosophy demonstrating 20–50% cooling energy savings from natural ventilation and reflective surfaces.</span>
+        </a>
+        <a href="https://www.coolcoalition.org/beating-the-heat/" target="_blank" rel="noopener noreferrer" class="access-resource-card">
+          <strong class="access-resource-title">Cool Coalition: Beating the Heat Handbook</strong>
+          <span class="access-resource-desc">Encyclopedia of 80 case studies covering cool roofs, green corridors, and shading strategies that reduce the urban heat island effect.</span>
+        </a>
+        <a href="https://www.giz.de/en/worldwide/1504.html" target="_blank" rel="noopener noreferrer" class="access-resource-card">
+          <strong class="access-resource-title">GIZ Proklima: Solar Cooling Solutions</strong>
+          <span class="access-resource-desc">Technical guideline on the intersection of solar energy and passive architectural principles for rural and off-grid contexts.</span>
+        </a>
+        <a href="https://www.iea-dhc.org/" target="_blank" rel="noopener noreferrer" class="access-resource-card">
+          <strong class="access-resource-title">IEA DHC: Thermal Networks Case Studies 2025/2026</strong>
+          <span class="access-resource-desc">Factsheets on District Heating and Cooling showing how centralised networks replace thousands of individual AC units and reduce peak loads.</span>
+        </a>
+        <a href="https://www.unep.org/resources/report/sustainable-district-cooling" target="_blank" rel="noopener noreferrer" class="access-resource-card">
+          <strong class="access-resource-title">UNEP: Sustainable District Cooling Guidelines</strong>
+          <span class="access-resource-desc">Strategic guide for city planners on financing, designing, and regulating district cooling systems as part of a low-carbon urban transition.</span>
+        </a>
       </div>
-      <h2 class="chapter-heading">Go deeper on cooling access and vulnerability</h2>
 
       <div class="access-partner-bar">
         <div class="access-partner-header">
@@ -1247,82 +1254,145 @@
       </div>
     </div>
 
-    <!-- Source Attribution -->
-    <div class="access-source" style="text-align: center; padding: 0.75rem; font-size: 0.7rem; color: #94a3b8;">
-      Sources:
-      <a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer" style="color: #64748b;">SEforALL Chilling Prospects</a>
-      &middot;
-      <a href="https://coolcoalition.org/" target="_blank" rel="noopener noreferrer" style="color: #64748b;">UNEP Cool Coalition</a>
-      &middot;
-      <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer" style="color: #64748b;">HEAT GmbH</a>
-      &middot;
-      <a href="/methodology" style="color: #2D7D5A; font-weight: 600;">Methodology</a>
-    </div>
   </div>
 </section>
 
 <style>
   /* ===========================
-     ACCESS STORY CARD
-     Warm/amber accent (access & vulnerability identity).
+     DESIGN SYSTEM — narrative sections
      =========================== */
-  .access-story-card {
-    border-left: 4px solid #D4A843;
-    padding: 1.75rem;
-    position: relative;
-    overflow: visible;
+  .access-narrative-section {
+    padding: 56px 64px;
   }
 
-  .access-story-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(212, 168, 67, 0.06) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .access-story-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .access-story-text { flex: 1; min-width: 0; }
-
-  .access-headline {
-    font-size: 1.25rem;
+  .access-eyebrow {
+    font-size: 0.9rem;
     font-weight: 800;
-    color: #0f172a;
-    line-height: 1.3;
-    margin: 0 0 0.4rem;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #0369a1;
+    display: inline-block;
+    margin-bottom: 16px;
   }
 
-  .access-subhead {
-    color: #64748b;
+  .access-section-title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: -0.025em;
+    margin: 0 0 20px;
+    line-height: 1.15;
+  }
+
+  .access-body-text {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1e293b;
+    line-height: 1.78;
+    margin: 0 0 16px;
+    max-width: 900px;
+  }
+
+  /* ===========================
+     IMPACT / STRATEGY 2×2 GRID CARDS
+     =========================== */
+  .access-impact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0 28px;
+  }
+
+  .access-impact-card {
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
+    padding: 28px 0;
+  }
+
+  .access-impact-card:hover {
+    transform: none;
+  }
+
+  .access-impact-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(3,105,161,0.1);
+    color: #0369a1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    flex-shrink: 0;
+  }
+
+  .access-impact-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 8px;
+    line-height: 1.3;
+  }
+
+  .access-impact-body {
     font-size: 0.85rem;
-    line-height: 1.5;
+    font-weight: 500;
+    color: #475569;
+    line-height: 1.65;
     margin: 0;
   }
 
-  /* --- Human-right lead --- */
-  .access-rights-lead {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #C25B33;
-    line-height: 1.4;
-    margin: 0 0 0.85rem;
-    padding: 0.75rem 1rem;
-    background: rgba(194, 91, 51, 0.06);
-    border-left: 3px solid #C25B33;
-    border-radius: 6px;
+  @media (max-width: 768px) {
+    .access-narrative-section { padding: 36px 24px; }
+    .access-impact-grid { grid-template-columns: 1fr; }
+    .access-resources-grid { grid-template-columns: 1fr; }
   }
 
+  /* ===========================
+     RESOURCES SECTION
+     =========================== */
+  .access-resources-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0 36px;
+  }
+
+  .access-resource-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
+    padding: 24px 0;
+    text-decoration: none;
+  }
+
+  .access-resource-card:hover {
+    color: #0284c7;
+  }
+
+  .access-resource-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #0369a1;
+    line-height: 1.35;
+  }
+
+  .access-resource-desc {
+    font-size: 0.8rem;
+    color: #475569;
+    line-height: 1.6;
+  }
+
+  /* ===========================
+     ADVANCED FILTER TOGGLE
+     =========================== */
   /* --- Advanced filter toggle --- */
   .access-advanced-toggle {
     display: inline-flex;
@@ -1330,9 +1400,9 @@
     gap: 0.35rem;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #2D7D5A;
-    background: rgba(45, 125, 90, 0.06);
-    border: 1px solid rgba(45, 125, 90, 0.2);
+    color: #0369a1;
+    background: rgba(3, 105, 161, 0.06);
+    border: 1px solid rgba(3, 105, 161, 0.2);
     border-radius: 999px;
     padding: 0.35rem 0.85rem;
     cursor: pointer;
@@ -1342,14 +1412,17 @@
   }
 
   .access-advanced-toggle:hover {
-    background: rgba(45, 125, 90, 0.12);
+    background: rgba(3, 105, 161, 0.12);
   }
 
   /* --- Humidity callout card --- */
   .access-humidity-card {
-    padding: 1.4rem 1.6rem;
+    padding: 1.4rem 0 1.4rem 1.2rem;
+    background: transparent;
+    border-radius: 0;
+    border: none;
     border-left: 4px solid #5A8FC2;
-    background: #f0f7ff;
+    margin: 0;
   }
 
   .access-humidity-header {
@@ -1395,123 +1468,14 @@
 
   .access-humidity-note i { color: #5A8FC2; flex-shrink: 0; margin-top: 0.15rem; }
 
-  /* --- Solutions layer card --- */
-  .access-solutions-card {
-    padding: 1.25rem 1.5rem;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-  }
-
-  .access-solutions-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-    margin-bottom: 1.1rem;
-  }
-
-  .access-solutions-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    background: color-mix(in srgb, #D4A843 12%, transparent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    color: #D4A843;
-    font-size: 1rem;
-  }
-
-  .access-solutions-header strong {
-    display: block;
-    font-size: 0.9rem;
-    color: #1e293b;
-    margin-bottom: 0.2rem;
-  }
-
-  .access-solutions-header span {
-    font-size: 0.78rem;
-    color: #64748b;
-  }
-
-  .access-solutions-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.85rem;
-    margin-bottom: 1rem;
-  }
-
-  .access-solution-item {
-    display: flex;
-    gap: 0.6rem;
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 0.75rem 0.85rem;
-  }
-
-  .access-solution-icon {
-    width: 30px;
-    height: 30px;
-    border-radius: 6px;
-    background: color-mix(in srgb, var(--sol-color) 10%, transparent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    color: var(--sol-color);
-    font-size: 0.85rem;
-    margin-top: 0.1rem;
-  }
-
-  .access-solution-text strong {
-    display: block;
-    font-size: 0.82rem;
-    color: #1e293b;
-    margin-bottom: 0.25rem;
-  }
-
-  .access-solution-text p {
-    font-size: 0.75rem;
-    color: #475569;
-    line-height: 1.6;
-    margin: 0;
-  }
-
-  .access-solutions-note {
-    font-size: 0.78rem;
-    color: #475569;
-    line-height: 1.6;
-    margin: 0;
-    padding: 0.6rem 0.85rem;
-    background: #fff;
-    border-radius: 8px;
-    border-left: 3px solid #C25B33;
-    display: flex;
-    gap: 0.5rem;
-    align-items: flex-start;
-  }
-
-  .access-solutions-note i {
-    color: #C25B33;
-    flex-shrink: 0;
-    margin-top: 0.15rem;
-  }
-
-  @media (max-width: 680px) {
-    .access-solutions-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
   .access-story-hook {
     font-size: 0.82rem;
     color: #475569;
     line-height: 1.65;
     margin: 0 0 1.25rem;
-    padding: 0.75rem 1rem;
-    background: #faf8f0;
-    border-radius: 10px;
+    padding: 0.75rem 0 0.75rem 1rem;
+    background: transparent;
+    border-radius: 0;
     border-left: 3px solid #D4A843;
     opacity: 0;
     transform: translateY(8px);
@@ -1565,25 +1529,6 @@
 
   .revealed .access-narrative { opacity: 1; transform: translateY(0); }
 
-  .access-narrative-title {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #8B5E3C;
-    margin: 0 0 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .access-narrative-title i { color: #D4A843; font-size: 0.85rem; }
-
-  .access-narrative p {
-    font-size: 0.78rem;
-    color: #475569;
-    line-height: 1.7;
-    margin: 0;
-  }
-
   /* Chart highlights */
   .access-chart-highlights {
     margin: 0 0 1.25rem;
@@ -1593,18 +1538,6 @@
   }
 
   .revealed .access-chart-highlights { opacity: 1; transform: translateY(0); }
-
-  .access-highlights-title {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #8B5E3C;
-    margin: 0 0 0.6rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .access-highlights-title i { color: #D4A843; font-size: 0.85rem; }
 
   .access-highlights-grid {
     display: grid;
@@ -1616,16 +1549,15 @@
     display: flex;
     align-items: flex-start;
     gap: 0.6rem;
-    padding: 0.75rem;
-    background: #fafbfc;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 0.75rem 0;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
   }
 
   .access-highlight-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    opacity: 0.85;
   }
 
   .access-highlight-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
@@ -1639,10 +1571,11 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    background: linear-gradient(135deg, #f0fdf4, #f0f7f4);
-    border: 1px solid #86efac;
-    border-radius: 12px;
+    padding: 0.75rem 0;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
     margin: 0 0 0.75rem;
     opacity: 0;
     transform: translateY(6px);
@@ -1672,10 +1605,11 @@
   .access-cool-coalition {
     display: flex;
     align-items: center;
-    padding: 0.6rem 0.75rem;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
+    padding: 0.6rem 0;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
     margin: 0 0 1rem;
     font-size: 0.75rem;
     color: #475569;
@@ -1686,16 +1620,16 @@
 
   .revealed .access-cool-coalition { opacity: 1; transform: translateY(0); }
 
-  .access-cool-coalition strong { color: #2D7D5A; }
+  .access-cool-coalition strong { color: #0369a1; }
 
   .access-cool-coalition a {
-    color: #2D7D5A;
+    color: #0369a1;
     font-weight: 600;
     text-decoration: none;
-    border-bottom: 1px dashed #2D7D5A;
+    border-bottom: 1px dashed #0369a1;
   }
 
-  .access-cool-coalition a:hover { color: #1A5E43; }
+  .access-cool-coalition a:hover { color: #0284c7; }
 
   /* Partner bar */
   .access-partner-bar {
@@ -1747,8 +1681,8 @@
     transition: color 0.2s ease, border-color 0.2s ease;
   }
 
-  .access-source-footer a:hover { color: #8B5E3C; border-bottom-color: #8B5E3C; }
-  .access-source-footer a:last-child { color: #8B5E3C; font-weight: 600; }
+  .access-source-footer a:hover { color: #0369a1; border-bottom-color: #0369a1; }
+  .access-source-footer a:last-child { color: #0369a1; font-weight: 600; }
 
   /* KPI panel */
   .kpi-panel { padding: 1rem 1.25rem; }
@@ -1758,11 +1692,11 @@
     display: flex;
     gap: 1.25rem;
     flex-wrap: wrap;
-    padding: 1rem 1rem 0.875rem;
-    border-top: 1px solid #e2e8f0;
+    padding: 1rem 0 0.875rem;
+    border-top: 1px solid rgba(0,0,0,0.06);
     margin-top: 0.5rem;
-    background: #ffffff;
-    border-radius: 0 0 10px 10px;
+    background: transparent;
+    border-radius: 0;
   }
 
   .checkbox-group {
@@ -1790,18 +1724,18 @@
     flex-wrap: wrap;
   }
 
-  /* Pill button — unselected state: teal outline, light bg */
+  /* Pill button — unselected state: blue outline, light bg */
   .tick-box {
     display: inline-flex;
     align-items: center;
     gap: 0;
     font-size: 0.8rem;
     font-weight: 500;
-    color: #3D6B6B;
+    color: #0369a1;
     cursor: pointer;
     padding: 0.3rem 0.75rem;
     border-radius: 999px;
-    border: 1.5px solid #3D6B6B;
+    border: 1.5px solid #0369a1;
     background: transparent;
     transition: all 0.15s ease;
     user-select: none;
@@ -1810,22 +1744,22 @@
   }
 
   .tick-box:hover {
-    background: rgba(61, 107, 107, 0.1);
-    border-color: #2D5C5C;
-    color: #2D5C5C;
+    background: rgba(3, 105, 161, 0.1);
+    border-color: #0284c7;
+    color: #0284c7;
   }
 
-  /* Pill button — selected state: filled teal, white text */
+  /* Pill button — selected state: filled blue, white text */
   .tick-box:has(input:checked) {
-    background: #3D6B6B;
-    border-color: #3D6B6B;
+    background: #0369a1;
+    border-color: #0369a1;
     color: #ffffff;
     font-weight: 600;
   }
 
   .tick-box:has(input:checked):hover {
-    background: #2D5C5C;
-    border-color: #2D5C5C;
+    background: #0284c7;
+    border-color: #0284c7;
   }
 
   .tick-box input { display: none; }
@@ -1868,4 +1802,15 @@
     .access-counters :global(.counter-display) { font-size: 1.2rem; }
     .access-counters :global(.counter-label) { font-size: 0.65rem; }
   }
+
+  /* ===========================
+     CHART HINT
+     =========================== */
+  .chart-hint {
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin: 0 0 8px 0;
+    font-style: italic;
+  }
+
 </style>

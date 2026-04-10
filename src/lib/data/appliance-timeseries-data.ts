@@ -57,19 +57,19 @@ const acBAU: ApplianceTimeseriesPoint[] = [
   // AC stock uses IEA/CCC series (broader scope, consistent with existing chart)
   // Energy uses CLASP 2005+ with IEA back-calculation for 1990-2000
   // Emissions: HEAT model (direct) + CLASP/IEA (indirect), validated against OWID/IEA benchmarks
-  { year: 1990, appliance: 'AC', stockMillions: 573, energyTwh: 230, indirectEmissionMt: 200, directEmissionMt: 180, totalEmissionMt: 380, scenario: 'BAU', isProjected: false, source: 'IEA/CCC + IPCC SROC', sourceUrl: 'https://www.iea.org/reports/the-future-of-cooling' },
-  { year: 1995, appliance: 'AC', stockMillions: 700, energyTwh: 290, indirectEmissionMt: 280, directEmissionMt: 200, totalEmissionMt: 480, scenario: 'BAU', isProjected: false, source: 'IEA/CCC + IPCC SROC', sourceUrl: 'https://www.iea.org/reports/the-future-of-cooling' },
-  { year: 2000, appliance: 'AC', stockMillions: 850, energyTwh: 350, indirectEmissionMt: 350, directEmissionMt: 220, totalEmissionMt: 570, scenario: 'BAU', isProjected: false, source: 'IEA/CCC + IPCC SROC', sourceUrl: 'https://www.iea.org/reports/the-future-of-cooling' },
+  { year: 1990, appliance: 'AC', stockMillions: 573, energyTwh: 230, indirectEmissionMt: 200, directEmissionMt: 180, totalEmissionMt: 380, scenario: 'BAU', isProjected: false, source: 'IEA + IPCC SROC', sourceUrl: 'https://www.iea.org/reports/the-future-of-cooling' },
+  { year: 1995, appliance: 'AC', stockMillions: 700, energyTwh: 290, indirectEmissionMt: 280, directEmissionMt: 200, totalEmissionMt: 480, scenario: 'BAU', isProjected: false, source: 'IEA + IPCC SROC', sourceUrl: 'https://www.iea.org/reports/the-future-of-cooling' },
+  { year: 2000, appliance: 'AC', stockMillions: 850, energyTwh: 350, indirectEmissionMt: 350, directEmissionMt: 220, totalEmissionMt: 570, scenario: 'BAU', isProjected: false, source: 'IEA + IPCC SROC', sourceUrl: 'https://www.iea.org/reports/the-future-of-cooling' },
   { year: 2005, appliance: 'AC', stockMillions: 1050, energyTwh: 429, indirectEmissionMt: 446, directEmissionMt: 240, totalEmissionMt: 686, scenario: 'BAU', isProjected: false, source: 'IEA stock / CLASP energy+indirect / Velders direct', sourceUrl: 'https://www.clasp.ngo/' },
   { year: 2010, appliance: 'AC', stockMillions: 1200, energyTwh: 645, indirectEmissionMt: 617, directEmissionMt: 270, totalEmissionMt: 887, scenario: 'BAU', isProjected: false, source: 'IEA stock / CLASP energy+indirect / Purohit direct', sourceUrl: 'https://www.clasp.ngo/' },
   { year: 2015, appliance: 'AC', stockMillions: 1500, energyTwh: 990, indirectEmissionMt: 880, directEmissionMt: 290, totalEmissionMt: 1170, scenario: 'BAU', isProjected: false, source: 'IEA stock / CLASP energy+indirect / HEAT direct', sourceUrl: 'https://www.clasp.ngo/' },
   { year: 2020, appliance: 'AC', stockMillions: 2000, energyTwh: 1422, indirectEmissionMt: 972, directEmissionMt: 314, totalEmissionMt: 1286, scenario: 'BAU', isProjected: false, source: 'IEA stock / HEAT model BAU (indirect 972 + direct 314)', sourceUrl: 'https://ourworldindata.org/air-conditioning-causes-around-greenhouse-gas-emissions-will-change-future' },
-  { year: 2025, appliance: 'AC', stockMillions: 3100, energyTwh: 1972, indirectEmissionMt: 1338, directEmissionMt: 403, totalEmissionMt: 1741, scenario: 'BAU', isProjected: false, source: 'CCC stock / CLASP energy / HEAT model BAU', sourceUrl: 'https://www.cleancoolingcollaborative.org/the-challenge/' },
+  { year: 2025, appliance: 'AC', stockMillions: 3100, energyTwh: 1972, indirectEmissionMt: 1338, directEmissionMt: 403, totalEmissionMt: 1741, scenario: 'BAU', isProjected: false, source: 'CLASP / HEAT model BAU', sourceUrl: 'https://www.clasp.ngo/' },
   { year: 2030, appliance: 'AC', stockMillions: 4000, energyTwh: 2629, indirectEmissionMt: 2156, directEmissionMt: 538, totalEmissionMt: 2694, scenario: 'BAU', isProjected: true, source: 'IEA stock / CLASP energy / HEAT model BAU', sourceUrl: 'https://www.clasp.ngo/' },
   { year: 2035, appliance: 'AC', stockMillions: 4500, energyTwh: 3339, indirectEmissionMt: 3299, directEmissionMt: 664, totalEmissionMt: 3963, scenario: 'BAU', isProjected: true, source: 'IEA stock / CLASP energy / HEAT model BAU', sourceUrl: 'https://www.clasp.ngo/' },
   { year: 2040, appliance: 'AC', stockMillions: 5000, energyTwh: 4402, indirectEmissionMt: 3686, directEmissionMt: 634, totalEmissionMt: 4320, scenario: 'BAU', isProjected: true, source: 'IEA stock / CLASP energy / HEAT model BAU', sourceUrl: 'https://www.clasp.ngo/' },
   { year: 2045, appliance: 'AC', stockMillions: 5800, energyTwh: 5188, indirectEmissionMt: 4045, directEmissionMt: 551, totalEmissionMt: 4596, scenario: 'BAU', isProjected: true, source: 'IEA stock / CLASP energy / HEAT model BAU', sourceUrl: 'https://www.clasp.ngo/' },
-  { year: 2050, appliance: 'AC', stockMillions: 6542, energyTwh: 6095, indirectEmissionMt: 4359, directEmissionMt: 581, totalEmissionMt: 4940, scenario: 'BAU', isProjected: true, source: 'CCC stock / CLASP energy / HEAT model BAU', sourceUrl: 'https://www.clasp.ngo/' },
+  { year: 2050, appliance: 'AC', stockMillions: 6542, energyTwh: 6095, indirectEmissionMt: 4359, directEmissionMt: 581, totalEmissionMt: 4940, scenario: 'BAU', isProjected: true, source: 'CLASP / HEAT model BAU', sourceUrl: 'https://www.clasp.ngo/' },
 ];
 
 const domRefBAU: ApplianceTimeseriesPoint[] = [
@@ -246,7 +246,7 @@ export const applianceMilestones: ApplianceMilestone[] = [
   { year: 2016, label: 'Kigali Amendment', description: 'Amendment to phase down HFCs by 80-85% by 2047. Could avoid 0.5\u00B0C warming by 2100.', appliance: 'All' },
   { year: 2018, label: 'IEA Future of Cooling', description: 'Landmark IEA report projecting global AC stock to reach 5.6B by 2050.', appliance: 'AC' },
   { year: 2023, label: 'COP28 Global Cooling Pledge', description: '66 nations committed to reducing cooling emissions 68% by 2050 and raising AC efficiency 50%.', appliance: 'All' },
-  { year: 2025, label: '3 Billion ACs', description: 'Global AC stock surpassed 3 billion units. CCC reports 3,099 million units installed worldwide.', appliance: 'AC' },
+  { year: 2025, label: '3 Billion ACs', description: 'Global AC stock surpassed 3 billion units — 3,099 million units installed worldwide.', appliance: 'AC' },
 ];
 
 // Appliance display metadata

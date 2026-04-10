@@ -9,7 +9,7 @@
       icon: 'fa-people-group',
       color: '#2D7D5A',
       label: 'Access to Cooling',
-      description: 'Over 1.2 billion people face dangerous heat without adequate cooling. Closing the access gap is a matter of climate equity and public health.',
+      description: 'Ensuring cooling for all as a fundamental human right and a life-saving necessity.',
       route: 'access',
       comingSoon: false
     },
@@ -17,8 +17,8 @@
       id: 'meps',
       icon: 'fa-bolt',
       color: '#D4A843',
-      label: 'Energy-Efficient Products',
-      description: 'Minimum energy performance standards (MEPS) and labels raise the efficiency floor, cut electricity bills, and prevent the dumping of inefficient equipment in growing markets.',
+      label: 'Energy Efficient Products',
+      description: 'Shielding global energy grids by ensuring every unit sold is a high-efficiency model.',
       route: 'meps',
       comingSoon: false
     },
@@ -26,197 +26,160 @@
       id: 'kigali',
       icon: 'fa-snowflake',
       color: '#5A8FC2',
-      label: 'Climate-Friendly Refrigerants',
-      description: 'The Kigali Amendment commits 172 countries to phasing down high-GWP refrigerants. Full implementation can prevent up to 0.5°C of global warming by 2100.',
+      label: 'Climate Friendly Refrigerants',
+      description: 'Moving to climate and environmentally friendly refrigerants under the Kigali Amendment — a strategic shift that can avert 0.5°C of global warming this century.',
       route: 'kigali',
       comingSoon: false
     },
     {
       id: 'buildings',
       icon: 'fa-building',
-      color: '#94a3b8',
-      label: 'Buildings & Passive Cooling',
-      description: 'Better building design — insulation, shading, ventilation, cool roofs — reduces cooling demand at source. This can cut indoor temperatures by 5–8°C at near-zero operating cost.',
+      color: '#64748b',
+      label: 'Building & Passive Cooling',
+      description: 'Better building design — including insulation, shading, ventilation, and cool roofs — addresses cooling demand at the source. These passive measures can cut indoor temperatures by 5–8°C at near-zero operating cost.',
       route: null,
-      comingSoon: true
+      comingSoon: false
     }
   ];
 </script>
 
-<div class="four-pillar-wrapper card-panel">
-  <div class="four-pillar-header">
-    <h2 class="four-pillar-title">Four Pathways to Sustainable Cooling</h2>
-    <p class="four-pillar-subtitle">Every lever matters. Progress on all four is needed to stay on the sustainable pathway.</p>
+<div class="way-forward-section">
+  <div class="way-forward-header">
+    <span class="way-forward-eyebrow">The Way Forward</span>
+    <h2 class="way-forward-title">Four Priority Areas for Sustainable Cooling</h2>
+    <p class="way-forward-subtitle">Every priority area matters. Progress on all four is needed to stay on the sustainable pathway.</p>
   </div>
 
-  <div class="four-pillar-grid">
-    {#each pillars as pillar}
-      <div
-        class="pillar-card"
-        class:coming-soon={pillar.comingSoon}
-        role={pillar.comingSoon ? 'article' : 'button'}
-        tabindex={pillar.comingSoon ? -1 : 0}
-        on:click={() => !pillar.comingSoon && pillar.route && dispatch('navigate', pillar.route)}
-        on:keydown={(e) => e.key === 'Enter' && !pillar.comingSoon && pillar.route && dispatch('navigate', pillar.route)}
-        style="--pillar-color: {pillar.color}"
-      >
-        <div class="pillar-card-top">
-          <div class="pillar-icon">
+  <div class="way-forward-grid">
+    {#each pillars as pillar, i}
+      <div class="way-item" style="--way-color: {pillar.color}">
+        <div class="way-item-top">
+          <div class="way-icon">
             <i class="fa-solid {pillar.icon}"></i>
           </div>
-          {#if pillar.comingSoon}
-            <span class="coming-soon-badge">Coming soon</span>
-          {/if}
+          <span class="way-number">0{i + 1}</span>
         </div>
-        <h3 class="pillar-card-label">{pillar.label}</h3>
-        <p class="pillar-card-desc">{pillar.description}</p>
-        {#if !pillar.comingSoon}
-          <span class="pillar-card-cta">
-            Explore <i class="fa-solid fa-arrow-right"></i>
-          </span>
-        {/if}
+        <h3 class="way-title">{pillar.label}</h3>
+        <p class="way-desc">{pillar.description}</p>
       </div>
     {/each}
   </div>
 </div>
 
 <style>
-  .four-pillar-wrapper {
-    padding: 1.75rem;
+  .way-forward-section {
+    background: transparent;
+    border-radius: 0;
+    padding: 56px 64px;
   }
 
-  .four-pillar-header {
-    margin-bottom: 1.25rem;
+  .way-forward-header {
+    margin-bottom: 40px;
   }
 
-  .four-pillar-title {
-    font-size: 1.1rem;
+  .way-forward-eyebrow {
+    display: inline-block;
+    font-size: 0.82rem;
     font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #0369a1;
+    margin-bottom: 12px;
+  }
+
+  .way-forward-title {
+    font-size: 1.5rem;
+    font-weight: 900;
     color: #0f172a;
-    margin: 0 0 0.35rem;
-    letter-spacing: -0.01em;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.02em;
   }
 
-  .four-pillar-subtitle {
-    font-size: 0.85rem;
-    color: #64748b;
+  .way-forward-subtitle {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #334155;
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.6;
   }
 
-  .four-pillar-grid {
+  .way-forward-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.85rem;
+    gap: 0;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.55);
   }
 
-  .pillar-card {
-    background: #f8fafc;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.1rem;
+  .way-item {
+    padding: 40px 32px;
+    border-right: 1px solid rgba(0,0,0,0.07);
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    cursor: pointer;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-    border-top: 3px solid var(--pillar-color);
-    outline: none;
+    gap: 14px;
+    transition: background 0.2s ease;
   }
 
-  .pillar-card:not(.coming-soon):hover {
-    border-color: var(--pillar-color);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
+  .way-item:last-child { border-right: none; }
+
+  .way-item:hover {
+    background: #f8fafc;
   }
 
-  .pillar-card:not(.coming-soon):focus-visible {
-    box-shadow: 0 0 0 3px rgba(45, 125, 90, 0.3);
-  }
-
-  .pillar-card.coming-soon {
-    opacity: 0.5;
-    cursor: default;
-    filter: grayscale(0.4);
-  }
-
-  .pillar-card-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 0.5rem;
-  }
-
-  .pillar-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    background: color-mix(in srgb, var(--pillar-color) 12%, transparent);
+  .way-item-top {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
-    color: var(--pillar-color);
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .way-icon {
+    width: 72px; height: 72px;
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--way-color) 14%, transparent);
+    color: var(--way-color);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.85rem;
     flex-shrink: 0;
   }
 
-  .coming-soon-badge {
-    font-size: 0.6rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #94a3b8;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    border-radius: 999px;
-    padding: 0.2rem 0.5rem;
-    white-space: nowrap;
+  .way-number {
+    font-size: 3.2rem;
+    font-weight: 900;
+    color: var(--way-color);
+    opacity: 0.55;
+    line-height: 1;
+    letter-spacing: -0.03em;
   }
 
-  .pillar-card-label {
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: #1e293b;
+  .way-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #0f172a;
     margin: 0;
     line-height: 1.3;
   }
 
-  .pillar-card-desc {
-    font-size: 0.78rem;
-    color: #64748b;
-    line-height: 1.55;
+  .way-desc {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: #1e293b;
+    line-height: 1.7;
     margin: 0;
     flex: 1;
   }
 
-  .pillar-card-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--pillar-color);
-    margin-top: 0.25rem;
-    transition: gap 0.15s ease;
-  }
-
-  .pillar-card:hover .pillar-card-cta {
-    gap: 0.5rem;
-  }
-
-  .pillar-card-cta i {
-    font-size: 0.6rem;
-  }
-
   @media (max-width: 900px) {
-    .four-pillar-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+    .way-forward-grid { grid-template-columns: repeat(2, 1fr); }
+    .way-item { border-right: 1px solid rgba(0,0,0,0.07); border-bottom: 1px solid rgba(0,0,0,0.07); }
+    .way-item:nth-child(even) { border-right: none; }
   }
 
   @media (max-width: 540px) {
-    .four-pillar-grid {
-      grid-template-columns: 1fr;
-    }
+    .way-forward-section { padding: 32px 24px; }
+    .way-forward-grid { grid-template-columns: 1fr; }
+    .way-item { border-right: none; }
   }
 </style>

@@ -1,6 +1,5 @@
 <script lang="ts">
   const partnerLogos = [
-    { src: '/images/ccc-logo.png', alt: 'Clean Cooling Collaborative', url: 'https://www.cleancoolingcollaborative.org' },
     { src: '/images/cool-coalition.png', alt: 'Cool Coalition', url: 'https://coolcoalition.org' },
     { src: '/images/heat-logo.png', alt: 'HEAT GmbH', url: 'https://www.heat-gmbh.de' },
     { src: '/images/clasp-logo.png', alt: 'CLASP', url: 'https://www.clasp.ngo' },

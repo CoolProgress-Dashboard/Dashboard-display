@@ -32,12 +32,12 @@
   }
 
   const navLinks = [
-    { view: 'overview',  label: 'Strategic Summary',    icon: 'fa-house' },
-    { view: 'emissions', label: '1. Emissions',          icon: 'fa-smog' },
-    { view: 'meps',      label: '2. Product Efficiency', icon: 'fa-bolt' },
-    { view: 'kigali',    label: '3. Refrigerant Transition', icon: 'fa-flask' },
-    { view: 'access',    label: '4. Access & Vulnerability', icon: 'fa-people-roof' },
-    { view: 'policy',    label: '5. Policy Framework',   icon: 'fa-scale-balanced' },
+    { view: 'overview',  label: 'Strategic Summary',       icon: 'fa-house',          color: '#0369a1' },
+    { view: 'emissions', label: '1. Emissions',             icon: 'fa-smog',           color: '#dc2626' },
+    { view: 'meps',      label: '2. Product Efficiency',    icon: 'fa-bolt',           color: '#d97706' },
+    { view: 'kigali',    label: '3. Refrigerant Transition',icon: 'fa-flask',          color: '#0891b2' },
+    { view: 'access',    label: '4. Access & Vulnerability',icon: 'fa-people-roof',    color: '#2D7D5A' },
+    { view: 'policy',    label: '5. Policy Framework',      icon: 'fa-scale-balanced', color: '#7c3aed' },
   ];
 </script>
 
@@ -72,6 +72,7 @@
         class="nav-btn nav-item"
         class:active={activeView === link.view}
         data-view={link.view}
+        style="--nav-color: {link.color}; --nav-bg: {link.color}12"
       >
         <span class="nav-icon"><i class="fa-solid {link.icon}"></i></span>
         <span>{link.label}</span>
@@ -172,6 +173,21 @@
     gap: 0.6rem;
     text-decoration: none;
     color: inherit;
+  }
+
+  /* Per-pillar active state using CSS variable set via inline style */
+  .nav-btn.active {
+    background: var(--nav-bg, rgba(6, 147, 227, 0.08)) !important;
+    color: var(--nav-color, #0369a1) !important;
+  }
+
+  .nav-btn.active .nav-icon {
+    color: var(--nav-color, #0369a1);
+  }
+
+  /* Override the global ::before bar color */
+  .nav-btn.active::before {
+    background: var(--nav-color, #0369a1) !important;
   }
 
   /* Latest News - Sidebar Section */

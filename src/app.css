@@ -3,38 +3,37 @@
 @tailwind utilities;
 
 /* ================================
-   CCC Design System - CSS Variables (Light Theme)
-   Based on Clean Cooling Collaborative Logo Colors
+   Dashboard Design System - CSS Variables (Light Theme)
    ================================ */
 :root {
-  /* Primary Colors - CCC Logo Palette */
+  /* Primary Colors */
   --color-black: #000000;
   --color-white: #FFFFFF;
-  --color-teal: #3D6B6B;             /* CCC logo: dark teal (outer ring) */
-  --color-teal-light: #4A7F7F;       /* Lighter teal for hover */
-  --color-teal-dark: #2D5252;        /* Darker teal for active */
-  --color-green: #8BC34A;            /* CCC logo: light green petal */
-  --color-green-light: #A5D66A;      /* Lighter green */
-  --color-green-dark: #7CB342;       /* Darker green */
-  --color-coral: #E89B8C;            /* CCC logo: coral/salmon petal */
-  --color-coral-light: #F0B5A8;      /* Lighter coral */
-  --color-coral-dark: #D88676;       /* Darker coral */
-  --color-orange: #E85A4F;           /* CCC logo: orange-red petal */
-  --color-orange-light: #EF7B72;     /* Lighter orange */
-  --color-orange-dark: #D94539;      /* Darker orange */
+  --color-teal: #3D6B6B;
+  --color-teal-light: #4A7F7F;
+  --color-teal-dark: #2D5252;
+  --color-green: #8BC34A;
+  --color-green-light: #A5D66A;
+  --color-green-dark: #7CB342;
+  --color-coral: #E89B8C;
+  --color-coral-light: #F0B5A8;
+  --color-coral-dark: #D88676;
+  --color-orange: #E85A4F;
+  --color-orange-light: #EF7B72;
+  --color-orange-dark: #D94539;
 
   /* Neutrals - Light Theme */
   --color-bg-primary: #FFFFFF;
   --color-bg-secondary: #F8FAFC;
   --color-bg-tertiary: #F1F5F9;
-  --color-text-primary: #333333;     /* CCC logo: charcoal text */
+  --color-text-primary: #333333;
   --color-text-secondary: #555555;
   --color-text-muted: #888888;
   --color-border: #E2E8F0;
   --color-border-light: #F1F5F9;
-  --color-charcoal: #333333;         /* CCC logo: text color */
+  --color-charcoal: #333333;
 
-  /* Gradients - CCC Logo Inspired */
+  /* Gradients */
   --gradient-primary: linear-gradient(135deg, #3D6B6B 0%, #4A7F7F 100%);
   --gradient-ccc: linear-gradient(135deg, #3D6B6B 0%, #8BC34A 100%);
   --gradient-energy: linear-gradient(135deg, #8BC34A 0%, #7CB342 100%);

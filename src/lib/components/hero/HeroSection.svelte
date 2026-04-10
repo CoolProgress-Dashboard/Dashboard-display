@@ -137,8 +137,6 @@
       &middot;
       <a href="https://www.iea.org/reports/the-future-of-cooling" target="_blank" rel="noreferrer">IEA</a>
       &middot;
-      <a href="https://cleancoolingcollaborative.org" target="_blank" rel="noreferrer">CCC</a>
-      &middot;
       <a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noreferrer">SE4ALL</a>
       &middot;
       <a href="/methodology" style="font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.3);">Methodology</a>

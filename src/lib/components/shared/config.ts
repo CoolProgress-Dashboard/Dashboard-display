@@ -87,7 +87,6 @@ export const VIEW_META: Record<string, ViewMeta> = {
       'CoolProgress integrates authoritative data from leading global partners. HEAT GmbH provides the analytical backbone, CLASP the efficiency data, IEA the energy projections, and SEforALL the access tracking.',
     sources: [
       { name: 'HEAT GmbH', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' },
-      { name: 'Clean Cooling Collaborative', url: 'https://www.cleancoolingcollaborative.org/', logo: '/images/ccc-logo.png' },
       { name: 'Cool Coalition', url: 'https://coolcoalition.org/', logo: '/images/cool-coalition.png' },
       { name: 'CLASP', url: 'https://www.clasp.ngo/', logo: '/images/clasp-logo.png' }
     ]

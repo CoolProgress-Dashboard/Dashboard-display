@@ -84,7 +84,7 @@ export const countrySpotlights: CountrySpotlight[] = [
       {
         label: 'Indonesia peak load (2050)',
         value: '40.7%',
-        detail: 'CCC projection for cooling share',
+        detail: 'IEA projection for cooling share',
       },
       {
         label: 'Heat mortality increase',
@@ -102,7 +102,7 @@ export const countrySpotlights: CountrySpotlight[] = [
     mepsStatus: 'developing',
     dominantRefrigerant: 'R-32 (transitioning); R-290 (emerging in Indonesia)',
     keyChallenge: 'Bridging efficiency gaps while cooling demand grows 7%+ annually',
-    source: 'IEA; CCC; Meticulous Research',
+    source: 'IEA; Meticulous Research',
   },
   {
     id: 'africa',
@@ -144,12 +144,12 @@ export const countrySpotlights: CountrySpotlight[] = [
       {
         label: 'Brazil peak load (2050)',
         value: '30.8%',
-        detail: 'CCC projection for cooling share',
+        detail: 'IEA projection for cooling share',
       },
       {
         label: 'Mexico peak load (2050)',
         value: '24.3%',
-        detail: 'CCC projection for cooling share',
+        detail: 'IEA projection for cooling share',
       },
       {
         label: 'Mexico MEPS history',
@@ -162,7 +162,7 @@ export const countrySpotlights: CountrySpotlight[] = [
     mepsStatus: 'developing',
     dominantRefrigerant: 'R-410A (transitioning to R-32)',
     keyChallenge: 'Accelerating the Kigali Amendment HFC phasedown while expanding access',
-    source: 'CCC; IEA; CLASP; IGSD',
+    source: 'IEA; CLASP; IGSD',
   },
 ];
 

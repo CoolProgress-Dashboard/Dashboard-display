@@ -2,9 +2,7 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { VIEW_META } from '$lib/components/shared/config';
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
-  import { pillarContent } from '$lib/data/pillar-content';
   import { partners, globalCoolingPledge } from '$lib/data/partner-data';
   import PillarHeader from '$lib/components/shared/PillarHeader.svelte';
   import PillarInsight from '$lib/components/shared/PillarInsight.svelte';
@@ -22,9 +20,6 @@
   export let countries: any[] = [];
   export let kigali: any[] = [];
   export let meps: any[] = [];
-
-  const meta = VIEW_META.policy;
-  const policyContent = pillarContent.policy;
 
   // Animated stat cards
   const policyStats = [
@@ -56,7 +51,7 @@
       icon: 'fa-file-contract',
       title: 'Kigali & GCP Status',
       description: 'Track ratification and pledge commitments by country',
-      color: '#2D7D5A'
+      color: '#0369a1'
     },
     {
       icon: 'fa-clipboard-list',
@@ -72,8 +67,8 @@
     }
   ];
 
-  // Policy pillar partners: CCC → UNFCCC → CLASP NDC → Climate Policy Radar → HEAT (last)
-  const policyPartnerIds = ['ccc', 'cool-coalition', 'clasp', 'climate-policy-radar', 'heat'];
+  // Policy pillar partners: Cool Coalition → CLASP NDC → Climate Policy Radar → HEAT (last)
+  const policyPartnerIds = ['cool-coalition', 'clasp', 'climate-policy-radar', 'heat'];
   const policyPartners = policyPartnerIds
     .map(id => partners.find(p => p.id === id))
     .filter((p): p is NonNullable<typeof p> => p != null);
@@ -433,8 +428,8 @@
         if (!container) return;
         container.innerHTML = `
           <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
-            <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #2D7D5A; margin-bottom: 0.75rem; display: block;"></i>
-            <h4 style="color: #2D7D5A; margin-bottom: 0.5rem;">Select a Country</h4>
+            <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #0369a1; margin-bottom: 0.75rem; display: block;"></i>
+            <h4 style="color: #0369a1; margin-bottom: 0.5rem;">Select a Country</h4>
             <p style="font-size: 0.85rem;">Click on any country in the map above to view policy framework details including GCP, NDC, and NCAP status.</p>
           </div>
         `;
@@ -466,7 +461,7 @@
         const ndcLabel  = ndcStatus === 'Mentioned' ? 'Cooling Mentioned' : ndcStatus === 'Not mentioned' ? 'Not yet mentioned' : (ndcStatus || 'No Data');
 
         container.innerHTML = `
-          <div style="background: #3D6B6B; color: #fff; border-radius: 8px 8px 0 0; padding: 0.5rem 0.75rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 700;">
+          <div style="background: #0369a1; color: #fff; border-radius: 8px 8px 0 0; padding: 0.5rem 0.75rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 700;">
             <i class="fa-solid fa-location-dot" style="font-size: 0.9rem;"></i>
             ${country.country_name || code}
           </div>
@@ -1021,22 +1016,22 @@
           container.innerHTML = `
             <div class="policy-charts-flat">
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-chart-pie" style="color:#2D7D5A;margin-right:0.5rem;"></i>Kigali Amendment Status</h3>
+                <h3><i class="fa-solid fa-chart-pie" style="color:#0369a1;margin-right:0.5rem;"></i>Kigali Amendment Status</h3>
                 <p class="chart-subtitle">${kigaliParties} of ${kigali.length} countries ratified</p>
                 <div id="chart-kigali-status" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-earth-americas" style="color:#2D7D5A;margin-right:0.5rem;"></i>Kigali Ratification by Region</h3>
+                <h3><i class="fa-solid fa-earth-americas" style="color:#0369a1;margin-right:0.5rem;"></i>Kigali Ratification by Region</h3>
                 <p class="chart-subtitle">Regional breakdown of parties</p>
                 <div id="chart-kigali-regions" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-users-rectangle" style="color:#2D7D5A;margin-right:0.5rem;"></i>Parties by Group Type</h3>
+                <h3><i class="fa-solid fa-users-rectangle" style="color:#0369a1;margin-right:0.5rem;"></i>Parties by Group Type</h3>
                 <p class="chart-subtitle">Article 5 Group 1, Group 2, Non-Article 5</p>
                 <div id="chart-kigali-groups" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-layer-group" style="color:#2D7D5A;margin-right:0.5rem;"></i>Treaty Coverage</h3>
+                <h3><i class="fa-solid fa-layer-group" style="color:#0369a1;margin-right:0.5rem;"></i>Treaty Coverage</h3>
                 <p class="chart-subtitle">Montreal Protocol vs Kigali Amendment</p>
                 <div id="chart-kigali-coverage" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
@@ -1052,7 +1047,7 @@
           container.innerHTML = `
             <div class="policy-charts-flat">
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-handshake" style="color:#2D7D5A;margin-right:0.5rem;"></i>GCP Signatories by Region</h3>
+                <h3><i class="fa-solid fa-handshake" style="color:#0369a1;margin-right:0.5rem;"></i>GCP Signatories by Region</h3>
                 <p class="chart-subtitle">${gcpSignatoryCount} countries have signed the Global Cooling Pledge — breakdown by world region</p>
                 <div id="chart-gcp-by-region" class="chart-surface" style="width:100%;height:320px;min-height:320px;"></div>
               </div>
@@ -1067,12 +1062,12 @@
           container.innerHTML = `
             <div class="policy-charts-flat">
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-tags" style="color:#2D7D5A;margin-right:0.5rem;"></i>NDC Cooling Mentions by Category</h3>
+                <h3><i class="fa-solid fa-tags" style="color:#0369a1;margin-right:0.5rem;"></i>NDC Cooling Mentions by Category</h3>
                 <p class="chart-subtitle">Excluding Kigali Amendment</p>
                 <div id="chart-ndc-categories" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-earth-americas" style="color:#2D7D5A;margin-right:0.5rem;"></i>NDC Status by Region</h3>
+                <h3><i class="fa-solid fa-earth-americas" style="color:#0369a1;margin-right:0.5rem;"></i>NDC Status by Region</h3>
                 <p class="chart-subtitle">Countries mentioning cooling</p>
                 <div id="chart-ndc-regions" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
@@ -1330,45 +1325,49 @@
 
 <section id="view-policy" class="view-section" class:active>
   <div class="pillar-stack">
-    <!-- ═══ Ch01 THE LANDSCAPE ═══ -->
+
+    <!-- ═══ Section 1: THE LANDSCAPE ═══ -->
+    <div class="chapter-card" class:revealed style="border-top: none;">
+      <span class="ns-eyebrow">The Landscape</span>
+      <h2 class="ns-title">Cooling has historically been invisible in climate policy — that is changing.</h2>
+      <p class="ns-body">Historically, cooling was a "blind spot" in climate policy. That changed at COP28 with the launch of the Global Cooling Pledge — a voluntary commitment by national governments to reduce cooling-related emissions by 68% by 2050 through three core pillars: passive cooling, energy efficiency, and a rapid refrigerant transition. As of April 2026, more than 70 countries have signed on, signalling intention to integrate cooling into the heart of national climate strategies.</p>
+      <p class="ns-body">While many countries have signed the pledge, very few have implemented the full regulatory framework required to reach the target emissions reduction. The gap between commitment and implementation remains the central challenge of global cooling governance.</p>
+    </div>
+
+    <!-- ═══ POLICY INSTRUMENT EXPLAINERS ═══ -->
     <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(61,107,107,0.10); color: #3D6B6B;">
-        <span class="chapter-num" style="background: #3D6B6B; color: #fff;">01</span>
-        <span class="chapter-title-text">The Landscape</span>
-      </div>
-      <h2 class="chapter-heading">Cooling has historically been invisible in climate policy — that is changing.</h2>
-
-      <div class="policy-gcp-intro">
-        <div class="policy-gcp-intro-header">
-          <div class="policy-gcp-intro-icon"><i class="fa-solid fa-handshake-angle"></i></div>
+      <span class="ns-eyebrow">Policy Instruments</span>
+      <h2 class="ns-title">Understanding Global Cooling Policy</h2>
+      <div class="policy-explainer-grid">
+        <div class="policy-explainer-card">
+          <div class="policy-explainer-icon"><i class="fa-solid fa-file-contract" style="color:#0369a1;"></i></div>
           <div>
-            <strong>The Global Cooling Pledge</strong> — the most important high-level political signal on cooling to date.
+            <strong>NDCs (Nationally Determined Contributions)</strong>
+            <p>Under the Paris Agreement, countries submit NDCs outlining their climate targets and actions. Cooling-specific mentions in NDCs signal government recognition of the sector's importance.</p>
           </div>
         </div>
-        <p>Launched at COP28 in Dubai in December 2023, the Global Cooling Pledge is a voluntary commitment by national governments to act on cooling across three areas: energy efficiency of cooling equipment, refrigerant transition, and sustainable cooling access for vulnerable populations. As of 2026, 71 countries have signed.</p>
-        <p>The pledge matters because cooling has historically been invisible in climate policy. A signature here is a signal that a country intends to include cooling in its national climate strategy — through NDCs, National Cooling Action Plans, or domestic legislation. The data below tracks how far countries are turning that signal into action.</p>
-        <div class="policy-framework-row">
-          <div class="policy-framework-item">
-            <i class="fa-solid fa-handshake"></i>
-            <strong>Global Cooling Pledge</strong>
-            <span>High-level political commitment (COP28)</span>
+        <div class="policy-explainer-card">
+          <div class="policy-explainer-icon"><i class="fa-solid fa-clipboard-list" style="color:#0369a1;"></i></div>
+          <div>
+            <strong>KIPs (Kigali Implementation Plans)</strong>
+            <p>KIPs are national plans detailing how countries will implement their Kigali Amendment commitments to phase down HFC refrigerants.</p>
           </div>
-          <i class="fa-solid fa-arrow-right policy-framework-arrow"></i>
-          <div class="policy-framework-item">
-            <i class="fa-solid fa-file-contract"></i>
-            <strong>NDCs</strong>
-            <span>Legally binding national climate targets</span>
+        </div>
+        <div class="policy-explainer-card">
+          <div class="policy-explainer-icon"><i class="fa-solid fa-map" style="color:#0369a1;"></i></div>
+          <div>
+            <strong>NCAPs (National Cooling Action Plans)</strong>
+            <p>NCAPs are comprehensive national strategies addressing sustainable cooling across sectors — from energy efficiency standards to access for vulnerable populations.</p>
           </div>
-          <i class="fa-solid fa-arrow-right policy-framework-arrow"></i>
-          <div class="policy-framework-item">
-            <i class="fa-solid fa-map"></i>
-            <strong>NCAPs</strong>
-            <span>National Cooling Action Plans — roadmaps</span>
+        </div>
+        <div class="policy-explainer-card">
+          <div class="policy-explainer-icon"><i class="fa-solid fa-handshake-angle" style="color:#0369a1;"></i></div>
+          <div>
+            <strong>The Global Cooling Pledge</strong>
+            <p>Launched at COP28, the Global Cooling Pledge commits signatory governments to reduce cooling-related emissions 68% by 2050 and improve appliance efficiency. It currently has 71 signatories.</p>
           </div>
         </div>
       </div>
-
-      <p class="chapter-intro">{policyContent.storyHook}</p>
 
       <div class="policy-counters">
         {#each policyStats as stat, i}
@@ -1384,29 +1383,11 @@
       </div>
     </div>
 
-    <!-- ═══ Ch02 WHERE THINGS STAND ═══ -->
+    <!-- ═══ Section 2: WHERE THINGS STAND ═══ -->
     <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(45,125,90,0.10); color: #2D7D5A;">
-        <span class="chapter-num" style="background: #2D7D5A; color: #fff;">02</span>
-        <span class="chapter-title-text">Where Things Stand</span>
-      </div>
-      <h2 class="chapter-heading">Pledges are up — but implementation lags on every measure.</h2>
-
-      <div class="policy-highlights-grid">
-        {#each chartHighlights as highlight}
-          <div class="policy-highlight-card">
-            <div class="policy-highlight-icon" style="color: {highlight.color}">
-              <i class="fa-solid {highlight.icon}"></i>
-            </div>
-            <div class="policy-highlight-text">
-              <strong>{highlight.title}</strong>
-              <span>{highlight.description}</span>
-            </div>
-          </div>
-        {/each}
-      </div>
-
-      <p class="chapter-text">{policyContent.keyNarrative}</p>
+      <span class="ns-eyebrow">Where Things Stand</span>
+      <h2 class="ns-title">Cooling Policy: From Pledges to Implementation</h2>
+      <p class="ns-body">The cooling policy landscape is defined by a multi-layered framework where Nationally Determined Contributions (NDCs) serve as the legally binding anchor under the Paris Agreement. While the Global Cooling Watch 2025 reports that 134 countries now reference cooling in their national climate strategies, a significant implementation gap persists: only 54 countries have enforceable regulations covering the three critical pillars of passive cooling, high-efficiency standards (MEPS), and refrigerant transitions. As of 2026, the focus has shifted toward National Cooling Action Plans (NCAPs), with roughly 30 countries having finalised or initiated these roadmaps to bridge the gap between high-level pledges and ground-level enforcement. Beyond national efforts, the pace of transition is increasingly dictated by regional harmonisation — such as the ASEAN and ECOWAS efficiency standards — and targeted climate finance from the Montreal Protocol's Multilateral Fund and the Green Climate Fund. Ultimately, the effectiveness of the cooling transition depends on policy coherence, ensuring that NDCs, NCAPs, and Kigali Amendment compliance function as a unified system.</p>
     </div>
 
     <!-- DATA: Policy Maps & Charts -->
@@ -1424,7 +1405,7 @@
         <button class="tab-btn policy-map-tab" data-map="ndc" type="button">NDC Cooling Mentions</button>
         <button class="tab-btn policy-map-tab" data-map="NCAP" type="button">NCAP</button>
       </div>
-      <div class="filters-help" style="font-size: 0.8rem; color: #2D7D5A; margin: 0.75rem 0; padding: 0.5rem 0.75rem; background: #F5FAFA; border-radius: 8px; border-left: 3px solid #2D7D5A;">
+      <div class="filters-help" style="font-size: 0.8rem; color: #0369a1; margin: 0.75rem 0; padding: 0.5rem 0 0.5rem 0.75rem; background: transparent; border-left: 3px solid #0369a1;">
         <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
         <strong>Switch tabs</strong> to explore different policy frameworks: GCP signatories, NDC cooling mentions, or National Cooling Action Plans.
       </div>
@@ -1445,6 +1426,7 @@
           </div>
         </div>
       </div>
+      <p class="chart-hint">Hover over a country to see its pledge status, NDC cooling mentions, and NCAP progress. Click a country to explore details.</p>
       <div id="ndc-map-container" class="map-surface"></div>
       <div class="legend legend-row">
         <span class="legend-label">Status:</span>
@@ -1461,8 +1443,8 @@
     <div class="country-card-inline" id="policy-country-detail">
       <div class="country-detail">
         <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
-          <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #2D7D5A; margin-bottom: 0.75rem; display: block;"></i>
-          <h4 style="color: #2D7D5A; margin-bottom: 0.5rem;">Select a Country</h4>
+          <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #0369a1; margin-bottom: 0.75rem; display: block;"></i>
+          <h4 style="color: #0369a1; margin-bottom: 0.5rem;">Select a Country</h4>
           <p style="font-size: 0.85rem;">Click on any country in the map above to view policy framework details including GCP, NDC, and NCAP status.</p>
         </div>
       </div>
@@ -1479,18 +1461,17 @@
       </div>
     </div>
 
-    <div class="charts-section" style="background: #ffffff; padding: 1.25rem; border-radius: 0 0 16px 16px; border: 1px solid #e2e8f0; border-top: none;">
+    <div class="charts-section" style="padding: 1.25rem 0 0;">
+      <p class="chart-hint">Use the filters to compare countries and policy types.</p>
       <div id="policy-charts-container"></div>
     </div>
 
-    <!-- ═══ Ch03 TURNING SIGNALS INTO ACTION ═══ -->
+    <!-- ═══ Section 3: THE WAY FORWARD ═══ -->
     <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(90,143,194,0.10); color: #5A8FC2;">
-        <span class="chapter-num" style="background: #5A8FC2; color: #fff;">03</span>
-        <span class="chapter-title-text">Turning Signals into Action</span>
-      </div>
-      <h2 class="chapter-heading">From pledge to plan — what effective cooling policy looks like.</h2>
-      <p class="story-call-to-insight">{policyContent.callToInsight}</p>
+      <span class="ns-eyebrow">The Way Forward</span>
+      <h2 class="ns-title">Turning Signals into Action</h2>
+      <p class="ns-body">Effective cooling policy has transitioned from a secondary concern to a pillar of essential health and climate infrastructure, defined by three critical hallmarks: integrated governance that aligns Montreal Protocol refrigerant phase-downs with Paris Agreement NDCs, enforceable standards that mandate "passive-first" design and high-efficiency inverter technology, and a commitment to radical equity that prioritises affordable, nature-based cooling for the 1.2 billion people most vulnerable to extreme heat.</p>
+      <p class="ns-body">Moving beyond voluntary pledges, the gold standard in 2026 is an enforceable National Cooling Action Plan (NCAP) that bridges the implementation gap by unifying building codes, energy standards, and refrigerant management into a single, funded roadmap. This dashboard tracks that structural integrity, mapping the journey from high-level political signals to the rigorous, multi-pillar regulations required to ensure global cooling is both sustainable and fast enough to matter.</p>
 
       <div class="policy-pledge-badge">
         <div class="pledge-icon"><i class="fa-solid fa-handshake-angle"></i></div>
@@ -1505,15 +1486,79 @@
         </div>
         <a href={globalCoolingPledge.progressReportUrl} target="_blank" rel="noopener noreferrer" class="pledge-link">Progress Report</a>
       </div>
+
+      <div class="policy-cooling-watch-link">
+        <i class="fa-solid fa-arrow-up-right-from-square" style="color: #0369a1; margin-right: 0.4rem;"></i>
+        For the latest analysis of cooling policy commitments and implementation, see the Cool Coalition's
+        <a href="https://www.coolcoalition.org/cooling-watch/" target="_blank" rel="noopener noreferrer"><strong>Cooling Watch Report</strong></a> ↗
+      </div>
+
+      <div class="policy-registry-note">
+        <i class="fa-solid fa-circle-info" style="color: #0369a1; margin-right: 0.4rem;"></i>
+        To view a country's full NDC or NCAP document, visit the
+        <a href="https://unfccc.int/NDCREG" target="_blank" rel="noopener noreferrer"><strong>UNFCCC NDC Registry</strong></a>
+        or the
+        <a href="https://www.coolcoalition.org/national-cooling-action-plans/" target="_blank" rel="noopener noreferrer"><strong>NCAP tracker</strong></a> ↗
+      </div>
     </div>
 
-    <!-- ═══ LEARN MORE ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(61,107,107,0.10); color: #3D6B6B;">
-        <i class="fa-solid fa-books" style="margin-right: 0.2rem;"></i>
-        <span class="chapter-title-text">Learn More</span>
+    <!-- ═══ KEY STATS BAR ═══ -->
+    <div class="chapter-card ns-stat-bar" class:revealed>
+      <div class="ns-stat-item">
+        <span class="ns-stat-num">70+</span>
+        <span class="ns-stat-label">countries signed the Global Cooling Pledge</span>
       </div>
-      <h2 class="chapter-heading">Go deeper on cooling policy frameworks</h2>
+      <div class="ns-stat-divider"></div>
+      <div class="ns-stat-item">
+        <span class="ns-stat-num">134</span>
+        <span class="ns-stat-label">countries reference cooling in their NDCs</span>
+      </div>
+      <div class="ns-stat-divider"></div>
+      <div class="ns-stat-item">
+        <span class="ns-stat-num">54</span>
+        <span class="ns-stat-label">countries have enforceable cooling regulations</span>
+      </div>
+    </div>
+
+    <!-- ═══ RESOURCES ═══ -->
+    <div class="chapter-card" class:revealed>
+      <span class="ns-eyebrow">Go Deeper</span>
+      <h2 class="ns-title">Resources on Cooling Policy</h2>
+
+      <div class="ns-resource-grid">
+        <a href="https://www.unep.org/resources/report/global-cooling-watch-2025" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+          <strong>UNEP Global Cooling Watch 2025</strong>
+          <p>Outlines the "Sustainable Cooling Pathway" delivering 64% reduction in sector emissions by 2050. Advocates for treating cooling as essential infrastructure.</p>
+        </a>
+        <a href="https://www.unep.org/resources/toolkits-manuals-and-guides/sustainable-cooling-policy-toolkit" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+          <strong>UNEP Sustainable Cooling Policy Toolkit 2026</strong>
+          <p>Maps interventions across refrigerant management, energy efficiency, passive cooling, and cross-cutting policies.</p>
+        </a>
+        <a href="https://www.iea.org/reports/energy-efficiency-policy-toolkit-2025" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+          <strong>IEA Energy Efficiency Policy Toolkit 2025</strong>
+          <p>How-to for implementing MEPS and labelling schemes, including quality infrastructure requirements.</p>
+        </a>
+        <a href="https://www.ccacoalition.org/resources/guidance-sustainable-cooling-enhanced-ndcs" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+          <strong>CCAC: Guidance on Sustainable Cooling for Enhanced NDCs</strong>
+          <p>Roadmap for integrating Lifecycle Refrigerant Management into economy-wide climate targets for NDC 3.0.</p>
+        </a>
+        <a href="https://www.unep.org/resources/report/national-cooling-action-plan-methodology" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+          <strong>National Cooling Action Plan Methodology</strong>
+          <p>Framework for governments to move from pledges to implementation, adapted for High-Ambient-Temperature regions.</p>
+        </a>
+        <a href={globalCoolingPledge.progressReportUrl} target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+          <strong>Global Cooling Pledge Progress Report 2025</strong>
+          <p>Accountability document providing overview of how 70+ signatory countries are translating promises into policy.</p>
+        </a>
+        <a href="https://www.undp.org/publications/summary-national-cooling-action-plans" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+          <strong>UNDP: Summary of National Cooling Action Plans</strong>
+          <p>Comparative analysis of how different nations structure cooling strategies and align NDCs into actionable roadmaps.</p>
+        </a>
+        <a href="https://www.green-cooling-initiative.org/ndcs" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+          <strong>Green Cooling Initiative: NDC Publications</strong>
+          <p>Modular toolkits and sectoral guides to help countries quantify the mitigation potential of their cooling sectors.</p>
+        </a>
+      </div>
 
       <div class="policy-partner-bar">
         <div class="policy-partner-header">
@@ -1543,163 +1588,180 @@
       </div>
     </div>
 
-    <!-- Source Attribution -->
-    <div style="text-align: center; padding: 0.75rem; font-size: 0.7rem; color: #94a3b8;">
-      Sources:
-      <a href="https://coolcoalition.org/global-cooling-pledge/" target="_blank" rel="noopener noreferrer" style="color: #64748b;">Cool Coalition</a>
-      &middot;
-      <a href="https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment-2016" target="_blank" rel="noopener noreferrer" style="color: #64748b;">UNEP Ozone Secretariat</a>
-      &middot;
-      <a href="https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/" target="_blank" rel="noopener noreferrer" style="color: #64748b;">CLASP NDC Toolkit</a>
-      &middot;
-      <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="color: #64748b;">Climate Policy Radar</a>
-      &middot;
-      <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer" style="color: #64748b;">HEAT GmbH</a>
-      &middot;
-      <a href="/methodology" style="color: #2D7D5A; font-weight: 600;">Methodology</a>
-    </div>
   </div>
 </section>
 
 <style>
   /* ===========================
-     POLICY STORY CARD
-     Green accent (policy/governance identity).
+     NARRATIVE SYSTEM (design system tokens)
      =========================== */
-  .policy-story-card {
-    border-left: 4px solid #2D7D5A;
-    padding: 1.75rem;
-    position: relative;
-    overflow: visible;
-  }
 
-  .policy-story-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(45, 125, 90, 0.06) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .policy-story-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .policy-story-text { flex: 1; min-width: 0; }
-
-  .policy-headline {
-    font-size: 1.25rem;
+  /* Eyebrow label */
+  .ns-eyebrow {
+    font-size: 0.9rem;
     font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #0369a1;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+
+  /* Section title h2 */
+  .ns-title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: -0.025em;
+    margin: 0 0 20px;
+    line-height: 1.15;
+  }
+
+  /* Body paragraph */
+  .ns-body {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1e293b;
+    line-height: 1.78;
+    margin: 0 0 16px;
+    max-width: 900px;
+  }
+
+  /* Stat bar */
+  .ns-stat-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 40px 48px !important;
+    flex-wrap: wrap;
+  }
+
+  .ns-stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex: 1;
+    min-width: 160px;
+    padding: 0 24px;
+  }
+
+  .ns-stat-num {
+    font-size: 2.6rem;
+    font-weight: 900;
+    color: #0369a1;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .ns-stat-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #475569;
+    line-height: 1.4;
+  }
+
+  .ns-stat-divider {
+    width: 1px;
+    height: 56px;
+    background: rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+  }
+
+  /* Resource grid */
+  .ns-resource-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 0 0 32px;
+  }
+
+  .ns-resource-card {
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0;
+    padding: 24px 0;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ns-resource-card:hover strong {
+    color: #0284c7;
+  }
+
+  .ns-resource-card strong {
+    font-size: 0.9rem;
+    font-weight: 700;
     color: #0f172a;
     line-height: 1.3;
-    margin: 0 0 0.4rem;
-    letter-spacing: -0.01em;
   }
 
-  .policy-subhead {
-    color: #64748b;
-    font-size: 0.85rem;
-    line-height: 1.5;
+  .ns-resource-card p {
+    font-size: 0.82rem;
+    color: #475569;
+    line-height: 1.6;
     margin: 0;
   }
 
-  /* GCP intro block */
-  .policy-gcp-intro {
-    background: #f8fafc;
-    border-radius: 10px;
-    border: 1px solid #e2e8f0;
-    padding: 1rem 1.25rem;
+  /* ===========================
+     POLICY EXPLAINER CARDS
+     =========================== */
+  .policy-explainer-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
     margin: 0 0 1.25rem;
   }
 
-  .policy-gcp-intro-header {
+  .policy-explainer-card {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 24px 0;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0;
   }
 
-  .policy-gcp-intro-header i {
-    color: #5A8FC2;
-    font-size: 1.1rem;
+  .policy-explainer-card:hover {
+    opacity: 0.85;
   }
 
-  .policy-gcp-intro-header strong {
-    font-size: 0.9rem;
-    color: #1e293b;
+  .policy-explainer-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
   }
 
-  .policy-gcp-intro p {
+  .policy-explainer-card strong {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.35rem;
+  }
+
+  .policy-explainer-card p {
     font-size: 0.82rem;
     color: #475569;
-    line-height: 1.65;
-    margin: 0 0 0.6rem;
+    line-height: 1.6;
+    margin: 0;
   }
 
-  .policy-gcp-intro p:last-of-type {
-    margin-bottom: 0.75rem;
-  }
-
-  .policy-framework-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-top: 0.5rem;
-  }
-
-  .policy-framework-item {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: #fff;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    padding: 0.35rem 0.65rem;
-    font-size: 0.78rem;
-    color: #334155;
-    font-weight: 500;
-  }
-
-  .policy-framework-item i {
-    color: #5A8FC2;
-    font-size: 0.8rem;
-  }
-
-  .policy-framework-arrow {
-    color: #94a3b8;
-    font-size: 0.75rem;
-  }
-
-  .policy-story-hook {
-    font-size: 0.82rem;
-    color: #475569;
-    line-height: 1.65;
-    margin: 0 0 1.25rem;
-    padding: 0.75rem 1rem;
-    background: #f0f7f0;
-    border-radius: 10px;
-    border-left: 3px solid #2D7D5A;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
-  }
-
-  .revealed .policy-story-hook { opacity: 1; transform: translateY(0); }
-
-  /* Counters */
+  /* ===========================
+     COUNTERS
+     =========================== */
   .policy-counters {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 0.75rem;
-    margin: 0 0 1.25rem;
+    margin: 0 0 1rem;
   }
 
   .policy-counter-wrapper {
@@ -1711,8 +1773,8 @@
   .revealed .policy-counter-wrapper { opacity: 1; transform: translateY(0); }
 
   .policy-counters :global(.counter-card) {
-    background: linear-gradient(135deg, #f0f7f0 0%, #f0f7f0 100%);
-    border: 1px solid rgba(45, 125, 90, 0.15);
+    background: rgba(240, 247, 255, 0.7);
+    border: 1px solid rgba(3, 105, 161, 0.12);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     min-height: 100px;
@@ -1720,103 +1782,28 @@
   }
 
   .policy-counters :global(.counter-card:hover) {
-    background: linear-gradient(135deg, #C8E8C4 0%, #f0f7f0 100%);
+    background: rgba(219, 234, 254, 0.9);
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(45, 125, 90, 0.12);
+    box-shadow: 0 6px 20px rgba(3, 105, 161, 0.12);
   }
 
-  .policy-counters :global(.counter-display) { font-size: 1.8rem; color: #2D7D5A; }
-  .policy-counters :global(.counter-label) { font-size: 0.72rem; color: #2D7D5A; }
+  .policy-counters :global(.counter-display) { font-size: 1.8rem; color: #0369a1; }
+  .policy-counters :global(.counter-label) { font-size: 0.72rem; color: #0369a1; }
   .policy-counters :global(.counter-tooltip) { background: #0f172a !important; color: #ffffff !important; z-index: 99999; box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,0,0,0.3); opacity: 1 !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 
-  /* Narrative */
-  .policy-narrative {
-    margin: 0 0 1.25rem;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s;
-  }
-
-  .revealed .policy-narrative { opacity: 1; transform: translateY(0); }
-
-  .policy-narrative-title {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #2D7D5A;
-    margin: 0 0 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .policy-narrative-title i { color: #2D7D5A; font-size: 0.85rem; }
-
-  .policy-narrative p {
-    font-size: 0.78rem;
-    color: #475569;
-    line-height: 1.7;
-    margin: 0;
-  }
-
-  /* Chart highlights */
-  .policy-chart-highlights {
-    margin: 0 0 1.25rem;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.6s ease 0.7s, transform 0.6s ease 0.7s;
-  }
-
-  .revealed .policy-chart-highlights { opacity: 1; transform: translateY(0); }
-
-  .policy-highlights-title {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #2D7D5A;
-    margin: 0 0 0.6rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .policy-highlights-title i { color: #2D7D5A; font-size: 0.85rem; }
-
-  .policy-highlights-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-  }
-
-  .policy-highlight-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.6rem;
-    padding: 0.75rem;
-    background: #fafbfc;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .policy-highlight-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  }
-
-  .policy-highlight-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
-  .policy-highlight-text { display: flex; flex-direction: column; gap: 0.15rem; }
-  .policy-highlight-text strong { font-size: 0.78rem; font-weight: 700; color: #0f172a; }
-  .policy-highlight-text span { font-size: 0.72rem; color: #64748b; line-height: 1.4; }
-
-  /* Pledge badge */
+  /* ===========================
+     PLEDGE BADGE
+     =========================== */
   .policy-pledge-badge {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    background: linear-gradient(135deg, #f0f7f0, #f0f7f0);
-    border: 1px solid #6BADA0;
-    border-radius: 12px;
-    margin: 0 0 1rem;
+    padding: 0.85rem 0;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0;
+    margin: 1rem 0;
     opacity: 0;
     transform: translateY(6px);
     transition: opacity 0.6s ease 0.8s, transform 0.6s ease 0.8s;
@@ -1824,28 +1811,73 @@
 
   .revealed .policy-pledge-badge { opacity: 1; transform: translateY(0); }
 
-  .pledge-icon { font-size: 1.2rem; color: #2D7D5A; flex-shrink: 0; }
+  .pledge-icon { font-size: 1.2rem; color: #0369a1; flex-shrink: 0; }
   .pledge-content { flex: 1; min-width: 0; }
-  .pledge-content strong { display: block; font-size: 0.78rem; color: #2D7D5A; margin-bottom: 0.15rem; }
-  .pledge-content span { font-size: 0.72rem; color: #4ade80; }
+  .pledge-content strong { display: block; font-size: 0.82rem; color: #0369a1; margin-bottom: 0.2rem; }
+  .pledge-content span { font-size: 0.75rem; color: #475569; }
 
   .pledge-link {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    color: #2D7D5A;
+    color: #0369a1;
     text-decoration: none;
     white-space: nowrap;
-    border-bottom: 1px dashed #6BADA0;
+    border-bottom: 1px dashed rgba(3, 105, 161, 0.4);
     transition: color 0.2s;
   }
 
-  .pledge-link:hover { color: #2D7D5A; }
+  .pledge-link:hover { color: #0c4a6e; }
 
-  /* Partner bar */
+  /* ===========================
+     COOLING WATCH / REGISTRY LINKS
+     =========================== */
+  .policy-cooling-watch-link {
+    font-size: 0.88rem;
+    color: #475569;
+    line-height: 1.65;
+    margin: 0.75rem 0 0.5rem;
+    padding: 0.7rem 0 0.7rem 1rem;
+    background: transparent;
+    border-radius: 0;
+    border-left: 3px solid #0369a1;
+  }
+
+  .policy-cooling-watch-link a {
+    color: #0369a1;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(3, 105, 161, 0.3);
+    transition: color 0.2s;
+  }
+
+  .policy-cooling-watch-link a:hover { color: #0c4a6e; }
+
+  .policy-registry-note {
+    font-size: 0.85rem;
+    color: #475569;
+    line-height: 1.65;
+    margin: 0.5rem 0 0;
+    padding: 0.65rem 0 0.65rem 1rem;
+    background: transparent;
+    border-radius: 0;
+    border-left: 3px solid rgba(0, 0, 0, 0.12);
+  }
+
+  .policy-registry-note a {
+    color: #0369a1;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(3, 105, 161, 0.25);
+    transition: color 0.2s;
+  }
+
+  .policy-registry-note a:hover { color: #0c4a6e; }
+
+  /* ===========================
+     PARTNER BAR
+     =========================== */
   .policy-partner-bar {
-    padding: 0.75rem 0;
-    margin: 0 0 0.75rem;
-    border-top: 1px solid #f1f5f9;
+    padding: 1rem 0 0.75rem;
+    margin: 1rem 0 0.75rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
     opacity: 0;
     transform: translateY(6px);
     transition: opacity 0.6s ease 0.9s, transform 0.6s ease 0.9s;
@@ -1854,8 +1886,8 @@
   .revealed .policy-partner-bar { opacity: 1; transform: translateY(0); }
 
   .policy-partner-header { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.6rem; }
-  .policy-partner-header > i { color: #2D7D5A; font-size: 0.8rem; }
-  .policy-partner-title { font-size: 0.78rem; font-weight: 700; color: #333; }
+  .policy-partner-header > i { color: #0369a1; font-size: 0.8rem; }
+  .policy-partner-title { font-size: 0.78rem; font-weight: 700; color: #334155; }
 
   .policy-partner-logos { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
 
@@ -1871,13 +1903,15 @@
   .policy-partner-logo:hover { opacity: 1; transform: translateY(-2px); }
   .policy-partner-logo img { max-width: 80px; max-height: 32px; object-fit: contain; }
 
-  /* Source footer */
+  /* ===========================
+     SOURCE FOOTER
+     =========================== */
   .policy-source-footer {
     text-align: center;
     font-size: 0.68rem;
     color: #94a3b8;
     padding-top: 0.5rem;
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
     opacity: 0;
     transition: opacity 0.6s ease 1.1s;
   }
@@ -1891,29 +1925,33 @@
     transition: color 0.2s ease, border-color 0.2s ease;
   }
 
-  .policy-source-footer a:hover { color: #2D7D5A; border-bottom-color: #2D7D5A; }
-  .policy-source-footer a:last-child { color: #2D7D5A; font-weight: 600; }
+  .policy-source-footer a:hover { color: #0369a1; border-bottom-color: #0369a1; }
+  .policy-source-footer a:last-child { color: #0369a1; font-weight: 600; }
 
-  /* KPI panel */
-  .kpi-panel { padding: 1rem 1.25rem; }
+  /* ===========================
+     CHART ELEMENTS
+     =========================== */
+  .chart-hint {
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin: 0 0 8px 0;
+    font-style: italic;
+  }
 
-  /* Flat chart layout */
   .policy-charts-flat {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 1.5rem;
-    padding: 1.25rem;
-    background: #ffffff;
+    padding: 1.25rem 0;
+    background: transparent;
   }
 
-  .policy-chart-item {
-    padding: 0;
-  }
+  .policy-chart-item { padding: 0; }
 
   .policy-chart-item h3 {
     font-size: 1rem;
     font-weight: 600;
-    color: #2D7D5A;
+    color: #0369a1;
     margin-bottom: 0.25rem;
   }
 
@@ -1923,7 +1961,9 @@
     margin-bottom: 0.5rem;
   }
 
-  /* Country detail status boxes */
+  /* ===========================
+     COUNTRY DETAIL STATUS BOXES
+     =========================== */
   .policy-status-box {
     text-align: center;
     padding: 0.75rem;
@@ -1935,21 +1975,24 @@
     gap: 0.25rem;
   }
 
-  /* Responsive */
+  /* ===========================
+     RESPONSIVE
+     =========================== */
   @media (max-width: 1024px) {
     .policy-counters { grid-template-columns: repeat(2, 1fr); }
-    .policy-highlights-grid { grid-template-columns: 1fr; }
+    .policy-explainer-grid { grid-template-columns: 1fr; }
+    .ns-resource-grid { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 768px) {
-    .policy-story-card { padding: 1.25rem; }
-    .policy-headline { font-size: 1.1rem; }
-    .policy-story-header { flex-direction: column; gap: 0.5rem; }
     .policy-counters { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
     .policy-counters :global(.counter-display) { font-size: 1.4rem; }
     .policy-partner-logos { gap: 1rem; }
     .policy-partner-logo img { max-width: 60px; max-height: 26px; }
     .policy-pledge-badge { flex-direction: column; text-align: center; gap: 0.5rem; }
+    .ns-stat-bar { padding: 28px 24px !important; }
+    .ns-stat-num { font-size: 2rem; }
+    .ns-stat-divider { width: 100%; height: 1px; margin: 12px 0; }
   }
 
   @media (max-width: 600px) {
@@ -1957,5 +2000,8 @@
     .policy-counters :global(.counter-card) { min-height: 85px; padding: 0.75rem 0.5rem; }
     .policy-counters :global(.counter-display) { font-size: 1.2rem; }
     .policy-counters :global(.counter-label) { font-size: 0.65rem; }
+    .ns-title { font-size: 1.6rem; }
+    .ns-resource-grid { grid-template-columns: 1fr; }
+    .ns-resource-card { padding: 20px; }
   }
 </style>

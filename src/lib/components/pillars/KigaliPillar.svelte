@@ -73,8 +73,8 @@
     }
   ];
 
-  // Kigali pillar partners: CCC (client) → UNEP Ozone → GIZ → HEAT (last)
-  const kigaliPartnerIds = ['ccc', 'unep-ozone', 'giz', 'heat'];
+  // Kigali pillar partners: UNEP Ozone → GIZ → HEAT (last)
+  const kigaliPartnerIds = ['unep-ozone', 'giz', 'heat'];
   const kigaliPartners = kigaliPartnerIds
     .map(id => partners.find(p => p.id === id))
     .filter((p): p is NonNullable<typeof p> => p != null);
@@ -828,9 +828,9 @@
             b.style.borderColor = '#e2e8f0';
           });
           btn.classList.add('active');
-          btn.style.background = '#3D6B6B';
+          btn.style.background = '#0369a1';
           btn.style.color = 'white';
-          btn.style.borderColor = '#3D6B6B';
+          btn.style.borderColor = '#0369a1';
           renderRefrigerantMarketShare();
           requestAnimationFrame(() => forceResizeViewCharts());
         });
@@ -847,9 +847,9 @@
             b.style.borderColor = '#e2e8f0';
           });
           btn.classList.add('active');
-          btn.style.background = '#3D6B6B';
+          btn.style.background = '#0369a1';
           btn.style.color = 'white';
-          btn.style.borderColor = '#3D6B6B';
+          btn.style.borderColor = '#0369a1';
           renderRefrigerantMarketShare();
           requestAnimationFrame(() => forceResizeViewCharts());
         });
@@ -948,16 +948,13 @@
   <div class="pillar-stack">
 
     <!-- ═══════════════════════════════════════════════════
-         CHAPTER 1 — THE CHALLENGE
+         SECTION 1 — THE CHALLENGE
          ═══════════════════════════════════════════════════ -->
-    <div class="kigali-chapter-card" class:revealed>
-      <div class="kigali-chapter-label problem-label">
-        <span class="chapter-num">01</span>
-        <span class="chapter-title-text">The Challenge</span>
-      </div>
-      <h2 class="kigali-chapter-heading">Refrigerants are leaking the climate away</h2>
-      <p class="kigali-chapter-intro">Refrigerants are the gases that make air conditioners and refrigerators work. They circulate inside the equipment, absorbing and releasing heat. The problem: they leak — during manufacturing, servicing, and at end-of-life — and most of the gases used today are extremely potent greenhouse gases, thousands of times more warming than CO₂.</p>
-      <p class="kigali-story-hook">{kigaliContent.storyHook}</p>
+    <div class="k-section" class:revealed style="border-top: none;">
+      <span class="k-eyebrow">The Challenge</span>
+      <h2 class="k-title">Refrigerants are leaking the climate away.</h2>
+      <p class="k-body">Refrigerants are the essential "working fluids" that enable cooling by circulating through equipment to absorb and release heat — but they present a massive "invisible" climate risk through leakage during manufacturing, operation, servicing, and disposal.</p>
+      <p class="k-body">While the Montreal Protocol has already eliminated ozone-depleting CFCs and is phasing out HCFCs, their common replacements — hydrofluorocarbons (HFCs) — are potent greenhouse gases with a Global Warming Potential (GWP) thousands of times higher than CO₂. Common refrigerants like R-134a (GWP 1,430) and R-410A (GWP 2,088) mean that even minor leaks contribute significantly to global heating. Left unchecked, HFC growth alone would add 0.5°C of warming by 2100. To avert this, the Kigali Amendment establishes a legally binding pathway to phase down HFC production and consumption by over 80%, driving the global transition toward climate-friendly, low-GWP alternatives.</p>
       <div class="kigali-problem-stats">
         <div class="kigali-problem-stat">
           <div class="kps-value">R-410A</div>
@@ -965,9 +962,9 @@
           <div class="kps-label">The dominant AC refrigerant in most markets today — 2,088× more warming per kg than CO₂</div>
         </div>
         <div class="kigali-problem-stat">
-          <div class="kps-value">R-22</div>
-          <div class="kps-gwp">GWP 1,810</div>
-          <div class="kps-label">Still installed in over 1.5 billion units worldwide — leaks from aging equipment are an immediate risk</div>
+          <div class="kps-value">R-134a</div>
+          <div class="kps-gwp">GWP 1,430</div>
+          <div class="kps-label">Common in mobile air conditioning and refrigeration — still installed in hundreds of millions of units worldwide</div>
         </div>
         <div class="kigali-problem-stat kps-highlight">
           <div class="kps-value">+0.5°C</div>
@@ -977,7 +974,7 @@
       </div>
     </div>
 
-    <!-- DATA 1: What BAU emissions look like — and what Kigali changes -->
+    <!-- DATA 1: Direct emissions chart -->
     <div class="kigali-story-bridge">
       <div class="kigali-bridge-label">
         <span class="bridge-num">DATA</span>
@@ -986,27 +983,24 @@
       </div>
       <div class="chart-card-header" style="padding: 1rem 1rem 0;">
         <p class="chart-subtitle">Global direct (refrigerant) emissions: BAU vs Kigali Implementation vs Kigali+</p>
-        <a href="/methodology#direct-emissions" style="font-size: 0.68rem; color: #2D7D5A; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+        <a href="/methodology#direct-emissions" style="font-size: 0.68rem; color: #0369a1; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px;">
           <i class="fa-solid fa-book-open" style="font-size: 0.6rem;"></i> Methodology
         </a>
       </div>
       <div class="chart-card-body">
+        <p class="chart-hint" style="padding: 0 1rem;">Hover over the chart lines to see exact emission values and percentage reductions versus the business-as-usual scenario for each year.</p>
         <div id="chart-kigali-direct-emissions" class="chart-surface" style="width: 100%; height: 300px; min-height: 300px;"></div>
       </div>
       <p class="kigali-chart-caption">Full Kigali implementation cuts direct refrigerant emissions by over 80% from BAU levels. Combining the phase-down with higher efficiency standards (Kigali+) delivers the deepest reductions — avoiding roughly 1 GtCO₂e per year by 2050.</p>
     </div>
 
     <!-- ═══════════════════════════════════════════════════
-         CHAPTER 2 — GLOBAL PROGRESS
-         How far the world has come on ratification
+         SECTION 2 — GLOBAL PROGRESS
          ═══════════════════════════════════════════════════ -->
-    <div class="kigali-chapter-card" class:revealed>
-      <div class="kigali-chapter-label progress-label">
-        <span class="chapter-num">02</span>
-        <span class="chapter-title-text">Global Progress</span>
-      </div>
-      <h2 class="kigali-chapter-heading">172 parties, 95% of global HFC consumption covered</h2>
-      <p class="kigali-chapter-intro">As of February 2026, 172 countries have ratified the Kigali Amendment — but ratification is only the first step. The real test is whether national phase-down schedules translate into converted manufacturing lines, updated safety codes, and recovery infrastructure for legacy gases.</p>
+    <div class="k-section" class:revealed>
+      <span class="k-eyebrow">Global Progress</span>
+      <h2 class="k-title">Moving from Commitment to Implementation</h2>
+      <p class="k-body">As of April 2026, 172 countries have ratified the Kigali Amendment, bringing 95% of global HFC consumption under a legally binding framework. However, ratification is only the initial milestone. The true measure of success lies in execution: whether national phasedown schedules translate into converted manufacturing lines, modernised safety codes for flammable alternatives, and robust recovery infrastructure. The transition depends on shifting the entire market from high-GWP HFCs to climate-safe, sustainable alternatives.</p>
 
       <!-- Animated stat cards -->
       <div class="kigali-counters">
@@ -1023,7 +1017,7 @@
       </div>
     </div>
 
-    <!-- Map under Chapter 2 -->
+    <!-- Map under Section 2 -->
     <div class="card-panel map-card">
       <div class="card-header">
         <div class="card-title">
@@ -1032,6 +1026,7 @@
         </div>
         <span class="viewing-pill">Viewing: <strong id="kigali-viewing">Global</strong></span>
       </div>
+      <p class="chart-hint" style="padding: 0 1rem; margin-bottom: 0.5rem;">The Kigali Amendment to the Montreal Protocol, adopted in 2016, commits countries to a phase-down of HFC production and consumption. Developed countries began reducing HFCs in 2019, with most developing countries following from 2024 or 2028. Hover over a country to see its ratification status and refrigerant transition data. Click a country to explore details.</p>
       <div id="kigali-map-container" class="map-surface"></div>
       <div class="legend legend-row">
         <span class="legend-label">Status:</span>
@@ -1051,20 +1046,49 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════
-         CHAPTER 3 — THE WAY FORWARD
-         Solution: Kigali Amendment + transition plan + implementation
+         SECTION 3 — THE WAY FORWARD
          ═══════════════════════════════════════════════════ -->
-    <div class="kigali-chapter-card" class:revealed>
-      <div class="kigali-chapter-label solution-label">
-        <span class="chapter-num">03</span>
-        <span class="chapter-title-text">The Way Forward</span>
+    <div class="k-section" class:revealed>
+      <span class="k-eyebrow">The Way Forward</span>
+      <h2 class="k-title">The Kigali Amendment: A Legally Binding Phase-Down</h2>
+      <p class="k-body">There are proven, climate-safe alternatives to high-GWP refrigerants. The Kigali Amendment, adopted in 2016, establishes a legally binding schedule to phase down the most harmful HFCs by over 80%.</p>
+
+      <!-- Phase-down groups: 3-card grid -->
+      <div class="kigali-stages-grid">
+        <div class="kigali-stage-item">
+          <div class="kigali-stage-label" style="background: #0369a1; color: #fff;">Non-Article 5 (Developed countries)</div>
+          <ul class="kigali-stage-milestones">
+            <li><strong>2019</strong> — Freeze at baseline</li>
+            <li><strong>2024</strong> — Reduce to 60%</li>
+            <li><strong>2029</strong> — Reduce to 30%</li>
+            <li><strong>2036</strong> — Reduce to 15% of baseline</li>
+          </ul>
+          <p class="kigali-stage-note">EU, USA, Japan, Australia, most OECD countries.</p>
+        </div>
+        <div class="kigali-stage-item">
+          <div class="kigali-stage-label" style="background: #0284c7; color: #fff;">Article 5 Group 1 (Most developing countries)</div>
+          <ul class="kigali-stage-milestones">
+            <li><strong>2024</strong> — Freeze at baseline</li>
+            <li><strong>2029</strong> — Reduce to 90%</li>
+            <li><strong>2035</strong> — Reduce to 70%</li>
+            <li><strong>2045</strong> — Reduce to 20% of baseline</li>
+          </ul>
+          <p class="kigali-stage-note">Most African, Latin American, Southeast Asian countries.</p>
+        </div>
+        <div class="kigali-stage-item">
+          <div class="kigali-stage-label" style="background: #0ea5e9; color: #fff;">Article 5 Group 2 (India, Pakistan, Gulf States)</div>
+          <ul class="kigali-stage-milestones">
+            <li><strong>2028</strong> — Freeze at baseline</li>
+            <li><strong>2032</strong> — Reduce to 90%</li>
+            <li><strong>2042</strong> — Reduce to 50%</li>
+            <li><strong>2047</strong> — Reduce to 15% of baseline</li>
+          </ul>
+          <p class="kigali-stage-note">India, Pakistan, Iran, Iraq, Gulf states.</p>
+        </div>
       </div>
-      <h2 class="kigali-chapter-heading">The Kigali Amendment: a legally binding phase-down</h2>
-      <p class="kigali-chapter-intro">There are proven, climate-safe alternatives to high-GWP refrigerants. The Kigali Amendment to the Montreal Protocol, adopted in 2016, creates a legally binding schedule for countries to phase down the most harmful HFCs by over 80% — and sets out a clear pathway to natural refrigerants.</p>
-      <p class="kigali-chapter-text">{kigaliContent.keyNarrative}</p>
 
       <!-- Transition pathway stepper -->
-      <div class="kigali-stepper">
+      <div class="kigali-stepper" style="margin-top: 1.5rem;">
         <div class="kigali-step">
           <div class="kigali-step-dot current"></div>
           <div class="kigali-step-label">
@@ -1077,7 +1101,7 @@
           <div class="kigali-step-dot transition"></div>
           <div class="kigali-step-label">
             <span class="kigali-step-stage">Transition</span>
-            <span class="kigali-step-desc">Lower-GWP HFCs (R-32) and HFO blends (&lt;150 GWP)</span>
+            <span class="kigali-step-desc">Lower-GWP HFCs (R-32, GWP 675) and HFO blends (&lt;150 GWP)</span>
           </div>
         </div>
         <div class="kigali-step-arrow"><i class="fa-solid fa-arrow-right"></i></div>
@@ -1085,53 +1109,26 @@
           <div class="kigali-step-dot target"></div>
           <div class="kigali-step-label">
             <span class="kigali-step-stage">Target</span>
-            <span class="kigali-step-desc">Natural refrigerants — R-290 (propane), CO₂, ammonia — near-zero climate impact</span>
+            <span class="kigali-step-desc">Natural refrigerants — R-290 (GWP 3), CO₂ (GWP 1), ammonia (GWP 0) — negligible climate impact</span>
           </div>
         </div>
       </div>
 
-      <!-- Two-stage phase-down schedule -->
-      <div class="kigali-stages-inner">
-        <h3 class="kigali-stages-inner-title">
-          <i class="fa-solid fa-layer-group"></i> The Phase-Down Schedule
-        </h3>
-        <p class="kigali-stages-intro">The Kigali Amendment creates staggered obligations based on development status — not a single global timetable.</p>
-        <div class="kigali-stages-grid">
-          <div class="kigali-stage-item">
-            <div class="kigali-stage-label" style="background: #5A8FC2; color: #fff;">Non-Article 5 (Developed)</div>
-            <ul class="kigali-stage-milestones">
-              <li><strong>2019</strong> — Freeze at baseline</li>
-              <li><strong>2024</strong> — Reduce to 60%</li>
-              <li><strong>2029</strong> — Reduce to 30%</li>
-              <li><strong>2036</strong> — Reduce to 15% (long-term)</li>
-            </ul>
-            <p class="kigali-stage-note">EU, USA, Japan, Australia, most OECD countries.</p>
-          </div>
-          <div class="kigali-stage-item">
-            <div class="kigali-stage-label" style="background: #4A9088; color: #fff;">Article 5 Group 1 (Most Developing)</div>
-            <ul class="kigali-stage-milestones">
-              <li><strong>2024</strong> — Freeze at baseline</li>
-              <li><strong>2029</strong> — Reduce to 90%</li>
-              <li><strong>2035</strong> — Reduce to 70%</li>
-              <li><strong>2045</strong> — Reduce to 20% (long-term)</li>
-            </ul>
-            <p class="kigali-stage-note">Most African, Latin American, Southeast Asian countries.</p>
-          </div>
-          <div class="kigali-stage-item">
-            <div class="kigali-stage-label" style="background: #6BADA0; color: #fff;">Article 5 Group 2 (High-Baseline Developing)</div>
-            <ul class="kigali-stage-milestones">
-              <li><strong>2028</strong> — Freeze at baseline</li>
-              <li><strong>2032</strong> — Reduce to 90%</li>
-              <li><strong>2042</strong> — Reduce to 50%</li>
-              <li><strong>2047</strong> — Reduce to 15% (long-term)</li>
-            </ul>
-            <p class="kigali-stage-note">India, Pakistan, Iran, Iraq, Gulf states.</p>
-          </div>
-        </div>
-      </div>
+      <p class="k-body" style="margin-top: 1.25rem;">The transition pathway runs from high-GWP HFCs toward increasingly sustainable options: lower-GWP HFCs like R-32 (GWP 675), HFO blends with GWPs under 150, and natural refrigerants — R-290 propane (GWP 3), R-600a isobutane (GWP 3), R-744 CO₂ (GWP 1), and R-717 ammonia (GWP 0). Natural refrigerants are the end state. They carry negligible direct climate impact and avoid the PFAS concerns increasingly associated with HFOs.</p>
 
-      <!-- callToInsight conclusion -->
-      <p class="story-call-to-insight">{kigaliContent.callToInsight}</p>
+      <!-- Market momentum callout -->
+      <div class="k-callout">
+        <strong>Market Momentum</strong>: Leading manufacturers in China and India are already producing R-290 split ACs at scale, proving that leapfrogging to natural refrigerants is a viable, ready-to-scale reality.
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         SECTION D — PROGRESS: DECLINING GWP
+         ═══════════════════════════════════════════════════ -->
+    <div class="k-section" class:revealed>
+      <span class="k-eyebrow">Market Progress</span>
+      <h2 class="k-title">Declining Refrigerant GWP: The Transition in Numbers</h2>
+      <p class="k-body">Encouragingly, the average Global Warming Potential (GWP) of refrigerants used in new equipment has been declining in key markets as manufacturers transition to lower-GWP alternatives. The data below shows trends in refrigerant market share across major markets — a direct proxy for the falling average GWP of newly sold equipment.</p>
     </div>
 
     <!-- Market share transition: the solution in action -->
@@ -1143,18 +1140,18 @@
       </div>
       <div class="chart-card-header" style="padding: 1rem 1rem 0; display: flex; justify-content: space-between; align-items: flex-start;">
         <p class="chart-subtitle">Projected refrigerant market share by appliance type</p>
-        <a href="/methodology#refrigerant-transition" style="font-size: 0.68rem; color: #2D7D5A; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; white-space: nowrap;">
+        <a href="/methodology#refrigerant-transition" style="font-size: 0.68rem; color: #0369a1; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; white-space: nowrap;">
           <i class="fa-solid fa-book-open" style="font-size: 0.6rem;"></i> Methodology
         </a>
       </div>
       <div style="display: flex; gap: 0.75rem; padding: 0 0.75rem 0.5rem; flex-wrap: wrap; align-items: center;">
         <div style="display: flex; gap: 0.35rem;">
-          <button class="toggle-btn kigali-appliance-toggle active" data-appliance="ac" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #3D6B6B; border-radius: 5px; background: #3D6B6B; color: white; cursor: pointer;">AC</button>
+          <button class="toggle-btn kigali-appliance-toggle active" data-appliance="ac" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #0369a1; border-radius: 5px; background: #0369a1; color: white; cursor: pointer;">AC</button>
           <button class="toggle-btn kigali-appliance-toggle" data-appliance="fridge" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #e2e8f0; border-radius: 5px; background: white; color: #475569; cursor: pointer;">Fridges</button>
         </div>
         <span style="color: #cbd5e1;">|</span>
         <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;" id="kigali-region-toggles">
-          <button class="toggle-btn kigali-region-toggle active" data-region="" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #3D6B6B; border-radius: 5px; background: #3D6B6B; color: white; cursor: pointer;">Global</button>
+          <button class="toggle-btn kigali-region-toggle active" data-region="" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #0369a1; border-radius: 5px; background: #0369a1; color: white; cursor: pointer;">Global</button>
           <button class="toggle-btn kigali-region-toggle" data-region="China" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #e2e8f0; border-radius: 5px; background: white; color: #475569; cursor: pointer;">China</button>
           <button class="toggle-btn kigali-region-toggle" data-region="India" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #e2e8f0; border-radius: 5px; background: white; color: #475569; cursor: pointer;">India</button>
           <button class="toggle-btn kigali-region-toggle" data-region="Europe" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #e2e8f0; border-radius: 5px; background: white; color: #475569; cursor: pointer;">Europe</button>
@@ -1162,6 +1159,7 @@
         </div>
       </div>
       <div class="chart-card-body">
+        <p class="chart-hint" style="padding: 0 1rem;">Use the appliance (AC / Fridges) and region filters above to compare refrigerant transition trajectories across markets. Hover over the chart to see market share values by refrigerant type for each year.</p>
         <div id="chart-kigali-transition" class="chart-surface" style="width: 100%; height: 300px; min-height: 300px;"></div>
         <div style="font-size: 0.68rem; color: #94a3b8; text-align: center; padding: 0.5rem;">
           Sources: UNEP Ozone Secretariat · IIR · JARN · HEAT GmbH modelling
@@ -1171,63 +1169,59 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════
-         LEARN MORE — Resources + further reading
+         SECTION 4 — LIFECYCLE REFRIGERANT MANAGEMENT
          ═══════════════════════════════════════════════════ -->
-    <div class="kigali-chapter-card kigali-learn-more-card" class:revealed>
-      <div class="kigali-chapter-label resources-label">
-        <i class="fa-solid fa-books" style="margin-right: 0.2rem;"></i>
-        <span class="chapter-title-text">Learn More</span>
-      </div>
-      <h2 class="kigali-chapter-heading">Go deeper on the refrigerant transition</h2>
+    <div class="k-section" class:revealed>
+      <span class="k-eyebrow">Responsible Deployment</span>
+      <h2 class="k-title">Managing the Transition</h2>
+      <p class="k-body">Transitioning to low-GWP alternatives requires addressing specific physical properties. These are not barriers, but technical requirements already being successfully managed in leading markets.</p>
 
-      <!-- Lifecycle Refrigerant Management -->
-      <div class="card-panel kigali-lifecycle-card">
-        <div class="kigali-lifecycle-header">
-          <div class="kigali-lifecycle-icon"><i class="fa-solid fa-recycle"></i></div>
-          <div>
-            <h3 class="kigali-lifecycle-title">Beyond Phase-Down: Lifecycle Refrigerant Management</h3>
-            <p class="kigali-lifecycle-sub">Phase-down stops new high-GWP gases entering the market. But large quantities are already installed in equipment worldwide — and most will leak or be vented unless actively managed.</p>
-          </div>
+      <!-- LRM 3-column base grid -->
+      <div class="kigali-lifecycle-grid" style="margin-bottom: 1.25rem;">
+        <div class="kigali-lifecycle-item">
+          <i class="fa-solid fa-wrench"></i>
+          <strong>Leak Prevention</strong>
+          <span>Regular maintenance, better fittings, and leak detection systems reduce emissions from equipment in active use.</span>
         </div>
-        <div class="kigali-lifecycle-grid">
-          <div class="kigali-lifecycle-item">
-            <i class="fa-solid fa-wrench"></i>
-            <strong>Leak prevention</strong>
-            <span>Regular maintenance, better fittings, and leak detection systems reduce emissions from equipment in use.</span>
-          </div>
-          <div class="kigali-lifecycle-item">
-            <i class="fa-solid fa-box-archive"></i>
-            <strong>End-of-life recovery</strong>
-            <span>Capturing refrigerant when equipment is scrapped prevents venting. Requires collection infrastructure and trained technicians.</span>
-          </div>
-          <div class="kigali-lifecycle-item">
-            <i class="fa-solid fa-industry"></i>
-            <strong>Reclamation &amp; destruction</strong>
-            <span>Recovered gases can be purified for reuse or destroyed. Destruction facilities remain scarce in many regions.</span>
-          </div>
+        <div class="kigali-lifecycle-item">
+          <i class="fa-solid fa-box-archive"></i>
+          <strong>End-of-Life Recovery</strong>
+          <span>Capturing refrigerant when equipment is scrapped prevents venting. Requires collection infrastructure and trained technicians.</span>
         </div>
-        <p class="kigali-lifecycle-note">
-          <i class="fa-solid fa-circle-info"></i>
-          Lifecycle refrigerant management is under-addressed but offers major near-term mitigation potential.
-          See: <a href="https://www.ccacoalition.org/resources/guidance-sustainable-cooling-approaches-enhanced-ndcs" target="_blank" rel="noopener noreferrer">CCAC Guidance on Sustainable Cooling</a>
-          · <a href="https://kigalisim.org/" target="_blank" rel="noopener noreferrer">Kigali SIM</a>
-        </p>
+        <div class="kigali-lifecycle-item">
+          <i class="fa-solid fa-industry"></i>
+          <strong>Reclamation &amp; Destruction</strong>
+          <span>Recovered gases can be purified for reuse or destroyed. Destruction facilities remain scarce in many regions.</span>
+        </div>
       </div>
 
-      <!-- Safety & Deployment -->
-      <aside class="card-panel kigali-safety-card">
-        <div class="kigali-safety-header">
-          <i class="fa-solid fa-triangle-exclamation"></i>
-          <strong>Responsible Deployment: What to Know</strong>
+      <!-- Technical considerations: 2-column grid of 4 cards -->
+      <h3 class="k-sub-heading">Technical Considerations for Alternative Refrigerants</h3>
+      <div class="k-card-grid-2">
+        <div class="k-card">
+          <strong class="k-card-title"><i class="fa-solid fa-fire" style="color:#C25B33;margin-right:0.4rem;"></i>Flammability (A2L/A3)</strong>
+          <p class="k-card-body">R-32 and R-290 require updated building codes, installation standards, and technician training — protocols well-established where these refrigerants are already deployed at scale.</p>
         </div>
-        <p>Some low-GWP alternatives come with additional considerations. This is not a reason to avoid the transition — it is a reason to do it carefully and with the right support.</p>
-        <ul class="kigali-safety-list">
-          <li><strong>Flammability (A2L/A3 refrigerants):</strong> R-32 and R-290 are mildly or highly flammable. This requires updated building codes, installation standards, and technician training — all well-established in countries where these refrigerants are already widely used.</li>
-          <li><strong>PFAS concerns (some HFOs):</strong> Certain HFO refrigerants contain per- and polyfluoroalkyl substances. Natural refrigerants (R-290, CO₂, ammonia) avoid this issue entirely.</li>
-          <li><strong>High pressure (CO₂):</strong> R-744 operates at much higher pressures than conventional refrigerants, requiring specialized equipment and training.</li>
-        </ul>
-        <p class="kigali-safety-footer">These factors are manageable with proper standards, training, and technology selection. They are already addressed in markets that have moved furthest on the transition.</p>
-      </aside>
+        <div class="k-card">
+          <strong class="k-card-title"><i class="fa-solid fa-skull-crossbones" style="color:#92400e;margin-right:0.4rem;"></i>Toxicity (Ammonia/R-717)</strong>
+          <p class="k-card-body">Highly efficient but toxic and corrosive to copper. Requires steel piping, ventilated machine rooms, and rigorous safety training, particularly in industrial refrigeration.</p>
+        </div>
+        <div class="k-card">
+          <strong class="k-card-title"><i class="fa-solid fa-gauge-high" style="color:#0369a1;margin-right:0.4rem;"></i>High Pressure (CO₂/R-744)</strong>
+          <p class="k-card-body">Operates at significantly higher pressures. Requires specialised "transcritical" equipment and technician expertise, but is widely deployed in commercial refrigeration.</p>
+        </div>
+        <div class="k-card">
+          <strong class="k-card-title"><i class="fa-solid fa-flask" style="color:#7c3aed;margin-right:0.4rem;"></i>PFAS Concerns (certain HFOs)</strong>
+          <p class="k-card-body">While some HFOs offer low GWP, they face regulatory scrutiny around PFAS substances. Natural refrigerants (R-290, CO₂, Ammonia) avoid these concerns entirely.</p>
+        </div>
+      </div>
+
+      <p class="kigali-lifecycle-note" style="margin-top:1rem;">
+        <i class="fa-solid fa-circle-info"></i>
+        Lifecycle refrigerant management is under-addressed but offers major near-term mitigation potential.
+        See: <a href="https://www.ccacoalition.org/resources/guidance-sustainable-cooling-approaches-enhanced-ndcs" target="_blank" rel="noopener noreferrer">CCAC Guidance on Sustainable Cooling</a>
+        · <a href="https://kigalisim.org/" target="_blank" rel="noopener noreferrer">Kigali SIM</a>
+      </p>
 
       <!-- Cooling Pledge Badge -->
       <div class="kigali-pledge-badge">
@@ -1237,6 +1231,57 @@
           <span>Target: {globalCoolingPledge.targetEmissionReduction} from BAU &middot; {globalCoolingPledge.signatoryCountries} signatory nations</span>
         </div>
         <a href={globalCoolingPledge.progressReportUrl} target="_blank" rel="noopener noreferrer" class="pledge-link">Progress Report</a>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         SECTION 5 — RESOURCES
+         ═══════════════════════════════════════════════════ -->
+    <div class="k-section" class:revealed>
+      <span class="k-eyebrow">Go Deeper</span>
+      <h2 class="k-title">Resources on the Refrigerant Transition</h2>
+
+      <div class="k-card-grid-2">
+        <div class="k-card k-resource-card">
+          <strong class="k-card-title">EU F-Gas Regulation (2024/573)</strong>
+          <p class="k-card-body">World's most ambitious HFC phase-out. Mandates full phase-out of virgin HFCs by 2050, with GWP limits &lt;150 for most small split ACs by 2027/2029.</p>
+          <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32024R0573" target="_blank" rel="noopener noreferrer" class="k-resource-link">Read the regulation <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="k-card k-resource-card">
+          <strong class="k-card-title">US EPA Technology Transitions Rule (AIM Act)</strong>
+          <p class="k-card-body">Sets GWP limit of 700 for new residential AC systems from 2025/2026, effectively ending R-410A in new equipment across the United States.</p>
+          <a href="https://www.epa.gov/climate-hfcs-reduction/aim-act" target="_blank" rel="noopener noreferrer" class="k-resource-link">EPA AIM Act page <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="k-card k-resource-card">
+          <strong class="k-card-title">New York State Part 494</strong>
+          <p class="k-card-body">Sets GWP limit &lt;10 by 2034/2035 for almost all new cooling equipment using 20-year GWP metrics — one of the most ambitious sub-national targets globally.</p>
+          <a href="https://www.dec.ny.gov/regulations/117151.html" target="_blank" rel="noopener noreferrer" class="k-resource-link">NY DEC regulation <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="k-card k-resource-card">
+          <strong class="k-card-title">Green Cooling Initiative (GCI)</strong>
+          <p class="k-card-body">Global platform on natural refrigerants with a worldwide database of projects and country-specific data on the transition to climate-friendly cooling.</p>
+          <a href="https://www.green-cooling-initiative.org/" target="_blank" rel="noopener noreferrer" class="k-resource-link">GCI platform <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="k-card k-resource-card">
+          <strong class="k-card-title">IIR: New Parties to Kigali (2026)</strong>
+          <p class="k-card-body">Update on the 9 new countries that ratified in 2025, including High-Ambient-Temperature exemptions relevant to tropical and arid climate markets.</p>
+          <a href="https://iifiir.org" target="_blank" rel="noopener noreferrer" class="k-resource-link">IIR website <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="k-card k-resource-card">
+          <strong class="k-card-title">CCAC: LRM Resource Hub</strong>
+          <p class="k-card-body">Detailed guidance on Recovery, Recycling, and Reclamation of refrigerants and environmentally sound disposal of end-of-life equipment.</p>
+          <a href="https://www.ccacoalition.org/resources/guidance-sustainable-cooling-approaches-enhanced-ndcs" target="_blank" rel="noopener noreferrer" class="k-resource-link">CCAC guidance <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="k-card k-resource-card">
+          <strong class="k-card-title">U4E Guide on National Certification Schemes</strong>
+          <p class="k-card-body">For policymakers establishing mandatory QCR schemes, linking technician certification to environmental goals and safe refrigerant handling.</p>
+          <a href="https://united4efficiency.org/" target="_blank" rel="noopener noreferrer" class="k-resource-link">U4E resources <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="k-card k-resource-card">
+          <strong class="k-card-title">GIZ Proklima: Fit for Green Cooling</strong>
+          <p class="k-card-body">Modular training structure covering safe handling of natural refrigerants (CO₂, Ammonia, Hydrocarbons) for technicians and trainers worldwide.</p>
+          <a href="https://www.giz.de/en/worldwide/367.html" target="_blank" rel="noopener noreferrer" class="k-resource-link">GIZ Proklima <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
       </div>
 
       <!-- Partner logos -->
@@ -1255,7 +1300,6 @@
       </div>
     </div>
 
-
     <!-- Source Attribution -->
     <div style="text-align: center; padding: 0.75rem; font-size: 0.7rem; color: #94a3b8;">
       Sources:
@@ -1267,116 +1311,140 @@
       &middot;
       <a href="https://www.multilateralfund.org/OurWork/default.aspx" target="_blank" rel="noopener noreferrer" style="color: #64748b;">MLF</a>
       &middot;
-      <a href="/methodology" style="color: #2D7D5A; font-weight: 600;">Methodology</a>
+      <a href="/methodology" style="color: #0369a1; font-weight: 600;">Methodology</a>
     </div>
   </div>
 </section>
 
 <style>
   /* ═══════════════════════════════════════════════════════
-     CHAPTER NARRATIVE CARDS — Storytelling layout
+     DESIGN SYSTEM — narrative section cards
      ═══════════════════════════════════════════════════════ */
 
-  .kigali-chapter-card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.5rem 1.75rem;
+  /* Fluid section wrapper */
+  .k-section {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 56px 64px;
     opacity: 0;
     transition: opacity 0.4s ease;
   }
 
-  .kigali-chapter-card.revealed {
+  .k-section.revealed {
     opacity: 1;
   }
 
-  /* All revealed-dependent children inside chapter cards become visible */
-  .kigali-chapter-card.revealed .kigali-story-hook,
-  .kigali-chapter-card.revealed .kigali-counter-wrapper,
-  .kigali-chapter-card.revealed .kigali-narrative,
-  .kigali-chapter-card.revealed .kigali-pledge-badge,
-  .kigali-chapter-card.revealed .kigali-partner-bar,
-  .kigali-chapter-card.revealed .kigali-source-footer {
+  /* All revealed-dependent children inside k-section become visible */
+  .k-section.revealed .kigali-counter-wrapper,
+  .k-section.revealed .kigali-pledge-badge,
+  .k-section.revealed .kigali-partner-bar {
     opacity: 1;
     transform: none;
   }
 
-  /* Chapter label row */
-  .kigali-chapter-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    border-radius: 999px;
-    padding: 0.3rem 0.9rem 0.3rem 0.35rem;
-    margin-bottom: 0.9rem;
-    font-size: 0.78rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-
-  .chapter-num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 50%;
-    font-size: 0.65rem;
-    font-weight: 900;
-    flex-shrink: 0;
-  }
-
-  /* Chapter label color variants */
-  .problem-label   { background: rgba(194, 91, 51, 0.10); color: #C25B33; }
-  .problem-label   .chapter-num { background: #C25B33; color: #fff; }
-  .solution-label  { background: rgba(90, 143, 194, 0.10); color: #5A8FC2; }
-  .solution-label  .chapter-num { background: #5A8FC2; color: #fff; }
-  .progress-label  { background: rgba(45, 125, 90, 0.10); color: #2D7D5A; }
-  .progress-label  .chapter-num { background: #2D7D5A; color: #fff; }
-  .implementation-label { background: rgba(107, 173, 160, 0.10); color: #4A9088; }
-  .implementation-label .chapter-num { background: #4A9088; color: #fff; }
-  .resources-label { background: rgba(61, 107, 107, 0.10); color: #3D6B6B; }
-  .resources-label .chapter-num { background: #3D6B6B; color: #fff; }
-
-  /* Strip version (no full card wrapper) */
-  .kigali-chapter-label-strip {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 0.85rem;
-    padding: 0.75rem 1rem;
-    background: #f8fafc;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    flex-wrap: wrap;
-  }
-
-  .kigali-chapter-strip-text {
-    font-size: 0.78rem;
-    color: #475569;
-    margin: 0;
-    flex: 1;
-    min-width: 200px;
-    line-height: 1.55;
-  }
-
-  /* Chapter heading */
-  .kigali-chapter-heading {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: #0f172a;
-    line-height: 1.3;
-    margin: 0 0 0.75rem;
-    letter-spacing: -0.02em;
-  }
-
-  .kigali-chapter-intro,
-  .kigali-chapter-text {
+  /* Eyebrow label */
+  .k-eyebrow {
     font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #0369a1;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+
+  /* Section title */
+  .k-title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: -0.025em;
+    margin: 0 0 20px;
+    line-height: 1.15;
+  }
+
+  /* Body text */
+  .k-body {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1e293b;
+    line-height: 1.78;
+    margin: 0 0 16px;
+    max-width: 900px;
+  }
+
+  /* Sub-heading inside section */
+  .k-sub-heading {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #334155;
+    margin: 1.25rem 0 0.75rem;
+    letter-spacing: 0.01em;
+  }
+
+  /* Market momentum callout */
+  .k-callout {
+    background: transparent;
+    border: none;
+    border-left: 4px solid #0369a1;
+    border-radius: 0;
+    padding: 0.85rem 0 0.85rem 1.1rem;
+    font-size: 0.9rem;
+    color: #1e293b;
+    line-height: 1.65;
+    margin-top: 1.25rem;
+  }
+
+  /* 2-column card grid */
+  .k-card-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.85rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Generic card */
+  .k-card {
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
+    padding: 20px 0;
+  }
+
+  .k-card-title {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+  }
+
+  .k-card-body {
+    font-size: 0.82rem;
     color: #475569;
-    line-height: 1.7;
-    margin: 0 0 0.85rem;
+    line-height: 1.6;
+    margin: 0 0 0.75rem;
+  }
+
+  /* Resource card link */
+  .k-resource-link {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #0369a1;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border-bottom: 1px solid rgba(3, 105, 161, 0.25);
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .k-resource-link:hover {
+    color: #075985;
+    border-bottom-color: #075985;
   }
 
   /* Problem stats strip */
@@ -1388,15 +1456,15 @@
   }
 
   .kigali-problem-stat {
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 0.85rem 1rem;
-    background: #fafafa;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
+    padding: 1rem 0;
+    background: transparent;
   }
 
   .kigali-problem-stat.kps-highlight {
-    background: rgba(194, 91, 51, 0.04);
-    border-color: rgba(194, 91, 51, 0.2);
+    background: transparent;
   }
 
   .kps-value {
@@ -1421,10 +1489,11 @@
 
   /* Story bridge — chart within narrative flow */
   .kigali-story-bridge {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 0 0 0.85rem;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
+    padding: 1.5rem 0 0.85rem;
     overflow: hidden;
   }
 
@@ -1435,9 +1504,9 @@
     font-size: 0.85rem;
     font-weight: 700;
     color: #334155;
-    background: #f8fafc;
-    border-bottom: 1px solid #e2e8f0;
-    padding: 0.65rem 1.25rem;
+    background: transparent;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    padding: 0.65rem 0;
   }
 
   .bridge-num {
@@ -1485,7 +1554,7 @@
      KIGALI STORY CARD (legacy, kept for safety)
      =========================== */
   .kigali-story-card {
-    border-left: 4px solid #2D7D5A;
+    border-left: 4px solid #0369a1;
     padding: 1.75rem;
     position: relative;
     overflow: visible;
@@ -1539,11 +1608,11 @@
      =========================== */
   /* --- Non-specialist intro --- */
   .kigali-intro-explainer {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: transparent;
+    border: none;
     border-left: 3px solid #5A8FC2;
-    border-radius: 10px;
-    padding: 0.9rem 1.1rem;
+    border-radius: 0;
+    padding: 0.9rem 0 0.9rem 1.1rem;
     margin: 0 0 1rem;
     font-size: 0.82rem;
     color: #334155;
@@ -1570,10 +1639,11 @@
     gap: 0.6rem;
     flex: 1;
     min-width: 140px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 0.75rem;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
+    padding: 0.75rem 0;
   }
 
   .kigali-step-dot {
@@ -1585,7 +1655,7 @@
   }
   .kigali-step-dot.current    { background: #C25B33; }
   .kigali-step-dot.transition { background: #D4A843; }
-  .kigali-step-dot.target     { background: #2D7D5A; }
+  .kigali-step-dot.target     { background: #0369a1; }
 
   .kigali-step-label { display: flex; flex-direction: column; gap: 0.2rem; }
   .kigali-step-stage { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; }
@@ -1600,10 +1670,11 @@
 
   /* --- Two-stage phase-down explainer --- */
   .kigali-stages-card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.25rem 1.4rem;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
+    padding: 1.25rem 0;
     margin-bottom: 0.85rem;
   }
 
@@ -1637,8 +1708,9 @@
   }
 
   .kigali-stage-item {
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
     overflow: hidden;
   }
 
@@ -1697,8 +1769,8 @@
     width: 40px;
     height: 40px;
     border-radius: 10px;
-    background: rgba(45, 125, 90, 0.1);
-    color: #2D7D5A;
+    background: rgba(3, 105, 161, 0.1);
+    color: #0369a1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1717,10 +1789,11 @@
   }
 
   .kigali-lifecycle-item {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 0.85rem;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
+    padding: 0.85rem 0;
     font-size: 0.8rem;
     color: #334155;
     display: flex;
@@ -1729,7 +1802,7 @@
     line-height: 1.5;
   }
 
-  .kigali-lifecycle-item i { color: #2D7D5A; font-size: 0.9rem; margin-bottom: 0.1rem; }
+  .kigali-lifecycle-item i { color: #0369a1; font-size: 0.9rem; margin-bottom: 0.1rem; }
   .kigali-lifecycle-item strong { font-size: 0.82rem; color: #1e293b; }
   .kigali-lifecycle-item span { color: #64748b; }
 
@@ -1743,14 +1816,14 @@
     gap: 0.4rem;
   }
 
-  .kigali-lifecycle-note i { color: #5A8FC2; flex-shrink: 0; margin-top: 0.15rem; }
-  .kigali-lifecycle-note a { color: #2D7D5A; }
+  .kigali-lifecycle-note i { color: #0369a1; flex-shrink: 0; margin-top: 0.15rem; }
+  .kigali-lifecycle-note a { color: #0369a1; }
 
   /* --- Safety aside --- */
   .kigali-safety-card {
-    padding: 1.25rem 1.5rem;
+    padding: 1.25rem 0 1.25rem 1.5rem;
     border-left: 4px solid #D4A843;
-    background: #fffdf5;
+    background: transparent;
   }
 
   .kigali-safety-header {
@@ -1803,10 +1876,10 @@
     color: #334155;
     line-height: 1.7;
     margin: 0.75rem 0 1rem;
-    padding: 0.85rem 1.1rem;
-    background: #f5faf5;
-    border-radius: 10px;
-    border-left: 3px solid #2D7D5A;
+    padding: 0.85rem 0 0.85rem 1.1rem;
+    background: transparent;
+    border-radius: 0;
+    border-left: 3px solid #0369a1;
     opacity: 0;
     transform: translateY(8px);
     transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
@@ -1839,8 +1912,8 @@
   }
 
   .kigali-counters :global(.counter-card) {
-    background: linear-gradient(135deg, #f0f7f0 0%, #f5faf5 100%);
-    border: 1px solid rgba(45, 125, 90, 0.15);
+    background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+    border: 1px solid rgba(3, 105, 161, 0.15);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     min-height: 100px;
@@ -1848,19 +1921,19 @@
   }
 
   .kigali-counters :global(.counter-card:hover) {
-    background: linear-gradient(135deg, #e5f2ec 0%, #edf7f7 100%);
+    background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(45, 125, 90, 0.12);
+    box-shadow: 0 6px 20px rgba(3, 105, 161, 0.12);
   }
 
   .kigali-counters :global(.counter-display) {
     font-size: 1.8rem;
-    color: #2D7D5A;
+    color: #0369a1;
   }
 
   .kigali-counters :global(.counter-label) {
     font-size: 0.72rem;
-    color: #2D7D5A;
+    color: #0369a1;
   }
 
   .kigali-counters :global(.counter-tooltip) {
@@ -1891,7 +1964,7 @@
   .kigali-narrative-title {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #2D7D5A;
+    color: #0369a1;
     margin: 0 0 0.5rem;
     display: flex;
     align-items: center;
@@ -1928,7 +2001,7 @@
   .kigali-highlights-title {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #2D7D5A;
+    color: #0369a1;
     margin: 0 0 0.6rem;
     display: flex;
     align-items: center;
@@ -1950,16 +2023,15 @@
     display: flex;
     align-items: flex-start;
     gap: 0.6rem;
-    padding: 0.75rem;
-    background: #fafbfc;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 0.75rem 0;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
   }
 
   .kigali-highlight-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    opacity: 0.85;
   }
 
   .kigali-highlight-icon {
@@ -1993,10 +2065,11 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    background: linear-gradient(135deg, #f0fdf4, #f0f7f4);
-    border: 1px solid #A8D5A2;
-    border-radius: 12px;
+    padding: 0.75rem 0;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
     margin: 0 0 1rem;
     opacity: 0;
     transform: translateY(6px);
@@ -2010,7 +2083,7 @@
 
   .pledge-icon {
     font-size: 1.2rem;
-    color: #2D7D5A;
+    color: #0369a1;
     flex-shrink: 0;
   }
 
@@ -2022,27 +2095,27 @@
   .pledge-content strong {
     display: block;
     font-size: 0.78rem;
-    color: #15803d;
+    color: #0369a1;
     margin-bottom: 0.15rem;
   }
 
   .pledge-content span {
     font-size: 0.72rem;
-    color: #4ade80;
+    color: #0284c7;
   }
 
   .pledge-link {
     font-size: 0.72rem;
     font-weight: 600;
-    color: #15803d;
+    color: #0369a1;
     text-decoration: none;
     white-space: nowrap;
-    border-bottom: 1px dashed #A8D5A2;
+    border-bottom: 1px dashed rgba(3, 105, 161, 0.4);
     transition: color 0.2s;
   }
 
   .pledge-link:hover {
-    color: #166534;
+    color: #075985;
   }
 
   /* ===========================
@@ -2070,7 +2143,7 @@
   }
 
   .kigali-partner-header > i {
-    color: #2D7D5A;
+    color: #0369a1;
     font-size: 0.8rem;
   }
 
@@ -2132,12 +2205,12 @@
   }
 
   .kigali-source-footer a:hover {
-    color: #2D7D5A;
-    border-bottom-color: #2D7D5A;
+    color: #0369a1;
+    border-bottom-color: #0369a1;
   }
 
   .kigali-source-footer a:last-child {
-    color: #2D7D5A;
+    color: #0369a1;
     font-weight: 600;
   }
 
@@ -2154,9 +2227,25 @@
     .kigali-highlights-grid {
       grid-template-columns: repeat(2, 1fr);
     }
+
+    .k-section {
+      padding: 32px 36px;
+    }
   }
 
   @media (max-width: 768px) {
+    .k-section {
+      padding: 28px 24px;
+    }
+
+    .k-title {
+      font-size: 1.6rem;
+    }
+
+    .k-card-grid-2 {
+      grid-template-columns: 1fr;
+    }
+
     .kigali-story-card {
       padding: 1.25rem;
     }
@@ -2253,9 +2342,9 @@
   }
 
   .kigali-filter-btn {
-    background: #2D7D5A;
+    background: #0369a1;
     color: white;
-    border: 2px solid #2D7D5A;
+    border: 2px solid #0369a1;
     border-radius: 999px;
     padding: 0.3rem 0.9rem;
     font-size: 0.82rem;
@@ -2266,18 +2355,18 @@
 
   .kigali-filter-btn--outline {
     background: transparent;
-    color: #2D7D5A;
+    color: #0369a1;
   }
 
   .kigali-filter-btn--outline:hover {
-    background: rgba(45,125,90,0.08);
+    background: rgba(3,105,161,0.08);
   }
 
-  /* Override toggle-btn styles inside the group toggles to use teal outlined pills */
+  /* Override toggle-btn styles inside the group toggles to use blue outlined pills */
   :global(#kigali-group-toggles .toggle-btn) {
     background: transparent !important;
-    border: 2px solid #2D7D5A !important;
-    color: #2D7D5A !important;
+    border: 2px solid #0369a1 !important;
+    color: #0369a1 !important;
     border-radius: 999px !important;
     padding: 0.3rem 0.9rem !important;
     font-size: 0.82rem !important;
@@ -2287,12 +2376,68 @@
   }
 
   :global(#kigali-group-toggles .toggle-btn.active) {
-    background: #3D6B6B !important;
+    background: #0369a1 !important;
     color: white !important;
     font-weight: 600 !important;
   }
 
   :global(#kigali-group-toggles .toggle-btn:hover:not(.active)) {
-    background: rgba(61,107,107,0.1) !important;
+    background: rgba(3,105,161,0.1) !important;
+  }
+
+  /* ===========================
+     CHART HINTS
+     =========================== */
+  .chart-hint {
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin: 0 0 8px 0;
+    font-style: italic;
+  }
+
+  /* ===========================
+     KEY REGULATORY FRAMEWORKS CARD
+     =========================== */
+  .kigali-regulatory-card {
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
+    padding: 1.5rem 0;
+  }
+
+  .kigali-regulatory-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.85rem;
+    margin-top: 1rem;
+  }
+
+  .kigali-regulatory-item {
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
+    padding: 1rem 0;
+  }
+
+  .kigali-regulatory-item-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.4rem;
+  }
+
+  .kigali-regulatory-item p {
+    font-size: 0.78rem;
+    color: #475569;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .kigali-regulatory-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

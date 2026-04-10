@@ -24,14 +24,6 @@
   const partnerNews = [
     {
       date: '2025',
-      source: 'Clean Cooling Collaborative',
-      title: 'CCC receives $30M from MacKenzie Scott to expand clean cooling access',
-      url: 'https://www.cleancoolingcollaborative.org/blog/clean-cooling-collaborative-receives-30-million-gift-to-expand-access-to-efficient-climate-friendly-cooling/',
-      icon: 'fa-hand-holding-dollar',
-      color: '#E85A4F'
-    },
-    {
-      date: '2025',
       source: 'Cool Coalition',
       title: 'Steering Committee shifts from commitments to action for 2025-2026',
       url: 'https://coolcoalition.org/news/commitments-action-cool-coalition-steering-committee-sets-path-2025-2026',
@@ -56,19 +48,11 @@
     },
     {
       date: '2025',
-      source: 'CCC & ASEAN',
+      source: 'U4E & ASEAN',
       title: 'Cooling commitments reinforced at ASEAN 2nd Regional Workshop in Manila',
       url: 'https://united4efficiency.org/cooling-commitments-reinforced-at-aseans-2nd-regional-workshop-in-manila/',
       icon: 'fa-earth-asia',
       color: '#f59e0b'
-    },
-    {
-      date: '2024',
-      source: 'CCC',
-      title: 'Mid-program impact report shows gigaton-scale savings on track',
-      url: 'https://heathealth.info/resources/ccc-mid-program-impact-report/',
-      icon: 'fa-chart-line',
-      color: '#22c55e'
     }
   ];
 
@@ -281,7 +265,6 @@
 <style>
   /* ================================
      Partner Ecosystem - Scoped Styles
-     CCC Design System Integration
      ================================ */
   .partner-ecosystem {
     padding: 1.5rem;

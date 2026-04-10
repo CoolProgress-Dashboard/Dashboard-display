@@ -46,7 +46,7 @@ export const peakLoadData: PeakLoadEntry[] = [
     projectedYear: 2050,
     projectedPercent: 41,
     // CCC: Indonesia 40.7% by 2050
-    source: 'CCC The Challenge; IEA',
+    source: 'IEA Future of Cooling',
   },
   {
     country: 'China',
@@ -66,7 +66,7 @@ export const peakLoadData: PeakLoadEntry[] = [
     projectedYear: 2050,
     projectedPercent: 31,
     // CCC: Brazil 30.8% by 2050
-    source: 'CCC The Challenge; IEA',
+    source: 'IEA Future of Cooling',
   },
   {
     country: 'USA',
@@ -86,7 +86,7 @@ export const peakLoadData: PeakLoadEntry[] = [
     projectedYear: 2050,
     projectedPercent: 24,
     // CCC: Mexico 24.3% by 2050
-    source: 'CCC The Challenge; IEA',
+    source: 'IEA Future of Cooling',
   },
   {
     country: 'Japan',

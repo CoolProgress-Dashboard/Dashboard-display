@@ -2,7 +2,7 @@
  * CoolProgress Dashboard V2 - View Meta (refreshed)
  *
  * Drop-in replacement for the inline `viewMeta` object in +page.svelte.
- * Combines CCC-style headlines and story hooks from pillar-content.ts
+ * Combines story hooks from pillar-content.ts
  * with the original source attributions (logos, URLs) and additional
  * partner links from pillar-partner-links.ts.
  *
@@ -54,10 +54,6 @@ export const viewMetaV2: ViewMetaMap = {
 				name: 'IEA',
 				url: 'https://www.iea.org/reports/the-future-of-cooling',
 				logo: '/images/iea-logo.png'
-			},
-			{
-				name: 'Clean Cooling Collaborative',
-				url: 'https://cleancoolingcollaborative.org'
 			}
 		]
 	},
@@ -159,10 +155,6 @@ export const viewMetaV2: ViewMetaMap = {
 				logo: '/images/seforall-logo.jpg',
 				logoLarge: true
 			},
-			{
-				name: 'Clean Cooling Collaborative',
-				url: 'https://cleancoolingcollaborative.org'
-			}
 		]
 	},
 

@@ -14,6 +14,7 @@
   import MepsEquipmentChart from '$lib/components/charts/MepsEquipmentChart.svelte';
   import InverterByRegionChart from '$lib/components/charts/InverterByRegionChart.svelte';
   import InverterByCountryChart from '$lib/components/charts/InverterByCountryChart.svelte';
+  import PeakLoadChart from '$lib/components/charts/PeakLoadChart.svelte';
   import type { AcInverterRecord, Meps, Country } from '$lib/services/dashboard-types';
 
   export let active: boolean = false;
@@ -97,19 +98,19 @@
       icon: 'fa-chart-bar',
       title: 'MEPS & Labels by Region',
       description: 'See which regions lead in policy adoption',
-      color: '#2D7D5A'
+      color: '#0369a1'
     },
     {
       icon: 'fa-clock-rotate-left',
       title: 'MEPS Levels Over Time',
       description: 'Track how efficiency standards have evolved across major economies',
-      color: '#52B788'
+      color: '#0284c7'
     },
     {
       icon: 'fa-cogs',
       title: 'Equipment Type Coverage',
       description: 'Compare policy coverage across AC, Fridges, and Fans',
-      color: '#2D7D5A'
+      color: '#0369a1'
     }
   ];
 
@@ -1080,12 +1081,10 @@
 <section id="view-meps" class="view-section" class:active>
   <div class="pillar-stack">
     <!-- ═══ Ch01 THE CHALLENGE ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(212,168,67,0.10); color: #D4A843;">
-        <span class="chapter-num" style="background: #D4A843; color: #fff;">01</span>
-        <span class="chapter-title-text">The Challenge</span>
-      </div>
-      <h2 class="chapter-heading">Most of the world still buys inefficient cooling equipment.</h2>
+    <div class="chapter-card" class:revealed style="border-top: none;">
+      <span class="meps-eyebrow">The Challenge</span>
+      <h2 class="meps-section-title">Most of the global market still prioritises low-cost, inefficient cooling equipment.</h2>
+      <p class="meps-body-text">To shift this trajectory, two tools must work in tandem: Minimum Energy Performance Standards (MEPS) that legally set a floor on efficiency, and Energy Labels that drive consumer demand toward top-performing products.</p>
 
       <div class="meps-explainer">
         <div class="meps-explainer-item">
@@ -1108,8 +1107,6 @@
         </div>
       </div>
 
-      <p class="chapter-intro">{mepsContent.storyHook}</p>
-
       <div class="meps-counters">
         {#each mepsStats as stat, i}
           <div class="meps-counter-wrapper" style="transition-delay: {200 + i * 100}ms">
@@ -1124,16 +1121,36 @@
       </div>
     </div>
 
+    <!-- ═══ THE COST OF INACTION ═══ -->
+    <div class="chapter-card" class:revealed>
+      <span class="meps-eyebrow">The Cost of Inaction</span>
+      <h2 class="meps-section-title">Environmental Dumping</h2>
+      <p class="meps-body-text">When standards are weak or nonexistent, it results in environmental dumping: manufacturers offload their least efficient models in unregulated markets. Every year, millions of these units are installed, locking in 10 to 15 years of excess energy consumption that no retrofit can resolve. With the efficiency gap between the best and worst products currently exceeding a factor of three, implementing robust MEPS and labels is the most effective way to prevent decades of energy waste and unnecessary grid stress.</p>
+    </div>
+
+    <!-- ═══ THE INVERTER REVOLUTION ═══ -->
+    <div class="chapter-card meps-inverter-chapter" class:revealed>
+      <span class="meps-eyebrow">The Story of Two Compressors</span>
+      <h2 class="meps-section-title">The Inverter Revolution</h2>
+      <p class="meps-body-text">For decades, the standard room air conditioner operated like a simple light switch: either 100% ON or OFF. When your room got too warm, the compressor would kick in with a massive surge of power, blast cold air until the target was reached, and then abruptly shut down. This "fixed-speed" cycle is notoriously inefficient — much like driving a car by flooring it and then slamming on the brakes repeatedly.</p>
+      <p class="meps-body-text">The Inverter Revolution changed the game. Instead of a switch, an inverter acts like a dimmer. It uses a variable-speed drive to slow down or speed up the compressor based on the actual cooling need. Once the room is cool, the inverter keeps the compressor running at a low, ultra-efficient hum.</p>
+
+      <div class="meps-inverter-stat-highlight">
+        <div class="meps-inverter-stat-value">25–30%</div>
+        <div class="meps-inverter-stat-label">energy savings over standard fixed-speed models</div>
+        <div class="meps-inverter-stat-note">In high-performance units, savings can climb as high as 44%</div>
+      </div>
+
+      <p class="meps-body-text">By eliminating the wasteful start-stop cycles, inverter ACs typically achieve <strong>25–30% energy savings</strong> over standard fixed-speed models. In high-performance units, these savings can climb as high as 44%. For a typical household in a hot climate, this transition slashes electricity bills and reduces the "peak load" on national power grids.</p>
+    </div>
+
     <!-- DATA: MEPS Stringency Chart -->
     <MepsLevelChart />
 
     <!-- ═══ Ch02 GLOBAL COVERAGE ═══ -->
     <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(45,125,90,0.10); color: #2D7D5A;">
-        <span class="chapter-num" style="background: #2D7D5A; color: #fff;">02</span>
-        <span class="chapter-title-text">Global Coverage</span>
-      </div>
-      <h2 class="chapter-heading">Progress is real — but deeply uneven across regions.</h2>
+      <span class="meps-eyebrow">Global Coverage</span>
+      <h2 class="meps-section-title">Progress is real — but deeply uneven across regions.</h2>
 
       <div class="meps-highlights-grid">
         {#each chartHighlights as highlight}
@@ -1160,7 +1177,7 @@
           </div>
         </div>
         <div class="meps-regional-card">
-          <div class="meps-regional-icon" style="color: #2D7D5A">
+          <div class="meps-regional-icon" style="color: #0369a1">
             <i class="fa-solid fa-earth-africa"></i>
           </div>
           <div class="meps-regional-body">
@@ -1243,7 +1260,7 @@
         {#if mepsShowRegionCard}
           <div class="inverter-chart-flat">
             <div class="chart-card-header">
-              <h3><i class="fa-solid fa-chart-bar" style="color: #2D7D5A; margin-right: 0.5rem;"></i>MEPS &amp; Labels by Region</h3>
+              <h3><i class="fa-solid fa-chart-bar" style="color: #0369a1; margin-right: 0.5rem;"></i>MEPS &amp; Labels by Region</h3>
               <p class="chart-subtitle">Countries with MEPS vs Labels per region</p>
             </div>
             <div class="chart-card-body">
@@ -1253,7 +1270,7 @@
         {/if}
         <div class="inverter-chart-flat">
           <div class="chart-card-header">
-            <h3 id="meps-chart3-title"><i class="fa-solid fa-cogs" style="color: #2D7D5A; margin-right: 0.5rem;"></i>Equipment Type Coverage</h3>
+            <h3 id="meps-chart3-title"><i class="fa-solid fa-cogs" style="color: #0369a1; margin-right: 0.5rem;"></i>Equipment Type Coverage</h3>
             <p class="chart-subtitle" id="meps-chart3-subtitle">Countries with MEPS vs Labels by appliance</p>
           </div>
           <div class="chart-card-body">
@@ -1265,7 +1282,7 @@
       <div class="meps-charts-section charts-section">
         <div class="inverter-chart-flat">
           <div class="chart-card-header">
-            <h3><i class="fa-solid fa-snowflake" style="color: #2D7D5A; margin-right: 0.5rem;"></i>Inverter Share by Region</h3>
+            <h3><i class="fa-solid fa-snowflake" style="color: #0369a1; margin-right: 0.5rem;"></i>Inverter Share by Region</h3>
             <p class="chart-subtitle">Average share of variable-speed (inverter) ACs per region</p>
           </div>
           <div class="chart-card-body">
@@ -1274,7 +1291,7 @@
         </div>
         <div class="inverter-chart-flat">
           <div class="chart-card-header">
-            <h3><i class="fa-solid fa-ranking-star" style="color: #2D7D5A; margin-right: 0.5rem;"></i>Top Countries — Inverter Penetration</h3>
+            <h3><i class="fa-solid fa-ranking-star" style="color: #0369a1; margin-right: 0.5rem;"></i>Top Countries — Inverter Penetration</h3>
             <p class="chart-subtitle">Countries with highest variable-speed AC market share (latest data)</p>
           </div>
           <div class="chart-card-body">
@@ -1286,22 +1303,73 @@
 
     <!-- ═══ Ch03 THE WAY FORWARD ═══ -->
     <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(90,143,194,0.10); color: #5A8FC2;">
-        <span class="chapter-num" style="background: #5A8FC2; color: #fff;">03</span>
-        <span class="chapter-title-text">The Way Forward</span>
-      </div>
-      <h2 class="chapter-heading">Closing the standards gap before markets lock in inefficiency.</h2>
-      <p class="chapter-intro">{mepsContent.keyNarrative}</p>
-      <p class="story-call-to-insight">{mepsContent.callToInsight}</p>
+      <span class="meps-eyebrow">The Way Forward</span>
+      <h2 class="meps-section-title">Closing the Standards Gap: From Lock-in to Leapfrogging</h2>
+      <p class="meps-body-text">Most of the global market remains trapped in a cycle of inefficiency. By the time a consumer buys a cooling unit, the climate impact is already largely determined by the market's "efficiency floor." Efficiency is measured by the Cooling Seasonal Performance Factor (CSPF) or Energy Efficiency Ratio (EER). While best-in-class split ACs achieve a CSPF above 8.0, many unregulated markets still permit units below 3.0. CLASP data suggests that if every nation adopted MEPS aligned with best available technology, we could cut cooling energy consumption by 40–50% by 2050 — avoiding over 1,300 TWh of annual electricity consumption.</p>
+      <p class="meps-body-text">The primary barrier is a global patchwork of inconsistent standards. Over 80 countries have MEPS, but they vary wildly in stringency and enforcement. Closing this gap requires: (1) increasing MEPS stringency to match global benchmarks; (2) ensuring fans, refrigerators, and commercial chillers are covered; (3) strengthening capacity so standards exist in practice, not just on paper. Countries like Rwanda, Ghana, and Senegal are already demonstrating that nations can skip decades of incremental progress and move directly to high-efficiency standards by adopting U4E Model Regulation Guidelines.</p>
     </div>
 
-    <!-- ═══ LEARN MORE ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(61,107,107,0.10); color: #3D6B6B;">
-        <i class="fa-solid fa-books" style="margin-right: 0.2rem;"></i>
-        <span class="chapter-title-text">Learn More</span>
+    <!-- Peak Load Chart -->
+    <div class="meps-chart-wrapper">
+      <div class="chart-card-header">
+        <span class="meps-eyebrow">Grid Impact</span>
+        <h3 class="chart-card-title">Cooling as a Share of Peak Electricity Load</h3>
       </div>
-      <h2 class="chapter-heading">Go deeper on efficiency standards</h2>
+      <div class="chart-card-body">
+        <p class="chart-hint">This chart shows cooling's current and projected share of peak electricity demand by country. Hover over bars to see absolute values and growth projections.</p>
+        <PeakLoadChart />
+      </div>
+    </div>
+
+    <!-- ═══ RESOURCES ═══ -->
+    <div class="chapter-card" class:revealed>
+      <span class="meps-eyebrow">Go Deeper</span>
+      <h2 class="meps-section-title">Resources on Energy Efficiency Standards</h2>
+
+      <div class="meps-resources-grid">
+        <a href="https://united4efficiency.org/resources/model-regulation-guidelines/" target="_blank" rel="noopener noreferrer" class="meps-resource-card">
+          <div class="meps-resource-icon"><i class="fa-solid fa-file-lines"></i></div>
+          <div class="meps-resource-body">
+            <strong class="meps-resource-title">U4E Model Regulation Guidelines</strong>
+            <p class="meps-resource-desc">Ready-to-use regulatory templates for ACs and refrigerators designed specifically for developing and emerging economies.</p>
+          </div>
+        </a>
+        <a href="https://cprc-clasp.ngo/" target="_blank" rel="noopener noreferrer" class="meps-resource-card">
+          <div class="meps-resource-icon"><i class="fa-solid fa-globe"></i></div>
+          <div class="meps-resource-body">
+            <strong class="meps-resource-title">CLASP Policy Resource Center</strong>
+            <p class="meps-resource-desc">Toolkits to compare MEPS and labelling requirements across countries and calculate carbon savings of shifting to higher standards.</p>
+          </div>
+        </a>
+        <a href="https://www.iea.org/reports/energy-efficiency-2025" target="_blank" rel="noopener noreferrer" class="meps-resource-card">
+          <div class="meps-resource-icon"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="meps-resource-body">
+            <strong class="meps-resource-title">IEA: Energy Efficiency 2025/2026</strong>
+            <p class="meps-resource-desc">Annual report providing the global benchmark for how efficiency is progressing across sectors, with latest CSPF and EER trend data.</p>
+          </div>
+        </a>
+        <a href="https://www.iea.org/topics/energy-efficiency/policy-toolkit" target="_blank" rel="noopener noreferrer" class="meps-resource-card">
+          <div class="meps-resource-icon"><i class="fa-solid fa-toolbox"></i></div>
+          <div class="meps-resource-body">
+            <strong class="meps-resource-title">IEA Energy Efficiency Policy Toolkit 2025</strong>
+            <p class="meps-resource-desc">Interactive tool providing a "how-to" for implementing MEPS and labelling schemes, including quality infrastructure requirements.</p>
+          </div>
+        </a>
+        <a href="https://www.aceee.org/research-report/b2401" target="_blank" rel="noopener noreferrer" class="meps-resource-card">
+          <div class="meps-resource-icon"><i class="fa-solid fa-bolt"></i></div>
+          <div class="meps-resource-body">
+            <strong class="meps-resource-title">ACEEE: Grid-Interactive Efficient Buildings</strong>
+            <p class="meps-resource-desc">Research on how high-efficiency cooling can reduce peak demand on the electrical grid.</p>
+          </div>
+        </a>
+        <a href="https://superefficient.org/" target="_blank" rel="noopener noreferrer" class="meps-resource-card">
+          <div class="meps-resource-icon"><i class="fa-solid fa-star"></i></div>
+          <div class="meps-resource-body">
+            <strong class="meps-resource-title">SEAD Initiative</strong>
+            <p class="meps-resource-desc">Voluntary collaboration among governments to accelerate the market for highly efficient appliances. Shows which "Top Ten" products lead in efficiency.</p>
+          </div>
+        </a>
+      </div>
 
       <div class="meps-partner-bar">
         <div class="meps-partner-header">
@@ -1328,79 +1396,12 @@
         <a href="/methodology">Methodology</a>
       </div>
     </div>
-
-    <!-- Source Attribution -->
-    <div style="text-align: center; padding: 0.75rem; font-size: 0.7rem; color: #94a3b8;">
-      Sources:
-      <a href="https://cprc-clasp.ngo/" target="_blank" rel="noopener noreferrer" style="color: #64748b;">CLASP CPRC</a>
-      &middot;
-      <a href="https://united4efficiency.org/resources/model-regulation-guidelines/" target="_blank" rel="noopener noreferrer" style="color: #64748b;">U4E Model Regulations</a>
-      &middot;
-      <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer" style="color: #64748b;">HEAT GmbH</a>
-      &middot;
-      <a href="/methodology" style="color: #2D7D5A; font-weight: 600;">Methodology</a>
-    </div>
   </div>
 </section>
 
 <style>
   /* ===========================
-     MEPS STORY CARD
-     Rich narrative card replacing the basic headline/subhead/KPI format.
-     Uses light background with teal accent (matching MEPS pillar identity).
-     =========================== */
-  .meps-story-card {
-    border-left: 4px solid #2D7D5A;
-    padding: 1.75rem;
-    position: relative;
-    overflow: visible;
-  }
-
-  .meps-story-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(82, 183, 136, 0.06) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  /* ===========================
-     HEADER
-     =========================== */
-  .meps-story-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .meps-story-text {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .meps-headline {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: #0f172a;
-    line-height: 1.3;
-    margin: 0 0 0.4rem;
-    letter-spacing: -0.01em;
-  }
-
-  .meps-subhead {
-    color: #64748b;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    margin: 0;
-  }
-
-  /* ===========================
-     STORY HOOK (narrative paragraph below headline)
+     MEPS EXPLAINER ITEMS
      =========================== */
   .meps-explainer {
     display: flex;
@@ -1413,10 +1414,11 @@
     display: flex;
     align-items: flex-start;
     gap: 0.75rem;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0;
+    padding: 0.75rem 0;
     font-size: 0.82rem;
     color: #334155;
     line-height: 1.6;
@@ -1426,33 +1428,14 @@
     width: 28px;
     height: 28px;
     border-radius: 6px;
-    background: rgba(45, 125, 90, 0.1);
-    color: #2D7D5A;
+    background: rgba(3, 105, 161, 0.1);
+    color: #0369a1;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.75rem;
     flex-shrink: 0;
     margin-top: 0.1rem;
-  }
-
-  .meps-story-hook {
-    font-size: 0.82rem;
-    color: #475569;
-    line-height: 1.65;
-    margin: 0 0 1.25rem;
-    padding: 0.75rem 1rem;
-    background: #f5faf5;
-    border-radius: 10px;
-    border-left: 3px solid #2D7D5A;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
-  }
-
-  .revealed .meps-story-hook {
-    opacity: 1;
-    transform: translateY(0);
   }
 
   /* ===========================
@@ -1479,8 +1462,8 @@
 
   /* Override AnimatedCounter glassmorphic style for light background */
   .meps-counters :global(.counter-card) {
-    background: linear-gradient(135deg, #f0f7f0 0%, #f5faf5 100%);
-    border: 1px solid rgba(45, 125, 90, 0.15);
+    background: linear-gradient(135deg, #f0f7ff 0%, #f5faff 100%);
+    border: 1px solid rgba(3, 105, 161, 0.15);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     min-height: 100px;
@@ -1488,19 +1471,19 @@
   }
 
   .meps-counters :global(.counter-card:hover) {
-    background: linear-gradient(135deg, #e8f5e8 0%, #edf7f0 100%);
+    background: linear-gradient(135deg, #e0f0ff 0%, #eaf5ff 100%);
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(45, 125, 90, 0.12);
+    box-shadow: 0 6px 20px rgba(3, 105, 161, 0.12);
   }
 
   .meps-counters :global(.counter-display) {
     font-size: 1.8rem;
-    color: #2D7D5A;
+    color: #0369a1;
   }
 
   .meps-counters :global(.counter-label) {
     font-size: 0.72rem;
-    color: #2D7D5A;
+    color: #0369a1;
   }
 
   .meps-counters :global(.counter-tooltip) {
@@ -1511,120 +1494,6 @@
     opacity: 1 !important;
     -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
-  }
-
-  /* ===========================
-     KEY NARRATIVE
-     =========================== */
-  .meps-narrative {
-    margin: 0 0 1.25rem;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s;
-  }
-
-  .revealed .meps-narrative {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .meps-narrative-title {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #2D7D5A;
-    margin: 0 0 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .meps-narrative-title i {
-    color: #2D7D5A;
-    font-size: 0.85rem;
-  }
-
-  .meps-narrative p {
-    font-size: 0.78rem;
-    color: #475569;
-    line-height: 1.7;
-    margin: 0;
-  }
-
-  /* ===========================
-     CHART HIGHLIGHTS
-     Three callout cards summarizing what each chart shows.
-     =========================== */
-  .meps-chart-highlights {
-    margin: 0 0 1.25rem;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.6s ease 0.7s, transform 0.6s ease 0.7s;
-  }
-
-  .revealed .meps-chart-highlights {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .meps-highlights-title {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #2D7D5A;
-    margin: 0 0 0.6rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .meps-highlights-title i {
-    color: #2D7D5A;
-    font-size: 0.85rem;
-  }
-
-  .meps-highlights-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-  }
-
-  .meps-highlight-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.6rem;
-    padding: 0.75rem;
-    background: #fafbfc;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .meps-highlight-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  }
-
-  .meps-highlight-icon {
-    font-size: 1.1rem;
-    flex-shrink: 0;
-    margin-top: 0.1rem;
-  }
-
-  .meps-highlight-text {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-  }
-
-  .meps-highlight-text strong {
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: #0f172a;
-  }
-
-  .meps-highlight-text span {
-    font-size: 0.72rem;
-    color: #64748b;
-    line-height: 1.4;
   }
 
   /* ===========================
@@ -1653,7 +1522,7 @@
   }
 
   .meps-partner-header > i {
-    color: #2D7D5A;
+    color: #0369a1;
     font-size: 0.8rem;
   }
 
@@ -1715,12 +1584,12 @@
   }
 
   .meps-source-footer a:hover {
-    color: #2D7D5A;
-    border-bottom-color: #2D7D5A;
+    color: #0369a1;
+    border-bottom-color: #0369a1;
   }
 
   .meps-source-footer a:last-child {
-    color: #2D7D5A;
+    color: #0369a1;
     font-weight: 600;
   }
 
@@ -1800,10 +1669,11 @@
   .meps-regional-card {
     display: flex;
     gap: 0.75rem;
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1rem 1.1rem;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
+    padding: 1rem 0;
     align-items: flex-start;
   }
 
@@ -1879,6 +1749,168 @@
     margin-top: 0.15rem;
   }
 
+  /* ===========================
+     DESIGN SYSTEM — NARRATIVE TYPOGRAPHY
+     Matches OverviewPillar flow-eyebrow / flow-title pattern
+     =========================== */
+  .meps-eyebrow {
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #0369a1;
+    margin-bottom: 16px;
+  }
+
+  .meps-section-title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: -0.025em;
+    margin: 0 0 20px;
+    line-height: 1.15;
+  }
+
+  .meps-body-text {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1e293b;
+    line-height: 1.78;
+    margin: 0 0 16px;
+    max-width: 900px;
+  }
+
+  /* ===========================
+     INVERTER REVOLUTION — STAT HIGHLIGHT
+     =========================== */
+  .meps-inverter-chapter {
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .meps-inverter-stat-highlight {
+    background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+    border-radius: 16px;
+    padding: 28px 36px;
+    margin: 20px 0 24px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .meps-inverter-stat-highlight::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .meps-inverter-stat-value {
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: #fff;
+  }
+
+  .meps-inverter-stat-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.4;
+  }
+
+  .meps-inverter-stat-note {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.7);
+    margin-top: 2px;
+  }
+
+  /* ===========================
+     RESOURCES GRID — 2-column card grid
+     =========================== */
+  .meps-resources-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 0 0 32px;
+  }
+
+  .meps-resource-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
+    padding: 20px 0;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .meps-resource-card:hover .meps-resource-title {
+    color: #0284c7;
+  }
+
+  .meps-resource-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(3,105,161,0.10);
+    color: #0369a1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .meps-resource-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .meps-resource-title {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #0369a1;
+    margin-bottom: 5px;
+    line-height: 1.35;
+  }
+
+  .meps-resource-desc {
+    font-size: 0.78rem;
+    color: #475569;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .meps-resources-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .meps-inverter-stat-value {
+      font-size: 2.2rem;
+    }
+
+    .meps-section-title {
+      font-size: 1.25rem;
+    }
+  }
+
   /* Combined map header */
   .combined-map-header {
     flex-direction: column;
@@ -1903,11 +1935,11 @@
 
   .map-view-description {
     font-size: 0.8rem;
-    color: #2D7D5A;
-    padding: 0.5rem 0.75rem;
-    background: #F0F7F0;
-    border-radius: 8px;
-    border-left: 3px solid #2D7D5A;
+    color: #0369a1;
+    padding: 0.5rem 0 0.5rem 0.75rem;
+    background: transparent;
+    border-radius: 0;
+    border-left: 3px solid #0369a1;
   }
 
   /* Map view toggle buttons */
@@ -1934,14 +1966,14 @@
   }
 
   .map-toggle-btn.active {
-    background: #3D6B6B;
+    background: #0369a1;
     color: #fff;
-    border-color: #3D6B6B;
+    border-color: #0369a1;
   }
 
   .map-toggle-btn:hover:not(.active) {
     background: #f1f5f9;
-    color: #3D6B6B;
+    color: #0369a1;
     border-color: #cbd5e1;
   }
 
@@ -1967,10 +1999,16 @@
      so they sit directly on the section background without a box-in-box effect.
      =========================== */
   .inverter-chart-flat {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+  }
+
+  /* Peak Load chart wrapper — clean divider, no card-panel box */
+  .meps-chart-wrapper {
+    border-top: 1px solid rgba(0,0,0,0.06);
+    padding: 40px 48px;
   }
 </style>

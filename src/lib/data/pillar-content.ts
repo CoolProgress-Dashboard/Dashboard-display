@@ -1,8 +1,7 @@
 /**
  * CoolProgress Dashboard V2 - Pillar Content
  *
- * Narrative content for each dashboard pillar, inspired by the
- * Clean Cooling Collaborative (cleancoolingcollaborative.org).
+ * Narrative content for each dashboard pillar.
  *
  * Data references:
  * - IEA Future of Cooling (2018, updated 2023)

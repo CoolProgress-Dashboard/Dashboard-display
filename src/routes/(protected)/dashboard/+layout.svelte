@@ -16,7 +16,7 @@
   $: currentView = $page.url.pathname.split('/').at(-1) ?? 'overview';
 
   // Header is hidden for pillar views — each pillar has its own story card
-  const PILLAR_VIEWS = ['emissions', 'meps', 'kigali', 'access', 'policy'];
+  const PILLAR_VIEWS = ['emissions', 'meps', 'kigali', 'access', 'policy', 'overview'];
   $: headerVisible = !PILLAR_VIEWS.includes(currentView);
 
   $: viewMeta = VIEW_META[currentView] ?? VIEW_META['overview'];

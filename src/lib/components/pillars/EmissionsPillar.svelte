@@ -10,6 +10,7 @@
   import { SEQ, APPLIANCE, EMISSION_APPLIANCE, ACCESS_RISK, SCENARIO, EMISSION, SAVINGS, STATUS, CHROME, NO_DATA, YES, NO, rgba } from '$lib/components/shared/colors';
   import { loadDashboardData } from '$lib/services/dashboard-data';
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
+  import ApplianceGrowthChart from '$lib/components/charts/ApplianceGrowthChart.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
   import { partners } from '$lib/data/partner-data';
   import PillarHeader from '$lib/components/shared/PillarHeader.svelte';
@@ -689,7 +690,7 @@
         </div>
         <div style="padding:1rem;">
         <div class="country-header" style="margin-bottom:1rem;">
-          <h4 style="color:#2D7D5A;font-size:1.1rem;margin:0;display:flex;align-items:center;gap:0.5rem;">
+          <h4 style="color:#0369a1;font-size:1.1rem;margin:0;display:flex;align-items:center;gap:0.5rem;">
             <i class="fa-solid fa-flag" style="color:#52B788;"></i>
             ${country.country_name}
             <span style="font-size:0.75rem;font-weight:400;color:#64748b;margin-left:0.5rem;">${region}</span>
@@ -705,13 +706,13 @@
         </div>
         <div class="country-charts-grid">
           <div class="chart-box" style="background:#ffffff;border:1px solid #f1f5f9;border-radius:8px;padding:0.75rem;">
-            <div style="font-size:0.75rem;font-weight:600;color:#2D7D5A;margin-bottom:0.5rem;">
+            <div style="font-size:0.75rem;font-weight:600;color:#0369a1;margin-bottom:0.5rem;">
               <i class="fa-solid fa-chart-area" style="margin-right:0.3rem;color:#52B788;"></i>${lineChartTitle}
             </div>
             <div class="emissions-line-chart" style="width:100%;height:200px;"></div>
           </div>
           <div class="chart-box" style="background:#ffffff;border:1px solid #f1f5f9;border-radius:8px;padding:0.75rem;">
-            <div style="font-size:0.75rem;font-weight:600;color:#2D7D5A;margin-bottom:0.5rem;">
+            <div style="font-size:0.75rem;font-weight:600;color:#0369a1;margin-bottom:0.5rem;">
               <i class="fa-solid fa-chart-pie" style="margin-right:0.3rem;color:#52B788;"></i>${localEmissionsYear} Breakdown
             </div>
             <div class="emissions-pie-chart" style="width:100%;height:200px;"></div>
@@ -721,7 +722,7 @@
           <div style="font-size:0.8rem;font-weight:600;color:#2D5252;margin-bottom:0.5rem;">
             <i class="fa-solid fa-lightbulb" style="color:#52B788;margin-right:0.35rem;"></i>Analysis for ${country.country_name}
           </div>
-          <p style="font-size:0.85rem;color:#2D7D5A;line-height:1.6;margin:0;">
+          <p style="font-size:0.85rem;color:#1e293b;line-height:1.6;margin:0;">
             ${trendDescription} ${breakdownDescription}
             <span style="display:block;margin-top:0.5rem;font-size:0.75rem;color:#64748b;">
               <em>Data source: ${dataSourceLabel} • Scenario: ${scenarioLabel}</em>
@@ -785,7 +786,7 @@
       emissionsDetail.innerHTML = `
         <div class="country-placeholder" style="text-align:center;padding:2.5rem 1.5rem;">
           <i class="fa-solid fa-map-location-dot" style="font-size:3rem;color:#52B788;margin-bottom:1rem;display:block;"></i>
-          <h4 style="color:#2D7D5A;margin-bottom:0.75rem;font-size:1.1rem;">Select a Country</h4>
+          <h4 style="color:#0369a1;margin-bottom:0.75rem;font-size:1.1rem;">Select a Country</h4>
           <p style="font-size:0.9rem;color:#64748b;line-height:1.5;max-width:280px;margin:0 auto 1.25rem;">
             Click on any country in the map above to view detailed emissions breakdown and trends.
           </p>
@@ -793,7 +794,7 @@
             <div style="font-size:0.75rem;color:#64748b;margin-bottom:0.5rem;">
               <i class="fa-solid fa-globe" style="margin-right:0.35rem;"></i>Global Total (${localEmissionsYear} • ${scenarioLabel})
             </div>
-            <div style="font-size:1.5rem;font-weight:700;color:#2D7D5A;">
+            <div style="font-size:1.5rem;font-weight:700;color:#0369a1;">
               ${globalTotal.toFixed(1)} Mt CO<sub>2</sub>
             </div>
           </div>
@@ -1309,13 +1310,10 @@
 <section id="view-emissions" class="view-section" class:active>
   <div class="pillar-stack">
     <!-- ═══ Ch01 THE CHALLENGE ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(194,91,51,0.10); color: #C25B33;">
-        <span class="chapter-num" style="background: #C25B33; color: #fff;">01</span>
-        <span class="chapter-title-text">The Challenge</span>
-      </div>
-      <h2 class="chapter-heading">Cooling demand is rising — and so are the emissions that power it.</h2>
-      <p class="chapter-intro">{emissionsContent.storyHook}</p>
+    <div class="chapter-card" class:revealed style="border-top: none;">
+      <span class="ep-eyebrow">The Challenge</span>
+      <h2 class="ep-section-title">Cooling demand is rising — and so are the emissions that power it.</h2>
+      <p class="ep-body">On a fossil-reliant grid, every air conditioner adds CO₂ to the atmosphere, while refrigerant leaks release gases hundreds to thousands of times more potent than carbon. This creates a vicious cycle: rising temperatures drive cooling demand, which accelerates emissions, further heating the planet. Without intervention, cooling-related emissions are on track to double by 2040 and potentially triple by 2050.</p>
 
       <div class="emissions-counters">
         {#each emissionsStats as stat, i}
@@ -1340,7 +1338,7 @@
           <i class="fa-solid fa-earth-americas"></i>
           CO2 Emissions by Country
         </div>
-        <a href="/methodology#emissions-map" style="font-size: 0.68rem; color: #2D7D5A; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; white-space: nowrap;">
+        <a href="/methodology#emissions-map" style="font-size: 0.68rem; color: #0369a1; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; white-space: nowrap;">
           <i class="fa-solid fa-book-open" style="font-size: 0.6rem;"></i> Methodology
         </a>
       </div>
@@ -1361,7 +1359,7 @@
 
       <!-- Filters Inside Map Card -->
       <div class="map-filters" id="emissions-filters-panel">
-        <div class="filters-help" style="font-size: 0.8rem; color: #2D7D5A; margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; background: #F5FAFA; border-radius: 8px; border-left: 3px solid #52B788;">
+        <div class="filters-help" style="font-size: 0.8rem; color: #0369a1; margin-bottom: 0.75rem; padding: 0.5rem 0 0.5rem 0.75rem; background: transparent; border-left: 3px solid #0369a1;">
           <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
           <strong>Customize your view:</strong> These filters control all data displayed on the map, charts, and KPIs above. Adjust the source, year, scenario, and appliances to explore different emission projections.
         </div>
@@ -1428,46 +1426,20 @@
     <div class="country-card-inline" id="emissions-country-detail">
       <div class="country-detail">
         <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
-          <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #52B788; margin-bottom: 0.75rem; display: block;"></i>
-          <h4 style="color: #2D7D5A; margin-bottom: 0.5rem;">Select a Country</h4>
+          <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #0369a1; margin-bottom: 0.75rem; display: block;"></i>
+          <h4 style="color: #0369a1; margin-bottom: 0.5rem;">Select a Country</h4>
           <p style="font-size: 0.85rem;">Click on any country in the map above to view detailed emission breakdowns and projections.</p>
         </div>
       </div>
     </div>
     </div><!-- /map-charts-connected -->
 
-    <!-- ═══ Ch02 WHAT THE DATA SHOWS ═══ -->
+    <!-- ═══ THE WAY FORWARD ═══ -->
     <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(45,125,90,0.10); color: #2D7D5A;">
-        <span class="chapter-num" style="background: #2D7D5A; color: #fff;">02</span>
-        <span class="chapter-title-text">What the Data Shows</span>
-      </div>
-      <h2 class="chapter-heading">Three interlocking crises — energy, climate, and health.</h2>
-
-      <div class="emissions-highlights-grid">
-        {#each chartHighlights as highlight}
-          <div class="emissions-highlight-card">
-            <div class="emissions-highlight-icon" style="color: {highlight.color}">
-              <i class="fa-solid {highlight.icon}"></i>
-            </div>
-            <div class="emissions-highlight-text">
-              <strong>{highlight.title}</strong>
-              <span>{highlight.description}</span>
-            </div>
-          </div>
-        {/each}
-      </div>
-    </div>
-
-    <!-- ═══ Ch03 THE WAY FORWARD ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(90,143,194,0.10); color: #5A8FC2;">
-        <span class="chapter-num" style="background: #5A8FC2; color: #fff;">03</span>
-        <span class="chapter-title-text">The Way Forward</span>
-      </div>
-      <h2 class="chapter-heading">Breaking the vicious cycle of heat, demand, and emissions.</h2>
-      <p class="chapter-intro">{emissionsContent.keyNarrative}</p>
-      <p class="story-call-to-insight">{emissionsContent.callToInsight}</p>
+      <span class="ep-eyebrow">The Way Forward</span>
+      <h2 class="ep-section-title">Breaking the vicious cycle of heat, demand, and emissions.</h2>
+      <p class="ep-body">Cooling-related climate impact is driven by two distinct streams: indirect emissions from the electricity used to power compressors and fans — currently responsible for roughly 70% of the sector's impact — and direct emissions from high-GWP refrigerant leaks, such as R-410A and R-22, during manufacturing, operation, maintenance and disposal. Tackling one without the other solves only half the problem, as air conditioning and refrigeration already account for over 1 GtCO₂e annually, particularly in fast-growing regions (e.g. South Asia, Africa, Southeast Asia) with fossil-heavy grids.</p>
+      <p class="ep-body">Bending the emissions curve requires three simultaneous moves: shifting to ultra-low-GWP refrigerants, doubling equipment energy efficiency, and accelerating grid decarbonisation. According to the IEA Efficient Cooling Scenario, this integrated approach could avoid 460 GtCO₂e in cumulative emissions by 2060 — equivalent to eight years of current global energy-related output — and the data on this dashboard tracks our progress toward that critical trajectory.</p>
 
       <div class="cooling-pledge-badge">
         <div class="pledge-icon"><i class="fa-solid fa-handshake-angle"></i></div>
@@ -1481,14 +1453,90 @@
       </div>
     </div>
 
-    <!-- ═══ LEARN MORE ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div class="chapter-label" style="background: rgba(61,107,107,0.10); color: #3D6B6B;">
-        <i class="fa-solid fa-books" style="margin-right: 0.2rem;"></i>
-        <span class="chapter-title-text">Learn More</span>
+    <!-- Appliance Growth Chart -->
+    <div class="ep-chart-wrapper">
+      <div class="chart-card-header">
+        <span class="ep-eyebrow" style="margin-bottom: 6px;">Appliance Growth</span>
+        <h3 class="chart-card-title">Global Appliance Stock &amp; Emissions Trajectory</h3>
       </div>
-      <h2 class="chapter-heading">Go deeper on cooling and climate</h2>
+      <div class="chart-card-body">
+        <p class="chart-hint">Select an appliance type and metric to explore projected growth in stock, energy use, or emissions through 2050. Toggle the grid decarbonisation scenario to see its impact.</p>
+        <ApplianceGrowthChart />
+      </div>
+    </div>
 
+    <!-- ═══ RESOURCES ═══ -->
+    <div class="chapter-card" class:revealed>
+      <span class="ep-eyebrow">Go Deeper</span>
+      <h2 class="ep-section-title">Resources on Cooling &amp; Climate</h2>
+
+      <div class="ep-resources-grid">
+        <a href="https://www.unep.org/resources/report/global-cooling-watch-2025" target="_blank" rel="noopener noreferrer" class="ep-resource-card">
+          <i class="fa-solid fa-arrow-up-right-from-square ep-resource-icon"></i>
+          <div class="ep-resource-content">
+            <strong class="ep-resource-title">UNEP Global Cooling Watch 2025</strong>
+            <span class="ep-resource-desc">Report on the "Sustainable Cooling Pathway." Tracks global progress on the Global Cooling Pledge and provides the roadmap for reducing cooling emissions by 60–97%.</span>
+          </div>
+        </a>
+
+        <a href="https://climateactiontracker.org" target="_blank" rel="noopener noreferrer" class="ep-resource-card">
+          <i class="fa-solid fa-arrow-up-right-from-square ep-resource-icon"></i>
+          <div class="ep-resource-content">
+            <strong class="ep-resource-title">Climate Action Tracker (CAT)</strong>
+            <span class="ep-resource-desc">Tool to track whether government climate action meets Paris Agreement goals. Provides a "thermometer" view of global warming based on current policies vs. required targets.</span>
+          </div>
+        </a>
+
+        <a href="https://www.climatewatchdata.org" target="_blank" rel="noopener noreferrer" class="ep-resource-card">
+          <i class="fa-solid fa-arrow-up-right-from-square ep-resource-icon"></i>
+          <div class="ep-resource-content">
+            <strong class="ep-resource-title">Climate Watch</strong>
+            <span class="ep-resource-desc">Platform for visualising and comparing NDCs. Allows users to track historical emissions and see how countries are integrating cooling and HFC targets into climate roadmaps.</span>
+          </div>
+        </a>
+
+        <a href="https://ozone.unep.org/topics/kigali-amendment" target="_blank" rel="noopener noreferrer" class="ep-resource-card">
+          <i class="fa-solid fa-arrow-up-right-from-square ep-resource-icon"></i>
+          <div class="ep-resource-content">
+            <strong class="ep-resource-title">The Kigali Amendment (OzonAction)</strong>
+            <span class="ep-resource-desc">Primary resource for tracking HFC phasedown schedules, country ratification status, and technical assistance for Article 5 countries.</span>
+          </div>
+        </a>
+
+        <a href="https://www.iea.org/reports/the-future-of-cooling" target="_blank" rel="noopener noreferrer" class="ep-resource-card">
+          <i class="fa-solid fa-arrow-up-right-from-square ep-resource-icon"></i>
+          <div class="ep-resource-content">
+            <strong class="ep-resource-title">IEA: The Future of Cooling</strong>
+            <span class="ep-resource-desc">Essential for understanding the Efficient Cooling Scenario. Provides the data behind why doubling efficiency is necessary to mitigate the surge of 3 billion new AC units.</span>
+          </div>
+        </a>
+
+        <a href="https://www.iea.org/reports/electricity-2026" target="_blank" rel="noopener noreferrer" class="ep-resource-card">
+          <i class="fa-solid fa-arrow-up-right-from-square ep-resource-icon"></i>
+          <div class="ep-resource-content">
+            <strong class="ep-resource-title">IEA Electricity 2026 Report</strong>
+            <span class="ep-resource-desc">Tracks the decarbonisation of the global power grid and how peak loads are affected by cooling.</span>
+          </div>
+        </a>
+
+        <a href="https://cool-coalition.org/resources/beating-the-heat-handbook/" target="_blank" rel="noopener noreferrer" class="ep-resource-card">
+          <i class="fa-solid fa-arrow-up-right-from-square ep-resource-icon"></i>
+          <div class="ep-resource-content">
+            <strong class="ep-resource-title">Cool Coalition: Beating the Heat Handbook</strong>
+            <span class="ep-resource-desc">Practical guide for passive cooling strategies that can reduce indoor temperatures by 5–8°C.</span>
+          </div>
+        </a>
+
+        <a href="https://www.ccacoalition.org/resources/guidance-sustainable-cooling-ndcs" target="_blank" rel="noopener noreferrer" class="ep-resource-card">
+          <i class="fa-solid fa-arrow-up-right-from-square ep-resource-icon"></i>
+          <div class="ep-resource-content">
+            <strong class="ep-resource-title">CCAC: Guidance on Sustainable Cooling in NDCs</strong>
+            <span class="ep-resource-desc">Framework for countries to integrate cooling into NDCs, ensuring HFC phasedowns and efficiency gains are anchored in Paris commitments.</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Data Partners -->
       <div class="emissions-partner-bar">
         <div class="emissions-partner-header">
           <i class="fa-solid fa-handshake"></i>
@@ -1514,98 +1562,110 @@
         <a href="/methodology">Methodology</a>
       </div>
     </div>
-
-    <!-- Source Attribution -->
-    <div style="text-align: center; padding: 0.75rem; font-size: 0.7rem; color: #94a3b8;">
-      Sources:
-      <a href="https://www.cleancoolingcollaborative.org" target="_blank" rel="noopener noreferrer" style="color: #64748b;">Clean Cooling Collaborative</a>
-      &middot;
-      <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer" style="color: #64748b;">CLASP Mepsy</a>
-      &middot;
-      <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer" style="color: #64748b;">HEAT GmbH</a>
-      &middot;
-      <a href="https://www.iea.org/reports/world-energy-outlook-2025" target="_blank" rel="noopener noreferrer" style="color: #64748b;">IEA STEPS</a>
-      &middot;
-      <a href="/methodology" style="color: #2D7D5A; font-weight: 600;">Methodology</a>
-    </div>
   </div>
 </section>
 
 <style>
   /* ===========================
-     EMISSIONS STORY CARD
-     Rich narrative card with red/orange accent (matching emissions pillar identity).
+     DESIGN SYSTEM — matching OverviewPillar
      =========================== */
-  .emissions-story-card {
-    border-left: 4px solid #C25B33;
-    padding: 1.75rem;
-    position: relative;
-    overflow: visible;
+  .ep-eyebrow {
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #0369a1;
+    display: inline-block;
+    margin-bottom: 16px;
   }
 
-  .emissions-story-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(194, 91, 51, 0.06) 0%, transparent 70%);
-    pointer-events: none;
+  .ep-section-title {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    margin: 0 0 20px;
+  }
+
+  .ep-body {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1e293b;
+    line-height: 1.78;
+    margin: 0 0 16px;
+    max-width: 900px;
+  }
+
+  /* Chart wrapper — replaces card-panel for chart sections */
+  .ep-chart-wrapper {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 56px 64px;
+  }
+
+  @media (max-width: 768px) {
+    .ep-chart-wrapper {
+      padding: 32px 20px;
+    }
   }
 
   /* ===========================
-     HEADER
+     RESOURCE CARDS GRID
      =========================== */
-  .emissions-story-header {
+  .ep-resources-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 0 0 32px;
+  }
+
+  .ep-resource-card {
     display: flex;
     align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    gap: 14px;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0;
+    padding: 20px 0;
+    text-decoration: none;
+    color: inherit;
   }
 
-  .emissions-story-text {
-    flex: 1;
-    min-width: 0;
+  .ep-resource-card:hover .ep-resource-title {
+    color: #0284c7;
   }
 
-  .emissions-headline {
-    font-size: 1.25rem;
-    font-weight: 800;
+  .ep-resource-icon {
+    color: #0369a1;
+    font-size: 0.82rem;
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+
+  .ep-resource-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .ep-resource-title {
+    font-size: 0.9rem;
+    font-weight: 700;
     color: #0f172a;
     line-height: 1.3;
-    margin: 0 0 0.4rem;
-    letter-spacing: -0.01em;
   }
 
-  .emissions-subhead {
-    color: #64748b;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    margin: 0;
-  }
-
-  /* ===========================
-     STORY HOOK
-     =========================== */
-  .emissions-story-hook {
-    font-size: 0.82rem;
+  .ep-resource-desc {
+    font-size: 0.8rem;
     color: #475569;
-    line-height: 1.65;
-    margin: 0 0 1.25rem;
-    padding: 0.75rem 1rem;
-    background: #fdf6f0;
-    border-radius: 10px;
-    border-left: 3px solid #C25B33;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+    line-height: 1.55;
   }
 
-  .revealed .emissions-story-hook {
-    opacity: 1;
-    transform: translateY(0);
+  @media (max-width: 900px) {
+    .ep-resources-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   /* ===========================
@@ -1665,129 +1725,17 @@
   }
 
   /* ===========================
-     KEY NARRATIVE
-     =========================== */
-  .emissions-narrative {
-    margin: 0 0 1.25rem;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s;
-  }
-
-  .revealed .emissions-narrative {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .emissions-narrative-title {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #8B5E3C;
-    margin: 0 0 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .emissions-narrative-title i {
-    color: #C25B33;
-    font-size: 0.85rem;
-  }
-
-  .emissions-narrative p {
-    font-size: 0.78rem;
-    color: #475569;
-    line-height: 1.7;
-    margin: 0;
-  }
-
-  /* ===========================
-     CHART HIGHLIGHTS
-     =========================== */
-  .emissions-chart-highlights {
-    margin: 0 0 1.25rem;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.6s ease 0.7s, transform 0.6s ease 0.7s;
-  }
-
-  .revealed .emissions-chart-highlights {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .emissions-highlights-title {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #8B5E3C;
-    margin: 0 0 0.6rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .emissions-highlights-title i {
-    color: #C25B33;
-    font-size: 0.85rem;
-  }
-
-  .emissions-highlights-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-  }
-
-  .emissions-highlight-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.6rem;
-    padding: 0.75rem;
-    background: #fafbfc;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .emissions-highlight-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  }
-
-  .emissions-highlight-icon {
-    font-size: 1.1rem;
-    flex-shrink: 0;
-    margin-top: 0.1rem;
-  }
-
-  .emissions-highlight-text {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-  }
-
-  .emissions-highlight-text strong {
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: #0f172a;
-  }
-
-  .emissions-highlight-text span {
-    font-size: 0.72rem;
-    color: #64748b;
-    line-height: 1.4;
-  }
-
-  /* ===========================
      COOLING PLEDGE BADGE
      =========================== */
   .cooling-pledge-badge {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-    border: 1px solid #bbf7d0;
-    border-radius: 10px;
+    padding: 0.75rem 0;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0;
     margin: 0 0 1.25rem;
     opacity: 0;
     transform: translateY(6px);
@@ -1873,7 +1821,7 @@
   }
 
   .emissions-partner-header > i {
-    color: #2D7D5A;
+    color: #0369a1;
     font-size: 0.8rem;
   }
 
@@ -1935,12 +1883,12 @@
   }
 
   .emissions-source-footer a:hover {
-    color: #2D7D5A;
-    border-bottom-color: #2D7D5A;
+    color: #0369a1;
+    border-bottom-color: #0369a1;
   }
 
   .emissions-source-footer a:last-child {
-    color: #2D7D5A;
+    color: #0369a1;
     font-weight: 600;
   }
 
@@ -1973,26 +1921,9 @@
     .emissions-counters {
       grid-template-columns: repeat(2, 1fr);
     }
-
-    .emissions-highlights-grid {
-      grid-template-columns: 1fr;
-    }
   }
 
   @media (max-width: 768px) {
-    .emissions-story-card {
-      padding: 1.25rem;
-    }
-
-    .emissions-headline {
-      font-size: 1.1rem;
-    }
-
-    .emissions-story-header {
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
     .emissions-counters {
       grid-template-columns: repeat(2, 1fr);
       gap: 0.5rem;

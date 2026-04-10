@@ -1,5 +1,5 @@
 :root {
-  /* CCC Logo Color Palette */
+  /* Dashboard Color Palette */
   --ccc-teal: #3D6B6B;
   --ccc-teal-light: #4A7F7F;
   --ccc-teal-dark: #2D5252;
@@ -13,7 +13,7 @@
   --ccc-orange-light: #EF7B72;
   --ccc-orange-dark: #D94539;
 
-  /* Primary Colors - CCC Mapped */
+  /* Primary Colors */
   --primary-blue: #3D6B6B;
   --secondary-blue: #4A7F7F;
   --accent-green: #8BC34A;
@@ -1059,11 +1059,11 @@ select {
 }
 
 .card-panel {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 1rem 1.25rem;
-  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
   max-width: 100%;
   min-width: 0;
   width: 100%;
@@ -2155,7 +2155,7 @@ select {
   opacity: 1;
 }
 
-/* Tab theme colors - CCC Logo palette */
+/* Tab theme colors */
 .carousel-tab[data-slide="0"].active { border-bottom-color: #3D6B6B; }
 .carousel-tab[data-slide="0"].active i { color: #3D6B6B; }
 .carousel-tab[data-slide="0"]:hover { color: #3D6B6B; }
@@ -3407,7 +3407,7 @@ input[type='range']::-moz-range-thumb {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   CCC-INSPIRED MODERN DESIGN SYSTEM
+   MODERN DESIGN SYSTEM
    ═══════════════════════════════════════════════════════════════ */
 
 /* Modern Hero Banner - Light Theme - Compact */
@@ -4110,8 +4110,8 @@ input[type='range']::-moz-range-thumb {
   }
 
   .card-panel {
-    padding: 0.75rem;
-    border-radius: 12px;
+    padding: 0;
+    border-radius: 0;
   }
 
   .pillar-stack {
@@ -4154,8 +4154,7 @@ input[type='range']::-moz-range-thumb {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   CCC V2 DESIGN SYSTEM - Purple/Cyan Gradient Refresh
-   Inspired by cleancoolingcollaborative.org
+   V2 DESIGN SYSTEM - Purple/Cyan Gradient Refresh
    Added: Phase 2 - Design System Layer
    NOTE: All existing classes PRESERVED above. New classes below.
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -4163,9 +4162,9 @@ input[type='range']::-moz-range-thumb {
 /* Import animations */
 @import './animations.css';
 
-/* ─── NEW: CCC Purple/Cyan Design Tokens ─── */
+/* ─── NEW: Purple/Cyan Design Tokens ─── */
 :root {
-  /* CCC Purple/Cyan Gradient System */
+  /* Purple/Cyan Gradient System */
   --ccc-purple: #7a00df;
   --ccc-purple-light: #9b3eef;
   --ccc-purple-dark: #5c00a8;
@@ -4925,10 +4924,11 @@ input[type='range']::-moz-range-thumb {
    CHAPTER NARRATIVE CARDS — Shared storytelling layout
    ═══════════════════════════════════════════════════════ */
 .chapter-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 1.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  padding: 56px 64px;
   opacity: 0;
   transition: opacity 0.4s ease;
 }

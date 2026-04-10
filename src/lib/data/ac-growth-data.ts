@@ -131,7 +131,7 @@ export const acMilestones: ACMilestone[] = [
     year: 2025,
     label: '3 Billion ACs',
     description:
-      'Global AC stock surpassed 3 billion units. CCC reports 3,099 million units installed worldwide.',
+      'Global AC stock surpassed 3 billion units — 3,099 million units installed worldwide.',
   },
 ];
 

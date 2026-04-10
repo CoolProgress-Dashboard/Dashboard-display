@@ -22,7 +22,6 @@
     'UNEP': 'https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment',
     'GIZ Proklima': 'https://www.green-cooling-initiative.org/',
     'Cool Coalition': 'https://coolcoalition.org/global-cooling-pledge/',
-    'CCC': 'https://www.cleancoolingcollaborative.org/',
   };
 </script>
 

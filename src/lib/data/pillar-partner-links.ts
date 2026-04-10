@@ -18,11 +18,6 @@ export interface PartnerLink {
 export const partnerLinks: PartnerLink[] = [
 	// Organizations
 	{
-		mention: 'Clean Cooling Collaborative',
-		url: 'https://cleancoolingcollaborative.org',
-		label: 'Clean Cooling Collaborative'
-	},
-	{
 		mention: 'CLASP',
 		url: 'https://www.clasp.ngo',
 		label: 'CLASP - Collaborative Labeling and Appliance Standards Program'
