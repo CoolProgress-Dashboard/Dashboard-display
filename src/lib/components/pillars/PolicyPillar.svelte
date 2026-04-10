@@ -1773,18 +1773,20 @@
   .revealed .policy-counter-wrapper { opacity: 1; transform: translateY(0); }
 
   .policy-counters :global(.counter-card) {
-    background: rgba(240, 247, 255, 0.7);
-    border: 1px solid rgba(3, 105, 161, 0.12);
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    min-height: 100px;
-    padding: 1rem 0.75rem;
+    min-height: unset;
+    padding: 1rem 0;
   }
 
   .policy-counters :global(.counter-card:hover) {
-    background: rgba(219, 234, 254, 0.9);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(3, 105, 161, 0.12);
+    background: transparent;
+    transform: none;
+    box-shadow: none;
   }
 
   .policy-counters :global(.counter-display) { font-size: 1.8rem; color: #0369a1; }

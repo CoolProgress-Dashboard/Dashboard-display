@@ -1462,18 +1462,20 @@
 
   /* Override AnimatedCounter glassmorphic style for light background */
   .meps-counters :global(.counter-card) {
-    background: linear-gradient(135deg, #f0f7ff 0%, #f5faff 100%);
-    border: 1px solid rgba(3, 105, 161, 0.15);
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    min-height: 100px;
-    padding: 1rem 0.75rem;
+    min-height: unset;
+    padding: 1rem 0;
   }
 
   .meps-counters :global(.counter-card:hover) {
-    background: linear-gradient(135deg, #e0f0ff 0%, #eaf5ff 100%);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(3, 105, 161, 0.12);
+    background: transparent;
+    transform: none;
+    box-shadow: none;
   }
 
   .meps-counters :global(.counter-display) {

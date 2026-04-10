@@ -1166,24 +1166,25 @@ select {
   margin: -0.15rem 0 0.75rem;
 }
 
-/* Chart Card Styling - Matches Emissions View */
+/* Chart Card Styling - flat, no box */
 .chart-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  background: transparent;
+  border: none;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
+  padding: 32px 0;
 }
 
 .chart-card:hover {
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  box-shadow: none;
 }
 
 .chart-card-header {
-  padding: 1rem 1.25rem 0.5rem;
-  border-bottom: 1px solid #f1f5f9;
-  background: #ffffff;
+  padding: 0 0 0.75rem;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  background: transparent;
 }
 
 .chart-card-header h3 {
@@ -1205,8 +1206,8 @@ select {
 }
 
 .chart-card-body {
-  padding: 1rem 1.25rem;
-  background: #ffffff;
+  padding: 1rem 0;
+  background: transparent;
   width: 100%;
   min-width: 0;
   overflow: hidden;
@@ -1223,11 +1224,11 @@ select {
   display: flex;
   flex-direction: column;
   gap: 0;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
 }
 
 .map-charts-connected .map-section {
@@ -2724,12 +2725,13 @@ select {
 }
 
 .kpi-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 1rem 1.1rem;
+  background: transparent;
+  border: none;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  border-radius: 0;
+  padding: 1rem 0;
   text-align: left;
-  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+  box-shadow: none;
 }
 
 .kpi-card .value {
@@ -3507,17 +3509,18 @@ input[type='range']::-moz-range-thumb {
 }
 
 .kpi-card-modern {
-  background: #ffffff;
-  border-radius: var(--radius-lg);
-  padding: 1rem 1.25rem;
+  background: transparent;
+  border-radius: 0;
+  padding: 1rem 0;
   display: flex;
   align-items: center;
   gap: 1rem;
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-sm);
-  transition: all 0.25s ease;
+  border: none;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  box-shadow: none;
+  transition: none;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .kpi-card-modern::before {
@@ -3542,8 +3545,8 @@ input[type='range']::-moz-range-thumb {
 }
 
 .kpi-card-modern:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: none;
+  box-shadow: none;
 }
 
 .kpi-icon-wrap {
@@ -4622,15 +4625,16 @@ input[type='range']::-moz-range-thumb {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .kpi-card-v2 {
-  background: #fff;
-  border: 1px solid var(--border-color, #e2e8f0);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem 1.25rem;
+  background: transparent;
+  border: none;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  border-radius: 0;
+  padding: 1.5rem 0;
   text-align: left;
-  box-shadow: var(--shadow-card-v2);
+  box-shadow: none;
   position: relative;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: visible;
+  transition: none;
 }
 
 /* Gradient accent stripe on left */
@@ -4649,9 +4653,8 @@ input[type='range']::-moz-range-thumb {
 }
 
 .kpi-card-v2:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-card-v2-hover);
-  border-color: rgba(122, 0, 223, 0.15);
+  transform: none;
+  box-shadow: none;
 }
 
 .kpi-card-v2:hover::before {
@@ -4751,13 +4754,15 @@ input[type='range']::-moz-range-thumb {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .chart-container-v2 {
-  background: #fff;
-  border: 1px solid var(--border-color, #e2e8f0);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-card-v2);
-  transition: all 0.3s ease;
+  background: transparent;
+  border: none;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
+  transition: none;
   position: relative;
+  padding: 32px 0;
 }
 
 .chart-container-v2::before {
@@ -4777,11 +4782,11 @@ input[type='range']::-moz-range-thumb {
 }
 
 .chart-container-v2:hover::before {
-  opacity: 0.3;
+  opacity: 0;
 }
 
 .chart-container-v2:hover {
-  box-shadow: var(--shadow-card-v2-hover);
+  box-shadow: none;
 }
 
 .chart-header-v2 {

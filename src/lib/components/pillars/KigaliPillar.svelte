@@ -1912,18 +1912,20 @@
   }
 
   .kigali-counters :global(.counter-card) {
-    background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
-    border: 1px solid rgba(3, 105, 161, 0.15);
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    min-height: 100px;
-    padding: 1rem 0.75rem;
+    min-height: unset;
+    padding: 1rem 0;
   }
 
   .kigali-counters :global(.counter-card:hover) {
-    background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(3, 105, 161, 0.12);
+    background: transparent;
+    transform: none;
+    box-shadow: none;
   }
 
   .kigali-counters :global(.counter-display) {

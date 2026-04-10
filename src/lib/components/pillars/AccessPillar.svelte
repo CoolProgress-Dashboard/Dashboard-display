@@ -1501,18 +1501,20 @@
   .revealed .access-counter-wrapper { opacity: 1; transform: translateY(0); }
 
   .access-counters :global(.counter-card) {
-    background: linear-gradient(135deg, #faf8f0 0%, #f5f0e0 100%);
-    border: 1px solid rgba(212, 168, 67, 0.15);
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    min-height: 100px;
-    padding: 1rem 0.75rem;
+    min-height: unset;
+    padding: 1rem 0;
   }
 
   .access-counters :global(.counter-card:hover) {
-    background: linear-gradient(135deg, #f0e8d0 0%, #f5f0e040 100%);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(212, 168, 67, 0.12);
+    background: transparent;
+    transform: none;
+    box-shadow: none;
   }
 
   .access-counters :global(.counter-display) { font-size: 1.8rem; color: #8B5E3C; }

@@ -1690,18 +1690,20 @@
   }
 
   .emissions-counters :global(.counter-card) {
-    background: linear-gradient(135deg, #fdf6f0 0%, #fafaf5 100%);
-    border: 1px solid rgba(194, 91, 51, 0.15);
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-radius: 0;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    min-height: 100px;
-    padding: 1rem 0.75rem;
+    min-height: unset;
+    padding: 1rem 0;
   }
 
   .emissions-counters :global(.counter-card:hover) {
-    background: linear-gradient(135deg, #faf0e8 0%, #fdf6f0 100%);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(194, 91, 51, 0.12);
+    background: transparent;
+    transform: none;
+    box-shadow: none;
   }
 
   .emissions-counters :global(.counter-display) {
