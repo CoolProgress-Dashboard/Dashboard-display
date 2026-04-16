@@ -857,8 +857,7 @@
         .attr('preserveAspectRatio', 'xMidYMid meet');
 
       const projection = d3Lib.geoNaturalEarth1()
-        .scale(width / 5.5)
-        .translate([width / 2, height / 1.9]);
+        .fitExtent([[2, 2], [width - 2, height - 2]], { type: 'Sphere' });
 
       const path = d3Lib.geoPath().projection(projection);
 
