@@ -9,6 +9,9 @@
   import PillarInsight from '$lib/components/shared/PillarInsight.svelte';
   import FurtherReading from '$lib/components/shared/FurtherReading.svelte';
   import { SEQ, SCENARIO, STATUS, CHROME, NO_DATA, YES, NO, rgba } from '$lib/components/shared/colors';
+  import { loadSubcoolGlobalSummary, loadRefrigerantBankData } from '$lib/services/dashboard-data';
+  import type { RefrigerantBankRecord } from '$lib/services/dashboard-types';
+  import { SUPABASE_URL, SUPABASE_KEY } from '$lib/components/shared/config';
 
   export let active: boolean = false;
   export let onPillarInfoClick: (() => void) | null = null;
@@ -17,6 +20,11 @@
   export let kigaliData: any[] = [];
   export let countries: any[] = [];
   export let refrigerants: any[] = [];
+
+  // Lazily-loaded subcool summary for the direct-emissions chart
+  let subcoolSummary: { scenario_name: string; year: number; direct_emission_mt: number }[] = [];
+  // Lazily-loaded refrigerant bank data for the bank-share bar chart
+  let bankShareData: RefrigerantBankRecord[] = [];
 
   const meta = VIEW_META.kigali;
   const kigaliContent = pillarContent.kigali;
@@ -111,8 +119,6 @@
 
     let kigaliMapSvg: any = null;
     let d3Lib: any = null;
-    let kigaliMarketAppliance = 'ac';
-    let kigaliMarketRegion = '';
     let kigaliRegionFilter = '';
 
     // ECharts instance registry and resize observers
@@ -384,7 +390,7 @@
         })();
 
       try {
-        const world = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json');
+        const world = await d3.json('/countries-50m.json');
         const countriesGeo = (window as any).topojson.feature(world, world.objects.countries);
 
         kigaliMapSvg.selectAll('path')
@@ -450,145 +456,102 @@
       updateKigaliProgress();
     }
 
-    // ── Market share data ─────────────────────────────────────────────────────
-    const MARKET_SHARE_DATA: Record<string, Record<string, { years: string[]; series: { name: string; data: number[]; color: string }[] }>> = {
-      ac: {
-        '': {
-          years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
-          series: [
-            { name: 'R410A (GWP 2088)', data: [72, 52, 32, 18, 9, 4, 1],   color: '#C25B33' },
-            { name: 'R32 (GWP 675)',    data: [22, 36, 42, 42, 35, 26, 18], color: '#D4A843' },
-            { name: 'R290 (GWP 3)',     data: [4, 9, 20, 33, 48, 62, 73],   color: '#2D7D5A' },
-            { name: 'R22 (HCFC)',       data: [2, 3, 6, 7, 8, 8, 8],        color: '#94a3b8' }
-          ]
-        },
-        'China': {
-          years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
-          series: [
-            { name: 'R410A (GWP 2088)', data: [65, 40, 20, 8, 3, 1, 0],    color: '#C25B33' },
-            { name: 'R32 (GWP 675)',    data: [25, 38, 40, 35, 25, 15, 8],  color: '#D4A843' },
-            { name: 'R290 (GWP 3)',     data: [8, 18, 35, 52, 68, 80, 88],  color: '#2D7D5A' },
-            { name: 'R22 (HCFC)',       data: [2, 4, 5, 5, 4, 4, 4],        color: '#94a3b8' }
-          ]
-        },
-        'India': {
-          years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
-          series: [
-            { name: 'R410A (GWP 2088)', data: [55, 42, 28, 15, 7, 3, 1],   color: '#C25B33' },
-            { name: 'R32 (GWP 675)',    data: [30, 40, 42, 38, 30, 20, 12], color: '#D4A843' },
-            { name: 'R290 (GWP 3)',     data: [5, 12, 24, 40, 56, 70, 80],  color: '#2D7D5A' },
-            { name: 'R22 (HCFC)',       data: [10, 6, 6, 7, 7, 7, 7],       color: '#94a3b8' }
-          ]
-        },
-        'Europe': {
-          years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
-          series: [
-            { name: 'R410A (GWP 2088)', data: [55, 25, 10, 3, 1, 0, 0],    color: '#C25B33' },
-            { name: 'R32 (GWP 675)',    data: [35, 50, 48, 40, 30, 18, 8],  color: '#D4A843' },
-            { name: 'R290 (GWP 3)',     data: [8, 22, 38, 53, 65, 78, 88],  color: '#2D7D5A' },
-            { name: 'R22 (HCFC)',       data: [2, 3, 4, 4, 4, 4, 4],        color: '#94a3b8' }
-          ]
-        },
-        'Africa': {
-          years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
-          series: [
-            { name: 'R410A (GWP 2088)', data: [45, 48, 40, 28, 18, 10, 5], color: '#C25B33' },
-            { name: 'R32 (GWP 675)',    data: [10, 22, 32, 38, 38, 32, 22], color: '#D4A843' },
-            { name: 'R290 (GWP 3)',     data: [2, 5, 12, 22, 35, 50, 65],   color: '#2D7D5A' },
-            { name: 'R22 (HCFC)',       data: [43, 25, 16, 12, 9, 8, 8],    color: '#94a3b8' }
-          ]
-        }
-      },
-      fridge: {
-        '': {
-          years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
-          series: [
-            { name: 'R134a (GWP 1430)', data: [52, 38, 25, 15, 8, 4, 2],   color: '#C25B33' },
-            { name: 'R600a (GWP 3)',    data: [42, 55, 65, 72, 78, 83, 87], color: '#2D7D5A' },
-            { name: 'R290 (GWP 3)',     data: [4, 5, 8, 11, 12, 11, 9],     color: '#52B788' },
-            { name: 'HFC blends',       data: [2, 2, 2, 2, 2, 2, 2],        color: '#94a3b8' }
-          ]
-        },
-        'China': {
-          years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
-          series: [
-            { name: 'R134a (GWP 1430)', data: [30, 18, 10, 5, 2, 1, 0],    color: '#C25B33' },
-            { name: 'R600a (GWP 3)',    data: [62, 74, 82, 87, 90, 92, 93], color: '#2D7D5A' },
-            { name: 'R290 (GWP 3)',     data: [6, 6, 6, 6, 6, 5, 5],        color: '#52B788' },
-            { name: 'HFC blends',       data: [2, 2, 2, 2, 2, 2, 2],        color: '#94a3b8' }
-          ]
-        },
-        'India': {
-          years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
-          series: [
-            { name: 'R134a (GWP 1430)', data: [60, 45, 30, 18, 10, 5, 2],  color: '#C25B33' },
-            { name: 'R600a (GWP 3)',    data: [35, 48, 60, 70, 78, 84, 88], color: '#2D7D5A' },
-            { name: 'R290 (GWP 3)',     data: [3, 5, 8, 10, 10, 9, 8],      color: '#52B788' },
-            { name: 'HFC blends',       data: [2, 2, 2, 2, 2, 2, 2],        color: '#94a3b8' }
-          ]
-        },
-        'Europe': {
-          years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
-          series: [
-            { name: 'R134a (GWP 1430)', data: [15, 8, 3, 1, 0, 0, 0],      color: '#C25B33' },
-            { name: 'R600a (GWP 3)',    data: [78, 85, 90, 93, 95, 96, 96], color: '#2D7D5A' },
-            { name: 'R290 (GWP 3)',     data: [5, 5, 5, 4, 3, 2, 2],        color: '#52B788' },
-            { name: 'HFC blends',       data: [2, 2, 2, 2, 2, 2, 2],        color: '#94a3b8' }
-          ]
-        },
-        'Africa': {
-          years: ['2020', '2025', '2030', '2035', '2040', '2045', '2050'],
-          series: [
-            { name: 'R134a (GWP 1430)', data: [72, 60, 45, 32, 20, 12, 6], color: '#C25B33' },
-            { name: 'R600a (GWP 3)',    data: [22, 32, 44, 55, 66, 75, 82], color: '#2D7D5A' },
-            { name: 'R290 (GWP 3)',     data: [3, 5, 8, 10, 11, 10, 9],     color: '#52B788' },
-            { name: 'HFC blends',       data: [3, 3, 3, 3, 3, 3, 3],        color: '#94a3b8' }
-          ]
-        }
-      }
+    // ── Chart render functions ────────────────────────────────────────────────
+
+    // Refrigerant color palette — grouped by family (6 minor compounds removed for clarity)
+    const REFR_COLORS: Record<string, string> = {
+      'HCFC-22':   '#2D7D5A',
+      'HFC-134a':  '#0369a1',
+      'HFC-32':    '#0284c7',
+      'HFC-125':   '#38bdf8',
+      'HFC-143a':  '#F4A261',
+      'HFC-152a':  '#D4A843',
     };
 
-    // ── Chart render functions ────────────────────────────────────────────────
-    function renderRefrigerantMarketShare() {
-      const dataSet = MARKET_SHARE_DATA[kigaliMarketAppliance]?.[kigaliMarketRegion];
-      if (!dataSet) return;
+    // Static fallback (pre-computed A5+NA5 combined bank tonnes for 4 key years)
+    const BANK_STATIC: Record<string, number[]> = {
+      'HCFC-22':   [2864648.11, 2338147.08, 1748939.73, 1027107.17],
+      'HFC-134a':  [1257163.04, 1606893.01, 1766732.41, 1912600.59],
+      'HFC-32':    [ 484525.86,  944831.85, 1411977.64, 1762102.58],
+      'HFC-125':   [ 521160.27,  769894.80, 1025673.93, 1198728.92],
+      'HFC-143a':  [ 163099.48,  223127.51,  326280.94,  419045.68],
+      'HFC-152a':  [   7624.29,   21705.23,   27016.05,   28661.28],
+    };
+    const BANK_YEARS = ['2015', '2020', '2025', '2030'];
+
+    function renderRefrigerantBankShare() {
+      // Build per-year totals and per-refrigerant tonnes from Supabase or static
+      const refrs = Object.keys(BANK_STATIC);
+      const yearLabels = BANK_YEARS;
+      const nYears = yearLabels.length;
+
+      // raw[refrigerant][yearIndex] = combined bank tonnes
+      const raw: Record<string, number[]> = {};
+      refrs.forEach(r => { raw[r] = Array(nYears).fill(0); });
+
+      if (bankShareData && bankShareData.length > 0) {
+        // Aggregate A5 + NA5 from Supabase (skip minor compounds removed for clarity)
+        bankShareData.forEach((row: any) => {
+          const yi = yearLabels.indexOf(String(row.year));
+          if (yi === -1 || !raw[row.refrigerant]) return;
+          raw[row.refrigerant][yi] += (row.bank_tonnes || 0);
+        });
+      } else {
+        // Use static fallback
+        refrs.forEach(r => { raw[r] = [...BANK_STATIC[r]]; });
+      }
+
+      // Compute column totals then shares (%)
+      const totals = Array(nYears).fill(0);
+      refrs.forEach(r => raw[r].forEach((v, i) => { totals[i] += v; }));
+      const shares: Record<string, number[]> = {};
+      refrs.forEach(r => {
+        shares[r] = raw[r].map((v, i) => totals[i] > 0 ? Math.round(v / totals[i] * 1000) / 10 : 0);
+      });
 
       setChart('chart-kigali-transition', {
         tooltip: {
           trigger: 'axis',
+          axisPointer: { type: 'shadow' },
           formatter: function(params: any) {
             let html = `<strong>${params[0].axisValue}</strong><br/>`;
-            params.forEach((p: any) => {
-              html += `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${p.color};margin-right:4px;"></span>${p.seriesName}: <strong>${p.value}%</strong><br/>`;
+            const visible = params.filter((p: any) => p.value > 0.05);
+            visible.sort((a: any, b: any) => b.value - a.value);
+            visible.forEach((p: any) => {
+              html += `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${p.color};margin-right:4px;"></span>${p.seriesName}: <strong>${p.value.toFixed(1)}%</strong><br/>`;
             });
             return html;
           }
         },
-        grid: { left: '3%', right: '4%', bottom: '18%', top: '8%', containLabel: true },
-        legend: { bottom: 0, textStyle: { color: '#475569', fontSize: 10 }, padding: [5, 0, 0, 0] },
+        grid: { left: '6%', right: '6%', bottom: '28%', top: '8%', containLabel: true },
+        legend: {
+          bottom: 0,
+          left: 'center',
+          type: 'scroll',
+          textStyle: { color: '#1e293b', fontSize: 12, fontWeight: 700 },
+          padding: [5, 0, 0, 0]
+        },
         xAxis: {
           type: 'category',
-          data: dataSet.years,
-          axisLabel: { fontSize: 11 }
+          data: yearLabels,
+          axisLabel: { fontSize: 13, color: '#1e293b', fontWeight: 700 }
         },
         yAxis: {
           type: 'value',
-          name: 'Market Share (%)',
-          nameTextStyle: { color: '#475569', fontSize: 11 },
+          name: 'Bank Share (%)',
+          nameTextStyle: { color: '#1e293b', fontSize: 13, fontWeight: 700 },
           max: 100,
-          axisLabel: { formatter: '{value}%' }
+          axisLabel: { formatter: '{value}%', fontSize: 13, color: '#1e293b', fontWeight: 700 }
         },
-        series: dataSet.series.map((s: any) => ({
-          name: s.name,
-          type: 'line',
+        series: refrs.map(r => ({
+          name: r,
+          type: 'bar',
           stack: 'total',
-          areaStyle: { opacity: 0.6 },
-          data: s.data,
-          smooth: true,
-          symbol: 'circle',
-          symbolSize: 5,
-          lineStyle: { color: s.color, width: 2 },
-          itemStyle: { color: s.color }
+          data: shares[r],
+          itemStyle: { color: REFR_COLORS[r] ?? '#94a3b8' },
+          label: {
+            show: false
+          }
         }))
       });
     }
@@ -600,51 +563,65 @@
         'KIP_PLUS': SCENARIO.KIP_PLUS
       };
       const scenarioNames: Record<string, string> = {
-        'BAU': 'Business as Usual',
+        'BAU': 'BAU',
         'KIP': 'Kigali Implementation',
         'KIP_PLUS': 'Kigali+'
       };
 
       // Static fallback scenario data (UNEP/HEAT reference trajectories, global, Mt CO₂e)
+      // All series share the same 2025 starting value (1.8 GtCO₂e)
       const STATIC_SCENARIO_DATA: { years: number[]; series: { name: string; data: (number | null)[]; color: string }[] } = {
-        years: [2020, 2025, 2030, 2035, 2040, 2045, 2050],
+        years: [2020, 2025, 2030, 2035, 2040, 2045],
         series: [
-          { name: 'Business as Usual',    data: [1.8, 2.3, 3.1, 4.0, 5.0, 6.1, 7.4],             color: SCENARIO.BAU },
-          { name: 'Kigali Implementation',data: [1.8, 2.2, 2.6, 2.7, 2.4, 1.9, 1.4],             color: SCENARIO.KIP },
-          { name: 'Kigali+',              data: [null, 2.1, 1.9, 1.6, 1.2, 0.8, 0.4],            color: SCENARIO.KIP_PLUS }
+          { name: 'BAU',                   data: [1.8, 1.8, 3.1, 4.0, 5.0, 6.1],                  color: SCENARIO.BAU },
+          { name: 'Kigali Implementation',  data: [1.8, 1.8, 2.6, 2.7, 2.4, 1.9],                  color: SCENARIO.KIP },
+          { name: 'Kigali+',               data: [null, 1.8, 1.9, 1.6, 1.2, 0.8],                  color: SCENARIO.KIP_PLUS }
         ]
       };
 
       let years: number[];
       let seriesData: { name: string; data: (number | null)[]; color: string }[];
 
-      if (!refrigerants || refrigerants.length === 0) {
-        // Use static reference data when live data is unavailable
+      if (!subcoolSummary || subcoolSummary.length === 0) {
+        // Use static reference data while live data is still loading
         years = STATIC_SCENARIO_DATA.years;
         seriesData = STATIC_SCENARIO_DATA.series;
       } else {
+        // Aggregate global direct emissions: sum across all countries + subsectors
         const scenarios = ['BAU', 'KIP', 'KIP_PLUS'];
-        const allYears = Array.from(new Set(refrigerants.map((r: any) => r.year))).sort() as number[];
-        years = allYears.filter((y: number) => y % 5 === 0 || y === allYears[0] || y === allYears[allYears.length - 1]);
+        const allYears = Array.from(new Set(subcoolSummary.map((r: any) => r.year)))
+          .sort() as number[];
+        // Show 2020–2045 at every 5-year mark
+        years = allYears.filter((y: number) => y >= 2020 && y <= 2045 && y % 5 === 0);
 
         const rawData: Record<string, (number | null)[]> = {};
         scenarios.forEach((s: string) => { rawData[s] = []; });
 
         years.forEach((y: number) => {
           scenarios.forEach((s: string) => {
-            const yearScenario = refrigerants.filter((r: any) => r.year === y && r.scenario_name === s);
-            const totalDirect = yearScenario.reduce((sum: number, r: any) => sum + (r.direct_emission_mt || 0), 0);
-            if (s === 'KIP_PLUS' && (y < 2025 || yearScenario.length === 0)) {
+            const rows = subcoolSummary.filter((r: any) => r.year === y && r.scenario_name === s);
+            const totalDirect = rows.reduce((sum: number, r: any) => sum + (r.direct_emission_mt || 0), 0);
+            if (s === 'KIP_PLUS' && (y < 2025 || rows.length === 0)) {
               rawData[s].push(null);
             } else {
-              rawData[s].push(Math.round(totalDirect * 10) / 10);
+              rawData[s].push(totalDirect > 0 ? Math.round(totalDirect * 10) / 10 : null);
             }
           });
         });
 
-        const activeScenarios = scenarios.filter((s: string) => rawData[s].some((v: any) => v && v > 0));
+        // Normalise 2025: all scenarios share the BAU value at 2025 as the common start
+        const idx2025 = years.indexOf(2025);
+        if (idx2025 !== -1) {
+          const bau2025 = rawData['BAU'][idx2025];
+          if (bau2025 != null) {
+            scenarios.forEach((s: string) => {
+              if (rawData[s][idx2025] != null) rawData[s][idx2025] = bau2025;
+            });
+          }
+        }
+
+        const activeScenarios = scenarios.filter((s: string) => rawData[s].some((v: any) => v != null && v > 0));
         if (activeScenarios.length === 0) {
-          // All data is zero/empty — fall back to static reference data
           years = STATIC_SCENARIO_DATA.years;
           seriesData = STATIC_SCENARIO_DATA.series;
         } else {
@@ -661,11 +638,11 @@
           trigger: 'axis',
           formatter: function(params: any) {
             let result = `<strong>${params[0].axisValue}</strong><br/>`;
-            const bauVal = params.find((p: any) => p.seriesName === 'Business as Usual')?.value || 0;
+            const bauVal = params.find((p: any) => p.seriesName === 'BAU')?.value || 0;
             params.forEach((p: any) => {
               if (p.value == null) return;
-              const pct = bauVal > 0 && p.seriesName !== 'Business as Usual'
-                ? ` (${((1 - p.value / bauVal) * 100).toFixed(0)}% reduction)`
+              const pct = bauVal > 0 && p.seriesName !== 'BAU'
+                ? ` (${((1 - p.value / bauVal) * 100).toFixed(0)}% reduction vs BAU)`
                 : '';
               result += `${p.marker} ${p.seriesName}: ${p.value.toFixed(1)} Mt CO\u2082e${pct}<br/>`;
             });
@@ -674,23 +651,24 @@
         },
         legend: {
           data: seriesData.map((s: any) => s.name),
-          bottom: 0,
-          textStyle: { fontSize: 11 },
+          bottom: 12,
+          left: 'center',
+          textStyle: { color: '#1e293b', fontSize: 13, fontWeight: 700 },
           padding: [5, 0, 0, 0]
         },
-        grid: { left: '14%', right: '4%', bottom: '18%', top: '8%', containLabel: false },
+        grid: { left: '6%', right: '6%', bottom: '18%', top: '8%', containLabel: true },
         xAxis: {
           type: 'category',
           data: years.map(String),
-          axisLabel: { fontSize: 11, interval: 0 },
+          axisLabel: { fontSize: 13, color: '#1e293b', fontWeight: 700, interval: 0 },
           boundaryGap: false
         },
         yAxis: {
           type: 'value',
           name: 'Direct Emissions (Mt CO\u2082e)',
-          nameTextStyle: { fontSize: 11, color: '#475569' },
+          nameTextStyle: { fontSize: 13, color: '#1e293b', fontWeight: 700 },
           nameGap: 55,
-          axisLabel: { fontSize: 10 }
+          axisLabel: { fontSize: 13, color: '#1e293b', fontWeight: 700 }
         },
         series: seriesData.map((s: any) => ({
           name: s.name,
@@ -711,7 +689,7 @@
 
     // ── updateKigaliCharts — called after filter changes ──────────────────────
     function updateKigaliCharts() {
-      renderRefrigerantMarketShare();
+      renderRefrigerantBankShare();
       renderKigaliDirectEmissions();
     }
 
@@ -817,43 +795,7 @@
 
     // ── Filters initialisation ────────────────────────────────────────────────
     function initKigaliFilters() {
-      // Market share appliance toggles (AC / Fridge)
-      document.querySelectorAll<HTMLButtonElement>('.kigali-appliance-toggle').forEach(btn => {
-        btn.addEventListener('click', () => {
-          kigaliMarketAppliance = btn.dataset.appliance || 'ac';
-          document.querySelectorAll<HTMLButtonElement>('.kigali-appliance-toggle').forEach(b => {
-            b.classList.remove('active');
-            b.style.background = 'white';
-            b.style.color = '#475569';
-            b.style.borderColor = '#e2e8f0';
-          });
-          btn.classList.add('active');
-          btn.style.background = '#0369a1';
-          btn.style.color = 'white';
-          btn.style.borderColor = '#0369a1';
-          renderRefrigerantMarketShare();
-          requestAnimationFrame(() => forceResizeViewCharts());
-        });
-      });
-
-      // Market share region toggles (Global / China / India / Europe / Africa)
-      document.querySelectorAll<HTMLButtonElement>('.kigali-region-toggle').forEach(btn => {
-        btn.addEventListener('click', () => {
-          kigaliMarketRegion = btn.dataset.region || '';
-          document.querySelectorAll<HTMLButtonElement>('.kigali-region-toggle').forEach(b => {
-            b.classList.remove('active');
-            b.style.background = 'white';
-            b.style.color = '#475569';
-            b.style.borderColor = '#e2e8f0';
-          });
-          btn.classList.add('active');
-          btn.style.background = '#0369a1';
-          btn.style.color = 'white';
-          btn.style.borderColor = '#0369a1';
-          renderRefrigerantMarketShare();
-          requestAnimationFrame(() => forceResizeViewCharts());
-        });
-      });
+      // (filter toggles removed — bank-share chart has no interactive filters)
     }
 
     // ── Main view update ──────────────────────────────────────────────────────
@@ -873,11 +815,13 @@
 
     (async () => {
       try {
-        await Promise.all(
-          ['https://d3js.org/d3.v7.min.js', 'https://d3js.org/topojson.v3.min.js'].map(loadScript)
-        );
+        const [d3Mod, topojsonMod] = await Promise.all([
+          import('d3'),
+          import('topojson-client')
+        ]);
         // Assign shared closure references so all helper functions can use them
-        d3Lib = (window as any).d3;
+        d3Lib = d3Mod;
+        (window as any).topojson = topojsonMod;
         echartsLib = await import('echarts');
 
         // Map (requires D3 + TopoJSON + kigali/countries data)
@@ -886,9 +830,29 @@
         // Filters wires up DOM event listeners
         initKigaliFilters();
 
-        // Initial render
+        // Initial render (uses static fallback until subcool data arrives)
         updateKigaliView();
         showGlobalKigaliDetail();
+
+        // Lazy-load subcool summary for the direct-emissions chart
+        loadSubcoolGlobalSummary(SUPABASE_URL, SUPABASE_KEY).then((rows) => {
+          if (rows && rows.length > 0) {
+            subcoolSummary = rows;
+            renderKigaliDirectEmissions();
+          }
+        }).catch((err) => {
+          console.warn('[KigaliPillar] subcool summary load failed, using static data:', err);
+        });
+
+        // Lazy-load refrigerant bank data for the bank-share bar chart
+        loadRefrigerantBankData(SUPABASE_URL, SUPABASE_KEY).then((rows) => {
+          if (rows && rows.length > 0) {
+            bankShareData = rows;
+            renderRefrigerantBankShare();
+          }
+        }).catch((err) => {
+          console.warn('[KigaliPillar] bank share data load failed, using static data:', err);
+        });
 
         // ── Country sync (URL ↔ map) ──────────────────────────────────────────
         function applyKigaliCountry(code: string | null) {
@@ -951,8 +915,8 @@
          SECTION 1 — THE CHALLENGE
          ═══════════════════════════════════════════════════ -->
     <div class="k-section" class:revealed style="border-top: none;">
-      <span class="k-eyebrow">The Challenge</span>
-      <h2 class="k-title">Refrigerants are leaking the climate away.</h2>
+      <span class="k-eyebrow k-eyebrow-xl">The Challenge</span>
+      <h2 class="k-title k-title-xl">Refrigerants are leaking the climate away.</h2>
       <p class="k-body">Refrigerants are the essential "working fluids" that enable cooling by circulating through equipment to absorb and release heat — but they present a massive "invisible" climate risk through leakage during manufacturing, operation, servicing, and disposal.</p>
       <p class="k-body">While the Montreal Protocol has already eliminated ozone-depleting CFCs and is phasing out HCFCs, their common replacements — hydrofluorocarbons (HFCs) — are potent greenhouse gases with a Global Warming Potential (GWP) thousands of times higher than CO₂. Common refrigerants like R-134a (GWP 1,430) and R-410A (GWP 2,088) mean that even minor leaks contribute significantly to global heating. Left unchecked, HFC growth alone would add 0.5°C of warming by 2100. To avert this, the Kigali Amendment establishes a legally binding pathway to phase down HFC production and consumption by over 80%, driving the global transition toward climate-friendly, low-GWP alternatives.</p>
       <div class="kigali-problem-stats">
@@ -983,13 +947,14 @@
       </div>
       <div class="chart-card-header" style="padding: 1rem 1rem 0;">
         <p class="chart-subtitle">Global direct (refrigerant) emissions: BAU vs Kigali Implementation vs Kigali+</p>
-        <a href="/methodology#direct-emissions" style="font-size: 0.68rem; color: #0369a1; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px;">
-          <i class="fa-solid fa-book-open" style="font-size: 0.6rem;"></i> Methodology
-        </a>
+        <span style="font-size: 0.72rem; color: #64748b; display: inline-flex; align-items: center; gap: 0.3rem;">
+          <i class="fa-solid fa-database" style="color: #0369a1; font-size: 0.65rem;"></i>
+          Data from Global Cooling Initiative · HEAT &amp; GIZ &nbsp;·&nbsp;
+          <a href="https://www.green-cooling-initiative.org/country-data#!total-emissions/all-sectors/absolute" target="_blank" rel="noopener noreferrer" style="color: #0369a1; text-decoration: none; font-weight: 600;">More information <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.6rem;"></i></a>
+        </span>
       </div>
       <div class="chart-card-body">
-        <p class="chart-hint" style="padding: 0 1rem;">Hover over the chart lines to see exact emission values and percentage reductions versus the business-as-usual scenario for each year.</p>
-        <div id="chart-kigali-direct-emissions" class="chart-surface" style="width: 100%; height: 300px; min-height: 300px;"></div>
+        <div id="chart-kigali-direct-emissions" class="chart-surface" style="width: 100%; height: 380px; min-height: 380px;"></div>
       </div>
       <p class="kigali-chart-caption">Full Kigali implementation cuts direct refrigerant emissions by over 80% from BAU levels. Combining the phase-down with higher efficiency standards (Kigali+) delivers the deepest reductions — avoiding roughly 1 GtCO₂e per year by 2050.</p>
     </div>
@@ -998,9 +963,26 @@
          SECTION 2 — GLOBAL PROGRESS
          ═══════════════════════════════════════════════════ -->
     <div class="k-section" class:revealed>
-      <span class="k-eyebrow">Global Progress</span>
-      <h2 class="k-title">Moving from Commitment to Implementation</h2>
+      <span class="k-eyebrow k-eyebrow-xl">Global Progress</span>
+      <h2 class="k-title k-title-xl">172 Countries Have Signed. Now Comes the Hard Part.</h2>
       <p class="k-body">As of April 2026, 172 countries have ratified the Kigali Amendment, bringing 95% of global HFC consumption under a legally binding framework. However, ratification is only the initial milestone. The true measure of success lies in execution: whether national phasedown schedules translate into converted manufacturing lines, modernised safety codes for flammable alternatives, and robust recovery infrastructure. The transition depends on shifting the entire market from high-GWP HFCs to climate-safe, sustainable alternatives.</p>
+
+      <!-- Chart highlights -->
+      <div class="kigali-chart-highlights">
+        <div class="kigali-highlights-grid">
+          {#each chartHighlights as highlight}
+            <div class="kigali-highlight-card">
+              <div class="kigali-highlight-icon" style="color: {highlight.color}">
+                <i class="fa-solid {highlight.icon}"></i>
+              </div>
+              <div class="kigali-highlight-text">
+                <strong>{highlight.title}</strong>
+                <span>{highlight.description}</span>
+              </div>
+            </div>
+          {/each}
+        </div>
+      </div>
 
       <!-- Animated stat cards -->
       <div class="kigali-counters">
@@ -1017,40 +999,13 @@
       </div>
     </div>
 
-    <!-- Map under Section 2 -->
-    <div class="card-panel map-card">
-      <div class="card-header">
-        <div class="card-title">
-          <i class="fa-solid fa-flask"></i>
-          Kigali Amendment Ratification Status
-        </div>
-        <span class="viewing-pill">Viewing: <strong id="kigali-viewing">Global</strong></span>
-      </div>
-      <p class="chart-hint" style="padding: 0 1rem; margin-bottom: 0.5rem;">The Kigali Amendment to the Montreal Protocol, adopted in 2016, commits countries to a phase-down of HFC production and consumption. Developed countries began reducing HFCs in 2019, with most developing countries following from 2024 or 2028. Hover over a country to see its ratification status and refrigerant transition data. Click a country to explore details.</p>
-      <div id="kigali-map-container" class="map-surface"></div>
-      <div class="legend legend-row">
-        <span class="legend-label">Status:</span>
-        <div id="kigali-legend" class="legend-items"></div>
-      </div>
-      <div class="progress-bar" id="kigali-progress">
-        <span class="progress-segment" id="kigali-progress-ratified" title="Ratified" style="background:#6BADA0;"></span>
-        <span class="progress-segment" id="kigali-progress-notratified" title="Not yet ratified" style="background:#cbd5e1;"></span>
-      </div>
-      <div id="kigali-country-detail" class="country-card-inline">
-        <h3>Selected Country</h3>
-        <div class="country-detail">
-          <h4>Select a country</h4>
-          <p class="side-muted">Click on a country in the map to see Kigali details, refrigerant mix, and saving potential.</p>
-        </div>
-      </div>
-    </div>
 
     <!-- ═══════════════════════════════════════════════════
          SECTION 3 — THE WAY FORWARD
          ═══════════════════════════════════════════════════ -->
     <div class="k-section" class:revealed>
-      <span class="k-eyebrow">The Way Forward</span>
-      <h2 class="k-title">The Kigali Amendment: A Legally Binding Phase-Down</h2>
+      <span class="k-eyebrow k-eyebrow-xl">The Way Forward</span>
+      <h2 class="k-title k-title-xl">Safe Alternatives Exist — and Are Already Being Deployed.</h2>
       <p class="k-body">There are proven, climate-safe alternatives to high-GWP refrigerants. The Kigali Amendment, adopted in 2016, establishes a legally binding schedule to phase down the most harmful HFCs by over 80%.</p>
 
       <!-- Phase-down groups: 3-card grid -->
@@ -1088,7 +1043,7 @@
       </div>
 
       <!-- Transition pathway stepper -->
-      <div class="kigali-stepper" style="margin-top: 1.5rem;">
+      <div class="kigali-stepper" style="margin-top: 0.75rem;">
         <div class="kigali-step">
           <div class="kigali-step-dot current"></div>
           <div class="kigali-step-label">
@@ -1127,45 +1082,29 @@
          ═══════════════════════════════════════════════════ -->
     <div class="k-section" class:revealed>
       <span class="k-eyebrow">Market Progress</span>
-      <h2 class="k-title">Declining Refrigerant GWP: The Transition in Numbers</h2>
-      <p class="k-body">Encouragingly, the average Global Warming Potential (GWP) of refrigerants used in new equipment has been declining in key markets as manufacturers transition to lower-GWP alternatives. The data below shows trends in refrigerant market share across major markets — a direct proxy for the falling average GWP of newly sold equipment.</p>
+      <h2 class="k-title">What Is in the Global Refrigerant Bank?</h2>
+      <p class="k-body">The "refrigerant bank" is the total quantity of refrigerants currently circulating in equipment worldwide — the stock that will eventually leak or be recovered. Tracking its composition shows which compounds dominate today, and how the mix is projected to shift as HFC phase-downs take hold and low-GWP alternatives scale up.</p>
     </div>
 
-    <!-- Market share transition: the solution in action -->
+    <!-- Refrigerant bank share bar chart -->
     <div class="kigali-story-bridge">
       <div class="kigali-bridge-label">
         <span class="bridge-num">DATA</span>
-        <i class="fa-solid fa-chart-area"></i>
-        The market is already shifting — refrigerant transitions through 2050
+        <i class="fa-solid fa-chart-bar"></i>
+        The refrigerant bank is shifting — but legacy HCFCs still dominate
       </div>
-      <div class="chart-card-header" style="padding: 1rem 1rem 0; display: flex; justify-content: space-between; align-items: flex-start;">
-        <p class="chart-subtitle">Projected refrigerant market share by appliance type</p>
-        <a href="/methodology#refrigerant-transition" style="font-size: 0.68rem; color: #0369a1; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; white-space: nowrap;">
-          <i class="fa-solid fa-book-open" style="font-size: 0.6rem;"></i> Methodology
-        </a>
-      </div>
-      <div style="display: flex; gap: 0.75rem; padding: 0 0.75rem 0.5rem; flex-wrap: wrap; align-items: center;">
-        <div style="display: flex; gap: 0.35rem;">
-          <button class="toggle-btn kigali-appliance-toggle active" data-appliance="ac" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #0369a1; border-radius: 5px; background: #0369a1; color: white; cursor: pointer;">AC</button>
-          <button class="toggle-btn kigali-appliance-toggle" data-appliance="fridge" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #e2e8f0; border-radius: 5px; background: white; color: #475569; cursor: pointer;">Fridges</button>
-        </div>
-        <span style="color: #cbd5e1;">|</span>
-        <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;" id="kigali-region-toggles">
-          <button class="toggle-btn kigali-region-toggle active" data-region="" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #0369a1; border-radius: 5px; background: #0369a1; color: white; cursor: pointer;">Global</button>
-          <button class="toggle-btn kigali-region-toggle" data-region="China" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #e2e8f0; border-radius: 5px; background: white; color: #475569; cursor: pointer;">China</button>
-          <button class="toggle-btn kigali-region-toggle" data-region="India" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #e2e8f0; border-radius: 5px; background: white; color: #475569; cursor: pointer;">India</button>
-          <button class="toggle-btn kigali-region-toggle" data-region="Europe" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #e2e8f0; border-radius: 5px; background: white; color: #475569; cursor: pointer;">Europe</button>
-          <button class="toggle-btn kigali-region-toggle" data-region="Africa" type="button" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid #e2e8f0; border-radius: 5px; background: white; color: #475569; cursor: pointer;">Africa</button>
-        </div>
+      <div class="chart-card-header" style="padding: 1rem 1rem 0; border-bottom: none; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem;">
+        <p class="chart-subtitle" style="color: #334155; font-weight: 600;">Global refrigerant bank share by compound (A5 + Non-A5, bank tonnes)</p>
+        <span style="font-size: 0.72rem; color: #64748b; display: inline-flex; align-items: center; gap: 0.3rem;">
+          <i class="fa-solid fa-database" style="color: #0369a1; font-size: 0.65rem;"></i>
+          from consumption data reported to the Ozone Secretariat &nbsp;·&nbsp;
+          <a href="https://www.copalliance.org/imglib/publications/2025-04_COPA_Global%20Banks%20ODS%20HFC_update.pdf" target="_blank" rel="noopener noreferrer" style="color: #0369a1; text-decoration: none; font-weight: 600;">COPA GIZ <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.6rem;"></i></a>
+        </span>
       </div>
       <div class="chart-card-body">
-        <p class="chart-hint" style="padding: 0 1rem;">Use the appliance (AC / Fridges) and region filters above to compare refrigerant transition trajectories across markets. Hover over the chart to see market share values by refrigerant type for each year.</p>
-        <div id="chart-kigali-transition" class="chart-surface" style="width: 100%; height: 300px; min-height: 300px;"></div>
-        <div style="font-size: 0.68rem; color: #94a3b8; text-align: center; padding: 0.5rem;">
-          Sources: UNEP Ozone Secretariat · IIR · JARN · HEAT GmbH modelling
-        </div>
+        <div id="chart-kigali-transition" class="chart-surface" style="width: 100%; height: 400px; min-height: 400px;"></div>
       </div>
-      <p class="kigali-chart-caption">By 2035, natural refrigerants should lead new equipment sales in developed markets. China and India are already manufacturing R-290 split ACs at scale. The rate of adoption in developing markets will determine whether phase-down targets are met.</p>
+      <p class="kigali-chart-caption">HCFC-22 dominated the global bank in 2015 but is declining rapidly under Montreal Protocol schedules. HFC-134a and HFC-32 are rising sharply, reflecting the AC market's shift toward lower-GWP blends — while natural refrigerant share remains small but growing.</p>
     </div>
 
     <!-- ═══════════════════════════════════════════════════
@@ -1177,7 +1116,7 @@
       <p class="k-body">Transitioning to low-GWP alternatives requires addressing specific physical properties. These are not barriers, but technical requirements already being successfully managed in leading markets.</p>
 
       <!-- LRM 3-column base grid -->
-      <div class="kigali-lifecycle-grid" style="margin-bottom: 1.25rem;">
+      <div class="kigali-lifecycle-grid" style="margin-bottom: 0.75rem;">
         <div class="kigali-lifecycle-item">
           <i class="fa-solid fa-wrench"></i>
           <strong>Leak Prevention</strong>
@@ -1199,19 +1138,19 @@
       <h3 class="k-sub-heading">Technical Considerations for Alternative Refrigerants</h3>
       <div class="k-card-grid-2">
         <div class="k-card">
-          <strong class="k-card-title"><i class="fa-solid fa-fire" style="color:#C25B33;margin-right:0.4rem;"></i>Flammability (A2L/A3)</strong>
+          <strong class="k-card-title"><i class="fa-solid fa-fire" style="color:#C25B33;margin-right:0.5rem;font-size:1.3rem;"></i>Flammability (A2L/A3)</strong>
           <p class="k-card-body">R-32 and R-290 require updated building codes, installation standards, and technician training — protocols well-established where these refrigerants are already deployed at scale.</p>
         </div>
         <div class="k-card">
-          <strong class="k-card-title"><i class="fa-solid fa-skull-crossbones" style="color:#92400e;margin-right:0.4rem;"></i>Toxicity (Ammonia/R-717)</strong>
+          <strong class="k-card-title"><i class="fa-solid fa-skull-crossbones" style="color:#92400e;margin-right:0.5rem;font-size:1.3rem;"></i>Toxicity (Ammonia/R-717)</strong>
           <p class="k-card-body">Highly efficient but toxic and corrosive to copper. Requires steel piping, ventilated machine rooms, and rigorous safety training, particularly in industrial refrigeration.</p>
         </div>
         <div class="k-card">
-          <strong class="k-card-title"><i class="fa-solid fa-gauge-high" style="color:#0369a1;margin-right:0.4rem;"></i>High Pressure (CO₂/R-744)</strong>
+          <strong class="k-card-title"><i class="fa-solid fa-gauge-high" style="color:#0369a1;margin-right:0.5rem;font-size:1.3rem;"></i>High Pressure (CO₂/R-744)</strong>
           <p class="k-card-body">Operates at significantly higher pressures. Requires specialised "transcritical" equipment and technician expertise, but is widely deployed in commercial refrigeration.</p>
         </div>
         <div class="k-card">
-          <strong class="k-card-title"><i class="fa-solid fa-flask" style="color:#7c3aed;margin-right:0.4rem;"></i>PFAS Concerns (certain HFOs)</strong>
+          <strong class="k-card-title"><i class="fa-solid fa-flask" style="color:#7c3aed;margin-right:0.5rem;font-size:1.3rem;"></i>PFAS Concerns (certain HFOs)</strong>
           <p class="k-card-body">While some HFOs offer low GWP, they face regulatory scrutiny around PFAS substances. Natural refrigerants (R-290, CO₂, Ammonia) avoid these concerns entirely.</p>
         </div>
       </div>
@@ -1240,6 +1179,7 @@
     <div class="k-section" class:revealed>
       <span class="k-eyebrow">Go Deeper</span>
       <h2 class="k-title">Resources on the Refrigerant Transition</h2>
+      <p class="k-body">Regulations, technical guidance, and country-level data on HFC phase-down, natural refrigerants, and lifecycle management — curated for policymakers, procurement teams, and industry.</p>
 
       <div class="k-card-grid-2">
         <div class="k-card k-resource-card">
@@ -1327,10 +1267,11 @@
     border: none;
     border-radius: 0;
     border-top: 1px solid rgba(0, 0, 0, 0.06);
-    padding: 56px 64px;
+    padding: 28px 64px;
     opacity: 0;
     transition: opacity 0.4s ease;
   }
+
 
   .k-section.revealed {
     opacity: 1;
@@ -1352,17 +1293,30 @@
     text-transform: uppercase;
     color: #0369a1;
     display: inline-block;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
   }
 
-  /* Section title */
+  /* Larger eyebrow for main chapter headings */
+  .k-eyebrow-xl {
+    font-size: 1.05rem;
+    letter-spacing: 0.18em;
+    margin-bottom: 6px;
+  }
+
+  /* Section title — subsections */
   .k-title {
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     font-weight: 900;
     color: #0f172a;
-    letter-spacing: -0.025em;
-    margin: 0 0 20px;
+    letter-spacing: -0.02em;
+    margin: 0 0 12px;
     line-height: 1.15;
+  }
+
+  /* Chapter-level title — The Challenge / Global Progress / The Way Forward */
+  .k-title-xl {
+    font-size: 2.2rem;
+    letter-spacing: -0.025em;
   }
 
   /* Body text */
@@ -1370,14 +1324,14 @@
     font-size: 1rem;
     font-weight: 500;
     color: #1e293b;
-    line-height: 1.78;
-    margin: 0 0 16px;
+    line-height: 1.7;
+    margin: 0 0 10px;
     max-width: 900px;
   }
 
   /* Sub-heading inside section */
   .k-sub-heading {
-    font-size: 0.88rem;
+    font-size: 1rem;
     font-weight: 700;
     color: #334155;
     margin: 1.25rem 0 0.75rem;
@@ -1411,21 +1365,21 @@
     border: none;
     border-top: 1px solid rgba(0,0,0,0.06);
     border-radius: 0;
-    padding: 20px 0;
+    padding: 12px 0;
   }
 
   .k-card-title {
     display: block;
-    font-size: 0.88rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: #0f172a;
     margin-bottom: 0.5rem;
   }
 
   .k-card-body {
-    font-size: 0.82rem;
+    font-size: 0.9rem;
     color: #475569;
-    line-height: 1.6;
+    line-height: 1.65;
     margin: 0 0 0.75rem;
   }
 
@@ -1459,7 +1413,7 @@
     border: none;
     border-top: 1px solid rgba(0,0,0,0.06);
     border-radius: 0;
-    padding: 1rem 0;
+    padding: 0.6rem 0;
     background: transparent;
   }
 
@@ -1493,7 +1447,7 @@
     border: none;
     border-top: 1px solid rgba(0,0,0,0.06);
     border-radius: 0;
-    padding: 1.5rem 0 0.85rem;
+    padding: 28px 64px;
     overflow: hidden;
   }
 
@@ -1505,7 +1459,6 @@
     font-weight: 700;
     color: #334155;
     background: transparent;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
     padding: 0.65rem 0;
   }
 
@@ -1794,22 +1747,22 @@
     border-top: 1px solid rgba(0,0,0,0.06);
     border-radius: 0;
     padding: 0.85rem 0;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: #334155;
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
-    line-height: 1.5;
+    line-height: 1.55;
   }
 
-  .kigali-lifecycle-item i { color: #0369a1; font-size: 0.9rem; margin-bottom: 0.1rem; }
-  .kigali-lifecycle-item strong { font-size: 0.82rem; color: #1e293b; }
-  .kigali-lifecycle-item span { color: #64748b; }
+  .kigali-lifecycle-item i { color: #0369a1; font-size: 1.8rem; margin-bottom: 0.5rem; }
+  .kigali-lifecycle-item strong { font-size: 0.95rem; color: #1e293b; }
+  .kigali-lifecycle-item span { font-size: 0.875rem; color: #64748b; }
 
   .kigali-lifecycle-note {
-    font-size: 0.78rem;
+    font-size: 0.85rem;
     color: #64748b;
-    line-height: 1.55;
+    line-height: 1.6;
     margin: 0;
     display: flex;
     align-items: flex-start;
@@ -1989,7 +1942,7 @@
      CHART HIGHLIGHTS
      =========================== */
   .kigali-chart-highlights {
-    margin: 0 0 1.25rem;
+    margin: 0 0 0.75rem;
     opacity: 0;
     transform: translateY(8px);
     transition: opacity 0.6s ease 0.7s, transform 0.6s ease 0.7s;
@@ -2025,7 +1978,7 @@
     display: flex;
     align-items: flex-start;
     gap: 0.6rem;
-    padding: 0.75rem 0;
+    padding: 0.5rem 0;
     background: transparent;
     border: none;
     border-top: 1px solid rgba(0,0,0,0.06);
@@ -2037,7 +1990,7 @@
   }
 
   .kigali-highlight-icon {
-    font-size: 1.1rem;
+    font-size: 2rem;
     flex-shrink: 0;
     margin-top: 0.1rem;
   }

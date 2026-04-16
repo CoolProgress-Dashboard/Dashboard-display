@@ -9,8 +9,7 @@
   import PillarInsight from '$lib/components/shared/PillarInsight.svelte';
   import FurtherReading from '$lib/components/shared/FurtherReading.svelte';
   import {
-    ACCESS_ALL_YEARS,
-    POPULATION_CATEGORIES
+    ACCESS_ALL_YEARS
   } from '$lib/components/shared/config';
   import type { AccessRecord, AccessForecastRecord, Country } from '$lib/services/dashboard-types';
   import { SEQ, CAT, ACCESS_RISK, CHROME, NO_DATA, rgba } from '$lib/components/shared/colors';
@@ -168,12 +167,13 @@
         if (!existing) document.head.appendChild(script);
       });
 
-    await Promise.all(
-      ['https://d3js.org/d3.v7.min.js', 'https://d3js.org/topojson.v3.min.js'].map(loadScript)
-    );
+    const [d3Mod, topojsonMod] = await Promise.all([
+      import('d3'),
+      import('topojson-client')
+    ]);
 
-    const d3 = (window as any).d3;
-    const topojson = (window as any).topojson;
+    const d3 = d3Mod;
+    const topojson = topojsonMod;
     const echarts = await import('echarts');
 
     // -------------------------------------------------------
@@ -181,8 +181,6 @@
     // -------------------------------------------------------
     let accessYear = 2024;
     let accessImpactLevels: string[] = ['High', 'Medium', 'Low'];
-    let accessPopCategories: string[] = ['Rural Poor', 'Urban Poor', 'Lower-Middle Income', 'Middle-Income'];
-    let accessRegions: string[] = ['Africa', 'Asia and the Middle East', 'Latin America and the Caribbean', 'Oceania'];
     let selectedCountry: string | null = null;
 
     // -------------------------------------------------------
@@ -234,9 +232,7 @@
       // Map always shows 2024 historical data with tick-box region/impact/pop filters
       const mapFiltered = accessData.filter(r => {
         if (r.year !== 2024) return false;
-        if (accessRegions.length > 0 && r.region && !accessRegions.includes(r.region)) return false;
         if (accessImpactLevels.length > 0 && r.impact_level && !accessImpactLevels.includes(r.impact_level)) return false;
-        if (accessPopCategories.length > 0 && r.population_category && !accessPopCategories.includes(r.population_category)) return false;
         return true;
       });
       const totals: Record<string, number> = {};
@@ -393,7 +389,7 @@
         });
 
       try {
-        const world = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json');
+        const world = await d3.json('/countries-50m.json');
         const worldCountries = topojson.feature(world, world.objects.countries);
         const accessTotals = getAccessTotalsFiltered();
 
@@ -502,7 +498,6 @@
     function renderAccessTimeline() {
       const histRegionMap = buildHistoricalRegionMap();
 
-      // Normalize forecast regions to match historical SEforALL taxonomy per country
       const normalizedForecast = accessForecast.map(r => ({
         ...r,
         region: (r.country_code && histRegionMap[r.country_code])
@@ -510,39 +505,36 @@
           : r.region
       }));
 
-      const allRecords = [...accessData, ...normalizedForecast];
+      // Cap at 2030 — SEforALL data only (no HEAT projections beyond 2030)
+      const allRecords = [...accessData, ...normalizedForecast].filter(r => r.year <= 2030);
 
-      // Apply tick-box filters
+      // Apply risk level filter only
       const filtered = allRecords.filter(r => {
-        if (accessRegions.length > 0 && r.region && !accessRegions.includes(r.region)) return false;
         if (accessImpactLevels.length > 0 && r.impact_level && !accessImpactLevels.includes(r.impact_level)) return false;
-        if (accessPopCategories.length > 0 && r.population_category && !accessPopCategories.includes(r.population_category)) return false;
         return true;
       });
 
       const years = Array.from(new Set(filtered.map(r => r.year))).sort((a, b) => a - b);
-      const categories = ['Rural Poor', 'Urban Poor', 'Lower-Middle Income', 'Middle-Income'];
-      const catColors: Record<string, string> = {
-        'Rural Poor': '#C25B33',
-        'Urban Poor': '#E07850',
-        'Lower-Middle Income': '#D4A843',
-        'Middle-Income': '#F5C44A'
+      const riskLevels = ['High', 'Medium', 'Low'];
+      const riskColors: Record<string, string> = {
+        'High': '#C25B33',
+        'Medium': '#D4A843',
+        'Low': '#F5C44A'
       };
 
       const seriesData: Record<string, number[]> = {};
-      categories.forEach(cat => { seriesData[cat] = []; });
+      riskLevels.forEach(lvl => { seriesData[lvl] = []; });
 
       years.forEach(y => {
-        categories.forEach(cat => {
-          const catRecords = filtered.filter(r => r.year === y && r.population_category === cat);
-          const total = catRecords.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
-          seriesData[cat].push(Math.round(total / 1e6 * 10) / 10);
+        riskLevels.forEach(lvl => {
+          const records = filtered.filter(r => r.year === y && r.impact_level === lvl);
+          const total = records.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
+          seriesData[lvl].push(Math.round(total / 1e6 * 10) / 10);
         });
       });
 
-      // Only render categories that are active and have data
-      const activeCats = categories.filter(cat =>
-        accessPopCategories.includes(cat) && seriesData[cat].some(v => v > 0)
+      const activeRisks = riskLevels.filter(lvl =>
+        accessImpactLevels.includes(lvl) && seriesData[lvl].some(v => v > 0)
       );
 
       setChart('chart-access-timeline', {
@@ -562,33 +554,34 @@
           }
         },
         legend: {
-          data: activeCats,
+          data: activeRisks,
           bottom: 0,
-          textStyle: { fontSize: 10, color: '#475569' }
+          left: 'center',
+          textStyle: { fontSize: 11, color: '#1e293b', fontWeight: 700 }
         },
         grid: { left: '3%', right: '4%', bottom: '14%', top: '8%', containLabel: true },
         xAxis: {
           type: 'category',
           data: years,
-          axisLabel: { fontSize: 10, interval: 4 },
+          axisLabel: { fontSize: 10, color: '#1e293b', fontWeight: 700, interval: 1, showMaxLabel: true },
           boundaryGap: false
         },
         yAxis: {
           type: 'value',
           name: 'Population (millions)',
-          nameTextStyle: { fontSize: 10, color: '#475569' },
-          axisLabel: { fontSize: 10, formatter: '{value}M' }
+          nameTextStyle: { fontSize: 11, color: '#1e293b', fontWeight: 700 },
+          axisLabel: { fontSize: 10, color: '#1e293b', fontWeight: 700, formatter: '{value}M' }
         },
-        series: activeCats.map((cat, idx) => ({
-          name: cat,
+        series: activeRisks.map((lvl, idx) => ({
+          name: lvl,
           type: 'line',
           stack: 'total',
-          areaStyle: { opacity: 0.6 },
-          data: seriesData[cat],
+          areaStyle: { opacity: 0.7, color: riskColors[lvl] },
+          data: seriesData[lvl],
           smooth: false,
           symbol: 'none',
-          lineStyle: { color: catColors[cat], width: 1.5 },
-          itemStyle: { color: catColors[cat] },
+          lineStyle: { color: riskColors[lvl], width: 1.5 },
+          itemStyle: { color: riskColors[lvl] },
           markLine: idx === 0 ? {
             silent: true,
             symbol: 'none',
@@ -596,7 +589,7 @@
               xAxis: '2024',
               lineStyle: { color: '#94a3b8', type: 'dashed', width: 1.5 },
               label: {
-                formatter: 'Historical | Projected',
+                formatter: 'Historical | Forecast',
                 position: 'insideEndTop',
                 fontSize: 9,
                 color: '#94a3b8'
@@ -631,30 +624,33 @@
 
       const countryData = [...accessData, ...accessForecast].filter(r => r.country_code === code);
 
-      const categoryColors: Record<string, string> = {
-        'Rural Poor': '#C25B33',
-        'Urban Poor': '#E07850',
-        'Lower-Middle Income': '#D4A843',
-        'Middle-Income': '#F5C44A'
+      const riskColors: Record<string, string> = {
+        'High': '#C25B33',
+        'Medium': '#D4A843',
+        'Low': '#F5C44A'
       };
+      const riskLevels = ['High', 'Medium', 'Low'];
 
-      // Build stacked data by category over 2013-2050 timeline
-      const stackedData = POPULATION_CATEGORIES.map(cat => ({
-        name: cat,
-        data: ACCESS_ALL_YEARS.map(year => {
-          const yearCatData = countryData.filter(r => r.year === year && r.population_category === cat);
-          return yearCatData.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
+      // Cap at 2030 — SEforALL data only
+      const CHART_YEARS = ACCESS_ALL_YEARS.filter((y: number) => y <= 2030);
+
+      // Build stacked data by risk level over 2013–2030
+      const stackedData = riskLevels.map(lvl => ({
+        name: lvl,
+        data: CHART_YEARS.map((year: number) => {
+          const yearLvlData = countryData.filter(r => r.year === year && r.impact_level === lvl);
+          return yearLvlData.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
         }),
-        color: categoryColors[cat]
+        color: riskColors[lvl]
       }));
 
-      // 2024 breakdown for pie chart
+      // 2024 breakdown for pie chart by risk level
       const currentYearData = countryData.filter(r => r.year === 2024);
-      const categoryBreakdown = POPULATION_CATEGORIES.map(cat => {
-        const catTotal = currentYearData
-          .filter(r => r.population_category === cat)
+      const categoryBreakdown = riskLevels.map(lvl => {
+        const total = currentYearData
+          .filter(r => r.impact_level === lvl)
           .reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
-        return { category: cat, value: catTotal, color: categoryColors[cat] };
+        return { category: lvl, value: total, color: riskColors[lvl] };
       }).filter(cb => cb.value > 0);
 
       const currentYearTotal = currentYearData.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
@@ -669,13 +665,13 @@
       const changeIcon = Number(changePercent) > 0 ? 'fa-arrow-up' : 'fa-arrow-down';
       const region = country.region || 'Global South';
       const trendDirection = Number(changePercent) > 0 ? 'increased' : 'decreased';
-      const dominantCategory = categoryBreakdown.reduce(
+      const dominantRisk = categoryBreakdown.reduce(
         (max, c) => c.value > max.value ? c : max,
         { category: '', value: 0 }
       ).category;
       const trendDescription = `Population without cooling access has ${trendDirection} by ${Math.abs(Number(changePercent))}% since ${baselineYear}.`;
-      const breakdownDescription = dominantCategory
-        ? `The largest vulnerable group is ${dominantCategory}, making up the majority of those at risk.`
+      const breakdownDescription = dominantRisk
+        ? `The highest concentration is in the <strong style="color:${riskColors[dominantRisk] || '#C25B33'}">${dominantRisk} risk</strong> category.`
         : '';
 
       accessDetail.innerHTML = `
@@ -741,13 +737,13 @@
             legend: {
               show: true, top: 0, left: 'center',
               itemWidth: 14, itemHeight: 10,
-              textStyle: { fontSize: 11, color: '#475569', fontWeight: 500 },
+              textStyle: { fontSize: 12, color: '#1e293b', fontWeight: 700 },
               itemGap: 10
             },
             xAxis: {
               type: 'category',
-              data: ACCESS_ALL_YEARS.map(String),
-              axisLabel: { fontSize: 10, interval: 4, fontWeight: 500, color: '#475569' },
+              data: CHART_YEARS.map(String),
+              axisLabel: { fontSize: 13, interval: 1, fontWeight: 700, color: '#1e293b' },
               axisLine: { lineStyle: { color: '#cbd5e1' } },
               axisTick: { show: false },
               boundaryGap: false
@@ -885,8 +881,6 @@
       });
     }
 
-    wireAccessCheckboxes('access-region-checks', v => { accessRegions = v; });
-    wireAccessCheckboxes('access-pop-checks', v => { accessPopCategories = v; });
     wireAccessCheckboxes('access-impact-checks', v => { accessImpactLevels = v; });
 
     // -------------------------------------------------------
@@ -977,7 +971,7 @@
     <div class="access-narrative-section" class:revealed>
       <span class="access-eyebrow">The Challenge</span>
       <h2 class="access-section-title">Access to cooling is not a luxury — it is a human right.</h2>
-      <p class="access-body-text">As global temperatures break records, the "cooling gap" has become a matter of survival, particularly for the 1.2 billion people identified in the SEforALL Chilling Prospects 2025/2026 data as being at high risk.</p>
+      <p class="access-body-text">As global temperatures break records, the "cooling gap" has become a matter of survival, particularly for the 1.2 billion people identified in the <a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(3,105,161,0.3);">SEforALL Chilling Prospects 2025/2026</a> data as being at high risk.</p>
 
       <div class="access-counters">
         {#each accessStats as stat, i}
@@ -1061,7 +1055,7 @@
 
     <!-- Map Card with Filters Inside -->
     <div class="card-panel map-card">
-      <div class="card-header">
+      <div class="card-header" style="border-bottom: none;">
         <div class="card-title">
           <i class="fa-solid fa-earth-americas"></i>
           Cooling Access Gap by Country
@@ -1084,36 +1078,8 @@
         <span class="progress-segment access-critical" id="access-progress-critical"></span>
       </div>
 
-      <!-- Tick-box filters -->
+      <!-- Risk Level filter only -->
       <div class="access-checkboxes" id="access-filters-panel">
-        <div class="checkbox-group">
-          <span class="checkbox-label"><i class="fa-solid fa-earth-americas"></i> Region</span>
-          <div class="checkbox-items" id="access-region-checks">
-            <label class="tick-box" title="Sub-Saharan Africa and North Africa — largest high-risk population with significant infrastructure gaps."><input type="checkbox" value="Africa" checked /><span class="tick-mark"></span>Africa</label>
-            <label class="tick-box" title="South Asia, East Asia, Southeast Asia, and Middle East — fastest growing cooling demand regions."><input type="checkbox" value="Asia and the Middle East" checked /><span class="tick-mark"></span>Asia &amp; Middle East</label>
-            <label class="tick-box" title="Latin America and Caribbean — growing disparities between urban and rural cooling access."><input type="checkbox" value="Latin America and the Caribbean" checked /><span class="tick-mark"></span>Latin America</label>
-            <label class="tick-box" title="Pacific Island nations and Australia/New Zealand — vulnerable small island states."><input type="checkbox" value="Oceania" checked /><span class="tick-mark"></span>Oceania</label>
-          </div>
-        </div>
-        <button
-          class="access-advanced-toggle"
-          type="button"
-          on:click={() => showAdvancedFilters = !showAdvancedFilters}
-        >
-          <i class="fa-solid {showAdvancedFilters ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>
-          {showAdvancedFilters ? 'Hide' : 'Show'} income &amp; risk filters
-        </button>
-
-        {#if showAdvancedFilters}
-        <div class="checkbox-group">
-          <span class="checkbox-label"><i class="fa-solid fa-users"></i> Income Group <i class="fa-solid fa-circle-info" style="font-size:0.7rem;color:#94a3b8;margin-left:0.3rem;" title="Hover over each filter for more information"></i></span>
-          <div class="checkbox-items" id="access-pop-checks">
-            <label class="tick-box" title="Likely subsistence farmers without access to an intact cold chain; may lack access to electricity and properly stored vaccines. Income: less than $2.15/day in rural areas."><input type="checkbox" value="Rural Poor" checked /><span class="tick-mark"></span>Rural Poor</label>
-            <label class="tick-box" title="May have some access to electricity, but live in housing of poor quality; may have a refrigerator, but food often spoils due to intermittent power. Income: less than $2.15/day in urban/slum areas."><input type="checkbox" value="Urban Poor" checked /><span class="tick-mark"></span>Urban Poor</label>
-            <label class="tick-box" title="May purchase an affordable but likely inefficient air conditioner or refrigerator, raising energy consumption and GHG emissions. Income: less than $10/day outside poverty."><input type="checkbox" value="Lower-Middle Income" checked /><span class="tick-mark"></span>Lower-Mid</label>
-            <label class="tick-box" title="May be able to afford a more efficient air conditioner or minimize its use; may move to energy efficient housing and working environments. Income: between $10-$20/day."><input type="checkbox" value="Middle-Income" checked /><span class="tick-mark"></span>Middle</label>
-          </div>
-        </div>
         <div class="checkbox-group">
           <span class="checkbox-label"><i class="fa-solid fa-triangle-exclamation"></i> Risk Level <i class="fa-solid fa-circle-info" style="font-size:0.7rem;color:#94a3b8;margin-left:0.3rem;" title="Hover over each filter for more information"></i></span>
           <div class="checkbox-items" id="access-impact-checks">
@@ -1122,22 +1088,21 @@
             <label class="tick-box" title="LOW RISK: Populations with growing access to cooling but still facing affordability and efficiency challenges."><input type="checkbox" value="Low" checked /><span class="tick-mark risk-low"></span>Low</label>
           </div>
         </div>
-        {/if}
       </div>
 
       <!-- Global Timeline Chart (2013-2050) -->
       <div id="access-timeline-container" style="margin-top: 0.75rem; border-top: 1px solid #f1f5f9; padding-top: 0.25rem;">
-        <div class="chart-card-header" style="padding: 0.75rem 1rem;">
+        <div class="chart-card-header" style="padding: 0.75rem 1rem; border-bottom: none;">
           <h3 style="font-size: 0.88rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 0.4rem; margin: 0;">
             <i class="fa-solid fa-chart-area" style="color: #D4A843;"></i>
-            Population at Risk: 2013&ndash;2050
+            Population at Risk: 2013&ndash;2030
           </h3>
-          <p style="font-size: 0.72rem; color: #94a3b8; margin: 0.2rem 0 0;">
-            Historical (SEforALL) &middot; Projected (HEAT methodology) &middot; Stacked by income group
+          <p style="font-size: 0.72rem; color: #334155; font-weight: 600; margin: 0.2rem 0 0;">
+            SEforALL Chilling Prospects data &middot; Stacked by risk level &middot; Forecast to 2030
           </p>
         </div>
         <div class="chart-card-body">
-          <p class="chart-hint">Use the filters on the left to focus on specific regions, income groups, or risk levels.</p>
+          <p class="chart-hint">Use the Risk Level filter to focus on specific vulnerability groups.</p>
           <div id="chart-access-timeline" class="chart-surface" style="width: 100%; height: 400px; min-height: 400px;"></div>
         </div>
       </div>
@@ -1190,7 +1155,7 @@
         <div class="pledge-icon"><i class="fa-solid fa-handshake-angle"></i></div>
         <div class="pledge-content">
           <strong>Global Cooling Pledge Alignment</strong>
-          <span>Target: {globalCoolingPledge.targetEmissionReduction} from BAU &middot; {globalCoolingPledge.signatoryCountries} signatory nations &middot; Expand sustainable cooling access</span>
+          <span>Target: {globalCoolingPledge.targetEmissionReduction} from BAU &middot; Expand sustainable cooling access</span>
         </div>
         <a href={globalCoolingPledge.progressReportUrl} target="_blank" rel="noopener noreferrer" class="pledge-link">Progress Report</a>
       </div>
@@ -1262,7 +1227,7 @@
      DESIGN SYSTEM — narrative sections
      =========================== */
   .access-narrative-section {
-    padding: 56px 64px;
+    padding: 32px 64px;
   }
 
   .access-eyebrow {
@@ -1280,7 +1245,7 @@
     font-weight: 900;
     color: #0f172a;
     letter-spacing: -0.025em;
-    margin: 0 0 20px;
+    margin: 0 0 12px;
     line-height: 1.15;
   }
 
@@ -1316,15 +1281,15 @@
   }
 
   .access-impact-icon {
-    width: 44px;
-    height: 44px;
+    width: 52px;
+    height: 52px;
     border-radius: 12px;
     background: rgba(3,105,161,0.1);
     color: #0369a1;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
+    font-size: 1.5rem;
     margin-bottom: 16px;
     flex-shrink: 0;
   }
@@ -1349,6 +1314,9 @@
     .access-narrative-section { padding: 36px 24px; }
     .access-impact-grid { grid-template-columns: 1fr; }
     .access-resources-grid { grid-template-columns: 1fr; }
+    .card-panel { padding-left: 24px; padding-right: 24px; }
+    .country-card-inline { padding-left: 24px; padding-right: 24px; }
+    .access-humidity-card { margin: 0 24px; padding: 1.2rem 0 1.2rem 1rem; }
   }
 
   /* ===========================
@@ -1417,12 +1385,12 @@
 
   /* --- Humidity callout card --- */
   .access-humidity-card {
+    margin: 0 64px;
     padding: 1.4rem 0 1.4rem 1.2rem;
     background: transparent;
     border-radius: 0;
     border: none;
     border-left: 4px solid #5A8FC2;
-    margin: 0;
   }
 
   .access-humidity-header {
@@ -1662,6 +1630,17 @@
 
   .access-partner-logo:hover { opacity: 1; transform: translateY(-2px); }
   .access-partner-logo img { max-width: 80px; max-height: 32px; object-fit: contain; }
+
+  /* Align map card, country detail, and other full-width blocks to the 64px text margins */
+  .card-panel {
+    padding-left: 64px;
+    padding-right: 64px;
+  }
+
+  .country-card-inline {
+    padding-left: 64px;
+    padding-right: 64px;
+  }
 
   /* Source footer */
   .access-source-footer {

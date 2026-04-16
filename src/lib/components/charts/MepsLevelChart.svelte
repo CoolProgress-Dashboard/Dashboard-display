@@ -1,8 +1,16 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import mepsTimeline from '$lib/data/meps_timeline.json';
-  import mepsLevels from '$lib/data/meps_levels.json';
+  import mepsTimelineJson from '$lib/data/meps_timeline.json';
+  import mepsLevelsJson from '$lib/data/meps_levels.json';
   import { COUNTRY_LINES, CHROME } from '$lib/components/shared/colors';
+  import type { MepsTimelineRecord, MepsLevelRecord } from '$lib/services/dashboard-types';
+
+  export let mepsTimeline: MepsTimelineRecord[] = [];
+  export let mepsLevels: MepsLevelRecord[] = [];
+
+  // Use Supabase data if provided, otherwise fall back to JSON
+  $: effectiveTimeline = mepsTimeline.length > 0 ? mepsTimeline : (mepsTimelineJson as any[]);
+  $: effectiveLevels = mepsLevels.length > 0 ? mepsLevels : (mepsLevelsJson as any[]);
 
   let chartContainer: HTMLElement;
   let chartInstance: any;
@@ -78,14 +86,14 @@
 
   // Get timeline data for a specific appliance and country
   function getTimelineData(appliance: ApplianceTab, countryCode: string) {
-    return mepsTimeline.filter(
+    return effectiveTimeline.filter(
       (d: any) => d.appliance_type === appliance && d.country_code === countryCode
     ).sort((a: any, b: any) => a.year - b.year);
   }
 
   // Get level data for a specific appliance and country
   function getLevelData(appliance: ApplianceTab, countryCode: string) {
-    return mepsLevels.filter(
+    return effectiveLevels.filter(
       (d: any) => d.appliance_type === appliance && d.country_code === countryCode
     );
   }
@@ -93,7 +101,7 @@
   // Get available countries for the selected appliance from timeline data
   function getAvailableCountries(appliance: ApplianceTab): string[] {
     const codes = new Set<string>();
-    for (const d of mepsTimeline) {
+    for (const d of effectiveTimeline) {
       if ((d as any).appliance_type === appliance) {
         codes.add((d as any).country_code);
       }
@@ -107,7 +115,7 @@
     const cfg = countryConfigs.find(c => c.code === code);
     if (cfg) return cfg.name;
     // Then check timeline data
-    const entry = mepsTimeline.find((d: any) => d.country_code === code);
+    const entry = effectiveTimeline.find((d: any) => d.country_code === code);
     return entry ? (entry as any).country_name : code;
   }
 
@@ -238,7 +246,7 @@
 
           const code = countryConfigs.find(c => c.name === seriesName)?.code;
           if (code) {
-            const entry = mepsTimeline.find(
+            const entry = effectiveTimeline.find(
               (d: any) => d.country_code === code && d.year === year && d.appliance_type === appliance
             );
             if (entry) {
@@ -253,24 +261,28 @@
           return html;
         }
       },
-      grid: { left: '3%', right: '5%', bottom: '12%', top: '8%', containLabel: true },
+      grid: { left: '6%', right: '9%', bottom: '12%', top: '8%', containLabel: true },
       xAxis: {
         type: 'value',
         name: 'Year',
+        nameLocation: 'end',
+        nameGap: 8,
         min: minYear,
         max: maxYear,
         interval: 5,
-        nameTextStyle: { fontSize: 12, color: '#888' },
-        axisLabel: { fontSize: 13, color: '#666', formatter: (v: number) => String(v) },
+        nameTextStyle: { fontSize: 13, color: '#334155', fontWeight: 600 },
+        axisLabel: { fontSize: 13, color: '#334155', fontWeight: 500, formatter: (v: number) => String(v) },
         axisLine: { lineStyle: { color: '#e2e8f0' } },
         splitLine: { show: false },
       },
       yAxis: {
         type: 'value',
         name: yAxisLabel + directionNote,
+        nameLocation: 'end',
+        nameGap: 10,
         min: appliance === 'AC' ? 0 : undefined,
-        nameTextStyle: { fontSize: 12, color: '#888' },
-        axisLabel: { fontSize: 13, color: '#888', formatter: (v: number) => appliance === 'AC' ? v.toFixed(1) : String(Math.round(v)) },
+        nameTextStyle: { fontSize: 13, color: '#334155', fontWeight: 600 },
+        axisLabel: { fontSize: 13, color: '#334155', fontWeight: 500, formatter: (v: number) => appliance === 'AC' ? v.toFixed(1) : String(Math.round(v)) },
         splitLine: { lineStyle: { color: '#f1f5f9' } },
         axisLine: { show: false },
         inverse: !higherIsBetter,
@@ -282,7 +294,7 @@
 
   function buildNonAcChart(appliance: ApplianceTab) {
     // For refrigerators/fans, show a bar chart of current MEPS levels by country
-    const entries = mepsLevels.filter((d: any) =>
+    const entries = effectiveLevels.filter((d: any) =>
       d.appliance_type === appliance &&
       enabledCountries.has(d.country_code)
     );

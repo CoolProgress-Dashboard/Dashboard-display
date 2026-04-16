@@ -1,7 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { peakLoadByProjected, globalBaselineAvg } from '$lib/data/peak-load-data';
+  import { peakLoadByProjected as hardcodedByProjected, globalBaselineAvg as hardcodedAvg } from '$lib/data/peak-load-data';
   import { DIV, CHROME, rgba } from '$lib/components/shared/colors';
+  import type { PeakLoadRecord } from '$lib/services/dashboard-types';
+
+  export let peakLoadData: PeakLoadRecord[] = [];
 
   let chartContainer: HTMLElement;
   let chartInstance: any;
@@ -11,9 +14,25 @@
 
     chartInstance = echarts.init(chartContainer);
 
-    const countries = peakLoadByProjected.map(d => d.country);
-    const baseline = peakLoadByProjected.map(d => d.baselinePercent);
-    const projected = peakLoadByProjected.map(d => d.projectedPercent);
+    // Use Supabase data if provided, otherwise fall back to hardcoded
+    const sorted = peakLoadData.length > 0
+      ? [...peakLoadData]
+          .filter(d => !d.is_global_avg && d.projected_percent != null)
+          .sort((a, b) => (b.projected_percent ?? 0) - (a.projected_percent ?? 0))
+      : hardcodedByProjected;
+
+    const avgRecord = peakLoadData.find(d => d.is_global_avg);
+    const avgPercent = avgRecord ? avgRecord.baseline_percent : hardcodedAvg.percent;
+
+    const countries = peakLoadData.length > 0
+      ? sorted.map((d: any) => d.country)
+      : sorted.map((d: any) => d.country);
+    const baseline = peakLoadData.length > 0
+      ? sorted.map((d: any) => d.baseline_percent)
+      : sorted.map((d: any) => d.baselinePercent);
+    const projected = peakLoadData.length > 0
+      ? sorted.map((d: any) => d.projected_percent)
+      : sorted.map((d: any) => d.projectedPercent);
 
     const option = {
       tooltip: {
@@ -21,15 +40,17 @@
         axisPointer: { type: 'shadow' },
         formatter: (params: any[]) => {
           const country = params[0].name;
-          const entry = peakLoadByProjected.find(d => d.country === country);
+          const entry = (sorted as any[]).find((d: any) => d.country === country);
           let html = `<strong>${country}</strong><br/>`;
           for (const p of params) {
             html += `${p.marker} ${p.seriesName}: <strong>${p.value}%</strong><br/>`;
           }
           if (entry) {
-            const growth = entry.projectedPercent - entry.baselinePercent;
+            const bp = entry.baseline_percent ?? entry.baselinePercent ?? 0;
+            const pp = entry.projected_percent ?? entry.projectedPercent ?? 0;
+            const growth = pp - bp;
             html += `<span style="color:#52B788">Growth: +${growth} pp</span><br/>`;
-            html += `<span style="color:#999;font-size:11px">${entry.source}</span>`;
+            if (entry.source) html += `<span style="color:#999;font-size:11px">${entry.source}</span>`;
           }
           return html;
         }
@@ -86,6 +107,21 @@
               ]
             },
             borderRadius: [4, 4, 0, 0]
+          },
+          markLine: {
+            silent: true,
+            data: [
+              {
+                yAxis: avgPercent,
+                label: {
+                  formatter: `Global avg ${avgPercent}%`,
+                  position: 'end',
+                  fontSize: 10,
+                  color: CHROME.AXIS_LABEL
+                },
+                lineStyle: { type: 'dashed', color: CHROME.DEMARCATION }
+              }
+            ]
           }
         },
         {
@@ -105,22 +141,7 @@
             borderRadius: [4, 4, 0, 0]
           }
         }
-      ],
-      markLine: {
-        silent: true,
-        data: [
-          {
-            yAxis: globalBaselineAvg.percent,
-            label: {
-              formatter: `Global avg ${globalBaselineAvg.percent}%`,
-              position: 'end',
-              fontSize: 10,
-              color: CHROME.AXIS_LABEL
-            },
-            lineStyle: { type: 'dashed', color: CHROME.DEMARCATION }
-          }
-        ]
-      }
+      ]
     };
 
     chartInstance.setOption(option);

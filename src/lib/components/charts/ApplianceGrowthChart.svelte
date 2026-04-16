@@ -3,14 +3,45 @@
   import { APPLIANCE, SCENARIO, EMISSION, CHROME, areaGradient, rgba } from '$lib/components/shared/colors';
   import {
     applianceTimeseriesData,
-    applianceMilestones,
+    applianceMilestones as hardcodedMilestones,
     applianceSummaries,
-    getApplianceData,
     getYears,
     APPLIANCE_META,
     METRIC_META
   } from '$lib/data/appliance-timeseries-data';
-  import type { ApplianceType, MetricKey, ScenarioType } from '$lib/data/appliance-timeseries-data';
+  import type { ApplianceType, MetricKey, ScenarioType, ApplianceTimeseriesPoint } from '$lib/data/appliance-timeseries-data';
+  import type { ApplianceTimeseriesRecord, CoolingMilestoneRecord } from '$lib/services/dashboard-types';
+
+  export let applianceTimeseries: ApplianceTimeseriesRecord[] = [];
+  export let coolingMilestones: CoolingMilestoneRecord[] = [];
+
+  // Use Supabase data if provided, otherwise fall back to hardcoded
+  $: effectiveData = applianceTimeseries.length > 0
+    ? applianceTimeseries.map((r): ApplianceTimeseriesPoint => ({
+        year: r.year,
+        appliance: r.appliance_type as ApplianceType,
+        stockMillions: r.stock_millions,
+        energyTwh: r.energy_twh,
+        indirectEmissionMt: r.indirect_emission_mt,
+        directEmissionMt: r.direct_emission_mt,
+        totalEmissionMt: r.total_emission_mt,
+        scenario: r.scenario as ScenarioType,
+        isProjected: r.is_projected,
+        source: r.source ?? '',
+        sourceUrl: r.source_url ?? '',
+      }))
+    : applianceTimeseriesData;
+
+  $: applianceMilestones = coolingMilestones.length > 0
+    ? coolingMilestones.map(m => ({ year: m.year, label: m.label, description: m.description ?? '' }))
+    : hardcodedMilestones;
+
+  function getApplianceData(appliance: ApplianceType | 'All', scenario: ScenarioType): ApplianceTimeseriesPoint[] {
+    if (appliance === 'All') {
+      return effectiveData.filter(d => d.scenario === scenario);
+    }
+    return effectiveData.filter(d => d.appliance === appliance && d.scenario === scenario);
+  }
 
   let chartContainer: HTMLElement;
   let chartInstance: any;

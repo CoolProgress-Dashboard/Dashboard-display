@@ -13,6 +13,8 @@
   countries={data.countries ?? []}
   emissions={data.emissions ?? []}
   regions={data.regions ?? []}
+  applianceTimeseries={data.applianceTimeseries ?? []}
+  coolingMilestones={data.coolingMilestones ?? []}
   emissionsYear={2030}
   emissionsAppliances={['Air Conditioning', 'Ceiling and Portable Fans', 'Refrigerator-Freezers']}
   onPillarInfoClick={() => pillarModalOpen.set(true)}

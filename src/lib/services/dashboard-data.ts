@@ -2,14 +2,21 @@ import type {
   AccessFilters,
   AccessForecastRecord,
   AccessRecord,
+  AcGrowthRecord,
   AcInverterRecord,
+  ApplianceTimeseriesRecord,
   ClaspEnergyRecord,
+  CoolingMilestoneRecord,
+  CountrySpotlightRecord,
   DashboardData,
   EmissionsFilters,
   EmissionsRecord,
+  MepsLevelRecord,
+  MepsTimelineRecord,
   NcapRecord,
   NdcFilters,
   NdcTrackerRecord,
+  PeakLoadRecord,
   RefrigerantRecord,
   RegionRecord,
   SubcoolRecord
@@ -70,7 +77,14 @@ export const createDefaultData = (): DashboardData => ({
   subcool: [],
   regions: [],
   refrigerants: [],
-  acInverterShare: []
+  acInverterShare: [],
+  acGrowthData: [],
+  coolingMilestones: [],
+  applianceTimeseries: [],
+  peakLoadData: [],
+  countrySpotlights: [],
+  mepsTimeline: [],
+  mepsLevels: []
 });
 
 const safeFetch = async <T>(
@@ -89,11 +103,66 @@ const safeFetch = async <T>(
   }
 };
 
+// Loads refrigerant bank data for the 4 chart years (small table — 48 rows).
+export const loadRefrigerantBankData = async (
+  url: string,
+  key: string
+): Promise<import('./dashboard-types').RefrigerantBankRecord[]> => {
+  return safeFetch<import('./dashboard-types').RefrigerantBankRecord>(
+    url, key, 'refrigerant_bank_data',
+    'id,year,refrigerant,region,bank_tonnes',
+    'year=in.(2015,2020,2025,2030)'
+  );
+};
+
+// Loads only the columns needed for the Kigali direct-emissions chart.
+// Fetches scenario_name + year + direct_emission_mt from global_model_subcool so
+// the caller can aggregate globally without transferring all columns.
+export const loadSubcoolGlobalSummary = async (
+  url: string,
+  key: string
+): Promise<{ scenario_name: string; year: number; direct_emission_mt: number }[]> => {
+  return safeFetch<{ scenario_name: string; year: number; direct_emission_mt: number }>(
+    url, key, 'global_model_subcool', 'scenario_name,year,direct_emission_mt', '', 100000
+  );
+};
+
+// Loads clasp_energy_consumption + global_model_subcool separately.
+// These tables have 27k and 34k rows respectively — at Supabase's 1000-row cap
+// that means 62 sequential HTTP requests (~7–30 s). Calling this lazily inside
+// EmissionsPillar keeps the layout load fast.
+export const loadEmissionsHeavyData = async (
+  url: string,
+  key: string
+): Promise<{ claspEnergy: ClaspEnergyRecord[]; subcool: SubcoolRecord[] }> => {
+  const [claspEnergy, subcool] = await Promise.all([
+    safeFetch<ClaspEnergyRecord>(
+      url,
+      key,
+      'clasp_energy_consumption',
+      'id,country_code,country_name,year,appliance,bau_final_energy_twh,bau_co2_mt,gb_final_energy_twh,gb_co2_mt,gb_annual_co2_red_mt,gb_cumul_co2_red_mt,nzh_final_energy_twh,nzh_co2_mt,nzh_annual_co2_red_mt,nzh_cumul_co2_red_mt,bat_final_energy_twh,bat_co2_mt,bat_annual_co2_red_mt,bat_cumul_co2_red_mt,bat_co2_nzg_mt,bat_cumul_co2_red_nzg_mt,appliance_units_in_use,appliance_ownership_rate',
+      '',
+      50000
+    ),
+    safeFetch<SubcoolRecord>(
+      url,
+      key,
+      'global_model_subcool',
+      'id,scenario_id,scenario_name,country_code,country_name,subsector_id,subsector,year,indirect_emission_mt,direct_emission_mt,stock,unit_sales,ec_gwh',
+      '',
+      100000
+    )
+  ]);
+  return { claspEnergy, subcool };
+};
+
 export const loadDashboardData = async (
   url: string,
   key: string
 ): Promise<DashboardData> => {
-  const [countries, pledge, kigali, meps, access, accessForecast, emissions, ndcTracker, ncap, claspEnergy, subcool, regions, refrigerants, acInverterShare] =
+  // clasp_energy_consumption and global_model_subcool are intentionally excluded —
+  // they require 60+ sequential requests. EmissionsPillar loads them lazily.
+  const [countries, pledge, kigali, meps, access, accessForecast, emissions, ndcTracker, ncap, regions, refrigerants, acInverterShare, acGrowthData, coolingMilestones, applianceTimeseries, peakLoadData, countrySpotlights] =
     await Promise.all([
       safeFetch(url, key, 'countries', 'country_code,country_name,region'),
       safeFetch(url, key, 'global_cooling_pledge', 'country_code,country_name,signatory'),
@@ -131,7 +200,7 @@ export const loadDashboardData = async (
         'v_emissions_summary',
         'country_code,country_name,region,year,scenario_code,appliance_category,total_emissions,direct_emissions,indirect_emissions',
         '',
-        10000 // ~9,740 rows need pagination
+        10000
       ),
       safeFetch(
         url,
@@ -146,22 +215,6 @@ export const loadDashboardData = async (
         key,
         'ncap',
         'id,country_code,country_name,year,long_term_goal,sectoral_targets,energy_consumed_twh,ghg_emissions_mtco2e,cooling_access_vulnerability,energy_efficiency_demand_reduction,refrigerant_management,remarks,policy_available_pdf'
-      ),
-      safeFetch<ClaspEnergyRecord>(
-        url,
-        key,
-        'clasp_energy_consumption',
-        'id,country_code,country_name,year,appliance,bau_final_energy_twh,bau_co2_mt,gb_final_energy_twh,gb_co2_mt,gb_annual_co2_red_mt,gb_cumul_co2_red_mt,nzh_final_energy_twh,nzh_co2_mt,nzh_annual_co2_red_mt,nzh_cumul_co2_red_mt,bat_final_energy_twh,bat_co2_mt,bat_annual_co2_red_mt,bat_cumul_co2_red_mt,bat_co2_nzg_mt,bat_cumul_co2_red_nzg_mt,appliance_units_in_use,appliance_ownership_rate',
-        '',
-        50000
-      ),
-      safeFetch<SubcoolRecord>(
-        url,
-        key,
-        'global_model_subcool',
-        'id,scenario_id,scenario_name,country_code,country_name,subsector_id,subsector,year,indirect_emission_mt,direct_emission_mt,stock,unit_sales,ec_gwh',
-        '',
-        100000
       ),
       safeFetch<RegionRecord>(
         url,
@@ -180,8 +233,33 @@ export const loadDashboardData = async (
         key,
         'ac_inverter_share',
         'id,region,country_code,country_name,year_label,year_start,year_end,inverter_pct,non_inverter_pct,confidence,is_estimate,scope_notes,source_name,source_url'
+      ),
+      safeFetch<AcGrowthRecord>(url, key, 'ac_growth_data', 'id,year,stock_millions,is_projected,source'),
+      safeFetch<CoolingMilestoneRecord>(url, key, 'cooling_milestones', 'id,year,label,description,appliance_type'),
+      safeFetch<ApplianceTimeseriesRecord>(
+        url,
+        key,
+        'appliance_timeseries',
+        'id,year,appliance_type,scenario,stock_millions,energy_twh,indirect_emission_mt,direct_emission_mt,total_emission_mt,is_projected,source,source_url'
+      ),
+      safeFetch<PeakLoadRecord>(
+        url,
+        key,
+        'peak_load_data',
+        'id,country,country_code,baseline_year,baseline_percent,projected_year,projected_percent,source,is_global_avg'
+      ),
+      safeFetch<CountrySpotlightRecord>(
+        url,
+        key,
+        'country_spotlights',
+        'id,spotlight_id,name,region,flag_emoji,narrative,meps_status,dominant_refrigerant,key_challenge,source,stats'
       )
     ]);
+  // meps_level_timeline and meps_levels tables do not yet exist in Supabase.
+  // MepsLevelChart falls back to the bundled JSON files (src/lib/data/meps_timeline.json
+  // and meps_levels.json) when these arrays are empty.
+  const mepsTimeline: MepsTimelineRecord[] = [];
+  const mepsLevels: MepsLevelRecord[] = [];
 
   return {
     countries,
@@ -193,11 +271,18 @@ export const loadDashboardData = async (
     emissions,
     ndcTracker,
     ncap,
-    claspEnergy,
-    subcool,
+    claspEnergy: [],  // loaded lazily by EmissionsPillar
+    subcool: [],      // loaded lazily by EmissionsPillar
     regions,
     refrigerants,
     acInverterShare,
+    acGrowthData,
+    coolingMilestones,
+    applianceTimeseries,
+    peakLoadData,
+    countrySpotlights,
+    mepsTimeline,
+    mepsLevels,
     ndc: []
   };
 };

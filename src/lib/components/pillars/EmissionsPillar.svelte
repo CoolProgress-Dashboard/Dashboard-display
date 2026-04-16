@@ -8,7 +8,7 @@
     SUPABASE_URL, SUPABASE_KEY
   } from '$lib/components/shared/config';
   import { SEQ, APPLIANCE, EMISSION_APPLIANCE, ACCESS_RISK, SCENARIO, EMISSION, SAVINGS, STATUS, CHROME, NO_DATA, YES, NO, rgba } from '$lib/components/shared/colors';
-  import { loadDashboardData } from '$lib/services/dashboard-data';
+  import { loadEmissionsHeavyData } from '$lib/services/dashboard-data';
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
   import ApplianceGrowthChart from '$lib/components/charts/ApplianceGrowthChart.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
@@ -26,6 +26,8 @@
   export let countries: any[] = [];
   export let emissions: any[] = [];
   export let regions: any[] = [];
+  export let applianceTimeseries: any[] = [];
+  export let coolingMilestones: any[] = [];
   export let emissionsYear: number = 2030;
   export let emissionsAppliances: string[] = ['Air Conditioning', 'Ceiling and Portable Fans', 'Refrigerator-Freezers'];
 
@@ -675,35 +677,39 @@
         : 'fa-arrows-split-up-and-left';
 
       emissionsDetail.innerHTML = `
-        <div class="filter-status-bar">
-          <div class="status-title">
-            <i class="fa-solid fa-flag"></i>
-            ${country.country_name}
-            <span style="font-size:0.75rem;font-weight:400;opacity:0.8;">${region}</span>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;padding:1rem 1.25rem;border-bottom:1px solid rgba(0,0,0,0.07);background:#fff;">
+          <div style="display:flex;align-items:center;gap:1rem;">
+            <div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#e0f2fe,#bae6fd);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fa-solid fa-location-dot" style="color:#0284c7;font-size:1.1rem;"></i>
+            </div>
+            <div>
+              <div style="display:flex;align-items:baseline;gap:0.5rem;">
+                <span style="font-size:1.15rem;font-weight:800;color:#0f172a;letter-spacing:-0.01em;">${country.country_name}</span>
+                <span style="font-size:0.75rem;font-weight:500;color:#64748b;background:#f1f5f9;padding:0.15rem 0.5rem;border-radius:999px;">${region}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.2rem;">
+                <span style="font-size:0.9rem;font-weight:700;color:#C25B33;">
+                  <i class="fa-solid fa-cloud" style="margin-right:0.25rem;font-size:0.8rem;"></i>${currentYearTotal.toFixed(2)} Mt CO₂
+                </span>
+                <span style="font-size:0.8rem;font-weight:500;color:${changeColor};">
+                  <i class="fa-solid ${changeIcon}" style="margin-right:0.2rem;font-size:0.75rem;"></i>${Math.abs(Number(changePercent))}% ${comparisonText}
+                </span>
+              </div>
+            </div>
           </div>
-          <div class="status-filters">
-            <span class="filter-tag"><i class="fa-solid fa-calendar"></i> ${localEmissionsYear}</span>
-            <span class="filter-tag"><i class="fa-solid fa-flask"></i> ${scenarioLabel}</span>
-            <span class="filter-tag"><i class="fa-solid ${emissionTypeIcon}"></i> ${emissionTypeLabel}</span>
-            <span class="filter-tag" style="opacity:0.75;"><i class="fa-solid fa-sliders"></i> Adjust year slider to explore</span>
+          <div style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center;">
+            <span style="font-size:0.72rem;font-weight:600;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;padding:0.25rem 0.6rem;border-radius:6px;display:inline-flex;align-items:center;gap:0.3rem;">
+              <i class="fa-solid fa-calendar" style="color:#94a3b8;font-size:0.65rem;"></i>${localEmissionsYear}
+            </span>
+            <span style="font-size:0.72rem;font-weight:600;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;padding:0.25rem 0.6rem;border-radius:6px;display:inline-flex;align-items:center;gap:0.3rem;">
+              <i class="fa-solid fa-flask" style="color:#94a3b8;font-size:0.65rem;"></i>${scenarioLabel}
+            </span>
+            <span style="font-size:0.72rem;font-weight:600;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;padding:0.25rem 0.6rem;border-radius:6px;display:inline-flex;align-items:center;gap:0.3rem;">
+              <i class="fa-solid ${emissionTypeIcon}" style="color:#94a3b8;font-size:0.65rem;"></i>${emissionTypeLabel}
+            </span>
           </div>
         </div>
-        <div style="padding:1rem;">
-        <div class="country-header" style="margin-bottom:1rem;">
-          <h4 style="color:#0369a1;font-size:1.1rem;margin:0;display:flex;align-items:center;gap:0.5rem;">
-            <i class="fa-solid fa-flag" style="color:#52B788;"></i>
-            ${country.country_name}
-            <span style="font-size:0.75rem;font-weight:400;color:#64748b;margin-left:0.5rem;">${region}</span>
-          </h4>
-          <div style="display:flex;gap:0.75rem;margin-top:0.5rem;flex-wrap:wrap;">
-            <span style="font-size:0.8rem;color:#C25B33;font-weight:600;">
-              <i class="fa-solid fa-cloud" style="margin-right:0.25rem;"></i>${currentYearTotal.toFixed(2)} Mt CO2
-            </span>
-            <span style="font-size:0.8rem;color:${changeColor};font-weight:500;">
-              <i class="fa-solid ${changeIcon}" style="margin-right:0.25rem;"></i>${Math.abs(Number(changePercent))}% ${comparisonText}
-            </span>
-          </div>
-        </div>
+        <div style="padding:1rem 1.25rem;">
         <div class="country-charts-grid">
           <div class="chart-box" style="background:transparent;border:none;border-top:1px solid rgba(0,0,0,0.06);padding:0.75rem 0;">
             <div style="font-size:0.75rem;font-weight:600;color:#0369a1;margin-bottom:0.5rem;">
@@ -821,37 +827,13 @@
         typeHtml = appLabels.length ? `<span class="filter-tag"><i class="fa-solid fa-fan"></i> ${appLabels.join(' · ')}</span>` : '';
       }
       container.innerHTML = `
-        <div class="filter-status-bar">
-          <div class="status-title"><i class="fa-solid fa-chart-area"></i> Global Emissions — ${localEmissionsYear}</div>
-          <div class="status-filters">
-            <span class="filter-tag"><i class="fa-solid ${sourceIcon}"></i> ${sourceLabel}</span>
-            <span class="filter-tag"><i class="fa-solid fa-calendar"></i> ${localEmissionsYear}</span>
-            <span class="filter-tag"><i class="fa-solid fa-flask"></i> ${scenarioName}</span>
-            ${typeHtml}
-          </div>
-        </div>
-        <div class="emissions-chart-section">
-          <h3>Emissions by Category</h3>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;">
-            <div>
-              <h4 style="font-size:0.9rem;color:#475569;margin-bottom:0.5rem;">By Appliance/Subsector</h4>
-              <div id="chart-emissions-category" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
-            </div>
-            <div>
-              <h4 style="font-size:0.9rem;color:#475569;margin-bottom:0.5rem;">Top 10 Countries: Cumulative Savings to <span id="top-countries-year-label">${localEmissionsYear}</span></h4>
-              <div id="chart-emissions-top-countries" class="chart-surface" style="width:100%;height:320px;min-height:320px;"></div>
-            </div>
-          </div>
-        </div>
-        <div class="emissions-chart-section" style="border-top:1px solid #e2e8f0;">
-          <h3>Emissions Trajectory</h3>
-          <p class="chart-subtitle">Scenario comparison over time</p>
-          <div id="chart-emissions-timeline" class="chart-surface" style="width:100%;height:320px;min-height:320px;"></div>
+        <div class="ep-country-select-prompt" style="margin-top: 2.5rem; padding-top: 3rem;">
+          <i class="fa-solid fa-earth-americas ep-csp-icon"></i>
+          <strong class="ep-csp-heading">Select a country on the map above</strong>
+          <span class="ep-csp-sub">Explore its cooling emissions breakdown — direct refrigerant leaks and indirect electricity-related CO₂</span>
         </div>
       `;
       setTimeout(() => {
-        renderEmissionsCategoryChart(echartsLib);
-        renderEmissionsTopCountriesChart(echartsLib);
         renderNewEmissionsTimeline(echartsLib);
       }, 50);
     }
@@ -1026,12 +1008,12 @@
         };
       }
 
-      setChart('chart-emissions-timeline', {
+      setChart('chart-emissions-timeline-static', {
         tooltip: { trigger: 'axis' },
         legend: { bottom: 0, textStyle: { fontSize: 11 } },
-        grid: { left: '12%', right: '4%', bottom: '15%', top: '10%' },
+        grid: { left: '3%', right: '4%', bottom: '15%', top: '10%', containLabel: true },
         xAxis: { type: 'category', data: years.map(String), axisLabel: { fontSize: 11 } },
-        yAxis: { type: 'value', name: 'Mt CO2', nameLocation: 'middle', nameGap: 40, axisLabel: { fontSize: 10 } },
+        yAxis: { type: 'value', name: 'Mt CO2', nameLocation: 'middle', nameGap: 45, axisLabel: { fontSize: 10 } },
         series
       }, echartsLib);
     }
@@ -1070,7 +1052,6 @@
 
     async function initEmissionsMap(echartsLib: any) {
       const topojson = (window as any).topojson;
-      d3 = (window as any).d3;
       const container = document.getElementById('emissions-map-container');
       if (!container) return;
       d3.select('#emissions-map-container').selectAll('svg').remove();
@@ -1097,7 +1078,7 @@
       const projection = d3.geoNaturalEarth1().scale(width / 6).translate([width / 2, height / 1.8]);
       const path = d3.geoPath().projection(projection);
       try {
-        const world = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json');
+        const world = await d3.json('/countries-50m.json');
         const countries = topojson.feature(world, world.objects.countries);
         const countryValues = getCountryValuesForMap();
         const maxValue = Math.max(...Object.values(countryValues), 0.1);
@@ -1225,35 +1206,39 @@
 
     async function initEmissions() {
       try {
-        await Promise.all([
-          loadScript('https://d3js.org/d3.v7.min.js'),
-          loadScript('https://d3js.org/topojson.v3.min.js')
+        const [d3Mod, topojsonMod, echartsLib] = await Promise.all([
+          import('d3'),
+          import('topojson-client'),
+          import('echarts')
         ]);
-        const echartsLib = await import('echarts');
+        d3 = d3Mod;
+        (window as any).topojson = topojsonMod;
 
-        // Load data from props or fall back to fetching from API
+        // Regions and countries are small tables — always available from layout props.
+        regionsData   = regions;
+        countriesData = countries;
+
+        // Phase 1 — render map and wire events immediately (no heavy data needed).
+        populateEmissionsRegionFilter();
+        await initEmissionsMap(echartsLib);
+        setupEmissionsEventHandlers(echartsLib);
+        showGlobalEmissionsDetail();
+        syncPanelVisibility();
+
+        // Phase 2 — load heavy data in background, then update map colours + CLASP charts.
         if (claspEnergy.length > 0) {
           localClaspEnergy = claspEnergy;
           subcoolData      = subcool;
-          regionsData      = regions;
-          countriesData    = countries;
         } else {
           try {
-            const dashData = await loadDashboardData(SUPABASE_URL, SUPABASE_KEY);
-            localClaspEnergy = dashData.claspEnergy;
-            subcoolData      = dashData.subcool;
-            regionsData      = dashData.regions;
-            countriesData    = dashData.countries;
+            const heavyData = await loadEmissionsHeavyData(SUPABASE_URL, SUPABASE_KEY);
+            localClaspEnergy = heavyData.claspEnergy;
+            subcoolData      = heavyData.subcool;
           } catch (err) {
-            console.error('EmissionsPillar: failed to load dashboard data', err);
+            console.error('EmissionsPillar: failed to load emissions data', err);
           }
         }
-
-        // Setup filters, map, charts and event handlers
-        populateEmissionsRegionFilter();
-        await initEmissionsMap(echartsLib);
         updateEmissionsView(echartsLib);
-        setupEmissionsEventHandlers(echartsLib);
 
         // Resize handler
         const handleResize = () => {
@@ -1311,8 +1296,8 @@
   <div class="pillar-stack">
     <!-- ═══ Ch01 THE CHALLENGE ═══ -->
     <div class="chapter-card" class:revealed style="border-top: none;">
-      <span class="ep-eyebrow">The Challenge</span>
-      <h2 class="ep-section-title">Cooling demand is rising — and so are the emissions that power it.</h2>
+      <span class="ep-eyebrow ep-eyebrow-xl">The Challenge</span>
+      <h2 class="ep-section-title">Cooling demand is rising and so are the emissions that power it.</h2>
       <p class="ep-body">On a fossil-reliant grid, every air conditioner adds CO₂ to the atmosphere, while refrigerant leaks release gases hundreds to thousands of times more potent than carbon. This creates a vicious cycle: rising temperatures drive cooling demand, which accelerates emissions, further heating the planet. Without intervention, cooling-related emissions are on track to double by 2040 and potentially triple by 2050.</p>
 
       <div class="emissions-counters">
@@ -1330,11 +1315,17 @@
     </div>
 
     <!-- DATA: CO2 Emissions Map & Charts -->
-    <div class="map-charts-connected">
+    <div class="chapter-card ep-map-intro" class:revealed>
+      <span class="ep-eyebrow">Country Emissions</span>
+      <h2 class="ep-section-title">Look at your country's cooling emissions.</h2>
+      <p class="ep-body">Both <strong>direct emissions</strong> (refrigerant leaks from cooling equipment) and <strong>indirect emissions</strong> (electricity-related CO₂ from powering compressors) are shown on the map below. Click any country to explore its full breakdown by appliance type and emission source.</p>
+    </div>
+
+    <div class="map-charts-connected emissions-map-block">
     <div class="map-section">
-    <div class="card-panel map-card">
-      <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <div class="card-title">
+    <div class="card-panel map-card" style="padding: 0.75rem 0.75rem 0.5rem;">
+      <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; padding: 0 0 0.5rem; margin-bottom: 0; border-bottom: none;">
+        <div class="card-title" style="font-size: 0.82rem;">
           <i class="fa-solid fa-earth-americas"></i>
           CO2 Emissions by Country
         </div>
@@ -1342,7 +1333,7 @@
           <i class="fa-solid fa-book-open" style="font-size: 0.6rem;"></i> Methodology
         </a>
       </div>
-      <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem; padding: 0 0.5rem;">
+      <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.25rem; padding: 0;">
         Cooling sector emissions in Mt CO2. Click a country for detailed breakdown.
       </div>
       <div id="emissions-map-container" class="map-surface"></div>
@@ -1436,7 +1427,7 @@
 
     <!-- ═══ THE WAY FORWARD ═══ -->
     <div class="chapter-card" class:revealed>
-      <span class="ep-eyebrow">The Way Forward</span>
+      <span class="ep-eyebrow ep-eyebrow-xl">The Way Forward</span>
       <h2 class="ep-section-title">Breaking the vicious cycle of heat, demand, and emissions.</h2>
       <p class="ep-body">Cooling-related climate impact is driven by two distinct streams: indirect emissions from the electricity used to power compressors and fans — currently responsible for roughly 70% of the sector's impact — and direct emissions from high-GWP refrigerant leaks, such as R-410A and R-22, during manufacturing, operation, maintenance and disposal. Tackling one without the other solves only half the problem, as air conditioning and refrigeration already account for over 1 GtCO₂e annually, particularly in fast-growing regions (e.g. South Asia, Africa, Southeast Asia) with fossil-heavy grids.</p>
       <p class="ep-body">Bending the emissions curve requires three simultaneous moves: shifting to ultra-low-GWP refrigerants, doubling equipment energy efficiency, and accelerating grid decarbonisation. According to the IEA Efficient Cooling Scenario, this integrated approach could avoid 460 GtCO₂e in cumulative emissions by 2060 — equivalent to eight years of current global energy-related output — and the data on this dashboard tracks our progress toward that critical trajectory.</p>
@@ -1453,21 +1444,9 @@
       </div>
     </div>
 
-    <!-- Appliance Growth Chart -->
-    <div class="ep-chart-wrapper">
-      <div class="chart-card-header">
-        <span class="ep-eyebrow" style="margin-bottom: 6px;">Appliance Growth</span>
-        <h3 class="chart-card-title">Global Appliance Stock &amp; Emissions Trajectory</h3>
-      </div>
-      <div class="chart-card-body">
-        <p class="chart-hint">Select an appliance type and metric to explore projected growth in stock, energy use, or emissions through 2050. Toggle the grid decarbonisation scenario to see its impact.</p>
-        <ApplianceGrowthChart />
-      </div>
-    </div>
-
-    <!-- ═══ RESOURCES ═══ -->
+    <!-- ═══ RESOURCES (moved above GO DEEPER charts) ═══ -->
     <div class="chapter-card" class:revealed>
-      <span class="ep-eyebrow">Go Deeper</span>
+      <span class="ep-eyebrow">Explore Global Initiatives</span>
       <h2 class="ep-section-title">Resources on Cooling &amp; Climate</h2>
 
       <div class="ep-resources-grid">
@@ -1515,7 +1494,7 @@
           <i class="fa-solid fa-arrow-up-right-from-square ep-resource-icon"></i>
           <div class="ep-resource-content">
             <strong class="ep-resource-title">IEA Electricity 2026 Report</strong>
-            <span class="ep-resource-desc">Tracks the decarbonisation of the global power grid and how peak loads are affected by cooling.</span>
+            <span class="ep-resource-desc">Tracks the decarbonisation of the global power grid and how peak loads are affected by cooling demand surges.</span>
           </div>
         </a>
 
@@ -1523,7 +1502,7 @@
           <i class="fa-solid fa-arrow-up-right-from-square ep-resource-icon"></i>
           <div class="ep-resource-content">
             <strong class="ep-resource-title">Cool Coalition: Beating the Heat Handbook</strong>
-            <span class="ep-resource-desc">Practical guide for passive cooling strategies that can reduce indoor temperatures by 5–8°C.</span>
+            <span class="ep-resource-desc">Practical guide for passive cooling strategies that can reduce indoor temperatures by 5–8°C without energy-intensive equipment.</span>
           </div>
         </a>
 
@@ -1532,6 +1511,38 @@
           <div class="ep-resource-content">
             <strong class="ep-resource-title">CCAC: Guidance on Sustainable Cooling in NDCs</strong>
             <span class="ep-resource-desc">Framework for countries to integrate cooling into NDCs, ensuring HFC phasedowns and efficiency gains are anchored in Paris commitments.</span>
+          </div>
+        </a>
+
+        <a href="https://united4efficiency.org/" target="_blank" rel="noopener noreferrer" class="ep-resource-card">
+          <i class="fa-solid fa-arrow-up-right-from-square ep-resource-icon"></i>
+          <div class="ep-resource-content">
+            <strong class="ep-resource-title">U4E — United for Efficiency Standards</strong>
+            <span class="ep-resource-desc">Global initiative supporting developing countries to adopt best-in-class energy efficiency standards and labels for appliances including ACs, refrigerators, and lighting.</span>
+          </div>
+        </a>
+
+        <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32024R0573" target="_blank" rel="noopener noreferrer" class="ep-resource-card">
+          <i class="fa-solid fa-arrow-up-right-from-square ep-resource-icon"></i>
+          <div class="ep-resource-content">
+            <strong class="ep-resource-title">EU F-Gas Regulation 2024</strong>
+            <span class="ep-resource-desc">The EU's updated fluorinated gas regulation, progressively banning high-GWP refrigerants. A landmark policy accelerating the transition to natural refrigerants across Europe.</span>
+          </div>
+        </a>
+
+        <a href="https://www.iea.org/topics/energy-efficiency" target="_blank" rel="noopener noreferrer" class="ep-resource-card">
+          <i class="fa-solid fa-arrow-up-right-from-square ep-resource-icon"></i>
+          <div class="ep-resource-content">
+            <strong class="ep-resource-title">IEA Energy Efficiency Hub</strong>
+            <span class="ep-resource-desc">Central repository for IEA's energy efficiency analysis, country scorecards, and the global tracking of standards, labels, and building codes.</span>
+          </div>
+        </a>
+
+        <a href="https://cprc-clasp.ngo/" target="_blank" rel="noopener noreferrer" class="ep-resource-card">
+          <i class="fa-solid fa-arrow-up-right-from-square ep-resource-icon"></i>
+          <div class="ep-resource-content">
+            <strong class="ep-resource-title">CLASP Policy Resource Center (CPRC)</strong>
+            <span class="ep-resource-desc">Comprehensive database of appliance energy efficiency policies worldwide — MEPS, labels, and procurement standards by country and appliance type.</span>
           </div>
         </a>
       </div>
@@ -1562,21 +1573,134 @@
         <a href="/methodology">Methodology</a>
       </div>
     </div>
+
+    <!-- ═══ GO DEEPER: Emissions Trajectory ═══ -->
+    <div class="ep-chart-wrapper">
+      <span class="ep-eyebrow">Explore Global Pathways</span>
+      <h2 class="ep-section-title">Emissions Trajectory — Scenario Comparison</h2>
+      <p class="ep-body">Compare how different policy pathways bend the emissions curve from 2020 to 2050. Business as Usual (BAU) projects a tripling of cooling emissions; the DECARB scenarios show the impact of combining energy efficiency standards (MEPS), Kigali refrigerant phase-down, and grid decarbonisation.</p>
+      <div id="chart-emissions-timeline-static" class="chart-surface" style="width:100%;height:340px;min-height:340px;"></div>
+      <div class="ep-chart-source">
+        Sources: <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">CLASP Mepsy</a> &middot; <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH</a> &middot; <a href="/methodology">Methodology</a>
+      </div>
+    </div>
+
+    <!-- Appliance Growth Chart -->
+    <div class="ep-chart-wrapper">
+      <span class="ep-eyebrow">Appliance Growth</span>
+      <h2 class="ep-section-title">Global Appliance Stock &amp; Emissions Trajectory</h2>
+      <p class="ep-body">Select an appliance type (AC, Refrigerators, Fans) and a metric to explore projected growth through 2050.
+        Toggle between <strong>stock (units)</strong>, <strong>energy demand (TWh)</strong>, and <strong>emissions</strong> — both indirect (electricity) and direct (refrigerant leaks).
+        Activate the <strong>DECARB scenario</strong> to see how energy efficiency improvements and grid decarbonisation together reduce the climate footprint of the global cooling stock.</p>
+      <p class="ep-chart-addl-note">
+        <i class="fa-solid fa-lightbulb" style="color:#0369a1;margin-right:0.4rem;"></i>
+        <strong>Additional context:</strong> Use the Emissions Trajectory chart above alongside this view to understand how appliance-level efficiency gains translate into global emission reductions over time.
+      </p>
+      <ApplianceGrowthChart {applianceTimeseries} {coolingMilestones} />
+    </div>
   </div>
 </section>
 
 <style>
   /* ===========================
+     MAP INTRO SECTION
+     =========================== */
+  .ep-map-intro {
+    padding-bottom: 20px;
+  }
+
+  /* ===========================
+     COUNTRY SELECT PROMPT — :global because injected via innerHTML
+     =========================== */
+  :global(.ep-country-select-prompt) {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    gap: 0.6rem !important;
+    padding: 2.5rem 2rem !important;
+    background: linear-gradient(160deg, #f0f9ff 0%, #dbeafe 100%) !important;
+    border-top: 1px solid #bae6fd !important;
+    min-height: 140px;
+  }
+
+  :global(.ep-csp-icon) {
+    font-size: 2.5rem !important;
+    color: #0284c7 !important;
+    display: block !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  :global(.ep-csp-heading) {
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    color: #0369a1 !important;
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  :global(.ep-csp-sub) {
+    font-size: 0.9rem !important;
+    color: #0c4a6e !important;
+    line-height: 1.6 !important;
+    max-width: 520px !important;
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  /* ===========================
+     CHART SUBTITLE & ADDL NOTE
+     =========================== */
+  .ep-chart-subtitle {
+    font-size: 1rem;
+    color: #64748b;
+    margin: 0 0 0 0;
+    font-weight: 400;
+  }
+
+  .ep-chart-addl-note {
+    font-size: 0.82rem;
+    color: #475569;
+    background: #f8fafc;
+    border-left: 3px solid #0369a1;
+    padding: 0.6rem 0.9rem;
+    border-radius: 0 6px 6px 0;
+    margin: 0.5rem 0 1rem;
+    line-height: 1.55;
+  }
+
+  .ep-chart-source {
+    font-size: 0.68rem;
+    color: #94a3b8;
+    text-align: right;
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+
+  .ep-chart-source a {
+    color: #0369a1;
+    text-decoration: none;
+  }
+
+  /* ===========================
      DESIGN SYSTEM — matching OverviewPillar
      =========================== */
   .ep-eyebrow {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 800;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: #0369a1;
-    display: inline-block;
-    margin-bottom: 16px;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  /* Larger eyebrow for THE CHALLENGE / THE WAY FORWARD */
+  .ep-eyebrow.ep-eyebrow-xl {
+    font-size: 1.4rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
   }
 
   .ep-section-title {
@@ -1585,27 +1709,50 @@
     color: #0f172a;
     letter-spacing: -0.025em;
     line-height: 1.15;
-    margin: 0 0 20px;
+    margin: 0 0 16px;
   }
 
   .ep-body {
     font-size: 1rem;
     font-weight: 500;
     color: #1e293b;
-    line-height: 1.78;
+    line-height: 1.75;
     margin: 0 0 16px;
-    max-width: 900px;
   }
 
-  /* Chart wrapper — replaces card-panel for chart sections */
+  /* Remove inter-section gap — rely on section padding for breathing room */
+  :global(#view-emissions .pillar-stack) {
+    gap: 0;
+  }
+
+  /* Tighter section padding for this pillar */
+  :global(#view-emissions .chapter-card) {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  /* Chart wrapper — mirrors chapter-card */
   .ep-chart-wrapper {
     border-top: 1px solid rgba(0, 0, 0, 0.06);
-    padding: 56px 64px;
+    padding: 40px 64px;
   }
 
-  @media (max-width: 768px) {
+  /* Map container — matches horizontal padding */
+  :global(.map-charts-connected.emissions-map-block) {
+    padding-left: 64px !important;
+    padding-right: 64px !important;
+  }
+
+  @media (max-width: 900px) {
+    :global(#view-emissions .chapter-card) {
+      padding: 28px 24px;
+    }
     .ep-chart-wrapper {
-      padding: 32px 20px;
+      padding: 28px 24px;
+    }
+    :global(.map-charts-connected.emissions-map-block) {
+      padding-left: 24px !important;
+      padding-right: 24px !important;
     }
   }
 
@@ -1698,6 +1845,10 @@
     -webkit-backdrop-filter: none;
     min-height: unset;
     padding: 1rem 0;
+    text-align: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
   }
 
   .emissions-counters :global(.counter-card:hover) {
@@ -1733,12 +1884,12 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.75rem 0;
+    padding: 0.6rem 0;
     background: transparent;
     border: none;
     border-top: 1px solid rgba(0, 0, 0, 0.06);
     border-radius: 0;
-    margin: 0 0 1.25rem;
+    margin: 0.25rem 0 0;
     opacity: 0;
     transform: translateY(6px);
     transition: opacity 0.6s ease 0.8s, transform 0.6s ease 0.8s;

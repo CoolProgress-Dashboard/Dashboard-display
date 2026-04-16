@@ -41,5 +41,8 @@
   mepsShowRegionCard={true}
   mepsEquipmentCountryHtml=""
   acInverterShare={data.acInverterShare ?? []}
+  peakLoadData={data.peakLoadData ?? []}
+  mepsTimeline={data.mepsTimeline ?? []}
+  mepsLevels={data.mepsLevels ?? []}
   onPillarInfoClick={() => pillarModalOpen.set(true)}
 />

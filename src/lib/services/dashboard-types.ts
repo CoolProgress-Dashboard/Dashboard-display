@@ -108,6 +108,13 @@ export type DashboardData = {
   regions: RegionRecord[];
   refrigerants: RefrigerantRecord[];
   acInverterShare: AcInverterRecord[];
+  acGrowthData: AcGrowthRecord[];
+  coolingMilestones: CoolingMilestoneRecord[];
+  applianceTimeseries: ApplianceTimeseriesRecord[];
+  peakLoadData: PeakLoadRecord[];
+  countrySpotlights: CountrySpotlightRecord[];
+  mepsTimeline: MepsTimelineRecord[];
+  mepsLevels: MepsLevelRecord[];
 };
 
 export type EmissionsFilters = {
@@ -214,6 +221,103 @@ export type RefrigerantRecord = {
   gwp_source?: string | null;
   ref_type: string; // "HFC", "HCFC", "HFO", "NR"
   natural_refrigerant: boolean;
+};
+
+export type AcGrowthRecord = {
+  id: number;
+  year: number;
+  stock_millions: number;
+  is_projected: boolean;
+  source?: string | null;
+};
+
+export type CoolingMilestoneRecord = {
+  id: number;
+  year: number;
+  label: string;
+  description?: string | null;
+  appliance_type?: string | null;
+};
+
+export type ApplianceTimeseriesRecord = {
+  id: number;
+  year: number;
+  appliance_type: string;
+  scenario: string;
+  stock_millions: number;
+  energy_twh: number;
+  indirect_emission_mt: number;
+  direct_emission_mt: number;
+  total_emission_mt: number;
+  is_projected: boolean;
+  source?: string | null;
+  source_url?: string | null;
+};
+
+export type PeakLoadRecord = {
+  id: number;
+  country: string;
+  country_code?: string | null;
+  baseline_year?: number | null;
+  baseline_percent: number;
+  projected_year?: number | null;
+  projected_percent?: number | null;
+  source?: string | null;
+  is_global_avg: boolean;
+};
+
+export type RefrigerantBankRecord = {
+  id: number;
+  year: number;
+  refrigerant: string;
+  region: 'A5' | 'NA5';
+  bank_tonnes: number;
+};
+
+export type CountrySpotlightRecord = {
+  id: number;
+  spotlight_id: string;
+  name: string;
+  region?: string | null;
+  flag_emoji?: string | null;
+  narrative?: string | null;
+  meps_status?: string | null;
+  dominant_refrigerant?: string | null;
+  key_challenge?: string | null;
+  source?: string | null;
+  stats?: any;
+};
+
+// MEPS stringency timeline (one row per country/appliance/year)
+export type MepsTimelineRecord = {
+  id: number;
+  country_code: string;
+  country_name: string;
+  appliance_type: string;
+  year: number;
+  meps_level_national?: number | null;
+  metric_name?: string | null;
+  meps_level_cspf_equiv?: number | null;
+  standard_version?: string | null;
+  is_projected: boolean;
+  source?: string | null;
+};
+
+// MEPS current levels by country/appliance
+export type MepsLevelRecord = {
+  id: number;
+  country_code: string;
+  country_name: string;
+  appliance_type: string;
+  metric_name: string;
+  metric_value?: number | null;
+  cspf_equivalent?: number | null;
+  eei_equivalent?: number | null;
+  year_adopted?: number | null;
+  year_revised?: number | null;
+  is_mandatory?: boolean | null;
+  standard_name?: string | null;
+  notes?: string | null;
 };
 
 // AC inverter technology share data

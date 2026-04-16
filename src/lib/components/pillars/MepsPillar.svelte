@@ -122,6 +122,7 @@
 
   let revealed = false;
   let activeMapView: 'coverage' | 'inverter' = 'coverage';
+  let mepsHasCountry = false; // tracks whether a country is selected (for prompt visibility)
 
   // Country sync — exposed after D3 init
   let _applyMepsCountry: ((code: string | null) => void) | null = null;
@@ -282,10 +283,10 @@
     function getMepsColor(level: string): string {
       switch (level) {
         case 'both':     return STATUS.ADVANCED;
-        case 'meps':     return STATUS.GOOD;
+        case 'meps':     return '#2563eb';
         case 'labels':   return STATUS.DEVELOPING;
         case 'limited':  return STATUS.MINIMAL;
-        case 'critical': return STATUS.NONE;
+        case 'critical': return '#e5e7eb';
         default:         return NO_DATA;
       }
     }
@@ -331,7 +332,6 @@
         <div class="legend-item"><div class="legend-color" style="background:${STATUS.ADVANCED}"></div>MEPS &amp; Labels</div>
         <div class="legend-item"><div class="legend-color" style="background:${STATUS.GOOD}"></div>MEPS Only</div>
         <div class="legend-item"><div class="legend-color" style="background:${STATUS.DEVELOPING}"></div>Labels Only</div>
-        <div class="legend-item"><div class="legend-color" style="background:${STATUS.NONE}"></div>No Policies</div>
       `;
     }
 
@@ -436,37 +436,101 @@
 
     // ---- Global MEPS detail panel ----
     function showGlobalMepsDetail() {
-      const container = document.querySelector('#meps-country-detail .country-detail') as HTMLElement | null;
-      if (!container) return;
-      container.innerHTML = `
-        <div class="country-placeholder" style="text-align:center;padding:2rem;color:#64748b;">
-          <i class="fa-solid fa-map-location-dot" style="font-size:2rem;color:${STATUS.ADVANCED};margin-bottom:0.75rem;display:block;"></i>
-          <h4 style="color:${STATUS.ADVANCED};margin-bottom:0.5rem;">Select a Country</h4>
-          <p style="font-size:0.85rem;">Click on any country in the map above to view MEPS and labeling policy details.</p>
-        </div>
-      `;
+      mepsHasCountry = false;
+      const parentEl = document.getElementById('meps-country-detail') as HTMLElement | null;
+      if (parentEl) parentEl.style.display = 'none';
     }
 
     // ---- Country detail panel ----
     function updateMepsCountryDetail(code: string) {
       selectedMepsCountry = code;
-      const container = document.querySelector('#meps-country-detail .country-detail') as HTMLElement | null;
-      if (!container) return;
+      const parentEl = document.getElementById('meps-country-detail') as HTMLElement | null;
+      const container = parentEl?.querySelector('.country-detail') as HTMLElement | null;
+      if (!container || !parentEl) return;
+
+      // Show detail, hide prompt (via Svelte reactive variable)
+      mepsHasCountry = true;
+      parentEl.style.display = 'block';
+
       const country = countries.find(c => c.country_code === code);
       const allRecords = mepsData.filter(m => m.country_code === code);
+
       if (!country) {
-        container.innerHTML = `<h4>Unknown Country</h4><p>No data available for ${code}</p>`;
+        container.innerHTML = `<div style="padding:1rem;color:#64748b;">No data for ${code}</div>`;
         return;
       }
-      container.innerHTML = `
-        <div style="background:linear-gradient(135deg,${STATUS.ADVANCED} 0%,${STATUS.GOOD} 100%);color:white;padding:0.75rem 1rem;border-radius:8px;margin-bottom:0.5rem;">
-          <h4 style="margin:0;font-size:1.1rem;display:flex;align-items:center;gap:0.5rem;">
-            <i class="fa-solid fa-location-dot" style="color:#C8E8C4;"></i>
-            ${country.country_name}
-          </h4>
+
+      const status = getMepsStatus(code);
+      const statusColor = getMepsColor(status.level);
+      const equipTypes = ['Air Conditioning', 'Domestic Refrigeration', 'Fans'];
+      const equipColors: Record<string, string> = { 'Air Conditioning': '#2D7D5A', 'Domestic Refrigeration': '#52B788', 'Fans': '#D4A843' };
+      const equipIcons: Record<string, string> = { 'Air Conditioning': 'fa-snowflake', 'Domestic Refrigeration': 'fa-temperature-low', 'Fans': 'fa-fan' };
+
+      let html = `<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;padding:1rem 1.25rem;border-bottom:1px solid rgba(0,0,0,0.07);background:#fff;">
+        <div style="display:flex;align-items:center;gap:1rem;">
+          <div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,#e0f2fe,#bae6fd);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fa-solid fa-location-dot" style="color:#0284c7;font-size:1.1rem;"></i>
+          </div>
+          <div>
+            <div style="display:flex;align-items:baseline;gap:0.5rem;">
+              <span style="font-size:1.15rem;font-weight:800;color:#0f172a;letter-spacing:-0.01em;">${country.country_name}</span>
+              <span style="font-size:0.75rem;font-weight:500;color:#64748b;background:#f1f5f9;padding:0.15rem 0.5rem;border-radius:999px;">${country.region || ''}</span>
+            </div>
+            <div style="margin-top:0.25rem;display:flex;align-items:center;gap:0.5rem;">
+              <span style="font-size:0.8rem;font-weight:700;color:${statusColor};background:${statusColor}18;padding:0.15rem 0.6rem;border-radius:999px;border:1px solid ${statusColor}30;">${status.label}</span>
+              <span style="font-size:0.78rem;color:#64748b;">${allRecords.length} ${allRecords.length === 1 ? 'policy' : 'policies'} on record</span>
+            </div>
+          </div>
         </div>
-      `;
-      updateMepsCountryCharts(code, allRecords);
+      </div>
+      <div style="padding:1rem 1.25rem;">`;
+
+      if (allRecords.length === 0) {
+        html += `<div style="text-align:center;padding:2rem;color:#64748b;"><i class="fa-solid fa-circle-info" style="font-size:1.5rem;margin-bottom:0.5rem;display:block;color:#0284c7;"></i><strong style="display:block;margin-bottom:0.25rem;color:#0f172a;">No policies recorded</strong><span style="font-size:0.85rem;">This country has no MEPS or labelling policies in the database.</span></div>`;
+      } else {
+        html += `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;">`;
+        equipTypes.forEach(et => {
+          const appRecs = allRecords.filter(r => r.equipment_type === et);
+          if (appRecs.length === 0) return;
+          const color = equipColors[et];
+          const icon = equipIcons[et];
+          const mepsR = appRecs.filter(r => isMepsRecord(r));
+          const labelsR = appRecs.filter(r => isLabelRecord(r));
+          const adoptedYears = appRecs.map(r => r.year_adopted).filter(Boolean) as number[];
+          const firstAdopted = adoptedYears.length ? Math.min(...adoptedYears) : null;
+
+          html += `<div style="border-top:2px solid ${color};padding-top:0.75rem;">
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
+              <i class="fa-solid ${icon}" style="color:${color};font-size:0.9rem;"></i>
+              <span style="font-weight:700;font-size:0.9rem;color:#0f172a;">${et}</span>
+              <span style="margin-left:auto;font-size:0.72rem;color:#64748b;background:#f1f5f9;padding:1px 7px;border-radius:10px;">${appRecs.length}</span>
+            </div>
+            <div style="display:flex;gap:0.4rem;margin-bottom:0.5rem;flex-wrap:wrap;">
+              ${mepsR.length ? `<span style="font-size:0.7rem;background:#EBF4EE;color:#2D7D5A;padding:2px 7px;border-radius:4px;font-weight:600;">${mepsR.length} MEPS</span>` : ''}
+              ${labelsR.length ? `<span style="font-size:0.7rem;background:#fef3d0;color:#D4A843;padding:2px 7px;border-radius:4px;font-weight:600;">${labelsR.length} Labels</span>` : ''}
+              ${firstAdopted ? `<span style="font-size:0.7rem;color:#94a3b8;">Since ${firstAdopted}</span>` : ''}
+            </div>`;
+          appRecs.forEach(r => {
+            const name = r.policy_name || 'Unnamed Policy';
+            const truncName = name.length > 80 ? name.substring(0, 77) + '...' : name;
+            const hasMep = isMepsRecord(r);
+            const bColor = hasMep ? '#2D7D5A' : '#D4A843';
+            html += `<div style="border-left:3px solid ${bColor};padding:0.3rem 0 0.3rem 0.6rem;margin-bottom:0.35rem;">
+              <div style="font-size:0.77rem;color:#1e293b;line-height:1.4;">${truncName}</div>
+              <div style="display:flex;gap:0.35rem;align-items:center;margin-top:0.15rem;flex-wrap:wrap;">
+                ${hasMep ? `<span style="font-size:0.62rem;background:#EBF4EE;color:#2D7D5A;padding:1px 5px;border-radius:3px;font-weight:600;">MEPS</span>` : ''}
+                ${isLabelRecord(r) ? `<span style="font-size:0.62rem;background:#fef3d0;color:#D4A843;padding:1px 5px;border-radius:3px;font-weight:600;">Label</span>` : ''}
+                ${r.requirement_type ? `<span style="font-size:0.62rem;background:#f1f5f9;color:#475569;padding:1px 5px;border-radius:3px;">${r.requirement_type}</span>` : ''}
+                ${r.year_adopted ? `<span style="font-size:0.62rem;color:#64748b;">${r.year_adopted}${r.year_revised && r.year_revised !== r.year_adopted ? ' (rev. ' + r.year_revised + ')' : ''}</span>` : ''}
+              </div>
+            </div>`;
+          });
+          html += `</div>`;
+        });
+        html += `</div>`;
+      }
+      html += `</div>`;
+      container.innerHTML = html;
     }
 
     // ---- Country charts (timeline + policy details) ----
@@ -773,8 +837,8 @@
 
     // ---- Map height constants: MEPS coverage is shorter (has appliance toggles above),
     //      Inverter is taller (fewer controls, needs the extra space). ----
-    const MEPS_MAP_HEIGHT = 750;
-    const INVERTER_MAP_HEIGHT = 700;
+    const MEPS_MAP_HEIGHT = 480;
+    const INVERTER_MAP_HEIGHT = 450;
     const MAP_HEIGHT = INVERTER_MAP_HEIGHT; // fallback used when container is hidden at init
 
     // ---- MEPS choropleth D3 map ----
@@ -1082,7 +1146,7 @@
   <div class="pillar-stack">
     <!-- ═══ Ch01 THE CHALLENGE ═══ -->
     <div class="chapter-card" class:revealed style="border-top: none;">
-      <span class="meps-eyebrow">The Challenge</span>
+      <span class="meps-eyebrow meps-eyebrow-xl">The Challenge</span>
       <h2 class="meps-section-title">Most of the global market still prioritises low-cost, inefficient cooling equipment.</h2>
       <p class="meps-body-text">To shift this trajectory, two tools must work in tandem: Minimum Energy Performance Standards (MEPS) that legally set a floor on efficiency, and Energy Labels that drive consumer demand toward top-performing products.</p>
 
@@ -1144,13 +1208,11 @@
       <p class="meps-body-text">By eliminating the wasteful start-stop cycles, inverter ACs typically achieve <strong>25–30% energy savings</strong> over standard fixed-speed models. In high-performance units, these savings can climb as high as 44%. For a typical household in a hot climate, this transition slashes electricity bills and reduces the "peak load" on national power grids.</p>
     </div>
 
-    <!-- DATA: MEPS Stringency Chart -->
-    <MepsLevelChart />
-
     <!-- ═══ Ch02 GLOBAL COVERAGE ═══ -->
     <div class="chapter-card" class:revealed>
       <span class="meps-eyebrow">Global Coverage</span>
-      <h2 class="meps-section-title">Progress is real — but deeply uneven across regions.</h2>
+      <h2 class="meps-section-title">Progress is real but deeply uneven across regions.</h2>
+      <p class="meps-body-text">Over 80 countries now have some form of cooling-related efficiency standard, yet the gap between leaders and laggards is wider than ever. East Asia and the EU mandate inverter-class performance; large parts of South Asia, Africa, and Latin America still permit fixed-speed units that consume two to three times more energy. The map and charts below capture this patchwork — progress measured not in headlines, but in kilowatt-hours avoided and markets transformed.</p>
 
       <div class="meps-highlights-grid">
         {#each chartHighlights as highlight}
@@ -1181,11 +1243,22 @@
             <i class="fa-solid fa-earth-africa"></i>
           </div>
           <div class="meps-regional-body">
-            <strong class="meps-regional-title">Africa — Leapfrogging the Efficiency Gap</strong>
-            <p>The ECOWAS Regional Centre for Renewable Energy and Energy Efficiency (ECREEE) has established a regional MEPS framework for West Africa, with Ghana, Senegal, and Côte d'Ivoire as early adopters. Rwanda became the first East African country to adopt ambitious AC MEPS aligned with the U4E Model Regulation Guidelines — a global best-practice standard. The African Union, through the African Energy Commission (AFREC), is advancing continental energy efficiency policy. These early movers demonstrate that leapfrogging to high-efficiency standards is possible without decades of incremental improvement, and is critical to avoiding a locked-in efficiency deficit as cooling demand grows fastest on the continent.</p>
+            <strong class="meps-regional-title">Africa — Bridging the Efficiency Gap</strong>
+            <p>Africa is expected to see the world's fastest growth in cooling demand, making the standards set today decisive. Regional blocs and national governments are moving from fragmented rules to harmonised, high-ambition MEPS across all sub-regions. In West Africa, ECOWAS has adopted regional MEPS and shared compliance tools are emerging. East and Southern Africa have gazetted and approved regional MEPS and labels for ACs and refrigerators — including tiered requirements that tighten over time and alignment to UNEP-U4E best-practice guidance. North Africa is tightening and extending long-running national standards. Central Africa has initiated a regional MEPS development track.</p>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- DATA: MEPS Stringency Chart -->
+    <div class="meps-level-wrapper">
+      <MepsLevelChart />
+    </div>
+
+    <!-- ═══ MAP INTRO ═══ -->
+    <div class="chapter-card" class:revealed>
+      <span class="meps-eyebrow">Country & Regional View</span>
+      <h2 class="meps-section-title">Explore the MEPS regulation of your country and region.</h2>
     </div>
 
     <!-- DATA: MEPS & Inverter Map -->
@@ -1233,9 +1306,9 @@
         </div>
         <div class="progress-bar" id="meps-progress">
           <span class="progress-segment" id="meps-progress-both" title="MEPS & Labels" style="background:#4A9088"></span>
-          <span class="progress-segment" id="meps-progress-meps" title="MEPS Only" style="background:#6BADA0"></span>
+          <span class="progress-segment" id="meps-progress-meps" title="MEPS Only" style="background:#2563eb"></span>
           <span class="progress-segment" id="meps-progress-labels" title="Labels Only" style="background:#D4A843"></span>
-          <span class="progress-segment" id="meps-progress-critical" title="No Policies" style="background:#cbd5e1"></span>
+          <span class="progress-segment" id="meps-progress-critical" title="No Policies" style="background:#e5e7eb"></span>
         </div>
       </div>
 
@@ -1256,27 +1329,10 @@
 
     <!-- Charts Grid — switches with the map toggle -->
     {#if activeMapView === 'coverage'}
-      <div class="meps-charts-section charts-section">
-        {#if mepsShowRegionCard}
-          <div class="inverter-chart-flat">
-            <div class="chart-card-header">
-              <h3><i class="fa-solid fa-chart-bar" style="color: #0369a1; margin-right: 0.5rem;"></i>MEPS &amp; Labels by Region</h3>
-              <p class="chart-subtitle">Countries with MEPS vs Labels per region</p>
-            </div>
-            <div class="chart-card-body">
-              <MepsByRegionChart regionData={mepsRegionData} />
-            </div>
-          </div>
-        {/if}
-        <div class="inverter-chart-flat">
-          <div class="chart-card-header">
-            <h3 id="meps-chart3-title"><i class="fa-solid fa-cogs" style="color: #0369a1; margin-right: 0.5rem;"></i>Equipment Type Coverage</h3>
-            <p class="chart-subtitle" id="meps-chart3-subtitle">Countries with MEPS vs Labels by appliance</p>
-          </div>
-          <div class="chart-card-body">
-            <MepsEquipmentChart equipment={mepsEquipmentData} countryHtml={mepsEquipmentCountryHtml} />
-          </div>
-        </div>
+      <div class="meps-country-select-prompt" id="meps-select-prompt" style:display={mepsHasCountry ? 'none' : 'flex'}>
+        <i class="fa-solid fa-earth-americas meps-csp-icon"></i>
+        <strong class="meps-csp-heading">Select a country on the map above</strong>
+        <span class="meps-csp-sub">Explore its MEPS status and energy efficiency policy details</span>
       </div>
     {:else}
       <div class="meps-charts-section charts-section">
@@ -1303,7 +1359,7 @@
 
     <!-- ═══ Ch03 THE WAY FORWARD ═══ -->
     <div class="chapter-card" class:revealed>
-      <span class="meps-eyebrow">The Way Forward</span>
+      <span class="meps-eyebrow meps-eyebrow-xl">The Way Forward</span>
       <h2 class="meps-section-title">Closing the Standards Gap: From Lock-in to Leapfrogging</h2>
       <p class="meps-body-text">Most of the global market remains trapped in a cycle of inefficiency. By the time a consumer buys a cooling unit, the climate impact is already largely determined by the market's "efficiency floor." Efficiency is measured by the Cooling Seasonal Performance Factor (CSPF) or Energy Efficiency Ratio (EER). While best-in-class split ACs achieve a CSPF above 8.0, many unregulated markets still permit units below 3.0. CLASP data suggests that if every nation adopted MEPS aligned with best available technology, we could cut cooling energy consumption by 40–50% by 2050 — avoiding over 1,300 TWh of annual electricity consumption.</p>
       <p class="meps-body-text">The primary barrier is a global patchwork of inconsistent standards. Over 80 countries have MEPS, but they vary wildly in stringency and enforcement. Closing this gap requires: (1) increasing MEPS stringency to match global benchmarks; (2) ensuring fans, refrigerators, and commercial chillers are covered; (3) strengthening capacity so standards exist in practice, not just on paper. Countries like Rwanda, Ghana, and Senegal are already demonstrating that nations can skip decades of incremental progress and move directly to high-efficiency standards by adopting U4E Model Regulation Guidelines.</p>
@@ -1323,7 +1379,7 @@
 
     <!-- ═══ RESOURCES ═══ -->
     <div class="chapter-card" class:revealed>
-      <span class="meps-eyebrow">Go Deeper</span>
+      <span class="meps-eyebrow">Explore Global Standards and Initiatives</span>
       <h2 class="meps-section-title">Resources on Energy Efficiency Standards</h2>
 
       <div class="meps-resources-grid">
@@ -1470,6 +1526,10 @@
     -webkit-backdrop-filter: none;
     min-height: unset;
     padding: 1rem 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .meps-counters :global(.counter-card:hover) {
@@ -1660,6 +1720,52 @@
     }
   }
 
+  /* ===========================
+     CHART HIGHLIGHTS GRID (inline icon + text)
+     =========================== */
+  .meps-highlights-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    margin: 0 0 1.5rem;
+  }
+
+  .meps-highlight-card {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem 0.75rem 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .meps-highlight-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+    width: 18px;
+    text-align: center;
+  }
+
+  .meps-highlight-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .meps-highlight-text strong {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.3;
+  }
+
+  .meps-highlight-text span {
+    font-size: 0.76rem;
+    color: #64748b;
+    line-height: 1.5;
+  }
+
   /* Regional spotlight cards */
   .meps-regional-spotlights {
     display: grid;
@@ -1680,7 +1786,7 @@
   }
 
   .meps-regional-icon {
-    font-size: 1.3rem;
+    font-size: 2rem;
     flex-shrink: 0;
     margin-top: 0.1rem;
     opacity: 0.75;
@@ -1754,14 +1860,81 @@
      DESIGN SYSTEM — NARRATIVE TYPOGRAPHY
      Matches OverviewPillar flow-eyebrow / flow-title pattern
      =========================== */
+  :global(#view-meps .pillar-stack) {
+    gap: 0;
+  }
+
+  :global(#view-meps .chapter-card) {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  :global(#view-meps .map-card) {
+    padding-left: 64px !important;
+    padding-right: 64px !important;
+  }
+
+  .meps-level-wrapper {
+    padding: 0 64px;
+  }
+
+
+  :global(#meps-country-detail) {
+    padding-left: 64px !important;
+    padding-right: 64px !important;
+  }
+
   .meps-eyebrow {
     display: inline-block;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 800;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: #0369a1;
     margin-bottom: 16px;
+  }
+
+  .meps-eyebrow.meps-eyebrow-xl {
+    font-size: 1.4rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+
+  .meps-country-select-prompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.6rem;
+    padding: 2.5rem 2rem;
+    background: linear-gradient(160deg, #f0f9ff 0%, #dbeafe 100%);
+    border-top: 1px solid #bae6fd;
+    min-height: 140px;
+  }
+
+  .meps-csp-icon {
+    font-size: 2.5rem;
+    color: #0284c7;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .meps-csp-heading {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0369a1;
+    display: block;
+    margin: 0;
+  }
+
+  .meps-csp-sub {
+    font-size: 0.9rem;
+    color: #0c4a6e;
+    line-height: 1.6;
+    max-width: 520px;
+    display: block;
+    margin: 0;
   }
 
   .meps-section-title {
@@ -1779,7 +1952,6 @@
     color: #1e293b;
     line-height: 1.78;
     margin: 0 0 16px;
-    max-width: 900px;
   }
 
   /* ===========================
@@ -1987,11 +2159,11 @@
      Both heights must stay in sync with MEPS_MAP_HEIGHT / INVERTER_MAP_HEIGHT in JS.
      =========================== */
   #meps-map-container {
-    height: 750px;
+    height: 480px;
   }
 
   #inverter-map-container {
-    height: 700px;
+    height: 450px;
   }
 
   /* ===========================

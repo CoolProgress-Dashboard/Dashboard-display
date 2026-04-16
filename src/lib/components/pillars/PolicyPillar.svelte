@@ -175,7 +175,7 @@
         return document.getElementById(id) as HTMLDivElement | null;
       }
 
-      const axisLabelStyle = { color: '#475569' };
+      const axisLabelStyle = { color: '#1e293b', fontWeight: 700, fontSize: 11 };
       const axisLineStyle = { lineStyle: { color: '#e2e8f0' } };
       const splitLineStyle = { lineStyle: { color: '#e2e8f0' } };
 
@@ -603,6 +603,7 @@
               const status = countryStatus[code];
               return getNDCColor(status ? status.status : null);
             } else if (mapType === 'NCAP') {
+              if (code === 'BRA') return '#e5e7eb';
               const ncapCountry = ncap.find((n: any) => n.country_code === code);
               return ncapCountry ? '#6BADA0' : '#e5e7eb';
             }
@@ -903,17 +904,23 @@
         });
 
         const ndcRegions = [...new Set(ndcTracker.map((n: any) => n.continent).filter(Boolean))] as string[];
-        const regionMentioned = ndcRegions.map(region =>
-          ndcTracker.filter((n: any) => n.ndc_type === ndcType && n.category === ndcCategory && n.continent === region && n.mention_value === 1).length
+        const regionMentionedPrev = ndcRegions.map(region =>
+          ndcTracker.filter((n: any) => n.ndc_type === 'NDC 2.0' && n.category === ndcCategory && n.continent === region && n.mention_value === 1).length
+        );
+        const regionMentioned30 = ndcRegions.map(region =>
+          ndcTracker.filter((n: any) => n.ndc_type === 'NDC 3.0' && n.category === ndcCategory && n.continent === region && n.mention_value === 1).length
         );
 
         setChart('chart-ndc-regions', {
-          tooltip: { trigger: 'axis' },
-          legend: { bottom: 0, textStyle: { color: '#475569', fontSize: 11 } },
+          tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+          legend: { bottom: 0, textStyle: { color: '#1e293b', fontWeight: 700, fontSize: 11 } },
           grid: { left: '3%', right: '3%', bottom: '15%', top: '8%', containLabel: true },
           xAxis: categoryAxis(ndcRegions),
           yAxis: valueAxis(),
-          series: [{ name: `Countries mentioning ${ndcCategory}`, type: 'bar', data: regionMentioned, itemStyle: { color: '#6BADA0' } }]
+          series: [
+            { name: 'Previous NDC', type: 'bar', data: regionMentionedPrev, itemStyle: { color: '#94a3b8', borderRadius: [3, 3, 0, 0] }, barGap: '10%' },
+            { name: 'NDC 3.0', type: 'bar', data: regionMentioned30, itemStyle: { color: '#6BADA0', borderRadius: [3, 3, 0, 0] } }
+          ]
         });
 
         const ndc30Mentioned = ndcCategories.map(cat =>
@@ -945,38 +952,13 @@
           ]
         });
 
-        const submittedCount = new Set(ndcTracker.filter((n: any) => n.ndc_type === 'NDC 3.0' && n.mention_status !== 'No NDC submitted').map((n: any) => n.country_code)).size;
-        const notSubmittedCount = new Set(ndcTracker.filter((n: any) => n.ndc_type === 'NDC 3.0' && n.mention_status === 'No NDC submitted').map((n: any) => n.country_code)).size;
-
-        setChart('chart-ndc-submission', {
-          tooltip: { trigger: 'item' },
-          legend: { bottom: 0, textStyle: { color: '#475569', fontSize: 11 } },
-          series: [{
-            name: 'NDC 3.0 Status', type: 'pie', radius: ['35%', '60%'], center: ['50%', '45%'],
-            data: [
-              { value: submittedCount, name: 'NDC 3.0 Submitted', itemStyle: { color: '#6BADA0' } },
-              { value: notSubmittedCount, name: 'Not yet submitted', itemStyle: { color: '#e5e7eb' } }
-            ]
-          }]
-        });
       }
 
       function updateNCAPCharts() {
-        const ncapRegions = [...new Set(countries.map((c: any) => c.region).filter(Boolean))] as string[];
-        const ncapByRegion = ncapRegions.map(region => {
-          const regionCountryCodes = countries.filter((c: any) => c.region === region).map((c: any) => c.country_code);
-          return ncap.filter((n: any) => regionCountryCodes.includes(n.country_code)).length;
-        });
+        // Brazil excluded — NCAP process only recently initiated, data not yet confirmed
+        const ncapFiltered = ncap.filter((n: any) => n.country_code !== 'BRA');
 
-        setChart('chart-ncap-regions', {
-          tooltip: { trigger: 'axis' },
-          grid: { left: '3%', right: '3%', bottom: '15%', top: '8%', containLabel: true },
-          xAxis: categoryAxis(ncapRegions),
-          yAxis: valueAxis(),
-          series: [{ name: 'Countries with NCAP', type: 'bar', data: ncapByRegion, itemStyle: { color: '#5A8FC2' } }]
-        });
-
-        const ncapYears = ncap.map((n: any) => n.year).filter((y: any): y is number => y !== null && y !== undefined).sort((a: number, b: number) => a - b);
+        const ncapYears = ncapFiltered.map((n: any) => n.year).filter((y: any): y is number => y !== null && y !== undefined).sort((a: number, b: number) => a - b);
         const yearCounts2: Record<number, number> = {};
         ncapYears.forEach((year: number) => { yearCounts2[year] = (yearCounts2[year] || 0) + 1; });
         const years2 = Object.keys(yearCounts2).map(Number).sort((a, b) => a - b);
@@ -992,7 +974,7 @@
 
         const listEl = document.getElementById('ncap-countries-list');
         if (listEl) {
-          const sortedNcap = [...ncap].sort((a: any, b: any) => a.country_name.localeCompare(b.country_name));
+          const sortedNcap = [...ncapFiltered].sort((a: any, b: any) => a.country_name.localeCompare(b.country_name));
           listEl.innerHTML = sortedNcap.map((n: any) => `
             <div class="ncap-country-card" style="background: transparent; border: none; border-top: 1px solid rgba(0,0,0,0.06); padding: 0.75rem 0 0.75rem 1rem; border-left: 3px solid #5A8FC2;">
               <div style="font-weight: 600; color: #1e293b;">${n.country_name}</div>
@@ -1011,28 +993,55 @@
         disposeChartContainer(container);
         container.innerHTML = '';
 
+        const cprBox = `
+          <div style="display:flex;align-items:flex-start;gap:1.25rem;padding:1.1rem 1.4rem;background:#f0f7ff;border-top:3px solid #0369a1;border-bottom:1px solid #bae0ff;margin-top:1rem;">
+            <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="flex-shrink:0;display:flex;align-items:center;padding-top:2px;">
+              <img src="/images/climate-policy-radar-logo.png" alt="Climate Policy Radar" style="height:32px;width:auto;object-fit:contain;" />
+            </a>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:0.9rem;font-weight:800;color:#0f172a;margin-bottom:0.3rem;letter-spacing:-0.01em;">Find NDCs &amp; NCAPs on Climate Policy Radar</div>
+              <p style="font-size:0.81rem;color:#334155;line-height:1.65;margin:0 0 0.6rem;">
+                We are working on adding all NCAPs to the Climate Policy Radar search engine — check if your country's NCAP is already indexed.
+                All NDCs are searchable now. Compare and analyse cooling-related policy language across countries.
+              </p>
+              <div style="display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center;">
+                <a href="https://app.climatepolicyradar.org/?_gl=1*1orjtq2*_ga*MTk2OTA4ODMwNy4xNzc2MzQ2MzY4*_ga_ZD1WWE49TL*czE3NzYzNDYzNjckbzEkZzAkdDE3NzYzNDYzNjckajYwJGwwJGgw" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.35rem;background:#0369a1;color:#fff;font-size:0.78rem;font-weight:700;padding:0.38rem 0.9rem;border-radius:3px;text-decoration:none;">
+                  <i class="fa-solid fa-magnifying-glass" style="font-size:0.68rem;"></i> Search the Database
+                </a>
+                <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.3rem;color:#0369a1;font-size:0.78rem;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(3,105,161,0.3);padding-bottom:1px;">
+                  <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.62rem;"></i> More about Climate Policy Radar
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+
         if (mapType === 'kigali') {
           const kigaliParties = kigali.filter((k: any) => k.kigali_party === 1).length;
           container.innerHTML = `
             <div class="policy-charts-flat">
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-chart-pie" style="color:#0369a1;margin-right:0.5rem;"></i>Kigali Amendment Status</h3>
-                <p class="chart-subtitle">${kigaliParties} of ${kigali.length} countries ratified</p>
+                <p class="p-chart-eyebrow">Status</p>
+                <h3 class="p-chart-title">Kigali Amendment Ratification</h3>
+                <p class="p-chart-subtitle">${kigaliParties} of ${kigali.length} countries have ratified</p>
                 <div id="chart-kigali-status" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-earth-americas" style="color:#0369a1;margin-right:0.5rem;"></i>Kigali Ratification by Region</h3>
-                <p class="chart-subtitle">Regional breakdown of parties</p>
+                <p class="p-chart-eyebrow">By Region</p>
+                <h3 class="p-chart-title">Kigali Ratification by Region</h3>
+                <p class="p-chart-subtitle">Parties vs non-parties by world region</p>
                 <div id="chart-kigali-regions" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-users-rectangle" style="color:#0369a1;margin-right:0.5rem;"></i>Parties by Group Type</h3>
-                <p class="chart-subtitle">Article 5 Group 1, Group 2, Non-Article 5</p>
+                <p class="p-chart-eyebrow">Group Type</p>
+                <h3 class="p-chart-title">Parties by Group Type</h3>
+                <p class="p-chart-subtitle">Article 5 Group 1, Group 2, Non-Article 5</p>
                 <div id="chart-kigali-groups" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-layer-group" style="color:#0369a1;margin-right:0.5rem;"></i>Treaty Coverage</h3>
-                <p class="chart-subtitle">Montreal Protocol vs Kigali Amendment</p>
+                <p class="p-chart-eyebrow">Treaty Coverage</p>
+                <h3 class="p-chart-title">Montreal Protocol vs Kigali Amendment</h3>
+                <p class="p-chart-subtitle">Total countries covered under each treaty</p>
                 <div id="chart-kigali-coverage" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
             </div>
@@ -1046,9 +1055,10 @@
           const gcpSignatoryCount = pledge.filter((p: any) => p.signatory === 1).length;
           container.innerHTML = `
             <div class="policy-charts-flat">
-              <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-handshake" style="color:#0369a1;margin-right:0.5rem;"></i>GCP Signatories by Region</h3>
-                <p class="chart-subtitle">${gcpSignatoryCount} countries have signed the Global Cooling Pledge — breakdown by world region</p>
+              <div class="policy-chart-item" style="grid-column: 1 / -1;">
+                <p class="p-chart-eyebrow">By Region</p>
+                <h3 class="p-chart-title">Global Cooling Pledge — Signatories by Region</h3>
+                <p class="p-chart-subtitle">${gcpSignatoryCount} countries have signed the Global Cooling Pledge at COP28</p>
                 <div id="chart-gcp-by-region" class="chart-surface" style="width:100%;height:320px;min-height:320px;"></div>
               </div>
             </div>
@@ -1062,24 +1072,27 @@
           container.innerHTML = `
             <div class="policy-charts-flat">
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-tags" style="color:#0369a1;margin-right:0.5rem;"></i>NDC Cooling Mentions by Category</h3>
-                <p class="chart-subtitle">Excluding Kigali Amendment</p>
-                <div id="chart-ndc-categories" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
+                <p class="p-chart-eyebrow">By Category</p>
+                <h3 class="p-chart-title">NDC Cooling Mentions by Category</h3>
+                <p class="p-chart-subtitle">NDC 3.0 vs Previous NDC, excluding Kigali Amendment</p>
+                <div id="chart-ndc-categories" class="chart-surface" style="width:100%;height:300px;min-height:300px;"></div>
               </div>
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-earth-americas" style="color:#0369a1;margin-right:0.5rem;"></i>NDC Status by Region</h3>
-                <p class="chart-subtitle">Countries mentioning cooling</p>
-                <div id="chart-ndc-regions" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
+                <p class="p-chart-eyebrow">By Region</p>
+                <h3 class="p-chart-title">NDC Status by Region</h3>
+                <p class="p-chart-subtitle">Previous NDC vs NDC 3.0 — countries mentioning cooling</p>
+                <div id="chart-ndc-regions" class="chart-surface" style="width:100%;height:300px;min-height:300px;"></div>
               </div>
-              <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-code-compare" style="color:#6BADA0;margin-right:0.5rem;"></i>NDC 3.0 vs Previous NDC</h3>
-                <p class="chart-subtitle">Comparison of cooling mentions</p>
+              <div class="policy-chart-item" style="grid-column: 1 / -1;">
+                <p class="p-chart-eyebrow">Trend</p>
+                <h3 class="p-chart-title">NDC 3.0 vs Previous NDC — Full Comparison</h3>
+                <p class="p-chart-subtitle">Cooling mentions across all categories, previous round vs latest NDC submissions</p>
                 <div id="chart-ndc-comparison" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
-              <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-file-circle-check" style="color:#6BADA0;margin-right:0.5rem;"></i>NDC Submission Status</h3>
-                <p class="chart-subtitle">Countries by submission status</p>
-                <div id="chart-ndc-submission" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
+            </div>
+            <div class="policy-charts-flat" style="padding-top:0;">
+              <div class="policy-chart-item" style="grid-column: 1 / -1;">
+                ${cprBox}
               </div>
             </div>
           `;
@@ -1092,21 +1105,46 @@
           container.innerHTML = `
             <div class="policy-charts-flat">
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-chart-bar" style="color:#5A8FC2;margin-right:0.5rem;"></i>NCAPs by Region</h3>
-                <p class="chart-subtitle">Countries with National Cooling Action Plans</p>
-                <div id="chart-ncap-regions" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
+                <p class="p-chart-eyebrow">Timeline</p>
+                <h3 class="p-chart-title">NCAP Development Over Time</h3>
+                <p class="p-chart-subtitle">Number of National Cooling Action Plans adopted per year</p>
+                <div id="chart-ncap-timeline" class="chart-surface" style="width:100%;height:300px;min-height:300px;"></div>
               </div>
               <div class="policy-chart-item">
-                <h3><i class="fa-solid fa-clock-rotate-left" style="color:#5A8FC2;margin-right:0.5rem;"></i>NCAP Development Timeline</h3>
-                <p class="chart-subtitle">NCAPs by year of adoption</p>
-                <div id="chart-ncap-timeline" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
+                <p class="p-chart-eyebrow">Global North</p>
+                <h3 class="p-chart-title">Equivalent Policies in High-Income Countries</h3>
+                <p class="p-chart-subtitle">High-income countries address cooling through sector-specific regulations rather than dedicated NCAPs</p>
+                <div style="display:flex;flex-direction:column;gap:0;padding:0.25rem 0 0;">
+                  <div style="padding:0.9rem 0;border-bottom:1px solid rgba(0,0,0,0.06);">
+                    <div style="font-size:0.78rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:0.4rem;">United States</div>
+                    <div style="font-size:0.8rem;color:#475569;line-height:1.65;">
+                      <strong style="color:#1e293b;">AIM Act (2020)</strong> — 85% HFC phasedown by 2036, implementing Kigali commitments.<br>
+                      <strong style="color:#1e293b;">DOE Appliance Standards</strong> — mandatory MEPS for AC and refrigeration.<br>
+                      <strong style="color:#1e293b;">IRA (2022)</strong> — tax credits for efficient heat pumps and cooling appliances.
+                    </div>
+                  </div>
+                  <div style="padding:0.9rem 0;border-bottom:1px solid rgba(0,0,0,0.06);">
+                    <div style="font-size:0.78rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:0.4rem;">European Union</div>
+                    <div style="font-size:0.8rem;color:#475569;line-height:1.65;">
+                      <strong style="color:#1e293b;">F-Gas Regulation (2024)</strong> — HFC phasedown ahead of Kigali schedule; ban on high-GWP refrigerants.<br>
+                      <strong style="color:#1e293b;">Ecodesign Regulation</strong> — mandatory efficiency standards for cooling equipment.<br>
+                      <strong style="color:#1e293b;">EPBD (2024)</strong> — near-zero energy requirements for buildings including cooling demand limits.
+                    </div>
+                  </div>
+                  <div style="padding:0.9rem 0;">
+                    <div style="font-size:0.78rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:0.4rem;">Japan</div>
+                    <div style="font-size:0.8rem;color:#475569;line-height:1.65;">
+                      <strong style="color:#1e293b;">Top Runner Program</strong> — world's most advanced MEPS, best-performing products set the future standard.<br>
+                      <strong style="color:#1e293b;">Fluorocarbon Emissions Control Act</strong> — mandatory refrigerant recovery and lifecycle management.<br>
+                      <strong style="color:#1e293b;">Building Energy Efficiency Act</strong> — energy performance standards covering cooling systems.
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="policy-charts-flat" style="margin-top:0;">
+            <div class="policy-charts-flat" style="padding-top:0;">
               <div class="policy-chart-item" style="grid-column: 1 / -1;">
-                <h3><i class="fa-solid fa-list-check" style="color:#6BADA0;margin-right:0.5rem;"></i>Countries with NCAPs</h3>
-                <p class="chart-subtitle">List of countries that have developed National Cooling Action Plans</p>
-                <div id="ncap-countries-list" class="ncap-countries-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.75rem;padding:0.5rem 0;"></div>
+                ${cprBox}
               </div>
             </div>
           `;
@@ -1184,6 +1222,7 @@
               const pledgeRec = pledge.find((p: any) => p.country_code === code);
               if (!pledgeRec) return '#E5E1D8';
               return pledgeRec.signatory === 1 ? '#6BADA0' : '#e5e7eb';
+              // Note: Brazil excluded from NCAP view — NCAP only recently initiated
             })
             .on('mouseover', handlePolicyHover)
             .on('mouseout', handleOut)
@@ -1330,8 +1369,12 @@
     <div class="chapter-card" class:revealed style="border-top: none;">
       <span class="ns-eyebrow">The Landscape</span>
       <h2 class="ns-title">Cooling has historically been invisible in climate policy — that is changing.</h2>
-      <p class="ns-body">Historically, cooling was a "blind spot" in climate policy. That changed at COP28 with the launch of the Global Cooling Pledge — a voluntary commitment by national governments to reduce cooling-related emissions by 68% by 2050 through three core pillars: passive cooling, energy efficiency, and a rapid refrigerant transition. As of April 2026, more than 70 countries have signed on, signalling intention to integrate cooling into the heart of national climate strategies.</p>
+      <p class="ns-body">Historically, cooling was a "blind spot" in climate policy. That changed at COP28 with the launch of the <a href="https://www.coolcoalition.org/global-cooling-pledge/" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;border-bottom:1px solid rgba(3,105,161,0.3);text-decoration:none;">Global Cooling Pledge</a> — a voluntary commitment by national governments to reduce cooling-related emissions by 68% by 2050 through three core pillars: passive cooling, energy efficiency, and a rapid refrigerant transition. As of April 2026, more than 70 countries have signed on, signalling intention to integrate cooling into the heart of national climate strategies.</p>
       <p class="ns-body">While many countries have signed the pledge, very few have implemented the full regulatory framework required to reach the target emissions reduction. The gap between commitment and implementation remains the central challenge of global cooling governance.</p>
+      <p class="ns-body" style="font-size:0.88rem;padding:0.7rem 0 0.7rem 1rem;border-left:3px solid #6BADA0;color:#334155;background:transparent;">
+        <i class="fa-solid fa-circle-info" style="color:#6BADA0;margin-right:0.4rem;"></i>
+        The <strong>Kigali Amendment</strong> — the legally binding framework for phasing down HFC refrigerants — is tracked in detail under <strong>Pillar 3: Refrigerant Transition</strong>. This pillar focuses on the broader policy framework: NDCs, NCAPs, and pledge commitments.
+      </p>
     </div>
 
     <!-- ═══ POLICY INSTRUMENT EXPLAINERS ═══ -->
@@ -1392,7 +1435,7 @@
 
     <!-- DATA: Policy Maps & Charts -->
     <div class="card-panel map-card">
-      <div class="card-header">
+      <div class="card-header" style="border-bottom: none;">
         <div class="card-title">
           <i class="fa-solid fa-scale-balanced"></i>
           Policy Framework Status by Country
@@ -1450,18 +1493,7 @@
       </div>
     </div>
 
-    <div class="filter-status-bar policy-theme" id="policy-filter-bar">
-      <div class="status-title">
-        <i class="fa-solid fa-file-signature"></i>
-        <span id="policy-status-title">Policy Framework Analysis</span>
-      </div>
-      <div class="status-filters">
-        <span class="filter-tag" id="policy-filter-tab"><i class="fa-solid fa-file-contract"></i> Global Cooling Pledge</span>
-        <span class="filter-tag" id="policy-filter-region"><i class="fa-solid fa-earth-americas"></i> All Regions</span>
-      </div>
-    </div>
-
-    <div class="charts-section" style="padding: 1.25rem 0 0;">
+    <div class="charts-section" style="padding-top: 1.25rem;">
       <p class="chart-hint">Use the filters to compare countries and policy types.</p>
       <div id="policy-charts-container"></div>
     </div>
@@ -1496,9 +1528,10 @@
       <div class="policy-registry-note">
         <i class="fa-solid fa-circle-info" style="color: #0369a1; margin-right: 0.4rem;"></i>
         To view a country's full NDC or NCAP document, visit the
-        <a href="https://unfccc.int/NDCREG" target="_blank" rel="noopener noreferrer"><strong>UNFCCC NDC Registry</strong></a>
-        or the
-        <a href="https://www.coolcoalition.org/national-cooling-action-plans/" target="_blank" rel="noopener noreferrer"><strong>NCAP tracker</strong></a> ↗
+        <a href="https://unfccc.int/NDCREG" target="_blank" rel="noopener noreferrer"><strong>UNFCCC NDC Registry</strong></a>,
+        the <a href="https://www.coolcoalition.org/ncap/" target="_blank" rel="noopener noreferrer"><strong>Cool Coalition NCAP tracker</strong></a>,
+        or search across national climate policies on
+        <a href="https://climatepolicyradar.org/" target="_blank" rel="noopener noreferrer"><strong>Climate Policy Radar</strong></a> ↗
       </div>
     </div>
 
@@ -1613,7 +1646,7 @@
     font-weight: 900;
     color: #0f172a;
     letter-spacing: -0.025em;
-    margin: 0 0 20px;
+    margin: 0 0 12px;
     line-height: 1.15;
   }
 
@@ -1734,7 +1767,7 @@
   }
 
   .policy-explainer-icon {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     flex-shrink: 0;
     margin-top: 0.1rem;
   }
@@ -1950,16 +1983,46 @@
 
   .policy-chart-item { padding: 0; }
 
+  /* Chart card design tokens (consistent with other pillars)
+     These use :global because the elements are injected via innerHTML */
+  :global(.p-chart-eyebrow) {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #0369a1;
+    margin: 0 0 6px;
+    display: block;
+  }
+
+  :global(.p-chart-title) {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 4px;
+    line-height: 1.3;
+  }
+
+  :global(.p-chart-subtitle) {
+    font-size: 0.78rem;
+    color: #334155;
+    font-weight: 600;
+    margin: 0 0 0.6rem;
+    line-height: 1.4;
+  }
+
+  /* Legacy h3 fallback */
   .policy-chart-item h3 {
     font-size: 1rem;
-    font-weight: 600;
-    color: #0369a1;
+    font-weight: 700;
+    color: #0f172a;
     margin-bottom: 0.25rem;
   }
 
   .policy-chart-item .chart-subtitle {
-    font-size: 0.8rem;
-    color: #64748b;
+    font-size: 0.78rem;
+    color: #334155;
+    font-weight: 600;
     margin-bottom: 0.5rem;
   }
 
@@ -1978,6 +2041,24 @@
   }
 
   /* ===========================
+     WIDTH ALIGNMENT (64px margin system)
+     =========================== */
+  .card-panel {
+    padding-left: 64px;
+    padding-right: 64px;
+  }
+
+  .country-card-inline {
+    padding-left: 64px;
+    padding-right: 64px;
+  }
+
+  .charts-section {
+    padding-left: 64px;
+    padding-right: 64px;
+  }
+
+  /* ===========================
      RESPONSIVE
      =========================== */
   @media (max-width: 1024px) {
@@ -1987,6 +2068,9 @@
   }
 
   @media (max-width: 768px) {
+    .card-panel { padding-left: 24px; padding-right: 24px; }
+    .country-card-inline { padding-left: 24px; padding-right: 24px; }
+    .charts-section { padding-left: 24px; padding-right: 24px; }
     .policy-counters { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
     .policy-counters :global(.counter-display) { font-size: 1.4rem; }
     .policy-partner-logos { gap: 1rem; }

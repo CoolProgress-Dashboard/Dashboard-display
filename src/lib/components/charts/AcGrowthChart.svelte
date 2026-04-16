@@ -1,7 +1,19 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { acStockData, acMilestones, acGrowthSummary } from '$lib/data/ac-growth-data';
+  import { acStockData as hardcodedStock, acMilestones as hardcodedMilestones, acGrowthSummary } from '$lib/data/ac-growth-data';
   import { SCENARIO, CHROME, areaGradient } from '$lib/components/shared/colors';
+  import type { AcGrowthRecord, CoolingMilestoneRecord } from '$lib/services/dashboard-types';
+
+  export let acGrowthData: AcGrowthRecord[] = [];
+  export let coolingMilestones: CoolingMilestoneRecord[] = [];
+
+  $: acStockData = acGrowthData.length > 0
+    ? acGrowthData.map(r => ({ year: r.year, stockMillions: r.stock_millions, isProjected: r.is_projected, source: r.source ?? '' }))
+    : hardcodedStock;
+
+  $: acMilestones = coolingMilestones.length > 0
+    ? coolingMilestones.map(m => ({ year: m.year, label: m.label, description: m.description ?? '' }))
+    : hardcodedMilestones;
 
   let chartContainer: HTMLElement;
   let chartInstance: any;

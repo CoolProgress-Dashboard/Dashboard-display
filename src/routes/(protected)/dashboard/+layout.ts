@@ -11,7 +11,9 @@ export const load: LayoutLoad = async () => {
     return {
       countries: [], pledge: [], kigali: [], meps: [], access: [],
       accessForecast: [], ndc: [], emissions: [], ndcTracker: [], ncap: [],
-      claspEnergy: [], subcool: [], regions: [], refrigerants: [], acInverterShare: []
+      claspEnergy: [], subcool: [], regions: [], refrigerants: [], acInverterShare: [],
+      acGrowthData: [], coolingMilestones: [], applianceTimeseries: [], peakLoadData: [], countrySpotlights: [],
+      mepsTimeline: [], mepsLevels: []
     };
   }
   return await loadDashboardData(SUPABASE_URL, SUPABASE_KEY);
