@@ -390,7 +390,7 @@
         })();
 
       try {
-        const world = await d3.json('/countries-50m.json');
+        const world = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json');
         const countriesGeo = (window as any).topojson.feature(world, world.objects.countries);
 
         kigaliMapSvg.selectAll('path')
@@ -583,7 +583,13 @@
       let seriesData: { name: string; data: (number | null)[]; color: string }[];
 
       if (!subcoolSummary || subcoolSummary.length === 0) {
-        // Use static reference data while live data is still loading
+        // Show loading state — don't render with wrong-scale static data
+        const el = document.getElementById('chart-kigali-direct-emissions');
+        if (el) {
+          el.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#64748b;font-size:0.85rem;gap:0.5rem;"><i class="fa-solid fa-circle-notch fa-spin" style="color:#52B788;"></i> Loading emissions data…</div>`;
+        }
+        return;
+        // (unreachable, but kept for type safety)
         years = STATIC_SCENARIO_DATA.years;
         seriesData = STATIC_SCENARIO_DATA.series;
       } else {

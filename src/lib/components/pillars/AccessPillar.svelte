@@ -389,7 +389,7 @@
         });
 
       try {
-        const world = await d3.json('/countries-50m.json');
+        const world = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json');
         const worldCountries = topojson.feature(world, world.objects.countries);
         const accessTotals = getAccessTotalsFiltered();
 

@@ -1078,7 +1078,7 @@
       const projection = d3.geoNaturalEarth1().scale(width / 6).translate([width / 2, height / 1.8]);
       const path = d3.geoPath().projection(projection);
       try {
-        const world = await d3.json('/countries-50m.json');
+        const world = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json');
         const countries = topojson.feature(world, world.objects.countries);
         const countryValues = getCountryValuesForMap();
         const maxValue = Math.max(...Object.values(countryValues), 0.1);
