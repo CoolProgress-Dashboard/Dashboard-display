@@ -8,7 +8,8 @@
     SUPABASE_URL, SUPABASE_KEY
   } from '$lib/components/shared/config';
   import { SEQ, APPLIANCE, EMISSION_APPLIANCE, ACCESS_RISK, SCENARIO, EMISSION, SAVINGS, STATUS, CHROME, NO_DATA, YES, NO, rgba } from '$lib/components/shared/colors';
-  import { loadEmissionsHeavyData } from '$lib/services/dashboard-data';
+  import { loadEmissionsHeavyData, loadApplianceChartData, buildApplianceTimeseries } from '$lib/services/dashboard-data';
+  import type { ApplianceTimeseriesRecord } from '$lib/services/dashboard-types';
   import AnimatedCounter from '$lib/components/hero/AnimatedCounter.svelte';
   import ApplianceGrowthChart from '$lib/components/charts/ApplianceGrowthChart.svelte';
   import { pillarContent } from '$lib/data/pillar-content';
@@ -28,6 +29,11 @@
   export let regions: any[] = [];
   export let applianceTimeseries: any[] = [];
   export let coolingMilestones: any[] = [];
+  // Populated inside onMount after heavy data loads; declared here so Svelte
+  // reactivity propagates it as a prop to ApplianceGrowthChart.
+  let computedApplianceTimeseries: ApplianceTimeseriesRecord[] = [];
+  // Tracks whether Phase 2 heavy data (map + trajectory chart) has loaded
+  let mapDataLoaded = false;
   export let emissionsYear: number = 2030;
   export let emissionsAppliances: string[] = ['Air Conditioning', 'Ceiling and Portable Fans', 'Refrigerator-Freezers'];
 
@@ -486,7 +492,7 @@
           r.country_code === code && r.year === localEmissionsYear && r.scenario_name === emissionsScenario
         );
         if (countryRecords.length === 0) {
-          tooltipContent = `<strong>${countryName}</strong><br><em>No HEAT data available</em>`;
+          tooltipContent = `<strong>${countryName}</strong><br><em>No GCI data available</em>`;
         } else {
           const scenarioName = HEAT_SCENARIO_NAMES[emissionsScenario] || emissionsScenario;
           let direct = 0, indirect = 0;
@@ -605,7 +611,7 @@
           }));
         currentYearTotal = currentYearClaspData.reduce((sum: number, r: any) => sum + getClaspCO2(r, emissionsScenario), 0);
       } else {
-        dataSourceLabel = 'HEAT Modelling';
+        dataSourceLabel = 'GCI Data';
         scenarioLabel = HEAT_SCENARIO_NAMES[emissionsScenario] || emissionsScenario;
         const countrySubcoolData = subcoolData.filter((r: any) =>
           r.country_code === code && r.scenario_name === emissionsScenario
@@ -813,7 +819,7 @@
     function updateEmissionsCharts(echartsLib: any) {
       const container = document.getElementById('emissions-charts-container');
       if (!container) return;
-      const sourceLabel = emissionsDataSource === 'clasp' ? 'CLASP (Indirect)' : 'HEAT (Direct + Indirect)';
+      const sourceLabel = emissionsDataSource === 'clasp' ? 'CLASP (Indirect)' : 'GCI (Direct + Indirect)';
       const sourceIcon  = emissionsDataSource === 'clasp' ? 'fa-plug-circle-bolt' : 'fa-industry';
       const scenarioName = emissionsDataSource === 'clasp'
         ? ((CLASP_SCENARIO_NAMES as any)[emissionsScenario] || emissionsScenario)
@@ -1130,6 +1136,11 @@
           const typeRow = document.getElementById('emissions-type-row');
           if (appRow)  appRow.style.display  = emissionsDataSource === 'clasp'   ? 'flex' : 'none';
           if (typeRow) typeRow.style.display  = emissionsDataSource === 'subcool' ? 'flex' : 'none';
+          // Toggle source citation
+          const creditClasp = document.getElementById('emissions-source-credit-clasp');
+          const creditGci   = document.getElementById('emissions-source-credit-gci');
+          if (creditClasp) creditClasp.style.display = emissionsDataSource === 'clasp' ? 'inline-flex' : 'none';
+          if (creditGci)   creditGci.style.display   = emissionsDataSource === 'subcool' ? 'inline-flex' : 'none';
           updateEmissionsView(echartsLib);
         });
       });
@@ -1225,7 +1236,17 @@
         showGlobalEmissionsDetail();
         syncPanelVisibility();
 
-        // Phase 2 — load heavy data in background, then update map colours + CLASP charts.
+        // Phase 1b — kick off chart data fetch in the background (does NOT block the map).
+        // Uses loadApplianceChartData (fewer columns, filtered HEAT scenarios) so it
+        // completes long before the full heavy-data load. The chart switches from its
+        // static fallback to live data as soon as this resolves.
+        loadApplianceChartData(SUPABASE_URL, SUPABASE_KEY)
+          .then(({ clasp, subcool: sc }) => {
+            computedApplianceTimeseries = buildApplianceTimeseries(clasp, sc);
+          })
+          .catch(err => console.error('EmissionsPillar: chart data load failed', err));
+
+        // Phase 2 — load full heavy data for the emissions map (all columns, all rows).
         if (claspEnergy.length > 0) {
           localClaspEnergy = claspEnergy;
           subcoolData      = subcool;
@@ -1238,6 +1259,7 @@
             console.error('EmissionsPillar: failed to load emissions data', err);
           }
         }
+        mapDataLoaded = true;
         updateEmissionsView(echartsLib);
 
         // Resize handler
@@ -1336,7 +1358,15 @@
       <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.25rem; padding: 0;">
         Cooling sector emissions in Mt CO2. Click a country for detailed breakdown.
       </div>
-      <div id="emissions-map-container" class="map-surface"></div>
+      <div style="position: relative;">
+        <div id="emissions-map-container" class="map-surface"></div>
+        {#if !mapDataLoaded}
+          <div class="ep-loading-overlay">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <span>Loading data…</span>
+          </div>
+        {/if}
+      </div>
       <div class="legend legend-row">
         <span class="legend-label">Emissions (Mt CO2):</span>
         <div id="emissions-legend" class="legend-items"></div>
@@ -1346,6 +1376,28 @@
         <span class="progress-segment" id="emissions-progress-medium" style="background: #A8D5A2;"></span>
         <span class="progress-segment" id="emissions-progress-high" style="background: #C25B33;"></span>
         <span class="progress-segment" id="emissions-progress-critical" style="background: #8B2500;"></span>
+      </div>
+
+      <!-- Map Source Citation -->
+      <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0 0.25rem; border-top: 1px solid #f1f5f9; margin-top: 0.4rem;">
+        <span style="font-size: 0.68rem; color: #94a3b8; font-weight: 500; white-space: nowrap;">Data source:</span>
+        <div id="emissions-source-credit-clasp" style="display: inline-flex;">
+          <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer"
+            style="display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none; color: #0369a1; font-size: 0.68rem;">
+            <img src="/images/clasp-logo.png" alt="CLASP" style="height: 16px; width: auto; object-fit: contain; opacity: 0.85;" />
+            <span style="font-weight: 500;">Mepsy Tool</span>
+            <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.55rem; opacity: 0.7;"></i>
+          </a>
+        </div>
+        <div id="emissions-source-credit-gci" style="display: none;">
+          <a href="https://www.green-cooling-initiative.org/country-data#!total-emissions/all-sectors/absolute" target="_blank" rel="noopener noreferrer"
+            style="display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none; color: #0369a1; font-size: 0.68rem;">
+            <img src="/images/giz-logo.png" alt="GIZ" style="height: 16px; width: auto; object-fit: contain; opacity: 0.85;" />
+            <img src="/images/heat-logo.png" alt="HEAT GmbH" style="height: 16px; width: auto; object-fit: contain; opacity: 0.85;" />
+            <span style="font-weight: 500;">Green Cooling Initiative Country Data</span>
+            <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.55rem; opacity: 0.7;"></i>
+          </a>
+        </div>
       </div>
 
       <!-- Filters Inside Map Card -->
@@ -1360,7 +1412,7 @@
             <label class="filter-label">Source</label>
             <div class="toggle-group" id="emissions-source-toggles">
               <button class="toggle-btn active" data-source="clasp" type="button" title="Indirect emissions only (energy-related CO2) by appliance">CLASP</button>
-              <button class="toggle-btn" data-source="subcool" type="button" title="Direct and indirect emissions with Kigali scenarios (GIZ collaboration)">HEAT</button>
+              <button class="toggle-btn" data-source="subcool" type="button" title="Direct and indirect emissions with Kigali scenarios (GCI/GIZ data)">GCI</button>
             </div>
           </div>
 
@@ -1562,15 +1614,23 @@
         </div>
       </div>
 
-      <div class="emissions-source-footer">
-        Sources:
-        <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">CLASP Mepsy (indirect)</a>
-        &middot;
-        <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH (direct)</a>
-        &middot;
-        <a href="https://www.iea.org/reports/world-energy-outlook-2025" target="_blank" rel="noopener noreferrer">IEA STEPS (grid)</a>
-        &middot;
-        <a href="/methodology">Methodology</a>
+      <div class="emissions-source-footer" style="opacity:1;display:flex;justify-content:flex-end;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+        <span>CLASP:
+          <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">MEPSY tool</a>
+        </span>
+        <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">
+          <img src="/images/clasp-logo.png" alt="CLASP" style="height:14px;vertical-align:middle;opacity:0.8;" />
+        </a>
+        <span style="color:#cbd5e1;">·</span>
+        <span>GCI:
+          <a href="https://www.green-cooling-initiative.org/country-data#!total-emissions/all-sectors/absolute" target="_blank" rel="noopener noreferrer">Country Data</a>
+        </span>
+        <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">
+          <img src="/images/heat-logo.png" alt="HEAT GmbH" style="height:14px;vertical-align:middle;opacity:0.8;" />
+        </a>
+        <a href="https://www.giz.de" target="_blank" rel="noopener noreferrer">
+          <img src="/images/giz-logo.png" alt="GIZ" style="height:14px;vertical-align:middle;opacity:0.8;" />
+        </a>
       </div>
     </div>
 
@@ -1579,9 +1639,20 @@
       <span class="ep-eyebrow">Explore Global Pathways</span>
       <h2 class="ep-section-title">Emissions Trajectory — Scenario Comparison</h2>
       <p class="ep-body">Compare how different policy pathways bend the emissions curve from 2020 to 2050. Business as Usual (BAU) projects a tripling of cooling emissions; the DECARB scenarios show the impact of combining energy efficiency standards (MEPS), Kigali refrigerant phase-down, and grid decarbonisation.</p>
-      <div id="chart-emissions-timeline-static" class="chart-surface" style="width:100%;height:340px;min-height:340px;"></div>
-      <div class="ep-chart-source">
-        Sources: <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">CLASP Mepsy</a> &middot; <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH</a> &middot; <a href="/methodology">Methodology</a>
+      <div style="position: relative;">
+        <div id="chart-emissions-timeline-static" class="chart-surface" style="width:100%;height:340px;min-height:340px;"></div>
+        {#if !mapDataLoaded}
+          <div class="ep-loading-overlay">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <span>Loading data…</span>
+          </div>
+        {/if}
+      </div>
+      <div class="ep-chart-source" style="display:flex;justify-content:flex-end;align-items:center;gap:0.5rem;flex-wrap:wrap;font-size:0.78rem;margin-top:1rem;">
+        <span>Data from the <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">MEPSY tool</a></span>
+        <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">
+          <img src="/images/clasp-logo.png" alt="CLASP" style="height:16px;vertical-align:middle;opacity:0.8;" />
+        </a>
       </div>
     </div>
 
@@ -1596,7 +1667,10 @@
         <i class="fa-solid fa-lightbulb" style="color:#0369a1;margin-right:0.4rem;"></i>
         <strong>Additional context:</strong> Use the Emissions Trajectory chart above alongside this view to understand how appliance-level efficiency gains translate into global emission reductions over time.
       </p>
-      <ApplianceGrowthChart {applianceTimeseries} {coolingMilestones} />
+      <ApplianceGrowthChart
+        applianceTimeseries={computedApplianceTimeseries}
+        {coolingMilestones}
+      />
     </div>
   </div>
 </section>
@@ -1668,6 +1742,25 @@
     border-radius: 0 6px 6px 0;
     margin: 0.5rem 0 1rem;
     line-height: 1.55;
+  }
+
+  .ep-loading-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.85);
+    color: #64748b;
+    font-size: 0.85rem;
+    pointer-events: none;
+  }
+
+  .ep-loading-overlay i {
+    font-size: 1.4rem;
+    color: #2D7D5A;
   }
 
   .ep-chart-source {

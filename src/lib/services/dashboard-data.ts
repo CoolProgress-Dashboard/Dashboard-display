@@ -127,6 +127,32 @@ export const loadSubcoolGlobalSummary = async (
   );
 };
 
+// Lightweight fetch for ApplianceGrowthChart aggregation only.
+// Fetches far fewer columns than loadEmissionsHeavyData and filters HEAT to the
+// two subsectors and two scenarios the chart actually needs, so it completes
+// well before the full heavy-data load that powers the emissions map.
+export const loadApplianceChartData = async (
+  url: string,
+  key: string
+): Promise<{ clasp: ClaspEnergyRecord[]; subcool: SubcoolRecord[] }> => {
+  const [clasp, subcool] = await Promise.all([
+    // CLASP: 7 columns instead of 22 — stock, BAU energy/CO2, GB energy/CO2
+    safeFetch<ClaspEnergyRecord>(
+      url, key, 'clasp_energy_consumption',
+      'appliance,year,appliance_units_in_use,bau_final_energy_twh,bau_co2_mt,gb_final_energy_twh,gb_co2_mt',
+      '', 50000
+    ),
+    // HEAT: 4 columns instead of 11, filtered to the only 2 subsectors and
+    // 2 scenarios used by buildApplianceTimeseries — dramatically smaller payload
+    safeFetch<SubcoolRecord>(
+      url, key, 'global_model_subcool',
+      'subsector,year,scenario_name,direct_emission_mt',
+      '&scenario_name=in.(BAU,KIP_PLUS)', 100000
+    ),
+  ]);
+  return { clasp, subcool };
+};
+
 // Loads clasp_energy_consumption + global_model_subcool separately.
 // These tables have 27k and 34k rows respectively — at Supabase's 1000-row cap
 // that means 62 sequential HTTP requests (~7–30 s). Calling this lazily inside
@@ -285,6 +311,152 @@ export const loadDashboardData = async (
     mepsLevels,
     ndc: []
   };
+};
+
+// =============================================================================
+// buildApplianceTimeseries
+// =============================================================================
+// Combines two Supabase tables into a unified ApplianceTimeseriesRecord[]:
+//
+//  CLASP Mepsy  (clasp_energy_consumption)
+//    • stock_millions      ← appliance_units_in_use   (global sum per appliance+year)
+//    • energy_twh  BAU     ← bau_final_energy_twh     (global sum)
+//    • energy_twh  DECARB  ← gb_final_energy_twh      (Green Buildings MEPS efficiency)
+//    • indirect_mt BAU     ← bau_co2_mt               (global sum)
+//    • indirect_mt DECARB  ← gb_co2_mt × IEA grid ratio
+//      → GB removes appliance inefficiency; IEA STEPS ratio removes grid carbon on top
+//
+//  GCI / HEAT  (global_model_subcool)
+//    • direct_mt   BAU     ← direct_emission_mt where scenario_name = 'BAU'
+//    • direct_mt   DECARB  ← direct_emission_mt where scenario_name = 'KIP_PLUS'
+//      (KIP_PLUS = full Kigali phase-down, most ambitious refrigerant scenario)
+//    Subsector mapping: 'Split residential air conditioners' → AC
+//                       'Domestic refrigeration'             → DomRef
+//    Fans carry zero direct emissions (no refrigerant — not modelled by HEAT)
+//
+//  IEA STEPS grid decarbonisation ratios (vs frozen-BAU grid assumption)
+//  Source: IEA Electricity 2025, Stated Policies Scenario
+//  Applied to CLASP GB indirect emissions for DECARB scenario only (2025 onward)
+//
+//  Combination point: total_emission_mt = indirect_mt + direct_mt
+//  The join key is (appliance_type, year); no country-level data is retained.
+// =============================================================================
+
+export const buildApplianceTimeseries = (
+  claspEnergy: ClaspEnergyRecord[],
+  subcool: SubcoolRecord[]
+): ApplianceTimeseriesRecord[] => {
+
+  // ── Name mappings ────────────────────────────────────────────────────────
+  const CLASP_TO_TYPE: Record<string, string> = {
+    'Air Conditioning':          'AC',
+    'Refrigerator-Freezers':     'DomRef',
+    'Ceiling and Portable Fans': 'Fans',
+  };
+  // HEAT models only refrigerant-bearing subsectors; Fans have no direct emissions
+  const HEAT_TO_TYPE: Record<string, string> = {
+    'Split residential air conditioners': 'AC',
+    'Domestic refrigeration':             'DomRef',
+  };
+
+  // IEA STEPS grid decarbonisation ratios (2025–2050)
+  // Pre-2025 ratio = 1.0 (BAU and DECARB are identical for historical years)
+  const IEA_GRID_RATIO: Record<number, number> = {
+    2025: 0.95, 2030: 0.80, 2035: 0.65, 2040: 0.55, 2045: 0.47, 2050: 0.40,
+  };
+
+  type AggKey = string; // `${type}_${year}`
+
+  // ── Step 1: aggregate CLASP (stock, energy, indirect) ────────────────────
+  const claspBau: Record<AggKey, { stock: number; energy: number; indirect: number }> = {};
+  const claspGb:  Record<AggKey, { energy: number; indirect: number }> = {};
+
+  for (const r of claspEnergy) {
+    const type = CLASP_TO_TYPE[r.appliance];
+    if (!type) continue;
+    const k = `${type}_${r.year}`;
+    if (!claspBau[k]) claspBau[k] = { stock: 0, energy: 0, indirect: 0 };
+    claspBau[k].stock    += r.appliance_units_in_use  ?? 0;
+    claspBau[k].energy   += r.bau_final_energy_twh    ?? 0;
+    claspBau[k].indirect += r.bau_co2_mt              ?? 0;
+    if (!claspGb[k])  claspGb[k]  = { energy: 0, indirect: 0 };
+    claspGb[k].energy    += r.gb_final_energy_twh     ?? 0;
+    claspGb[k].indirect  += r.gb_co2_mt               ?? 0;
+  }
+
+  // ── Step 2: aggregate HEAT/GCI (direct emissions only) ───────────────────
+  const heatDirect: Record<AggKey, { bau: number; kipPlus: number }> = {};
+
+  for (const r of subcool) {
+    const type = HEAT_TO_TYPE[r.subsector ?? ''];
+    if (!type) continue;
+    const k = `${type}_${r.year}`;
+    if (!heatDirect[k]) heatDirect[k] = { bau: 0, kipPlus: 0 };
+    if (r.scenario_name === 'BAU')      heatDirect[k].bau     += r.direct_emission_mt ?? 0;
+    if (r.scenario_name === 'KIP_PLUS') heatDirect[k].kipPlus += r.direct_emission_mt ?? 0;
+  }
+
+  // ── Step 3: build combined rows per appliance × year × scenario ──────────
+  const TYPES = ['AC', 'DomRef', 'Fans'];
+  const years = [...new Set(claspEnergy.map(r => r.year))].sort((a, b) => a - b);
+  const rows: ApplianceTimeseriesRecord[] = [];
+  let id = 1;
+
+  for (const year of years) {
+    for (const type of TYPES) {
+      const k     = `${type}_${year}`;
+      const clasp = claspBau[k];
+      if (!clasp || clasp.stock === 0) continue;
+
+      const gb        = claspGb[k]     ?? { energy: 0, indirect: 0 };
+      const heat      = heatDirect[k]  ?? { bau: 0, kipPlus: 0 };
+      const gridRatio = IEA_GRID_RATIO[year] ?? 1.0;
+      const projected = year >= 2025;
+
+      // BAU: CLASP BAU columns + HEAT BAU direct
+      // appliance_units_in_use is in actual units → divide by 1,000,000 for "millions" field
+      const bauIndirect = clasp.indirect;
+      const bauDirect   = heat.bau;
+      rows.push({
+        id: id++,
+        year,
+        appliance_type: type,
+        scenario: 'BAU',
+        stock_millions:       Math.round(clasp.stock / 1_000_000),
+        energy_twh:           Math.round(clasp.energy),
+        indirect_emission_mt: Math.round(bauIndirect),
+        direct_emission_mt:   Math.round(bauDirect),
+        total_emission_mt:    Math.round(bauIndirect + bauDirect),
+        is_projected: projected,
+        source: 'CLASP Mepsy (stock/energy/indirect) + GCI/HEAT BAU (direct)',
+        source_url: 'https://www.clasp.ngo/tools/mepsy/',
+      });
+
+      // DECARB: CLASP GB energy × IEA grid ratio + HEAT KIP_PLUS direct
+      // Pre-2025 DECARB = BAU (scenarios haven't diverged yet)
+      const decarbEnergy   = projected ? Math.round(gb.energy   * gridRatio) : Math.round(clasp.energy);
+      const decarbIndirect = projected ? Math.round(gb.indirect * gridRatio) : Math.round(clasp.indirect);
+      const decarbDirect   = projected ? heat.kipPlus : heat.bau;
+      rows.push({
+        id: id++,
+        year,
+        appliance_type: type,
+        scenario: 'DECARB',
+        stock_millions:       Math.round(clasp.stock / 1_000_000),
+        energy_twh:           decarbEnergy,
+        indirect_emission_mt: decarbIndirect,
+        direct_emission_mt:   Math.round(decarbDirect),
+        total_emission_mt:    Math.round(decarbIndirect + decarbDirect),
+        is_projected: projected,
+        source: projected
+          ? 'CLASP GB efficiency × IEA STEPS grid ratio (indirect) + GCI/HEAT KIP_PLUS (direct)'
+          : 'CLASP Mepsy (stock/energy/indirect) + GCI/HEAT BAU (direct)',
+        source_url: 'https://www.clasp.ngo/tools/mepsy/',
+      });
+    }
+  }
+
+  return rows;
 };
 
 export const getEmissionsData = (

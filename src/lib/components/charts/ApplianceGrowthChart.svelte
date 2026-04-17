@@ -2,10 +2,8 @@
   import { onMount } from 'svelte';
   import { APPLIANCE, SCENARIO, EMISSION, CHROME, areaGradient, rgba } from '$lib/components/shared/colors';
   import {
-    applianceTimeseriesData,
     applianceMilestones as hardcodedMilestones,
     applianceSummaries,
-    getYears,
     APPLIANCE_META,
     METRIC_META
   } from '$lib/data/appliance-timeseries-data';
@@ -15,22 +13,25 @@
   export let applianceTimeseries: ApplianceTimeseriesRecord[] = [];
   export let coolingMilestones: CoolingMilestoneRecord[] = [];
 
-  // Use Supabase data if provided, otherwise fall back to hardcoded
-  $: effectiveData = applianceTimeseries.length > 0
-    ? applianceTimeseries.map((r): ApplianceTimeseriesPoint => ({
-        year: r.year,
-        appliance: r.appliance_type as ApplianceType,
-        stockMillions: r.stock_millions,
-        energyTwh: r.energy_twh,
-        indirectEmissionMt: r.indirect_emission_mt,
-        directEmissionMt: r.direct_emission_mt,
-        totalEmissionMt: r.total_emission_mt,
-        scenario: r.scenario as ScenarioType,
-        isProjected: r.is_projected,
-        source: r.source ?? '',
-        sourceUrl: r.source_url ?? '',
-      }))
-    : applianceTimeseriesData;
+  // Primary data: built in EmissionsPillar from live Supabase tables by combining:
+  //   CLASP Mepsy (stock, energy, indirect emissions) — clasp_energy_consumption
+  //   GCI/HEAT    (direct emissions)                  — global_model_subcool
+  // See buildApplianceTimeseries() in dashboard-data.ts for full methodology.
+  $: isLoading = applianceTimeseries.length === 0;
+
+  $: effectiveData = applianceTimeseries.map((r): ApplianceTimeseriesPoint => ({
+    year: r.year,
+    appliance: r.appliance_type as ApplianceType,
+    stockMillions: r.stock_millions,
+    energyTwh: r.energy_twh,
+    indirectEmissionMt: r.indirect_emission_mt,
+    directEmissionMt: r.direct_emission_mt,
+    totalEmissionMt: r.total_emission_mt,
+    scenario: r.scenario as ScenarioType,
+    isProjected: r.is_projected,
+    source: r.source ?? '',
+    sourceUrl: r.source_url ?? '',
+  }));
 
   $: applianceMilestones = coolingMilestones.length > 0
     ? coolingMilestones.map(m => ({ year: m.year, label: m.label, description: m.description ?? '' }))
@@ -48,7 +49,6 @@
 
   let selectedAppliance: ApplianceType | 'All' = 'AC';
   let selectedMetric: MetricKey = 'stock';
-  let showDecarb = false;
 
   const applianceOptions: { key: ApplianceType | 'All'; label: string }[] = [
     { key: 'AC', label: 'AC' },
@@ -80,59 +80,6 @@
   // Reactive sources
   $: activeSources = getActiveSources(selectedAppliance);
 
-  // Cumulative decarbonization potential 2025-2050
-  interface DecarbStats {
-    totalAvoided: number;
-    indirectAvoided: number;
-    directAvoided: number;
-    label: string;
-  }
-
-  function calcCumulativeDecarb(appliance: ApplianceType): DecarbStats {
-    const bau = getApplianceData(appliance, 'BAU').filter(d => d.year >= 2025).sort((a, b) => a.year - b.year);
-    const decarb = getApplianceData(appliance, 'DECARB').filter(d => d.year >= 2025).sort((a, b) => a.year - b.year);
-    let totalAvoided = 0, indirectAvoided = 0, directAvoided = 0;
-
-    for (let i = 0; i < bau.length - 1; i++) {
-      const dt = bau[i + 1].year - bau[i].year;
-      const avoidedStart = bau[i].totalEmissionMt - decarb[i].totalEmissionMt;
-      const avoidedEnd = bau[i + 1].totalEmissionMt - decarb[i + 1].totalEmissionMt;
-      totalAvoided += (avoidedStart + avoidedEnd) / 2 * dt;
-
-      const indStart = bau[i].indirectEmissionMt - decarb[i].indirectEmissionMt;
-      const indEnd = bau[i + 1].indirectEmissionMt - decarb[i + 1].indirectEmissionMt;
-      indirectAvoided += (indStart + indEnd) / 2 * dt;
-
-      const dirStart = bau[i].directEmissionMt - decarb[i].directEmissionMt;
-      const dirEnd = bau[i + 1].directEmissionMt - decarb[i + 1].directEmissionMt;
-      directAvoided += (dirStart + dirEnd) / 2 * dt;
-    }
-
-    return {
-      totalAvoided: Math.round(totalAvoided),
-      indirectAvoided: Math.round(indirectAvoided),
-      directAvoided: Math.round(directAvoided),
-      label: APPLIANCE_META[appliance].label,
-    };
-  }
-
-  $: decarbStats = showDecarb ? (() => {
-    const appliances: ApplianceType[] = ['AC', 'DomRef', 'Fans'];
-    const stats = appliances.map(calcCumulativeDecarb);
-    const grandTotal = stats.reduce((s, d) => s + d.totalAvoided, 0);
-    const grandIndirect = stats.reduce((s, d) => s + d.indirectAvoided, 0);
-    const grandDirect = stats.reduce((s, d) => s + d.directAvoided, 0);
-    return { stats, grandTotal, grandIndirect, grandDirect };
-  })() : null;
-
-  function fmtGt(mt: number): string {
-    return (mt / 1000).toFixed(1);
-  }
-
-  function fmtMt(mt: number): string {
-    return mt.toLocaleString();
-  }
-
   function getActiveSources(app: ApplianceType | 'All'): { name: string; url: string }[] {
     const sources: { name: string; url: string }[] = [];
     const seen = new Set<string>();
@@ -148,7 +95,13 @@
   }
 
   function buildChartOption() {
-    const years = getYears();
+    // Derive years from live data so the x-axis starts where data actually begins
+    // (2005 for CLASP, 1990 for hardcoded fallback). Using getYears() (hardcoded)
+    // when live data is present would create empty slots for 1990/1995/2000 that
+    // break the historical→projected bridge logic.
+    const years = [...new Set(effectiveData.map(d => d.year))]
+      .filter(y => y >= 2020 && y <= 2050)
+      .sort((a, b) => a - b);
     const field = METRIC_META[selectedMetric].field;
     const yLabel = METRIC_META[selectedMetric].yAxisLabel;
     const demarcationIdx = years.indexOf(2025);
@@ -189,28 +142,6 @@
             label: { show: false }
           } : undefined
         });
-
-        // DECARB overlay for All view
-        if (showDecarb) {
-          const decarbData = getApplianceData(app, 'DECARB');
-          const bauAt2025 = data.find(d => d.year === 2025);
-          series.push({
-            name: meta.label + ' (Decarb)',
-            type: 'line',
-            data: years.map(y => {
-              if (y < 2025) return null;
-              // Branch from BAU value at 2025 so lines meet at the junction
-              if (y === 2025) return bauAt2025 ? (bauAt2025 as any)[field] : null;
-              const pt = decarbData.find(d => d.year === y);
-              return pt ? (pt as any)[field] : null;
-            }),
-            smooth: 0.5,
-            lineStyle: { width: 2, color: SCENARIO.DECARB, type: 'dashed' },
-            itemStyle: { color: SCENARIO.DECARB },
-            symbol: 'none',
-            connectNulls: false,
-          });
-        }
       }
     } else if (selectedMetric === 'emissions' && selectedAppliance !== 'Fans') {
       // Emissions breakdown: stacked indirect + direct for AC and DomRef
@@ -248,59 +179,6 @@
         itemStyle: { color: EMISSION.DIRECT, opacity: 0.7 },
         barWidth: '60%',
       });
-
-      // DECARB overlay (stacked bars + total line)
-      if (showDecarb) {
-        const decarbData = getApplianceData(selectedAppliance, 'DECARB');
-
-        // DECARB Indirect
-        series.push({
-          name: 'Kigali+ Indirect',
-          type: 'bar',
-          stack: 'decarb',
-          data: years.map(y => {
-            const pt = decarbData.find(d => d.year === y);
-            if (!pt || y < 2025) return null;
-            return pt.indirectEmissionMt;
-          }),
-          itemStyle: { color: '#A8D5A2', opacity: 0.6 },
-          barWidth: '30%',
-          barGap: '10%',
-        });
-
-        // DECARB Direct
-        series.push({
-          name: 'Kigali+ Direct',
-          type: 'bar',
-          stack: 'decarb',
-          data: years.map(y => {
-            const pt = decarbData.find(d => d.year === y);
-            if (!pt || y < 2025) return null;
-            return pt.directEmissionMt;
-          }),
-          itemStyle: { color: '#A8D5A2', opacity: 0.6 },
-          barWidth: '30%',
-        });
-
-        // DECARB total line overlay
-        const bauAt2025 = bauData.find(d => d.year === 2025);
-        series.push({
-          name: 'Kigali+ Total',
-          type: 'line',
-          data: years.map(y => {
-            if (y < 2025) return null;
-            // Branch from BAU total at 2025 so lines meet at the junction
-            if (y === 2025) return bauAt2025 ? bauAt2025.totalEmissionMt : null;
-            const pt = decarbData.find(d => d.year === y);
-            return pt ? pt.totalEmissionMt : null;
-          }),
-          smooth: 0.5,
-          lineStyle: { width: 2.5, color: SCENARIO.DECARB, type: 'dashed' },
-          itemStyle: { color: SCENARIO.DECARB },
-          symbol: 'none',
-          connectNulls: false,
-        });
-      }
     } else {
       // Single appliance: stock, energy, or Fans emissions — historical (solid) + projected (dashed)
       const data = getApplianceData(selectedAppliance, 'BAU');
@@ -370,37 +248,6 @@
         symbol: 'circle',
         symbolSize: 5,
       });
-
-      // DECARB overlay
-      if (showDecarb) {
-        const decarbData = getApplianceData(selectedAppliance, 'DECARB');
-        const bauAt2025 = data.find(d => d.year === 2025);
-        series.push({
-          name: 'Decarbonization Pathway',
-          type: 'line',
-          data: years.map(y => {
-            if (y < 2025) return null;
-            // Branch from the same BAU point at 2025 so all lines meet
-            if (y === 2025) return bauAt2025 ? (bauAt2025 as any)[field] : null;
-            const pt = decarbData.find(d => d.year === y);
-            return pt ? (pt as any)[field] : null;
-          }),
-          smooth: 0.5,
-          lineStyle: { width: 2.5, color: SCENARIO.DECARB, type: 'dashed' },
-          itemStyle: { color: SCENARIO.DECARB },
-          areaStyle: {
-            color: {
-              type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
-              colorStops: [
-                { offset: 0, color: 'rgba(82, 183, 136, 0.12)' },
-                { offset: 1, color: 'rgba(82, 183, 136, 0.02)' },
-              ]
-            }
-          },
-          symbol: 'none',
-          connectNulls: false,
-        });
-      }
     }
 
     // Build tooltip
@@ -431,14 +278,6 @@
           const entry = bauData.find(d => d.year === year);
           if (entry) {
             html += `<br/><span style="color:#555;font-size:0.85em;font-weight:600">BAU Total: ${entry.totalEmissionMt.toLocaleString()} Mt</span>`;
-            if (showDecarb && year >= 2025) {
-              const decarbData = getApplianceData(selectedAppliance, 'DECARB');
-              const dEntry = decarbData.find(d => d.year === year);
-              if (dEntry) {
-                const reduction = Math.round((1 - dEntry.totalEmissionMt / entry.totalEmissionMt) * 100);
-                html += `<br/><span style="color:#52B788;font-size:0.85em;font-weight:600">Kigali+ Total: ${dEntry.totalEmissionMt.toLocaleString()} Mt (${reduction > 0 ? '-' : '+'}${Math.abs(reduction)}%)</span>`;
-              }
-            }
           }
         } else if (selectedMetric === 'emissions' && selectedAppliance === 'Fans') {
           const bauData = getApplianceData('Fans', 'BAU');
@@ -510,7 +349,7 @@
     chartInstance.setOption(buildChartOption(), true);
   }
 
-  $: selectedAppliance, selectedMetric, showDecarb, updateChart();
+  $: selectedAppliance, selectedMetric, effectiveData, updateChart();
 
   onMount(async () => {
     const echarts = await import('echarts');
@@ -531,7 +370,7 @@
   <div class="chart-header">
     <div class="chart-title">
       <i class={titleIcon}></i>
-      Global {applianceLabel} {metricLabel} (1990 - 2050)
+      Global {applianceLabel} {metricLabel} (2020 - 2050)
     </div>
     {#if summary}
       <div class="chart-subtitle-row">
@@ -572,60 +411,39 @@
     {/each}
   </div>
 
-  <!-- Scenario toggle -->
-  <label class="decarb-toggle">
-    <input type="checkbox" bind:checked={showDecarb} />
-    <span class="decarb-label">Show Decarbonization Pathway</span>
-  </label>
-
-  <div class="chart-container" bind:this={chartContainer}></div>
-
-  {#if showDecarb && selectedMetric === 'emissions' && decarbStats}
-    <div class="decarb-highlight">
-      <div class="decarb-highlight-header">
-        <i class="fa-solid fa-leaf"></i>
-        <span>Cumulative Decarbonization Potential (2025&ndash;2050)</span>
+  <div class="chart-wrap">
+    <div class="chart-container" bind:this={chartContainer}></div>
+    {#if isLoading}
+      <div class="chart-loading-overlay">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span>Loading data…</span>
       </div>
-      <div class="decarb-kpi-row">
-        <div class="decarb-kpi grand">
-          <div class="decarb-kpi-value">{fmtGt(decarbStats.grandTotal)} Gt</div>
-          <div class="decarb-kpi-label">Total avoided CO&#8322;e</div>
-          <div class="decarb-kpi-sub">
-            <span class="decarb-tag indirect">{fmtGt(decarbStats.grandIndirect)} Gt indirect</span>
-            <span class="decarb-tag direct">{fmtGt(decarbStats.grandDirect)} Gt direct</span>
-          </div>
-        </div>
-        {#each decarbStats.stats as s}
-          <div class="decarb-kpi">
-            <div class="decarb-kpi-value">{fmtMt(s.totalAvoided)} Mt</div>
-            <div class="decarb-kpi-label">{s.label}</div>
-            {#if s.directAvoided > 0}
-              <div class="decarb-kpi-sub">
-                <span class="decarb-tag indirect">{fmtMt(s.indirectAvoided)} indirect</span>
-                <span class="decarb-tag direct">{fmtMt(s.directAvoided)} direct</span>
-              </div>
-            {:else}
-              <div class="decarb-kpi-sub">
-                <span class="decarb-tag indirect">{fmtMt(s.indirectAvoided)} indirect only</span>
-              </div>
-            {/if}
-          </div>
-        {/each}
-      </div>
-    </div>
-  {/if}
-
-  <div class="chart-source">
-    Sources:
-    {#each activeSources as src, i}
-      <a href={src.url} target="_blank" rel="noopener noreferrer">{src.name}</a>{#if i < activeSources.length - 1}; {/if}
-    {/each}
-    {#if showDecarb}
-      ; <a href="/methodology" target="_blank" rel="noopener noreferrer">HEAT GmbH (DECARB methodology)</a>
-      ; <a href="https://www.iea.org/reports/world-energy-outlook-2025" target="_blank" rel="noopener noreferrer">IEA STEPS (grid decarb)</a>
     {/if}
-    &nbsp;&middot;&nbsp;
-    <a href="/methodology" style="font-weight: 700;">Methodology</a>
+  </div>
+
+  <div class="chart-source-bar">
+    <div class="chart-source-credits">
+      <span class="chart-source-label">Data sources:</span>
+
+      <!-- CLASP Mepsy -->
+      <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer" class="source-credit-link">
+        <img src="/images/clasp-logo.png" alt="CLASP" class="source-credit-logo" />
+        <span>Mepsy Tool</span>
+        <i class="fa-solid fa-arrow-up-right-from-square source-credit-ext"></i>
+      </a>
+
+      <span class="source-credit-sep">·</span>
+
+      <!-- GCI / HEAT / GIZ -->
+      <a href="https://www.green-cooling-initiative.org/country-data#!total-emissions/all-sectors/absolute" target="_blank" rel="noopener noreferrer" class="source-credit-link">
+        <img src="/images/giz-logo.png" alt="GIZ" class="source-credit-logo" />
+        <img src="/images/heat-logo.png" alt="HEAT GmbH" class="source-credit-logo" />
+        <span>Green Cooling Initiative</span>
+        <i class="fa-solid fa-arrow-up-right-from-square source-credit-ext"></i>
+      </a>
+    </div>
+
+    <a href="/methodology/appliance-chart" class="chart-meth-link">Methodology</a>
   </div>
 </div>
 
@@ -707,23 +525,8 @@
     border-color: #2D7D5A;
   }
 
-  .decarb-toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    margin: 0.35rem 0;
-    cursor: pointer;
-  }
-
-  .decarb-toggle input {
-    accent-color: #52B788;
-    cursor: pointer;
-  }
-
-  .decarb-label {
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: #666;
+  .chart-wrap {
+    position: relative;
   }
 
   .chart-container {
@@ -731,116 +534,92 @@
     height: 380px;
   }
 
-  .chart-source {
-    font-size: 0.65rem;
-    color: #aaa;
-    text-align: right;
-    margin-top: 0.5rem;
-    font-style: italic;
+  .chart-loading-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.85);
+    color: #64748b;
+    font-size: 0.85rem;
+    gap: 0.5rem;
   }
 
-  .chart-source a {
+  .chart-loading-overlay i {
+    font-size: 1.4rem;
     color: #2D7D5A;
-    text-decoration: none;
-    border-bottom: 1px dotted rgba(45, 125, 90, 0.3);
-    transition: color 0.2s ease;
   }
 
-  .chart-source a:hover {
-    color: #2D5252;
-    border-bottom-color: #2D5252;
-  }
-
-  /* Decarb Highlight */
-  .decarb-highlight {
-    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
-    border: 1px solid #A8D5A2;
-    border-left: 4px solid #2D7D5A;
-    border-radius: 10px;
-    padding: 0.75rem 1rem;
-    margin-top: 0.75rem;
-  }
-
-  .decarb-highlight-header {
+  .chart-source-bar {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: #166534;
-    margin-bottom: 0.5rem;
-  }
-
-  .decarb-highlight-header i {
-    color: #52B788;
-  }
-
-  .decarb-kpi-row {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr 1fr 1fr;
-    gap: 0.6rem;
-    align-items: start;
-  }
-
-  .decarb-kpi {
-    text-align: center;
-    padding: 0.4rem 0.3rem;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba(168, 213, 162, 0.4);
-  }
-
-  .decarb-kpi.grand {
-    background: rgba(22, 101, 52, 0.06);
-    border-color: rgba(22, 101, 52, 0.2);
-  }
-
-  .decarb-kpi-value {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: #166534;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .decarb-kpi.grand .decarb-kpi-value {
-    font-size: 1.3rem;
-  }
-
-  .decarb-kpi-label {
-    font-size: 0.68rem;
-    font-weight: 600;
-    color: #555;
-    margin-top: 0.1rem;
-  }
-
-  .decarb-kpi-sub {
-    display: flex;
-    gap: 0.3rem;
-    justify-content: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.4rem 0 0;
+    border-top: 1px solid #f1f5f9;
+    margin-top: 0.4rem;
     flex-wrap: wrap;
-    margin-top: 0.25rem;
   }
 
-  .decarb-tag {
-    font-size: 0.6rem;
-    font-weight: 600;
-    padding: 0.1rem 0.4rem;
-    border-radius: 999px;
+  .chart-source-credits {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
   }
 
-  .decarb-tag.indirect {
-    background: rgba(45, 125, 90, 0.1);
+  .chart-source-label {
+    font-size: 0.68rem;
+    color: #94a3b8;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .source-credit-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    text-decoration: none;
+    color: #0369a1;
+    font-size: 0.68rem;
+    font-weight: 500;
+    transition: opacity 0.2s;
+  }
+
+  .source-credit-link:hover {
+    opacity: 0.75;
+  }
+
+  .source-credit-logo {
+    height: 15px;
+    width: auto;
+    object-fit: contain;
+    opacity: 0.85;
+  }
+
+  .source-credit-sep {
+    color: #cbd5e1;
+    font-size: 0.75rem;
+  }
+
+  .source-credit-ext {
+    font-size: 0.5rem;
+    opacity: 0.6;
+  }
+
+  .chart-meth-link {
+    font-size: 0.68rem;
+    font-weight: 700;
     color: #2D7D5A;
+    text-decoration: none;
+    white-space: nowrap;
   }
 
-  .decarb-tag.direct {
-    background: rgba(194, 91, 51, 0.1);
-    color: #C25B33;
+  .chart-meth-link:hover {
+    text-decoration: underline;
   }
 
-  @media (max-width: 640px) {
-    .decarb-kpi-row {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
 </style>

@@ -769,9 +769,8 @@
         const gcpByRegion = gcpRegions.map(region => {
           const regionCodes = countries.filter((c: any) => c.region === region).map((c: any) => c.country_code);
           const signatories = pledge.filter((p: any) => regionCodes.includes(p.country_code) && p.signatory === 1).length;
-          const nonSignatories = pledge.filter((p: any) => regionCodes.includes(p.country_code) && p.signatory !== 1).length;
-          return { region, signatories, nonSignatories };
-        }).sort((a, b) => b.signatories - a.signatories);
+          return { region, signatories };
+        }).filter(r => r.signatories > 0).sort((a, b) => b.signatories - a.signatories);
 
         setChart('chart-gcp-by-region', {
           tooltip: {
@@ -779,13 +778,11 @@
             axisPointer: { type: 'shadow' },
             formatter: function(params: any) {
               const region = params[0].name;
-              let html = `<strong>${region}</strong><br/>`;
-              params.forEach((p: any) => { html += `${p.marker} ${p.seriesName}: <strong>${p.value}</strong><br/>`; });
-              return html;
+              return `<strong>${region}</strong><br/>${params[0].marker} Signatories: <strong>${params[0].value}</strong>`;
             }
           },
-          legend: { bottom: 0, textStyle: { color: '#475569', fontSize: 11 } },
-          grid: { left: '3%', right: '4%', bottom: '12%', top: '5%', containLabel: true },
+          legend: { show: false },
+          grid: { left: '3%', right: '8%', bottom: '5%', top: '5%', containLabel: true },
           xAxis: {
             type: 'value',
             axisLabel: { color: '#475569', fontSize: 10 },
@@ -802,18 +799,9 @@
             {
               name: 'Signatories',
               type: 'bar',
-              stack: 'total',
               data: gcpByRegion.map(r => r.signatories),
-              itemStyle: { color: '#6BADA0', borderRadius: [0, 0, 0, 0] },
-              label: { show: true, position: 'inside', color: '#fff', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' }
-            },
-            {
-              name: 'Non-Signatories',
-              type: 'bar',
-              stack: 'total',
-              data: gcpByRegion.map(r => r.nonSignatories),
-              itemStyle: { color: '#cbd5e1', borderRadius: [0, 4, 4, 0] },
-              label: { show: true, position: 'inside', color: '#64748b', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' }
+              itemStyle: { color: '#6BADA0', borderRadius: [0, 4, 4, 0] },
+              label: { show: true, position: 'right', color: '#334155', fontSize: 11, fontWeight: 700, formatter: (p: any) => String(p.value) }
             }
           ]
         });
@@ -876,15 +864,11 @@
         const mentionedCounts = ndcCategories.map(cat =>
           ndcTracker.filter((n: any) => n.ndc_type === ndcType && n.category === cat && n.mention_value === 1).length
         );
-        const notMentionedCounts = ndcCategories.map(cat =>
-          ndcTracker.filter((n: any) => n.ndc_type === ndcType && n.category === cat && n.mention_status === 'Not mentioned').length
-        );
-
-        const ndcVersionLabel = ndcType === 'NDC 3.0' ? '(NDC 3.0)' : '(NDC 2.0)';
+        const ndcVersionLabel = ndcType === 'NDC 3.0' ? '(NDC 3.0)' : '(Previous NDC)';
         setChart('chart-ndc-categories', {
           tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-          legend: { bottom: 0, textStyle: { color: '#475569', fontSize: 11 } },
-          grid: { left: '3%', right: '8%', bottom: '12%', top: '5%', containLabel: true },
+          legend: { show: false },
+          grid: { left: '3%', right: '8%', bottom: '5%', top: '5%', containLabel: true },
           xAxis: {
             type: 'value',
             axisLabel: { color: '#475569', fontSize: 10 },
@@ -898,14 +882,13 @@
             axisTick: { show: false }
           },
           series: [
-            { name: `Mentioned ${ndcVersionLabel}`, type: 'bar', stack: 'total', data: mentionedCounts, itemStyle: { color: '#6BADA0', borderRadius: [0, 0, 0, 0] }, label: { show: true, position: 'inside', color: '#fff', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } },
-            { name: `Not Mentioned ${ndcVersionLabel}`, type: 'bar', stack: 'total', data: notMentionedCounts, itemStyle: { color: '#D4A843', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'inside', color: '#fff', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } }
+            { name: `Mentioned ${ndcVersionLabel}`, type: 'bar', data: mentionedCounts, itemStyle: { color: '#6BADA0', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 11, fontWeight: 700, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } }
           ]
         });
 
         const ndcRegions = [...new Set(ndcTracker.map((n: any) => n.continent).filter(Boolean))] as string[];
         const regionMentionedPrev = ndcRegions.map(region =>
-          ndcTracker.filter((n: any) => n.ndc_type === 'NDC 2.0' && n.category === ndcCategory && n.continent === region && n.mention_value === 1).length
+          ndcTracker.filter((n: any) => n.ndc_type === 'Other' && n.category === ndcCategory && n.continent === region && n.mention_value === 1).length
         );
         const regionMentioned30 = ndcRegions.map(region =>
           ndcTracker.filter((n: any) => n.ndc_type === 'NDC 3.0' && n.category === ndcCategory && n.continent === region && n.mention_value === 1).length
@@ -1069,7 +1052,25 @@
           });
 
         } else if (mapType === 'ndc') {
-          container.innerHTML = `
+          const claspNdcBox = `
+            <div style="display:flex;align-items:flex-start;gap:1.25rem;padding:1.1rem 1.4rem;background:#f0fdf4;border-top:3px solid #2D7D5A;border-bottom:1px solid #bbf7d0;margin-bottom:0.5rem;">
+              <a href="https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/" target="_blank" rel="noopener noreferrer" style="flex-shrink:0;display:flex;align-items:center;padding-top:2px;">
+                <img src="/images/clasp-logo.png" alt="CLASP" style="height:28px;width:auto;object-fit:contain;opacity:0.9;" />
+              </a>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:0.9rem;font-weight:800;color:#0f172a;margin-bottom:0.3rem;letter-spacing:-0.01em;">NDC data: CLASP NDC Appliance Efficiency Toolkit</div>
+                <p style="font-size:0.81rem;color:#334155;line-height:1.65;margin:0 0 0.6rem;">
+                  The NDC cooling mentions data shown in the charts and map above comes from CLASP's NDC Appliance Efficiency Toolkit — a resource tracking how countries integrate appliance efficiency into their Nationally Determined Contributions.
+                </p>
+                <div style="display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center;">
+                  <a href="https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.35rem;background:#2D7D5A;color:#fff;font-size:0.78rem;font-weight:700;padding:0.38rem 0.9rem;border-radius:3px;text-decoration:none;">
+                    <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.68rem;"></i> Open the Toolkit
+                  </a>
+                </div>
+              </div>
+            </div>
+          `;
+          container.innerHTML = claspNdcBox + `
             <div class="policy-charts-flat">
               <div class="policy-chart-item">
                 <p class="p-chart-eyebrow">By Category</p>
@@ -1276,6 +1277,9 @@
           const ndcFilters = document.getElementById('policy-ndc-filters');
           if (ndcFilters) ndcFilters.classList.toggle('visible', mapType === 'ndc');
 
+          const ndcClaspSource = document.getElementById('ndc-clasp-source');
+          if (ndcClaspSource) ndcClaspSource.style.display = mapType === 'ndc' ? 'flex' : 'none';
+
           updatePolicyChartsForMapType(mapType);
           updatePolicyFilterStatusBar();
         };
@@ -1469,6 +1473,16 @@
           </div>
         </div>
       </div>
+      <!-- NDC-only source attribution — shown only when NDC tab is active -->
+      <div id="ndc-clasp-source" style="display:none; align-items:center; gap:0.5rem; padding:0.45rem 0.75rem; background:#f0fdf4; border-left:3px solid #2D7D5A; border-radius:0 6px 6px 0; margin-bottom:0.5rem;">
+        <span style="font-size:0.72rem; color:#334155; font-weight:500;">NDC data source:</span>
+        <a href="https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/" target="_blank" rel="noopener noreferrer"
+          style="display:inline-flex; align-items:center; gap:0.35rem; text-decoration:none; color:#0369a1; font-size:0.72rem; font-weight:600;">
+          <img src="/images/clasp-logo.png" alt="CLASP" style="height:14px; width:auto; object-fit:contain; opacity:0.85;" />
+          <span>CLASP NDC Appliance Efficiency Toolkit</span>
+          <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.5rem; opacity:0.7;"></i>
+        </a>
+      </div>
       <p class="chart-hint">Hover over a country to see its pledge status, NDC cooling mentions, and NCAP progress. Click a country to explore details.</p>
       <div id="ndc-map-container" class="map-surface"></div>
       <div class="legend legend-row">
@@ -1494,7 +1508,6 @@
     </div>
 
     <div class="charts-section" style="padding-top: 1.25rem;">
-      <p class="chart-hint">Use the filters to compare countries and policy types.</p>
       <div id="policy-charts-container"></div>
     </div>
 
@@ -1625,6 +1638,12 @@
 </section>
 
 <style>
+  /* Reduce chapter-card padding for the policy pillar to close large gaps */
+  :global(#view-policy .chapter-card) {
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+
   /* ===========================
      NARRATIVE SYSTEM (design system tokens)
      =========================== */

@@ -505,8 +505,8 @@
           : r.region
       }));
 
-      // Cap at 2030 — SEforALL data only (no HEAT projections beyond 2030)
-      const allRecords = [...accessData, ...normalizedForecast].filter(r => r.year <= 2030);
+      // Range: 2015–2030 — SEforALL data only (no HEAT projections beyond 2030)
+      const allRecords = [...accessData, ...normalizedForecast].filter(r => r.year >= 2015 && r.year <= 2030);
 
       // Apply risk level filter only
       const filtered = allRecords.filter(r => {
@@ -563,7 +563,12 @@
         xAxis: {
           type: 'category',
           data: years,
-          axisLabel: { fontSize: 10, color: '#1e293b', fontWeight: 700, interval: 1, showMaxLabel: true },
+          axisLabel: {
+            fontSize: 10, color: '#1e293b', fontWeight: 700,
+            interval: 0,
+            showMaxLabel: true,
+            formatter: (val: string | number) => [2015, 2020, 2025, 2030].includes(Number(val)) ? String(val) : ''
+          },
           boundaryGap: false
         },
         yAxis: {
@@ -1095,7 +1100,7 @@
         <div class="chart-card-header" style="padding: 0.75rem 1rem; border-bottom: none;">
           <h3 style="font-size: 0.88rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 0.4rem; margin: 0;">
             <i class="fa-solid fa-chart-area" style="color: #D4A843;"></i>
-            Population at Risk: 2013&ndash;2030
+            Population at Risk: 2015&ndash;2030
           </h3>
           <p style="font-size: 0.72rem; color: #334155; font-weight: 600; margin: 0.2rem 0 0;">
             SEforALL Chilling Prospects data &middot; Stacked by risk level &middot; Forecast to 2030
