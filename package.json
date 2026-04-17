@@ -38,8 +38,5 @@
     "typescript": "^5.5.4",
     "vite": "^5.4.0",
     "vitest": "^4.0.18"
-  },
-  "optionalDependencies": {
-    "@cloudflare/workerd-windows-64": "^1.20260207.0"
   }
 }
