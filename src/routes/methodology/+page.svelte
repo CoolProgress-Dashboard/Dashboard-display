@@ -1,803 +1,192 @@
 <script lang="ts">
-  // Methodology page - publicly accessible (outside auth-protected route group)
+  // Methodology index — publicly accessible
 </script>
 
 <svelte:head>
   <title>Methodology | CoolProgress Dashboard</title>
-  <meta name="description" content="Transparent methodology documentation for the CoolProgress Global Cooling Intelligence Platform. Three-layer DECARB pathway, data sources, and known limitations." />
+  <meta name="description" content="Chart methodology documentation for the CoolProgress Dashboard — MEPS Stringency, Appliance Growth, and Peak Electricity Load." />
 </svelte:head>
 
-<div class="methodology-page">
-  <header class="meth-header">
-    <a href="/login" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
-    <h1>Methodology & Data Sources</h1>
-    <p class="meth-subtitle">
-      Transparent documentation of how CoolProgress tracks global cooling emissions,
-      efficiency standards, refrigerant transitions, and access gaps.
+<div class="methodology-index">
+  <header class="idx-header">
+    <h1>Chart Methodology</h1>
+    <p class="idx-subtitle">
+      Transparent source documentation for CoolProgress charts.
+      Each chart has its own dedicated methodology page.
     </p>
-    <div class="meth-badge">
-      <i class="fa-solid fa-shield-check"></i> Last updated: February 2026
-    </div>
   </header>
 
-  <!-- Table of Contents -->
-  <nav class="toc-card">
-    <h2><i class="fa-solid fa-list"></i> Contents</h2>
-    <ol>
-      <li><a href="#decarb">Three-Layer DECARB Methodology</a></li>
-      <li><a href="#data-sources">Data Sources & Attribution</a></li>
-      <li><a href="#emissions">Emissions Methodology</a></li>
-      <li><a href="#meps">MEPS & Labels Methodology</a></li>
-      <li><a href="#kigali">Kigali Tracking Methodology</a></li>
-      <li><a href="#access">Access & Vulnerability Methodology</a></li>
-      <li><a href="#policy">Policy Framework Methodology</a></li>
-      <li><a href="#limitations">Methodology Notes & Scope</a></li>
-    </ol>
-  </nav>
+  <div class="chart-cards">
 
-  <!-- Section 1: DECARB -->
-  <section class="meth-section" id="decarb">
-    <h2><i class="fa-solid fa-layer-group"></i> Three-Layer DECARB Methodology</h2>
-    <p>
-      The CoolProgress DECARB pathway models the combined emission reduction achievable through
-      three independent intervention layers. This integrated approach captures the full mitigation
-      potential of the cooling sector by combining refrigerant transitions, appliance efficiency
-      improvements, and the ongoing decarbonization of electricity grids.
-    </p>
-
-    <div class="formula-card">
-      <div class="formula">
-        DECARB<sub>indirect</sub> = BAU<sub>indirect</sub> &times; CLASP<sub>efficiency</sub> &times; IEA<sub>grid</sub>
+    <a href="/methodology/meps-stringency" class="chart-card">
+      <div class="card-icon" style="background: rgba(61,107,107,0.1); color: #3D6B6B;">
+        <i class="fa-solid fa-chart-line"></i>
       </div>
-      <p class="formula-note">Where each factor is a ratio (0&ndash;1) representing the fraction of BAU emissions remaining after each intervention.</p>
-    </div>
-
-    <div class="layers-grid">
-      <div class="layer-card">
-        <div class="layer-badge" style="background: #E85A4F;">Layer 1</div>
-        <h3>Direct Emissions (Kigali)</h3>
-        <p><strong>Source:</strong> HEAT Global Cooling Model</p>
-        <p><strong>Mechanism:</strong> HFC phase-down per Kigali Amendment schedules</p>
-        <ul>
-          <li>Non-Article 5: &minus;85% by 2047</li>
-          <li>Article 5 Group 1: &minus;80% by 2045</li>
-          <li>Article 5 Group 2: &minus;80% by 2047</li>
-        </ul>
-        <p><strong>Coverage:</strong> AC and Refrigerators (Fans have zero direct emissions)</p>
+      <div class="card-body">
+        <div class="card-eyebrow">Product Efficiency</div>
+        <h2>MEPS Stringency Over Time</h2>
+        <p>CSPF and EEI harmonization, U4E reference tiers, adopted vs. effective timelines, and country coverage.</p>
+        <span class="card-link">Read methodology <i class="fa-solid fa-arrow-right"></i></span>
       </div>
+    </a>
 
-      <div class="layer-card">
-        <div class="layer-badge" style="background: #8BC34A;">Layer 2</div>
-        <h3>Energy Efficiency (CLASP GB)</h3>
-        <p><strong>Source:</strong> CLASP Global Best scenario</p>
-        <p><strong>Mechanism:</strong> Best-practice MEPS + labels across all countries</p>
-        <div class="ratio-table">
-          <table>
-            <thead><tr><th>Appliance</th><th>2030</th><th>2040</th><th>2050</th></tr></thead>
-            <tbody>
-              <tr><td>AC</td><td>0.835</td><td>0.743</td><td>0.735</td></tr>
-              <tr><td>Refrigerators</td><td>0.911</td><td>0.789</td><td>0.723</td></tr>
-              <tr><td>Fans</td><td>0.893</td><td>0.819</td><td>0.809</td></tr>
-            </tbody>
-          </table>
-          <p class="table-note">Ratios = GB/BAU energy consumption. Lower = more savings.</p>
-        </div>
+    <a href="/methodology/appliance-chart" class="chart-card">
+      <div class="card-icon" style="background: rgba(45,125,90,0.1); color: #2D7D5A;">
+        <i class="fa-solid fa-boxes-stacked"></i>
       </div>
-
-      <div class="layer-card">
-        <div class="layer-badge" style="background: #0693e3;">Layer 3</div>
-        <h3>Grid Decarbonization (IEA STEPS)</h3>
-        <p><strong>Source:</strong> IEA World Energy Outlook 2025, Stated Policies Scenario</p>
-        <p><strong>Mechanism:</strong> Renewable energy displacing fossil fuels in electricity generation</p>
-        <div class="ratio-table">
-          <table>
-            <thead><tr><th>Year</th><th>2025</th><th>2030</th><th>2035</th><th>2040</th><th>2045</th><th>2050</th></tr></thead>
-            <tbody>
-              <tr><td>Grid ratio</td><td>0.95</td><td>0.80</td><td>0.65</td><td>0.55</td><td>0.47</td><td>0.40</td></tr>
-            </tbody>
-          </table>
-          <p class="table-note">Ratios vs frozen/BAU grid assumption. Based on renewables 33% (2024) &rarr; 67% (2050).</p>
-        </div>
-        <p>IEA Electricity 2025: Global grid intensity 445 gCO<sub>2</sub>/kWh (2024) &rarr; 400 (2027), declining &sim;3.6%/yr.</p>
+      <div class="card-body">
+        <div class="card-eyebrow">Emissions Pillar</div>
+        <h2>Global Appliance Growth</h2>
+        <p>How CLASP Mepsy and GCI/HEAT data are combined to show stock, energy, and emissions from 2020 to 2050.</p>
+        <span class="card-link">Read methodology <i class="fa-solid fa-arrow-right"></i></span>
       </div>
-    </div>
+    </a>
 
-    <div class="methodology-note">
-      <i class="fa-solid fa-lightbulb"></i>
-      <div>
-        <strong>Why three layers?</strong> Appliance-level models typically hold grid emission factors
-        constant to isolate equipment-side impacts. The CoolProgress methodology adds Layer 3 to
-        reflect the real-world trajectory of electricity decarbonization, drawing on IEA STEPS
-        projections. This provides a more complete picture of the cooling sector's emission pathway
-        through 2050.
+    <a href="/methodology/peak-load" class="chart-card">
+      <div class="card-icon" style="background: rgba(217,117,64,0.1); color: #D97540;">
+        <i class="fa-solid fa-bolt"></i>
       </div>
-    </div>
-  </section>
-
-  <!-- Section 2: Data Sources -->
-  <section class="meth-section" id="data-sources">
-    <h2><i class="fa-solid fa-database"></i> Data Sources & Attribution</h2>
-    <p>CoolProgress integrates data from multiple authoritative sources. Attribution is shown on every chart and KPI card.</p>
-
-    <div class="source-grid">
-      <div class="source-card">
-        <img src="/images/heat-logo.png" alt="HEAT" class="source-logo" />
-        <h3>HEAT GmbH</h3>
-        <p class="source-role">Global Cooling Model &amp; Dashboard Development</p>
-        <ul>
-          <li>Global Cooling Model: BAU, Kigali, and mitigation emission scenarios by country</li>
-          <li>Direct emissions: HFC refrigerant leakage modeling</li>
-          <li>Indirect emissions: Country-level electricity consumption and grid emission factors</li>
-          <li>Three-layer DECARB methodology design, data integration, and dashboard development</li>
-        </ul>
-        <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">heat-gmbh.de</a>
+      <div class="card-body">
+        <div class="card-eyebrow">Product Efficiency</div>
+        <h2>Cooling Share of Peak Electricity Load</h2>
+        <p>IEA baseline data, 2050 projections, appliance scope, and how country values were calculated.</p>
+        <span class="card-link">Read methodology <i class="fa-solid fa-arrow-right"></i></span>
       </div>
+    </a>
 
-      <div class="source-card">
-        <img src="/images/clasp-logo.png" alt="CLASP" class="source-logo" />
-        <h3>CLASP</h3>
-        <p class="source-role">Appliance Efficiency &amp; Energy Data</p>
-        <ul>
-          <li>Energy consumption scenarios: BAU, Global Best, Net Zero Heroes, Best Available Technology</li>
-          <li>Country-level appliance stock and energy projections</li>
-          <li>MEPS and Labels database via the Policy Resource Center (CPRC)</li>
-          <li>World's Best MEPS benchmarking</li>
-        </ul>
-        <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">clasp.ngo/tools/mepsy</a>
-      </div>
+  </div>
 
-      <div class="source-card">
-        <img src="/images/iea-logo.png" alt="IEA" class="source-logo" />
-        <h3>IEA</h3>
-        <p class="source-role">Energy Projections &amp; Grid Decarbonization</p>
-        <ul>
-          <li>Future of Cooling (2018): AC stock projections</li>
-          <li>WEO 2025 STEPS: Grid decarbonization trajectory</li>
-          <li>Electricity 2025: Global grid intensity data</li>
-          <li>Space Cooling Tracker: Energy demand validation</li>
-        </ul>
-        <a href="https://www.iea.org/reports/the-future-of-cooling" target="_blank" rel="noopener noreferrer">iea.org/reports/the-future-of-cooling</a>
-      </div>
-
-      <div class="source-card">
-        <img src="/images/seforall-logo.jpg" alt="SEforALL" class="source-logo" />
-        <h3>SEforALL</h3>
-        <p class="source-role">Cooling Access &amp; Vulnerability Data</p>
-        <ul>
-          <li>Chilling Prospects 2025: Population at risk</li>
-          <li>Historical access data (2013&ndash;2024)</li>
-          <li>Risk levels by income group and region</li>
-        </ul>
-        <a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer">seforall.org/chilling-prospects</a>
-      </div>
-
-      <div class="source-card">
-        <img src="/images/unep.png" alt="UNEP" class="source-logo" />
-        <h3>UNEP Ozone Secretariat</h3>
-        <p class="source-role">Kigali Amendment &amp; Refrigerant Data</p>
-        <ul>
-          <li>Kigali Implementation Plan (KIP) ratification status</li>
-          <li>Country-level HFC baseline and allowable emissions</li>
-          <li>Montreal Protocol compliance tracking</li>
-        </ul>
-        <a href="https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment" target="_blank" rel="noopener noreferrer">ozone.unep.org</a>
-      </div>
-
-      <div class="source-card">
-        <img src="/images/giz-logo.png" alt="GIZ" class="source-logo" />
-        <h3>GIZ Proklima</h3>
-        <p class="source-role">Green Cooling Initiative &amp; Direct Emissions</p>
-        <ul>
-          <li>Green Cooling Initiative: Country emissions data</li>
-          <li>HEAT model collaboration on BAU/KIP scenarios</li>
-          <li>Technician training and technology transfer data</li>
-        </ul>
-        <a href="https://www.green-cooling-initiative.org/" target="_blank" rel="noopener noreferrer">green-cooling-initiative.org</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section 3: Emissions -->
-  <section class="meth-section" id="emissions">
-    <h2><i class="fa-solid fa-smog"></i> Emissions Methodology</h2>
-    <p>
-      Cooling emissions split into two streams. <strong>Indirect emissions</strong> come from electricity
-      powering compressors, fans, and chillers &mdash; currently ~70% of the sector's climate impact.
-      <strong>Direct emissions</strong> come from refrigerant gas leaks during manufacturing, operation, and disposal.
-    </p>
-
-    <h3>BAU Scenario (Business as Usual)</h3>
-    <ul>
-      <li><strong>Indirect:</strong> HEAT Global Cooling Model (BAU scenario) combined with CLASP BAU energy projections</li>
-      <li><strong>Direct:</strong> HEAT Global Cooling Model based on installed HFC charge, annual leak rates, and end-of-life emissions</li>
-      <li><strong>Validation:</strong> Cross-checked against IEA and OWID 2022 benchmarks (~1,750 Mt CO<sub>2</sub>e for AC)</li>
-    </ul>
-
-    <h3>DECARB Scenario (Decarbonization Pathway)</h3>
-    <ul>
-      <li><strong>Indirect:</strong> Three-layer approach: BAU indirect emissions &times; CLASP efficiency ratio &times; IEA grid decarbonization ratio</li>
-      <li><strong>Direct:</strong> Kigali-compliant refrigerant phase-down trajectory (HEAT Global Cooling Model)</li>
-      <li><strong>Fans:</strong> CLASP Global Best efficiency scenario &times; IEA grid ratio (fans have no refrigerant and zero direct emissions)</li>
-    </ul>
-
-    <h3>Appliance Coverage</h3>
-    <table class="data-table">
-      <thead><tr><th>Appliance</th><th>Direct Emissions</th><th>Indirect Emissions</th><th>DECARB Layers Applied</th></tr></thead>
-      <tbody>
-        <tr><td>Air Conditioners</td><td>Yes (HFC refrigerants)</td><td>Yes (electricity)</td><td>Layer 1 (Kigali) + Layer 2 (Efficiency) + Layer 3 (Grid)</td></tr>
-        <tr><td>Refrigerators</td><td>Yes (minimal HFC)</td><td>Yes (electricity)</td><td>Layer 1 (Kigali) + Layer 2 (Efficiency) + Layer 3 (Grid)</td></tr>
-        <tr><td>Fans</td><td>None (no refrigerant)</td><td>Yes (electricity)</td><td>Layer 2 (Efficiency) + Layer 3 (Grid)</td></tr>
-      </tbody>
-    </table>
-  </section>
-
-  <!-- Section 4: MEPS -->
-  <section class="meth-section" id="meps">
-    <h2><i class="fa-solid fa-bolt"></i> MEPS & Labels Methodology</h2>
-    <p>
-      Minimum Energy Performance Standards (MEPS) set the efficiency floor for appliances sold in a market.
-      Energy labels inform consumers. CoolProgress tracks both instruments across all major economies.
-    </p>
-    <ul>
-      <li><strong>Primary source:</strong> CLASP Policy Resource Center (CPRC)</li>
-      <li><strong>Metrics:</strong> Cooling Seasonal Performance Factor (CSPF), Energy Efficiency Ratio (EER), Annual Energy Consumption (AEC)</li>
-      <li><strong>Coverage:</strong> AC, Refrigerators, and Fans across 80+ countries</li>
-      <li><strong>Update frequency:</strong> Aligned with CLASP data releases (annual)</li>
-    </ul>
-  </section>
-
-  <!-- Section 5: Kigali -->
-  <section class="meth-section" id="kigali">
-    <h2><i class="fa-solid fa-snowflake"></i> Kigali Tracking Methodology</h2>
-    <p>
-      The Kigali Amendment to the Montreal Protocol provides the legal framework for phasing down
-      HFC production and consumption. CoolProgress tracks ratification status, implementation stage,
-      and baseline emissions for all 198 parties.
-    </p>
-    <ul>
-      <li><strong>Primary source:</strong> UNEP Ozone Secretariat</li>
-      <li><strong>Data:</strong> Ratification date, country group (Non-A5 / A5-I / A5-II), baseline CO<sub>2</sub>eq, KIP Stage 1 approval status</li>
-      <li><strong>Refrigerant GWP values:</strong> IPCC AR6 (2023) for consistency</li>
-    </ul>
-  </section>
-
-  <!-- Section 6: Access -->
-  <section class="meth-section" id="access">
-    <h2><i class="fa-solid fa-people-group"></i> Access & Vulnerability Methodology</h2>
-    <p>
-      The cooling access pillar draws on SEforALL's Chilling Prospects framework, which identifies
-      populations at risk from inadequate cooling across three dimensions: health (thermal safety),
-      food (cold chains), and livelihoods (labor productivity).
-    </p>
-    <ul>
-      <li><strong>Historical data (2013&ndash;2024):</strong> SEforALL Chilling Prospects series</li>
-      <li><strong>Forecast data (2025&ndash;2030):</strong> CoolProgress projections based on SEforALL methodology</li>
-      <li><strong>Population categories:</strong> Rural Poor, Urban Poor, Lower-Middle Income, Middle-Income</li>
-      <li><strong>Risk levels:</strong> High, Medium, Low &mdash; based on income, infrastructure, and climate vulnerability</li>
-    </ul>
-  </section>
-
-  <!-- Section 7: Policy -->
-  <section class="meth-section" id="policy">
-    <h2><i class="fa-solid fa-landmark"></i> Policy Framework Methodology</h2>
-    <p>
-      The policy pillar tracks four interconnected instruments: the Global Cooling Pledge (GCP),
-      Nationally Determined Contributions (NDCs), National Cooling Action Plans (NCAPs), and Kigali
-      Amendment ratification. Together these form the enabling framework for the cooling transition.
-    </p>
-
-    <div class="meth-subsection">
-      <h3>Global Cooling Pledge</h3>
-      <ul>
-        <li><strong>Source:</strong> Cool Coalition signatory registry (as of COP28, December 2023)</li>
-        <li><strong>Coverage:</strong> 71 signatory countries tracked; updated as new signatories join</li>
-        <li><strong>Note:</strong> Signing the pledge is a political commitment, not a legally binding obligation. Dashboard tracks commitment, not verified implementation.</li>
-      </ul>
-    </div>
-
-    <div class="meth-subsection">
-      <h3>NDC Cooling Mentions</h3>
-      <ul>
-        <li><strong>Source:</strong> CLASP NDC Appliance Efficiency Toolkit analysis; supplemented by Climate Policy Radar</li>
-        <li><strong>Method:</strong> Text analysis of submitted NDC documents for explicit mentions of cooling, refrigerants, MEPS, or the Kigali Amendment</li>
-        <li><strong>Categories:</strong> Mentioned / Not mentioned / No NDC submitted / No data</li>
-        <li><strong>Limitation:</strong> Qualitative text matching — a mention does not indicate a quantified target or funded commitment. NDC quality analysis is outside current scope.</li>
-      </ul>
-    </div>
-
-    <div class="meth-subsection">
-      <h3>National Cooling Action Plans (NCAPs)</h3>
-      <ul>
-        <li><strong>Source:</strong> UNEP Cool Coalition NCAP tracker; national government publications</li>
-        <li><strong>Coverage:</strong> Approximately 20 completed NCAPs tracked as of Q1 2026; additional plans under development</li>
-        <li><strong>Scope:</strong> Dashboard records NCAP existence and year — detailed plan assessment (quality, implementation status) is outside current scope</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- Section 8: Methodology Notes -->
-  <section class="meth-section" id="limitations">
-    <h2><i class="fa-solid fa-circle-info"></i> Methodology Notes & Scope</h2>
-    <div class="limitations-list">
-      <div class="limitation">
-        <strong>Grid decarbonization approach:</strong>
-        Layer 3 applies IEA STEPS grid decarbonization ratios at the global level. Country-specific
-        grid trajectories vary and may diverge from the global average. Future versions will incorporate
-        regional grid intensity pathways as IEA country-level data becomes available.
-      </div>
-      <div class="limitation">
-        <strong>MEPS data updates:</strong>
-        The MEPS database is updated annually in alignment with CLASP data releases. The 2026 update
-        incorporates recent standard revisions across 10 priority markets including India, the EU,
-        China, Brazil, and Saudi Arabia.
-      </div>
-      <div class="limitation">
-        <strong>MEPS stringency comparisons:</strong>
-        Cross-country efficiency comparisons require caution. Countries use different metrics (CSPF,
-        EER, ISEER, SEER2, APF), different test methods, different climate zone assumptions, and
-        different capacity class definitions. CoolProgress harmonizes to ISO CSPF equivalents using
-        published conversion factors, but residual methodological differences remain. The visual
-        approach for cross-country stringency comparison has been developed with CLASP and is subject
-        to validation with LBNL before wider publication.
-      </div>
-      <div class="limitation">
-        <strong>Regulatory timeline — adopted vs effective:</strong>
-        The MEPS timeline chart distinguishes between regulations that are currently in force (solid
-        line) and regulations that have been officially adopted but carry a future effective date or
-        staged compliance schedule (dashed line). Purely aspirational targets that have not been
-        legislated are excluded. "Adopted" means a formal regulatory decision exists; "effective"
-        means the requirement applies to products sold today.
-      </div>
-      <div class="limitation">
-        <strong>Fan emission pathway:</strong>
-        Since fans do not contain refrigerants, the DECARB pathway for fans applies Layer 2 (energy efficiency)
-        and Layer 3 (grid decarbonization) only. Layer 1 (Kigali) does not apply.
-      </div>
-      <div class="limitation">
-        <strong>NCAP coverage:</strong>
-        CoolProgress tracks approximately 30 National Cooling Action Plans. Additional NCAPs under
-        development by countries will be incorporated as they are officially published.
-      </div>
-      <div class="limitation">
-        <strong>Global aggregation:</strong>
-        Global-level indicators are derived from pre-computed timeseries based on the HEAT Global Cooling
-        Model. Country-level detail is available through the interactive map and country selection features.
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="meth-footer">
+  <footer class="idx-footer">
     <p>
       <strong>CoolProgress</strong> is developed by
       <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH</a>
-      in partnership with CLASP, IEA, SEforALL, UNEP, GIZ Proklima, and Cool Coalition.
+      in partnership with CLASP, IEA, UNEP U4E, and GIZ Proklima.
     </p>
-    <p class="meth-version">Methodology version 2.0 &middot; February 2026</p>
   </footer>
 </div>
 
 <style>
-  .methodology-page {
-    max-width: 860px;
+  .methodology-index {
+    max-width: 760px;
     margin: 0 auto;
-    padding: 2rem 1.5rem 3rem;
-    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    color: #333;
-    line-height: 1.6;
+    padding: 3rem 1.5rem 4rem;
+    font-family: inherit;
+    color: #1e293b;
   }
 
-  /* Header */
-  .meth-header {
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 2px solid #e2e8f0;
+  .idx-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
   }
 
-  .back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #3D6B6B;
-    text-decoration: none;
-    margin-bottom: 1rem;
-    transition: color 0.2s;
-  }
-
-  .back-link:hover { color: #2D5252; }
-
-  .meth-header h1 {
+  .idx-header h1 {
     font-size: 2rem;
     font-weight: 800;
     letter-spacing: -0.03em;
     margin: 0 0 0.5rem;
-    color: #1a1a1a;
+    color: #0f172a;
   }
 
-  .meth-subtitle {
-    font-size: 1rem;
-    color: #555;
-    max-width: 600px;
-    margin: 0;
-  }
-
-  .meth-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    margin-top: 0.75rem;
-    padding: 0.3rem 0.7rem;
-    background: rgba(61, 107, 107, 0.08);
-    border-radius: 999px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: #3D6B6B;
-  }
-
-  /* Table of Contents */
-  .toc-card {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.25rem 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .toc-card h2 {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #555;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0 0 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .toc-card ol {
-    margin: 0;
-    padding-left: 1.5rem;
-  }
-
-  .toc-card li {
-    margin-bottom: 0.3rem;
-  }
-
-  .toc-card a {
-    color: #3D6B6B;
-    text-decoration: none;
-    font-size: 0.88rem;
-    font-weight: 500;
-  }
-
-  .toc-card a:hover { text-decoration: underline; }
-
-  /* Sections */
-  .meth-section {
-    margin-bottom: 2.5rem;
-    scroll-margin-top: 2rem;
-  }
-
-  .meth-section h2 {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin: 0 0 0.75rem;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid #e2e8f0;
-  }
-
-  .meth-section h2 i {
-    color: #3D6B6B;
-    font-size: 1.1rem;
-  }
-
-  .meth-section h3 {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #333;
-    margin: 1.25rem 0 0.5rem;
-  }
-
-  .meth-section p {
-    margin: 0 0 0.75rem;
-    font-size: 0.9rem;
-  }
-
-  .meth-section ul {
-    padding-left: 1.5rem;
-    margin: 0 0 0.75rem;
-  }
-
-  .meth-section li {
-    font-size: 0.88rem;
-    margin-bottom: 0.35rem;
-  }
-
-  /* Formula Card */
-  .formula-card {
-    background: linear-gradient(135deg, #0d3b4f, #1a6b5a);
-    color: #fff;
-    padding: 1.25rem 1.5rem;
-    border-radius: 12px;
-    margin: 1rem 0 1.25rem;
-  }
-
-  .formula {
-    font-size: 1.2rem;
-    font-weight: 700;
-    font-family: 'Courier New', monospace;
-    text-align: center;
-    margin-bottom: 0.5rem;
-  }
-
-  .formula sub { font-size: 0.7em; }
-
-  .formula-note {
-    font-size: 0.78rem;
-    color: rgba(255,255,255,0.7);
-    text-align: center;
-    margin: 0;
-  }
-
-  /* Layers Grid */
-  .layers-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin: 1.25rem 0;
-    align-items: stretch;
-  }
-
-  .layer-card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1rem;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .layer-badge {
-    display: inline-block;
-    color: #fff;
-    font-size: 0.65rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 0.2rem 0.6rem;
-    border-radius: 999px;
-    margin-bottom: 0.5rem;
-  }
-
-  .layer-card h3 {
+  .idx-subtitle {
     font-size: 0.95rem;
-    margin: 0 0 0.5rem;
-  }
-
-  .layer-card p, .layer-card li {
-    font-size: 0.8rem;
-  }
-
-  .layer-card ul {
-    padding-left: 1.2rem;
-    margin: 0.25rem 0;
-  }
-
-  /* Ratio Tables */
-  .ratio-table {
-    margin: 0.5rem 0;
-    overflow-x: auto;
-  }
-
-  .ratio-table table, .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.78rem;
-    margin: 0.5rem 0;
-  }
-
-  .ratio-table th, .data-table th {
-    background: #f1f5f9;
-    padding: 0.4rem 0.6rem;
-    text-align: left;
-    font-weight: 700;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: #555;
-    border-bottom: 1px solid #e2e8f0;
-  }
-
-  .ratio-table td, .data-table td {
-    padding: 0.4rem 0.6rem;
-    border-bottom: 1px solid #f1f5f9;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .table-note {
-    font-size: 0.7rem;
-    color: #888;
-    font-style: italic;
-    margin: 0.25rem 0 0;
-  }
-
-  /* Methodology Note */
-  .methodology-note {
-    display: flex;
-    gap: 0.75rem;
-    align-items: flex-start;
-    background: #f0fdf4;
-    border: 1px solid #86efac;
-    border-left: 4px solid #22c55e;
-    border-radius: 8px;
-    padding: 1rem 1.25rem;
-    margin: 1.5rem 0;
-  }
-
-  .methodology-note i {
-    color: #22c55e;
-    font-size: 1.1rem;
-    flex-shrink: 0;
-    margin-top: 0.15rem;
-  }
-
-  .methodology-note p, .methodology-note div {
-    font-size: 0.85rem;
+    color: #64748b;
     margin: 0;
-    line-height: 1.5;
-  }
-
-  /* Source Grid */
-  .source-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin: 1rem 0;
-  }
-
-  .source-card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1rem 1.25rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-
-  .source-card:hover {
-    border-color: #3D6B6B;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-  }
-
-  .source-logo {
-    max-width: 80px;
-    max-height: 32px;
-    object-fit: contain;
-    margin-bottom: 0.5rem;
-    opacity: 0.85;
-  }
-
-  .source-card h3 {
-    font-size: 0.95rem;
-    margin: 0 0 0.15rem;
-  }
-
-  .source-role {
-    font-size: 0.75rem;
-    color: #888;
-    font-weight: 600;
-    margin: 0 0 0.5rem;
-  }
-
-  .source-card ul {
-    padding-left: 1.2rem;
-    margin: 0 0 0.5rem;
-  }
-
-  .source-card li {
-    font-size: 0.78rem;
-    margin-bottom: 0.2rem;
-  }
-
-  .source-card a {
-    font-size: 0.78rem;
-    color: #3D6B6B;
-    text-decoration: none;
-    font-weight: 600;
-  }
-
-  .source-card a:hover { text-decoration: underline; }
-
-  /* Policy sub-sections */
-  .meth-subsection {
-    margin: 1rem 0 0.5rem;
-    padding: 0.75rem 1rem;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-  }
-
-  .meth-subsection h3 {
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: #3D6B6B;
-    margin: 0 0 0.5rem;
-  }
-
-  .meth-subsection ul {
-    margin: 0;
-    padding-left: 1.2rem;
-    font-size: 0.83rem;
-    color: #475569;
     line-height: 1.6;
   }
 
-  .meth-subsection ul li {
+  .chart-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .chart-card {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+  }
+
+  .chart-card:hover {
+    border-color: #3D6B6B;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+    transform: translateY(-1px);
+  }
+
+  .card-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+  }
+
+  .card-body {
+    min-width: 0;
+  }
+
+  .card-eyebrow {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
     margin-bottom: 0.25rem;
   }
 
-  /* Limitations */
-  .limitations-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+  .card-body h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.35rem;
   }
 
-  .limitation {
-    background: #fafafa;
-    border: 1px solid #e2e8f0;
-    border-left: 3px solid #94a3b8;
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
+  .card-body p {
     font-size: 0.85rem;
+    color: #475569;
+    margin: 0 0 0.6rem;
+    line-height: 1.55;
   }
 
-  .limitation strong {
-    color: #333;
+  .card-link {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #3D6B6B;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
   }
 
-  /* Footer */
-  .meth-footer {
+  .idx-footer {
     margin-top: 3rem;
     padding-top: 1.5rem;
-    border-top: 2px solid #e2e8f0;
+    border-top: 1px solid #e2e8f0;
     text-align: center;
   }
 
-  .meth-footer p {
-    font-size: 0.85rem;
-    color: #555;
-    margin: 0 0 0.5rem;
+  .idx-footer p {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    margin: 0;
   }
 
-  .meth-footer a {
+  .idx-footer a {
     color: #3D6B6B;
     text-decoration: none;
     font-weight: 600;
   }
 
-  .meth-footer a:hover { text-decoration: underline; }
-
-  .meth-version {
-    font-size: 0.72rem;
-    color: #aaa;
-  }
-
-  /* Responsive */
-  @media (max-width: 900px) {
-    .layers-grid { grid-template-columns: 1fr; }
-    .source-grid { grid-template-columns: 1fr; }
-  }
-
   @media (max-width: 600px) {
-    .methodology-page { padding: 1rem; }
-    .meth-header h1 { font-size: 1.5rem; }
+    .chart-card { flex-direction: column; gap: 0.75rem; }
+    .idx-header h1 { font-size: 1.5rem; }
   }
 </style>

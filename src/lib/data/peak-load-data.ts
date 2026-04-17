@@ -89,16 +89,6 @@ export const peakLoadData: PeakLoadEntry[] = [
     source: 'IEA Future of Cooling',
   },
   {
-    country: 'Japan',
-    countryCode: 'JP',
-    baselineYear: 2016,
-    baselinePercent: 14,
-    projectedYear: 2050,
-    projectedPercent: 18,
-    // High efficiency but saturated market; IEA global avg 14% baseline
-    source: 'IEA Future of Cooling',
-  },
-  {
     country: 'Nigeria',
     countryCode: 'NG',
     baselineYear: 2016,

@@ -60,17 +60,30 @@
     updateChart();
   }
 
-  // U4E reference levels
+  // U4E reference levels — minimum MEPS tier
+  // AC: CSPF 5.1 = Group 1 minimum (4.5–9.5kW), U4E Model Reg Table 5
+  // Refrigerator: EEI 102 = R≥1.0 minimum, derived from AECMax=279 kWh/yr ÷ 274 × 100
   const u4eRef: Record<ApplianceTab, { value: number; label: string } | null> = {
-    AC: { value: 5.1, label: 'U4E Recommended (CSPF 5.1)' },
-    Refrigerator: { value: 102, label: 'U4E Baseline (EEI 102)' },
+    AC: { value: 5.1, label: 'U4E Minimum MEPS (CSPF 5.1)' },
+    Refrigerator: { value: 102, label: 'U4E Minimum MEPS – R≥1.0 (EEI 102)' },
     Fan: null,
   };
 
-  // U4E high efficiency target
+  // U4E intermediate efficiency tier
+  // AC: CSPF 6.5 = High Efficiency label, Group 2, U4E Annex 2 Table 14
+  // Refrigerator: EEI 81 = R≥1.25 Intermediate, 223 kWh/yr ÷ 274 × 100
+  const u4eIntermediate: Record<ApplianceTab, { value: number; label: string } | null> = {
+    AC: { value: 6.5, label: 'U4E High Efficiency Label (CSPF 6.5)' },
+    Refrigerator: { value: 81, label: 'U4E Intermediate – R≥1.25 (EEI 81)' },
+    Fan: null,
+  };
+
+  // U4E high efficiency / aspirational target
+  // AC: CSPF 8.75 = Global Cooling Prize target
+  // Refrigerator: EEI 68 = R≥1.50 High Efficiency, 186 kWh/yr ÷ 274 × 100
   const u4eHighEfficiency: Record<ApplianceTab, { value: number; label: string } | null> = {
-    AC: { value: 8.75, label: 'Global Cooling Prize (8.75)' },
-    Refrigerator: { value: 50, label: 'U4E High Efficiency (EEI 50)' },
+    AC: { value: 8.75, label: 'Global Cooling Prize (CSPF 8.75)' },
+    Refrigerator: { value: 68, label: 'U4E High Efficiency – R≥1.50 (EEI 68)' },
     Fan: null,
   };
 
@@ -211,6 +224,19 @@
         data: [[minYear, u4e.value], [maxYear, u4e.value]],
         lineStyle: { width: 2, color: '#94a3b8', type: 'dashed' },
         itemStyle: { color: '#94a3b8' },
+        symbol: 'none',
+      });
+    }
+
+    // Intermediate efficiency target line
+    const intermediate = u4eIntermediate[appliance];
+    if (intermediate) {
+      series.push({
+        name: intermediate.label,
+        type: 'line',
+        data: [[minYear, intermediate.value], [maxYear, intermediate.value]],
+        lineStyle: { width: 1.5, color: '#F59E0B', type: 'dashed' },
+        itemStyle: { color: '#F59E0B' },
         symbol: 'none',
       });
     }
@@ -465,17 +491,23 @@
       </span>
       {#if selectedAppliance === 'AC'}
         <span class="meps-legend-item">
-          <span class="meps-legend-line ref"></span> U4E Recommended (5.1)
+          <span class="meps-legend-line ref"></span> U4E Min. MEPS (CSPF 5.1)
         </span>
         <span class="meps-legend-item">
-          <span class="meps-legend-line gcp"></span> Global Cooling Prize (8.75)
+          <span class="meps-legend-line intermediate"></span> U4E High Eff. Label (CSPF 6.5)
+        </span>
+        <span class="meps-legend-item">
+          <span class="meps-legend-line gcp"></span> Global Cooling Prize (CSPF 8.75)
         </span>
       {:else}
         <span class="meps-legend-item">
-          <span class="meps-legend-line ref"></span> U4E Baseline (EEI 102)
+          <span class="meps-legend-line ref"></span> U4E Min. MEPS – R≥1.0 (EEI 102)
         </span>
         <span class="meps-legend-item">
-          <span class="meps-legend-line gcp"></span> U4E High Efficiency (EEI 50)
+          <span class="meps-legend-line intermediate"></span> U4E Intermediate – R≥1.25 (EEI 81)
+        </span>
+        <span class="meps-legend-item">
+          <span class="meps-legend-line gcp"></span> U4E High Eff. – R≥1.50 (EEI 68)
         </span>
       {/if}
     </div>
@@ -550,7 +582,7 @@
     <a href="https://www.iea.org/policies" target="_blank" rel="noopener noreferrer">IEA Policies DB</a>;
     <a href="https://eta-publications.lbl.gov" target="_blank" rel="noopener noreferrer">LBNL</a>
     &middot;
-    <a href="/methodology" style="font-weight: 700;">Methodology</a>
+    <a href="/methodology/meps-stringency" style="font-weight: 700;">Methodology</a>
   </div>
 </div>
 
@@ -564,7 +596,7 @@
   }
 
   .chart-title {
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: #333;
     display: flex;
@@ -674,7 +706,7 @@
     display: flex;
     align-items: center;
     gap: 0.3rem;
-    font-size: 0.68rem;
+    font-size: 0.78rem;
     color: #888;
   }
 
@@ -694,6 +726,10 @@
 
   .meps-legend-line.ref {
     border-top: 2px dashed #94a3b8;
+  }
+
+  .meps-legend-line.intermediate {
+    border-top: 2px dashed #F59E0B;
   }
 
   .meps-legend-line.gcp {

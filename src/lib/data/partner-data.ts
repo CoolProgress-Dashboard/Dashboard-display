@@ -230,6 +230,49 @@ export const partners: Partner[] = [
     ],
   },
   {
+    id: 'lbnl',
+    name: 'LBNL',
+    fullName: 'Lawrence Berkeley National Laboratory — Energy Technologies Area',
+    tagline: 'Science-based technical foundations for global appliance efficiency policy',
+    website: 'https://eta.lbl.gov',
+    coolingUrl: 'https://cooling.lbl.gov',
+    logoPath: '/images/lbnl-logo.svg',
+    logoPlaceholder: 'lbnl',
+    description:
+      'The U.S. Department of Energy\'s Lawrence Berkeley National Laboratory (LBNL) Energy Technologies Area conducts the technical analyses that underpin appliance efficiency standards in the U.S. and globally. Its Appliance & Equipment Standards group has supported MEPS development in 50+ countries and co-developed key tools used by CLASP and UNEP U4E.',
+    keyContribution:
+      'Co-developed the BUENAS model and U4E Model Regulation Guidelines for ACs and refrigerators. Estimated 389 TWh/yr electricity savings and 219 Mt CO₂/yr reductions achievable through MEPS in 12 major economies.',
+    keyReport: 'Global Cooling Efficiency Program',
+    keyReportUrl: 'https://cooling.lbl.gov',
+    category: 'research',
+    resources: [
+      {
+        label: 'Global Cooling Efficiency Program',
+        url: 'https://cooling.lbl.gov',
+        icon: 'fa-temperature-low',
+        description: 'Research on highly efficient, low-GWP cooling technologies',
+      },
+      {
+        label: 'ETA Publications Database',
+        url: 'https://eta-publications.lbl.gov',
+        icon: 'fa-book-open',
+        description: 'Peer-reviewed research on appliance efficiency standards',
+      },
+      {
+        label: 'BUENAS Methodology',
+        url: 'https://www.clasp.ngo/wp-content/uploads/2021/01/BottomUp-Energy-Analysis-System-BUENAS-Methodology-and-Results.pdf',
+        icon: 'fa-chart-bar',
+        description: 'Bottom-Up Energy Analysis System — global MEPS savings model',
+      },
+      {
+        label: 'International Energy Studies',
+        url: 'https://ies.lbl.gov/research-area/appliance-energy-efficiency',
+        icon: 'fa-earth-americas',
+        description: 'Appliance efficiency research for international policy',
+      },
+    ],
+  },
+  {
     id: 'heat',
     name: 'HEAT GmbH',
     fullName: 'HEAT GmbH - Climate Intelligence & Green Cooling',

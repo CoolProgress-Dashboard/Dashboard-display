@@ -1249,11 +1249,6 @@
       </div>
     </div>
 
-    <!-- DATA: MEPS Stringency Chart -->
-    <div class="meps-level-wrapper">
-      <MepsLevelChart />
-    </div>
-
     <!-- ═══ MAP INTRO ═══ -->
     <div class="chapter-card" class:revealed>
       <span class="meps-eyebrow">Country & Regional View</span>
@@ -1355,6 +1350,29 @@
         </div>
       </div>
     {/if}
+
+    <!-- DATA: MEPS Stringency Chart -->
+    <div class="meps-level-wrapper">
+      <MepsLevelChart />
+    </div>
+
+    <!-- U4E Country Savings Assessments CTA -->
+    <a href="https://united4efficiency.org/countries/country-assessments/" target="_blank" rel="noopener noreferrer" class="u4e-cta-box">
+      <div class="u4e-cta-left">
+        <img src="/images/unep.png" alt="U4E – United for Efficiency" class="u4e-logo" />
+      </div>
+      <div class="u4e-cta-content">
+        <div class="u4e-cta-eyebrow">Go further with U4E</div>
+        <div class="u4e-cta-title">Country Savings Assessments</div>
+        <p class="u4e-cta-desc">
+          U4E has quantified the energy, emissions, and financial savings that <strong>156 developing countries</strong>
+          could achieve by implementing MEPS — including for room air conditioners and refrigerators.
+          Each country report covers projected reductions in electricity use, CO₂ emissions, and consumer bills.
+          Regional assessments are also available for ASEAN, East Africa, SADC, West Africa, and more.
+        </p>
+      </div>
+      <div class="u4e-cta-arrow"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
+    </a>
 
     <!-- ═══ Ch03 THE WAY FORWARD ═══ -->
     <div class="chapter-card" class:revealed>
@@ -1875,6 +1893,73 @@
 
   .meps-level-wrapper {
     padding: 0 64px;
+  }
+
+  /* U4E Country Savings Assessments CTA */
+  .u4e-cta-box {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin: 1rem 64px 0;
+    padding: 1.1rem 1.4rem;
+    background: linear-gradient(135deg, #f0fdf9, #e8f5ff);
+    border: 1.5px solid #99e6d4;
+    border-left: 4px solid #0d9488;
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.2s, transform 0.15s;
+  }
+
+  .u4e-cta-box:hover {
+    box-shadow: 0 6px 18px rgba(13, 148, 136, 0.12);
+    transform: translateY(-1px);
+  }
+
+  .u4e-cta-left {
+    flex-shrink: 0;
+    width: 56px;
+  }
+
+  .u4e-logo {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .u4e-cta-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .u4e-cta-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #0d9488;
+    margin-bottom: 0.15rem;
+  }
+
+  .u4e-cta-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.3rem;
+  }
+
+  .u4e-cta-desc {
+    font-size: 0.87rem;
+    color: #475569;
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  .u4e-cta-arrow {
+    flex-shrink: 0;
+    font-size: 0.9rem;
+    color: #0d9488;
+    opacity: 0.7;
   }
 
 
