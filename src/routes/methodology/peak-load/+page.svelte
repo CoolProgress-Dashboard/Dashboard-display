@@ -6,13 +6,14 @@
 <svelte:head>
   <title>Methodology: Cooling Share of Peak Load | CoolProgress</title>
   <meta name="description" content="Methodology and data sources for the 'Cooling as a Share of Peak Electricity Load' chart in the CoolProgress Product Efficiency (MEPS) pillar." />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </svelte:head>
 
 <div class="methodology-page">
 
   <header class="meth-header">
     <div class="nav-row">
-      <a href="/dashboard/meps" class="back-link pillar-link"><i class="fa-solid fa-arrow-left"></i> Back to Product Efficiency</a>
+      <a href="/dashboard/meps" class="back-link pillar-link" on:click|preventDefault={() => { if (window.history.length > 1) { window.history.back(); } else { window.location.href = '/dashboard/meps'; } }}><i class="fa-solid fa-arrow-left"></i> Back to Product Efficiency</a>
     </div>
     <div class="meth-eyebrow">Product Efficiency Pillar · Grid Impact</div>
     <h1>Cooling as a Share of Peak Electricity Load</h1>

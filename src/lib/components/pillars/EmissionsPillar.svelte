@@ -1141,6 +1141,8 @@
           const creditGci   = document.getElementById('emissions-source-credit-gci');
           if (creditClasp) creditClasp.style.display = emissionsDataSource === 'clasp' ? 'inline-flex' : 'none';
           if (creditGci)   creditGci.style.display   = emissionsDataSource === 'subcool' ? 'inline-flex' : 'none';
+          const claspNote = document.getElementById('emissions-clasp-note');
+          if (claspNote) claspNote.style.display = emissionsDataSource === 'clasp' ? '' : 'none';
           updateEmissionsView(echartsLib);
         });
       });
@@ -1357,6 +1359,10 @@
       </div>
       <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.25rem; padding: 0;">
         Cooling sector emissions in Mt CO2. Click a country for detailed breakdown.
+      </div>
+      <div id="emissions-clasp-note" style="font-size: 0.72rem; color: #64748b; margin-bottom: 0.5rem; padding: 0.35rem 0.5rem; background: rgba(3,105,161,0.04); border-left: 2px solid #0369a1; border-radius: 0 4px 4px 0;">
+        <i class="fa-solid fa-circle-info" style="color: #0369a1; margin-right: 0.3rem; font-size: 0.65rem;"></i>
+        <strong>CLASP view:</strong> Only indirect emissions from energy consumption are shown. Switch to GCI for direct + indirect emissions.
       </div>
       <div style="position: relative;">
         <div id="emissions-map-container" class="map-surface"></div>

@@ -73,8 +73,8 @@
     },
     {
       icon: 'fa-chart-area',
-      title: '2013\u20132050 Timeline',
-      description: 'Unified historical and projected view of population at risk, stacked by income group',
+      title: '2015\u20132030 Timeline',
+      description: 'Historical and projected view of population at risk, stacked by risk level from 2015\u20132030',
       color: '#D4A843'
     },
     {
@@ -721,7 +721,7 @@
           <p style="font-size: 0.85rem; color: #6B4423; line-height: 1.6; margin: 0;">
             ${trendDescription} ${breakdownDescription}
             <span style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #64748b;">
-              <em>Data: SEforALL Chilling Prospects (historical) &bull; HEAT projection (2025-2050)</em>
+              <em>Data: SEforALL Chilling Prospects (historical)</em>
             </span>
           </p>
         </div>
@@ -771,6 +771,7 @@
               symbol: 'none',
               lineStyle: { width: 0 },
               areaStyle: { opacity: 0.8, color: cat.color },
+              itemStyle: { color: cat.color },
               emphasis: { focus: 'series' },
               data: cat.data,
               ...(idx === 0 ? {
@@ -1176,15 +1177,15 @@
           <strong class="access-resource-title">Chilling Prospects (SEforALL)</strong>
           <span class="access-resource-desc">The lead resource for tracking the 1.2 billion people who lack access to cooling. Vital for understanding the human cost of the cooling gap.</span>
         </a>
-        <a href="https://www.unep.org/resources/report/roadmap-extreme-heat-protection" target="_blank" rel="noopener noreferrer" class="access-resource-card">
+        <a href="https://aseanenergy.org/publications/roadmap-for-extreme-heat-protection-through-passive-cooling-in-asean-region/" target="_blank" rel="noopener noreferrer" class="access-resource-card">
           <strong class="access-resource-title">UNEP/ASEAN: Roadmap for Extreme Heat Protection</strong>
           <span class="access-resource-desc">Technical roadmap for a "Passive First" design philosophy demonstrating 20–50% cooling energy savings from natural ventilation and reflective surfaces.</span>
         </a>
-        <a href="https://www.coolcoalition.org/beating-the-heat/" target="_blank" rel="noopener noreferrer" class="access-resource-card">
+        <a href="https://www.unep.org/resources/report/beating-heat-sustainable-cooling-handbook-cities" target="_blank" rel="noopener noreferrer" class="access-resource-card">
           <strong class="access-resource-title">Cool Coalition: Beating the Heat Handbook</strong>
           <span class="access-resource-desc">Encyclopedia of 80 case studies covering cool roofs, green corridors, and shading strategies that reduce the urban heat island effect.</span>
         </a>
-        <a href="https://www.giz.de/en/worldwide/1504.html" target="_blank" rel="noopener noreferrer" class="access-resource-card">
+        <a href="https://www.green-cooling-initiative.org/news-media/publications/publication-detail/2025/08/27/climate-and-environmentally-friendly-solar-cooling-technology-solutions" target="_blank" rel="noopener noreferrer" class="access-resource-card">
           <strong class="access-resource-title">GIZ Proklima: Solar Cooling Solutions</strong>
           <span class="access-resource-desc">Technical guideline on the intersection of solar energy and passive architectural principles for rural and off-grid contexts.</span>
         </a>
@@ -1192,7 +1193,7 @@
           <strong class="access-resource-title">IEA DHC: Thermal Networks Case Studies 2025/2026</strong>
           <span class="access-resource-desc">Factsheets on District Heating and Cooling showing how centralised networks replace thousands of individual AC units and reduce peak loads.</span>
         </a>
-        <a href="https://www.unep.org/resources/report/sustainable-district-cooling" target="_blank" rel="noopener noreferrer" class="access-resource-card">
+        <a href="https://www.unep.org/resources/report/district-energy-cities-unlocking-potential-energy-efficiency-and-renewable-energy" target="_blank" rel="noopener noreferrer" class="access-resource-card">
           <strong class="access-resource-title">UNEP: Sustainable District Cooling Guidelines</strong>
           <span class="access-resource-desc">Strategic guide for city planners on financing, designing, and regulating district cooling systems as part of a low-carbon urban transition.</span>
         </a>

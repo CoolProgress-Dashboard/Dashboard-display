@@ -5,13 +5,14 @@
 <svelte:head>
   <title>Methodology: MEPS Stringency Over Time | CoolProgress</title>
   <meta name="description" content="Methodology and data sources for the MEPS Stringency Over Time chart: CSPF and EEI harmonization, U4E reference levels, and country coverage." />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </svelte:head>
 
 <div class="methodology-page">
 
   <header class="meth-header">
     <div class="nav-row">
-      <a href="/dashboard/meps" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Product Efficiency</a>
+      <a href="/dashboard/meps" class="back-link" on:click|preventDefault={() => { if (window.history.length > 1) { window.history.back(); } else { window.location.href = '/dashboard/meps'; } }}><i class="fa-solid fa-arrow-left"></i> Back to Product Efficiency</a>
     </div>
     <div class="meth-eyebrow">Product Efficiency Pillar · MEPS Stringency</div>
     <h1>MEPS Stringency Over Time</h1>
@@ -20,8 +21,8 @@
       standards for cooling appliances have evolved across countries, harmonized to a common metric
       for cross-country comparison.
     </p>
-    <div class="meth-badge">
-      <i class="fa-solid fa-shield-check"></i> Data vintage: CLASP CPRC 2025 · Last reviewed: April 2026
+    <div class="meth-badge wip">
+      <i class="fa-solid fa-triangle-exclamation"></i> Work in progress — conversion methodology under review
     </div>
   </header>
 
@@ -81,35 +82,13 @@
       national MEPS values are converted to an approximate <strong>ISO 16358 CSPF equivalent (W/W)</strong>.
     </p>
 
-    <div class="formula-card">
-      <div class="formula">CSPF<sub>equiv</sub> = National Metric × Conversion Factor</div>
-      <p class="formula-note">
-        Conversions are approximate — test condition and climate-zone differences are not fully
-        eliminable. See limitations section.
-      </p>
-    </div>
-
-    <table class="data-table">
-      <thead>
-        <tr><th>National Metric</th><th>Countries</th><th>Conversion to CSPF</th><th>Basis</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>CSPF (ISO 16358)</td><td>China, Singapore, ASEAN, SADC</td><td>× 1.0 (direct)</td><td>Same standard</td></tr>
-        <tr><td>APF (JIS C 9612)</td><td>Japan</td><td>× 0.90</td><td>CLASP conversion</td></tr>
-        <tr><td>ISEER (BEE)</td><td>India</td><td>× 0.92</td><td>CLASP conversion</td></tr>
-        <tr><td>EU SEER (EN 14825)</td><td>EU-27</td><td>× 0.95</td><td>CLASP conversion</td></tr>
-        <tr><td>SEER2 (DOE)</td><td>USA (South)</td><td>× 0.293 × 1.1</td><td>BTU/W·h → W/W, climate adj.</td></tr>
-        <tr><td>EER (fixed point)</td><td>Saudi Arabia, Ghana</td><td>× 1.062</td><td>CLASP conversion (fixed)</td></tr>
-        <tr><td>AEER</td><td>Australia, New Zealand</td><td>× 1.06</td><td>CLASP conversion</td></tr>
-      </tbody>
-    </table>
-
-    <div class="callout-info">
-      <i class="fa-solid fa-circle-info"></i>
+    <div class="callout-wip">
+      <i class="fa-solid fa-triangle-exclamation"></i>
       <div>
-        <strong>Capacity class:</strong> All country values shown are for the dominant residential
-        split AC range (approximately 2.5–5 kW cooling capacity). Some countries define MEPS
-        differently by capacity class — the value shown reflects the most common residential tier.
+        <strong>Work in progress:</strong> The conversion factors used to harmonize national AC metrics
+        (APF, ISEER, EU SEER, SEER2, EER, AEER) to ISO 16358 CSPF are currently under review.
+        Verified conversion factors will be published here once the harmonization methodology has been
+        finalised and validated with data partners.
       </div>
     </div>
   </section>
@@ -123,26 +102,15 @@
       To compare, all are normalized to a common <strong>Energy Efficiency Index (EEI)</strong>.
     </p>
 
-    <div class="formula-card">
-      <div class="formula">EEI = (MEPS max AEC / Reference AEC) × 100</div>
-      <p class="formula-note">
-        Reference AEC ≈ 274 kWh/yr for a 400L frost-free refrigerator-freezer at 24°C ambient
-        (IEC 62552-3:2015, 300L fresh + 100L frozen compartment).
-        <strong>Lower EEI = more stringent MEPS.</strong>
-      </p>
+    <div class="callout-wip">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <div>
+        <strong>Work in progress:</strong> The conversion factors used to harmonize national refrigerator
+        efficiency metrics (kWh/yr, TEEI, kWh/month) to a common EEI are currently under review.
+        Verified conversion factors will be published here once the harmonization methodology has been
+        finalised and validated with data partners.
+      </div>
     </div>
-
-    <table class="data-table">
-      <thead>
-        <tr><th>National Metric</th><th>Countries</th><th>Conversion to EEI</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>EEI (direct)</td><td>EU, SADC, EAC, Australia</td><td>× 1.0 (direct)</td></tr>
-        <tr><td>kWh/yr (400L ref.)</td><td>USA, India, Japan, South Korea</td><td>÷ 2.74</td></tr>
-        <tr><td>TEEI (%)</td><td>China</td><td>≈ TEEI × 1.0 (approximately equivalent)</td></tr>
-        <tr><td>kWh/month</td><td>Brazil</td><td>× 12 ÷ 2.74</td></tr>
-      </tbody>
-    </table>
   </section>
 
   <!-- Section 4: U4E Reference Lines -->
@@ -291,19 +259,6 @@
 
     <div class="source-block">
       <div class="source-header">
-        <img src="/images/clasp-logo.png" alt="CLASP" class="source-logo" />
-        <div>
-          <h3>CLASP Policy Resource Center (CPRC)</h3>
-          <a href="https://cprc-clasp.ngo/" target="_blank" rel="noopener noreferrer">
-            cprc-clasp.ngo <i class="fa-solid fa-arrow-up-right-from-square"></i>
-          </a>
-        </div>
-      </div>
-      <p>Primary source for national MEPS values, effective dates, and standard version names across all countries and appliance types. Data updated annually.</p>
-    </div>
-
-    <div class="source-block">
-      <div class="source-header">
         <div>
           <h3>UNEP United for Efficiency (U4E)</h3>
           <a href="https://united4efficiency.org" target="_blank" rel="noopener noreferrer">
@@ -311,32 +266,16 @@
           </a>
         </div>
       </div>
-      <p>Model Regulation Guidelines for Room Air Conditioners and Refrigerating Appliances. Source for all three U4E reference tier values (minimum MEPS, intermediate, high efficiency).</p>
+      <p>Model Regulation Guidelines for Room Air Conditioners and Refrigerating Appliances. Source for U4E reference tier values (minimum MEPS, intermediate, high efficiency).</p>
     </div>
 
-    <div class="source-block">
-      <div class="source-header">
-        <img src="/images/iea-logo.png" alt="IEA" class="source-logo" />
-        <div>
-          <h3>IEA Policies and Measures Database</h3>
-          <a href="https://www.iea.org/policies" target="_blank" rel="noopener noreferrer">
-            iea.org/policies <i class="fa-solid fa-arrow-up-right-from-square"></i>
-          </a>
-        </div>
+    <div class="callout-wip">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <div>
+        <strong>Additional sources pending:</strong> The full list of data sources for national MEPS values
+        and metric conversion factors will be published once the harmonization methodology has been
+        finalised and validated.
       </div>
-      <p>Used for cross-validation of adoption dates and standard versions for key markets.</p>
-    </div>
-
-    <div class="source-block">
-      <div class="source-header">
-        <div>
-          <h3>Lawrence Berkeley National Laboratory (LBNL)</h3>
-          <a href="https://eta-publications.lbl.gov" target="_blank" rel="noopener noreferrer">
-            eta-publications.lbl.gov <i class="fa-solid fa-arrow-up-right-from-square"></i>
-          </a>
-        </div>
-      </div>
-      <p>Metric conversion factors and efficiency harmonization methodology. Cross-country stringency comparison approach developed in collaboration with CLASP and LBNL.</p>
     </div>
   </section>
 
@@ -379,7 +318,7 @@
     <p>
       <strong>CoolProgress</strong> is developed by
       <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH</a>
-      in partnership with CLASP, IEA, UNEP U4E, and LBNL.
+      in partnership with IEA, UNEP U4E, and GIZ Proklima.
     </p>
     <p class="meth-version">Chart methodology v1.0 · April 2026</p>
   </footer>
@@ -650,6 +589,32 @@
     color: #0ea5e9;
     flex-shrink: 0;
     margin-top: 0.1rem;
+  }
+
+  .callout-wip {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-left: 4px solid #f59e0b;
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    margin: 0.75rem 0;
+    font-size: 0.83rem;
+    color: #78350f;
+    line-height: 1.5;
+  }
+
+  .callout-wip i {
+    color: #f59e0b;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .meth-badge.wip {
+    background: rgba(245, 158, 11, 0.12);
+    color: #92400e;
   }
 
   .callout-info div { margin: 0; }

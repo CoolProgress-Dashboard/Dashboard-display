@@ -5,12 +5,13 @@
 <svelte:head>
   <title>Appliance Growth Chart — Data Methodology | CoolProgress</title>
   <meta name="description" content="Data sources and methodology for the Global Appliance Growth Chart: how CLASP Mepsy and GCI/HEAT data are combined to show stock, energy, and emissions." />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </svelte:head>
 
 <div class="methodology-page">
   <header class="meth-header">
     <div class="nav-row">
-      <a href="/dashboard/emissions" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Emissions Pillar</a>
+      <a href="/dashboard/emissions" class="back-link" on:click|preventDefault={() => { if (window.history.length > 1) { window.history.back(); } else { window.location.href = '/dashboard/emissions'; } }}><i class="fa-solid fa-arrow-left"></i> Back to Emissions Pillar</a>
     </div>
     <h1>Appliance Growth Chart — Data Methodology</h1>
     <p class="meth-subtitle">

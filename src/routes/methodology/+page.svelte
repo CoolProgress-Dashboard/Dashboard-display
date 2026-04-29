@@ -5,9 +5,15 @@
 <svelte:head>
   <title>Methodology | CoolProgress Dashboard</title>
   <meta name="description" content="Chart methodology documentation for the CoolProgress Dashboard — MEPS Stringency, Appliance Growth, and Peak Electricity Load." />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </svelte:head>
 
 <div class="methodology-index">
+  <div class="nav-row">
+    <a href="/dashboard/overview" class="back-link" on:click|preventDefault={() => { if (window.history.length > 1) { window.history.back(); } else { window.location.href = '/dashboard/overview'; } }}>
+      <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
   <header class="idx-header">
     <h1>Chart Methodology</h1>
     <p class="idx-subtitle">
@@ -72,6 +78,25 @@
     padding: 3rem 1.5rem 4rem;
     font-family: inherit;
     color: #1e293b;
+  }
+
+  .nav-row {
+    margin-bottom: 1.5rem;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #3D6B6B;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover {
+    color: #0369a1;
   }
 
   .idx-header {
