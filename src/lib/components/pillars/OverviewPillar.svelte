@@ -34,22 +34,25 @@
         <div class="flow-hero-inner">
           <span class="flow-eyebrow">The Cooling Crisis</span>
           <h1 class="flow-hero-headline">Cooling is one of the most significant yet overlooked drivers of climate change.</h1>
-          <p class="flow-hero-body">It currently accounts for approximately 7% of global greenhouse gas emissions — a share projected to reach around 10% under business-as-usual by 2050 as heatwaves become more frequent and populations grow.</p>
+          <p class="flow-hero-body">It currently accounts for approximately 7% of global greenhouse gas emissions. Under business-as-usual, cooling-related emissions reach <strong>7.2 billion tonnes CO₂e by 2050</strong> as heatwaves become more frequent and populations grow.</p>
           <p class="flow-hero-body">This trajectory is fueled by a massive surge in demand: an additional 3 billion room air conditioners are expected to come online globally by mid-century. This creates a double-edged impact where indirect emissions from high energy consumption and direct emissions from high GWP refrigerant leaks fuel a vicious cycle of increased emissions and further warming that leaves 1.2 billion people vulnerable to life-threatening heat.</p>
           <div class="flow-stats">
             <div class="flow-stat">
               <span class="flow-stat-num">~7%</span>
-              <span class="flow-stat-label">of global greenhouse gas emissions from cooling today — projected to reach ~10% under BAU by 2050</span>
+              <span class="flow-stat-label">of global GHG emissions from cooling today — rising to 7.2 Gt CO₂e under BAU by 2050</span>
+              <span class="flow-stat-source"><a href="https://www.unep.org/resources/global-cooling-watch-2025" target="_blank" rel="noopener noreferrer">UNEP Global Cooling Watch 2025</a></span>
             </div>
             <div class="flow-stat-rule"></div>
             <div class="flow-stat">
               <span class="flow-stat-num">3 billion</span>
               <span class="flow-stat-label">additional room air conditioners expected globally by mid-century</span>
+              <span class="flow-stat-source"><a href="https://www.cleancoolingcollaborative.org/the-challenge/" target="_blank" rel="noopener noreferrer">Clean Cooling Collaborative</a> / <a href="https://www.iea.org/reports/the-future-of-cooling" target="_blank" rel="noopener noreferrer">IEA Future of Cooling</a></span>
             </div>
             <div class="flow-stat-rule"></div>
             <div class="flow-stat">
               <span class="flow-stat-num">1.2 billion</span>
               <span class="flow-stat-label">people vulnerable to life-threatening heat without adequate cooling</span>
+              <span class="flow-stat-source"><a href="https://www.cleancoolingcollaborative.org/the-challenge/" target="_blank" rel="noopener noreferrer">Clean Cooling Collaborative</a> · <a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer">SEforAll Chilling Prospects 2025</a></span>
             </div>
           </div>
         </div>
@@ -90,7 +93,8 @@
           <div class="flow-opp-right">
             <div class="flow-opp-stat">
               <span class="flow-opp-num">100 GT</span>
-              <span class="flow-opp-numlab">emissions prevented by 2050</span>
+              <span class="flow-opp-numlab">CO₂e emissions prevented by 2050</span>
+              <a class="flow-opp-source" href="https://rmi.org/wp-content/uploads/2018/11/Global_Cooling_Challenge_Report_2018.pdf" target="_blank" rel="noopener noreferrer">Rocky Mountain Institute — Solving the Global Cooling Challenge (2018)</a>
             </div>
             <div class="flow-opp-benefits">
               <div class="flow-opp-benefit"><i class="fa-solid fa-bolt-lightning"></i><span>Grid stress relief &amp; fewer power outages</span></div>
@@ -376,6 +380,23 @@
     color: #334155;
     line-height: 1.55;
   }
+  .flow-stat-source {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: #64748b;
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+  .flow-stat-source a {
+    color: #0369a1;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(3,105,161,0.25);
+    transition: border-color 0.15s;
+  }
+  .flow-stat-source a:hover {
+    border-color: #0369a1;
+  }
 
   /* ─── 2 · EMISSION SOURCES ──────────────── */
   .flow-section {
@@ -475,6 +496,21 @@
     font-weight: 600;
     color: #334155;
     margin-top: 4px;
+  }
+  .flow-opp-source {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: #64748b;
+    margin-top: 8px;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(100,116,139,0.3);
+    line-height: 1.4;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .flow-opp-source:hover {
+    color: #0369a1;
+    border-color: #0369a1;
   }
   .flow-opp-benefits { display: flex; flex-direction: column; gap: 18px; }
   .flow-opp-benefit {

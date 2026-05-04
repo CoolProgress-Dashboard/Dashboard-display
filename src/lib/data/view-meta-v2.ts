@@ -31,11 +31,11 @@ export type ViewMetaMap = Record<string, ViewMetaEntry>;
 
 export const viewMetaV2: ViewMetaMap = {
 	overview: {
-		headline: 'Cooling drives ~7% of global emissions today \u2014 rising to 10% by 2050 without action. Or we cut 73%.',
+		headline: 'Cooling drives ~7% of global emissions today \u2014 rising to 7.2 billion tonnes CO\u2082e by 2050 without action. Or we cut 73%.',
 		subhead: 'The CoolProgress Dashboard tracks whether the world is on the sustainable cooling pathway.',
 		insight:
 			'Today, cooling produces over 2,400 Mt CO\u2082e annually from AC, refrigerators, and fans combined. ' +
-			'Under business-as-usual, this grows to over 6,000 Mt by 2050 \u2014 roughly 10% of global emissions. ' +
+			'Under business-as-usual, this reaches 7.2 billion tonnes CO\u2082e by 2050 (UNEP Global Cooling Watch 2025). ' +
 			'But with efficiency standards, the Kigali refrigerant phase-down, and grid decarbonization working together, ' +
 			'emissions can peak before 2035 and decline to 1,554 Mt by 2050 \u2014 a 73% reduction from BAU.',
 		entryStat: '2,401 Mt CO\u2082e today -- 73% reduction achievable by 2050',

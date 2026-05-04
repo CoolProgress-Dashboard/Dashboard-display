@@ -13,7 +13,7 @@ export type ViewMeta = {
 
 export const VIEW_META: Record<string, ViewMeta> = {
   overview: {
-    headline: 'Cooling drives ~7% of global emissions today — rising to 10% by 2050 without action. Or we cut 73%.',
+    headline: 'Cooling drives ~7% of global emissions today — rising to 7.2 billion tonnes CO₂e by 2050 without action. Or we cut 73%.',
     subhead: 'The CoolProgress Dashboard tracks whether the world is on the sustainable cooling pathway.',
     insight:
       'Ten air conditioners are sold every second. Most are the least efficient models available. This creates a vicious cycle: rising heat drives demand, inefficient units strain power grids, grid stress increases emissions, and emissions drive more heat. By 2050, cooling could consume more electricity than China uses today \u2014 or we cut 73% through efficiency, Kigali, and clean grids.',
