@@ -142,7 +142,7 @@
     const appliance = selectedAppliance;
 
     if (appliance === 'AC') {
-      return buildTimelineChart('AC', 'CSPF Equivalent (W/W)', true);
+      return buildTimelineChart('AC', 'CSPF Equivalent (Wh/Wh)', true);
     }
 
     if (appliance === 'Refrigerator') {
@@ -434,7 +434,7 @@
     </div>
     <span class="chart-subtitle">
       {#if selectedAppliance === 'AC'}
-        Harmonized to ISO CSPF (W/W) for cross-country comparison
+        Harmonized to ISO CSPF (Wh/Wh) for cross-country comparison
       {:else if selectedAppliance === 'Refrigerator'}
         Harmonized to EEI (lower = more stringent) for cross-country comparison
       {:else}
@@ -531,7 +531,7 @@
         <h4><i class="fa-solid fa-flask"></i> CSPF Harmonization Note</h4>
         <p>
           Different countries use different seasonal performance metrics for air conditioners.
-          All national MEPS values are converted to an approximate ISO CSPF equivalent (W/W).
+          All national MEPS values are converted to an approximate ISO CSPF equivalent (Wh/Wh).
         </p>
         <div class="meps-conversion-table">
           <div class="meps-conv-row header"><span>National Metric</span><span>Countries</span><span>Conversion</span></div>

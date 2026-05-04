@@ -1009,7 +1009,7 @@
         series[0].markLine = {
           silent: true,
           lineStyle: { color: '#94a3b8', type: 'dashed', width: 1.5 },
-          label: { show: true, position: 'insideEndTop', fontSize: 10, color: '#64748b', formatter: '← Projected' },
+          label: { show: true, position: 'insideEndTop', fontSize: 10, color: '#64748b', formatter: '← Projected BAU 2050' },
           data: [{ xAxis: '2025' }]
         };
       }
@@ -1320,7 +1320,12 @@
   <div class="pillar-stack">
     <!-- ═══ Ch01 THE CHALLENGE ═══ -->
     <div class="chapter-card" class:revealed style="border-top: none;">
-      <span class="ep-eyebrow ep-eyebrow-xl">The Challenge</span>
+      <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+        <span class="ep-eyebrow ep-eyebrow-xl" style="margin-bottom:0;">The Challenge</span>
+        <span class="ep-scope-badge"><i class="fa-solid fa-wind"></i> Residential AC</span>
+        <span class="ep-scope-badge"><i class="fa-solid fa-snowflake"></i> Domestic Refrigerators</span>
+        <span class="ep-scope-badge"><i class="fa-solid fa-fan"></i> Ceiling Fans</span>
+      </div>
       <h2 class="ep-section-title">Cooling demand is rising and so are the emissions that power it.</h2>
       <p class="ep-body">On a fossil-reliant grid, every air conditioner adds CO₂ to the atmosphere, while refrigerant leaks release gases hundreds to thousands of times more potent than carbon. This creates a vicious cycle: rising temperatures drive cooling demand, which accelerates emissions, further heating the planet. Without intervention, cooling-related emissions are on track to double by 2040 and potentially triple by 2050.</p>
 
@@ -1644,7 +1649,7 @@
     <div class="ep-chart-wrapper">
       <span class="ep-eyebrow">Explore Global Pathways</span>
       <h2 class="ep-section-title">Emissions Trajectory — Scenario Comparison</h2>
-      <p class="ep-body">Compare how different policy pathways bend the emissions curve from 2020 to 2050. Business as Usual (BAU) projects a tripling of cooling emissions; the DECARB scenarios show the impact of combining energy efficiency standards (MEPS), Kigali refrigerant phase-down, and grid decarbonisation.</p>
+      <p class="ep-body">Compare how different policy pathways bend the emissions curve from 2020 to 2050. Business as Usual (BAU) projects significant growth in cooling emissions; the DECARB scenarios show the impact of combining energy efficiency standards (MEPS), Kigali refrigerant phase-down, and grid decarbonisation.</p>
       <div style="position: relative;">
         <div id="chart-emissions-timeline-static" class="chart-surface" style="width:100%;height:340px;min-height:340px;"></div>
         {#if !mapDataLoaded}
@@ -1653,6 +1658,10 @@
             <span>Loading data…</span>
           </div>
         {/if}
+      </div>
+      <div class="ep-scope-note">
+        <i class="fa-solid fa-circle-info"></i>
+        Residential AC, domestic refrigerators and ceiling fans only. Projected values show BAU 2050, not a mitigation or pledge-aligned pathway. Commercial refrigeration and chillers are excluded.
       </div>
       <div class="ep-chart-source" style="display:flex;justify-content:flex-end;align-items:center;gap:0.5rem;flex-wrap:wrap;font-size:0.78rem;margin-top:1rem;">
         <span>Data from the <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">MEPSY tool</a></span>
@@ -1775,6 +1784,48 @@
     text-align: right;
     margin-top: 0.5rem;
     font-style: italic;
+  }
+
+  .ep-scope-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    padding: 0.2rem 0.55rem;
+    white-space: nowrap;
+  }
+
+  .ep-scope-badge i {
+    font-size: 0.6rem;
+    color: #64748b;
+  }
+
+  .ep-scope-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    margin-top: 0.6rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(71, 85, 105, 0.06);
+    border-left: 3px solid #94a3b8;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: #475569;
+    line-height: 1.5;
+  }
+
+  .ep-scope-note i {
+    font-size: 0.7rem;
+    color: #64748b;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
   }
 
   .ep-chart-source a {

@@ -13,7 +13,7 @@ export type ViewMeta = {
 
 export const VIEW_META: Record<string, ViewMeta> = {
   overview: {
-    headline: 'Cooling emissions could triple by 2050. Or we cut them 73%.',
+    headline: 'Cooling drives ~7% of global emissions today — rising to 10% by 2050 without action. Or we cut 73%.',
     subhead: 'The CoolProgress Dashboard tracks whether the world is on the sustainable cooling pathway.',
     insight:
       'Ten air conditioners are sold every second. Most are the least efficient models available. This creates a vicious cycle: rising heat drives demand, inefficient units strain power grids, grid stress increases emissions, and emissions drive more heat. By 2050, cooling could consume more electricity than China uses today \u2014 or we cut 73% through efficiency, Kigali, and clean grids.',
@@ -121,7 +121,7 @@ export const PILLAR_INFO: Record<string, { title: string; subtitle: string; body
 <p class="pillar-modal-insight"><strong>Strategic Insight:</strong> Cooling is a life-saving necessity, yet a over 1 billion-person \u2018access gap\u2019 persists, representing a critical threat to health and food security. Closing this gap is a matter of climate equity, requiring integrated solutions to protect the health and livelihoods of the most vulnerable.</p>`
   },
   policy: {
-    title: 'Pillar 5: Policy Framework',
+    title: 'Pillar 5: National Plans & Commitments',
     subtitle: 'Tracking the legal and political commitments that turn promises into law',
     body: `<p>Pillar 5 tracks the evolution of global cooling governance by monitoring the adoption and stringency of national and international commitments. It provides an inventory of the Global Cooling Pledge signatories and assesses the integration of cooling-specific targets into Nationally Determined Contributions (NDCs) and National Cooling Action Plans (NCAPs). This data identifies the transition of voluntary climate promises into binding domestic regulations and enforceable management standards.</p>`
   }

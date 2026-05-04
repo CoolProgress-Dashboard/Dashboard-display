@@ -34,12 +34,12 @@
         <div class="flow-hero-inner">
           <span class="flow-eyebrow">The Cooling Crisis</span>
           <h1 class="flow-hero-headline">Cooling is one of the most significant yet overlooked drivers of climate change.</h1>
-          <p class="flow-hero-body">It currently accounts for over 10% of global greenhouse gas emissions, a figure which could triple by 2050 as heatwaves become more frequent and populations grow.</p>
+          <p class="flow-hero-body">It currently accounts for approximately 7% of global greenhouse gas emissions — a share projected to reach around 10% under business-as-usual by 2050 as heatwaves become more frequent and populations grow.</p>
           <p class="flow-hero-body">This trajectory is fueled by a massive surge in demand: an additional 3 billion room air conditioners are expected to come online globally by mid-century. This creates a double-edged impact where indirect emissions from high energy consumption and direct emissions from high GWP refrigerant leaks fuel a vicious cycle of increased emissions and further warming that leaves 1.2 billion people vulnerable to life-threatening heat.</p>
           <div class="flow-stats">
             <div class="flow-stat">
-              <span class="flow-stat-num">10%+</span>
-              <span class="flow-stat-label">of global greenhouse gas emissions come from cooling today — a figure that could triple by 2050</span>
+              <span class="flow-stat-num">~7%</span>
+              <span class="flow-stat-label">of global greenhouse gas emissions from cooling today — projected to reach ~10% under BAU by 2050</span>
             </div>
             <div class="flow-stat-rule"></div>
             <div class="flow-stat">
@@ -84,7 +84,7 @@
         <div class="flow-opp-inner">
           <div class="flow-opp-left">
             <span class="flow-eyebrow" style="color:#0e4f7a; font-size:0.9rem">The Opportunity</span>
-            <h2 class="flow-opp-title">By achieving sustainable cooling, we can prevent up to <em>100 gigatons</em> of emissions by 2050.</h2>
+            <h2 class="flow-opp-title">By achieving sustainable cooling we can prevent up to <em>100 gigatons</em> of emissions by 2050.</h2>
             <p class="flow-opp-body">By transitioning to energy-efficient technology and climate-friendly refrigerants, we can significantly alleviate stress on the electrical grid, reducing the frequency of power outages and avoiding the costly need to build additional power generation infrastructure. Ultimately, these shifts directly improve quality of life, safeguarding public health by drastically reducing heat-related illnesses and deaths.</p>
           </div>
           <div class="flow-opp-right">
@@ -122,7 +122,7 @@
             <span class="flow-eyebrow">The CoolProgress Dashboard</span>
             <h2 class="flow-pillars-title">Track Progress Across Five Pillars</h2>
           </div>
-          <p class="flow-pillars-sub">Explore real-world data on where the world stands on emissions, efficiency, refrigerant transitions, access to cooling, and policy frameworks — and what needs to happen next.</p>
+          <p class="flow-pillars-sub">Explore real-world data on where the world stands on emissions, efficiency, refrigerant transitions, access to cooling, and plans and commitments — and what needs to happen next.</p>
         </div>
         <div class="dp-strip">
           <button class="dp-item" type="button" on:click={() => onNavigate('emissions')} style="--dp-color:#dc2626;--dp-bg:#fff5f5">
@@ -170,7 +170,7 @@
               <div class="dp-item-icon"><i class="fa-solid fa-scale-balanced"></i></div>
               <div class="dp-item-num">05</div>
             </div>
-            <h3 class="dp-item-label">Policy Framework</h3>
+            <h3 class="dp-item-label">Plans and Commitments</h3>
             <p class="dp-item-desc">Track the Global Cooling Pledge, NDC cooling mentions, Kigali Implementation Plans, and National Cooling Action Plans.</p>
             <span class="dp-item-cta">Explore <i class="fa-solid fa-arrow-right"></i></span>
           </button>

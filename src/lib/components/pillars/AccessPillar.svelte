@@ -1064,7 +1064,7 @@
       <div class="card-header" style="border-bottom: none;">
         <div class="card-title">
           <i class="fa-solid fa-earth-americas"></i>
-          Cooling Access Gap by Country
+          Cooling Access Risk by Country
         </div>
         <span class="viewing-pill">Viewing: <strong id="access-viewing">Global</strong></span>
       </div>

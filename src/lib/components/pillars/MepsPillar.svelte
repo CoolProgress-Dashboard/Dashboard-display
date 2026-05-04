@@ -1145,7 +1145,12 @@
   <div class="pillar-stack">
     <!-- ═══ Ch01 THE CHALLENGE ═══ -->
     <div class="chapter-card" class:revealed style="border-top: none;">
-      <span class="meps-eyebrow meps-eyebrow-xl">The Challenge</span>
+      <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+        <span class="meps-eyebrow meps-eyebrow-xl" style="margin-bottom:0;">The Challenge</span>
+        <span class="appliance-scope-badge"><i class="fa-solid fa-wind"></i> Room ACs</span>
+        <span class="appliance-scope-badge"><i class="fa-solid fa-snowflake"></i> Refrigerators</span>
+        <span class="appliance-scope-badge"><i class="fa-solid fa-fan"></i> Fans</span>
+      </div>
       <h2 class="meps-section-title">Most of the global market still prioritises low-cost, inefficient cooling equipment.</h2>
       <p class="meps-body-text">To shift this trajectory, two tools must work in tandem: Minimum Energy Performance Standards (MEPS) that legally set a floor on efficiency, and Energy Labels that drive consumer demand toward top-performing products.</p>
 
@@ -1982,6 +1987,27 @@
     font-size: 1.4rem;
     letter-spacing: 0.08em;
     margin-bottom: 14px;
+  }
+
+  .appliance-scope-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    padding: 0.2rem 0.55rem;
+    white-space: nowrap;
+  }
+
+  .appliance-scope-badge i {
+    font-size: 0.6rem;
+    color: #64748b;
   }
 
   .meps-country-select-prompt {

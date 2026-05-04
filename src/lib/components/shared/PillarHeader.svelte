@@ -23,7 +23,7 @@
     meps:      { color: '#D4A843', dimColor: 'rgba(212,168,67,0.10)', icon: 'fa-bolt',         label: 'Product Efficiency'     },
     kigali:    { color: '#5A8FC2', dimColor: 'rgba(90,143,194,0.10)', icon: 'fa-snowflake',    label: 'Refrigerant Transition' },
     access:    { color: '#2D7D5A', dimColor: 'rgba(45,125,90,0.10)',  icon: 'fa-people-group', label: 'Access & Vulnerability' },
-    policy:    { color: '#3D6B6B', dimColor: 'rgba(61,107,107,0.10)', icon: 'fa-landmark',     label: 'Policy Framework'       },
+    policy:    { color: '#3D6B6B', dimColor: 'rgba(61,107,107,0.10)', icon: 'fa-landmark',     label: 'Plans and Commitments'  },
   };
 
   $: cfg = PILLAR_CONFIG[pillarId] ?? { color: '#3D6B6B', dimColor: 'rgba(61,107,107,0.10)', icon: 'fa-circle', label: pillarId };

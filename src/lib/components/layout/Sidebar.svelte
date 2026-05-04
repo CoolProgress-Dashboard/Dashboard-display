@@ -37,7 +37,7 @@
     { view: 'meps',      label: '2. Product Efficiency',    icon: 'fa-bolt',           color: '#d97706' },
     { view: 'kigali',    label: '3. Refrigerant Transition',icon: 'fa-flask',          color: '#0891b2' },
     { view: 'access',    label: '4. Access & Vulnerability',icon: 'fa-people-roof',    color: '#2D7D5A' },
-    { view: 'policy',    label: '5. Policy Framework',      icon: 'fa-scale-balanced', color: '#7c3aed' },
+    { view: 'policy',    label: '5. Plans and Commitments',  icon: 'fa-scale-balanced', color: '#7c3aed' },
   ];
 </script>
 
@@ -172,7 +172,7 @@
     align-items: center;
     gap: 0.6rem;
     text-decoration: none;
-    color: inherit;
+    color: var(--nav-color, #334155);
   }
 
   /* Per-pillar active state using CSS variable set via inline style */

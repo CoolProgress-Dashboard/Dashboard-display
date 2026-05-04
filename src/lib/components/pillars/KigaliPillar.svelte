@@ -559,13 +559,11 @@
     function renderKigaliDirectEmissions() {
       const scenarioColors: Record<string, string> = {
         'BAU': SCENARIO.BAU,
-        'KIP': SCENARIO.KIP,
-        'KIP_PLUS': SCENARIO.KIP_PLUS
+        'KIP': SCENARIO.KIP
       };
       const scenarioNames: Record<string, string> = {
         'BAU': 'BAU',
-        'KIP': 'Kigali Implementation',
-        'KIP_PLUS': 'Kigali+'
+        'KIP': 'Kigali Implementation'
       };
 
       // Static fallback scenario data (UNEP/HEAT reference trajectories, global, Mt CO₂e)
@@ -573,9 +571,8 @@
       const STATIC_SCENARIO_DATA: { years: number[]; series: { name: string; data: (number | null)[]; color: string }[] } = {
         years: [2020, 2025, 2030, 2035, 2040, 2045],
         series: [
-          { name: 'BAU',                   data: [1.8, 1.8, 3.1, 4.0, 5.0, 6.1],                  color: SCENARIO.BAU },
-          { name: 'Kigali Implementation',  data: [1.8, 1.8, 2.6, 2.7, 2.4, 1.9],                  color: SCENARIO.KIP },
-          { name: 'Kigali+',               data: [null, 1.8, 1.9, 1.6, 1.2, 0.8],                  color: SCENARIO.KIP_PLUS }
+          { name: 'BAU',                   data: [1.8, 1.8, 3.1, 4.0, 5.0, 6.1], color: SCENARIO.BAU },
+          { name: 'Kigali Implementation',  data: [1.8, 1.8, 2.6, 2.7, 2.4, 1.9], color: SCENARIO.KIP }
         ]
       };
 
@@ -594,7 +591,7 @@
         seriesData = STATIC_SCENARIO_DATA.series;
       } else {
         // Aggregate global direct emissions: sum across all countries + subsectors
-        const scenarios = ['BAU', 'KIP', 'KIP_PLUS'];
+        const scenarios = ['BAU', 'KIP'];
         const allYears = Array.from(new Set(subcoolSummary.map((r: any) => r.year)))
           .sort() as number[];
         // Show 2020–2045 at every 5-year mark
@@ -607,11 +604,7 @@
           scenarios.forEach((s: string) => {
             const rows = subcoolSummary.filter((r: any) => r.year === y && r.scenario_name === s);
             const totalDirect = rows.reduce((sum: number, r: any) => sum + (r.direct_emission_mt || 0), 0);
-            if (s === 'KIP_PLUS' && (y < 2025 || rows.length === 0)) {
-              rawData[s].push(null);
-            } else {
-              rawData[s].push(totalDirect > 0 ? Math.round(totalDirect * 10) / 10 : null);
-            }
+            rawData[s].push(totalDirect > 0 ? Math.round(totalDirect * 10) / 10 : null);
           });
         });
 
@@ -684,10 +677,10 @@
           connectNulls: false,
           symbol: 'circle',
           symbolSize: 5,
-          lineStyle: { width: s.name === 'Kigali+' ? 3.5 : 2.5, color: s.color },
+          lineStyle: { width: 2.5, color: s.color },
           itemStyle: { color: s.color },
           areaStyle: s.name === 'Business as Usual' ? { color: `${s.color}15` }
-                   : s.name === 'Kigali+' ? { color: `${s.color}10` }
+                   : s.name === 'Kigali Implementation' ? { color: `${s.color}10` }
                    : undefined
         }))
       });
@@ -730,15 +723,11 @@
       // Subcool (direct emissions) data from refrigerants prop
       const subcool2030BAU = refrigerants.filter((r: any) => r.country_code === code && r.year === 2030 && r.scenario_name === 'BAU');
       const subcool2030KIP = refrigerants.filter((r: any) => r.country_code === code && r.year === 2030 && r.scenario_name === 'KIP');
-      const subcool2030KIPP = refrigerants.filter((r: any) => r.country_code === code && r.year === 2030 && r.scenario_name === 'KIP_PLUS');
-
       const bauDirect  = subcool2030BAU.reduce((s: number, r: any) => s + (r.direct_emission_mt || 0), 0);
       const kipDirect  = subcool2030KIP.reduce((s: number, r: any) => s + (r.direct_emission_mt || 0), 0);
-      const kippDirect = subcool2030KIPP.reduce((s: number, r: any) => s + (r.direct_emission_mt || 0), 0);
       const bauIndirect = subcool2030BAU.reduce((s: number, r: any) => s + (r.indirect_emission_mt || 0), 0);
 
       const kipSavings  = bauDirect > 0 ? ((bauDirect - kipDirect) / bauDirect * 100).toFixed(1) : '0';
-      const kippSavings = bauDirect > 0 ? ((bauDirect - kippDirect) / bauDirect * 100).toFixed(1) : '0';
 
       let timeline = '';
       if (groupType.includes('Non-Article')) {
@@ -773,20 +762,15 @@
         ${bauDirect > 0 ? `
         <div style="margin-bottom:0.75rem;">
           <div style="font-size:0.75rem;font-weight:700;color:#2D7D5A;margin-bottom:0.4rem;"><i class="fa-solid fa-chart-line" style="margin-right:0.3rem;"></i>Direct Emissions (2030 Projections)</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.4rem;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;">
             <div style="text-align:center;background:#fdf0ec;border-radius:6px;padding:0.4rem;">
               <div style="font-size:0.65rem;color:#C25B33;">BAU</div>
               <div style="font-size:0.85rem;font-weight:700;color:#991b1b;">${bauDirect.toFixed(2)} Mt</div>
             </div>
             <div style="text-align:center;background:#fefce8;border-radius:6px;padding:0.4rem;">
-              <div style="font-size:0.65rem;color:#D4A843;">Kigali</div>
+              <div style="font-size:0.65rem;color:#D4A843;">Kigali Implementation</div>
               <div style="font-size:0.85rem;font-weight:700;color:#92400e;">${kipDirect.toFixed(2)} Mt</div>
               <div style="font-size:0.6rem;color:#2D7D5A;">-${kipSavings}%</div>
-            </div>
-            <div style="text-align:center;background:linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%);border-radius:6px;padding:0.4rem;border:1px solid #bbf7d0;">
-              <div style="font-size:0.65rem;color:#2D7D5A;font-weight:600;">Kigali+</div>
-              <div style="font-size:0.85rem;font-weight:700;color:#2D7D5A;">${kippDirect.toFixed(2)} Mt</div>
-              <div style="font-size:0.6rem;color:#2D7D5A;font-weight:600;">-${kippSavings}%</div>
             </div>
           </div>
         </div>
@@ -921,7 +905,11 @@
          SECTION 1 — THE CHALLENGE
          ═══════════════════════════════════════════════════ -->
     <div class="k-section" class:revealed style="border-top: none;">
-      <span class="k-eyebrow k-eyebrow-xl">The Challenge</span>
+      <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+        <span class="k-eyebrow k-eyebrow-xl" style="margin-bottom:0;">The Challenge</span>
+        <span class="k-scope-badge"><i class="fa-solid fa-wind"></i> Residential AC</span>
+        <span class="k-scope-badge"><i class="fa-solid fa-snowflake"></i> Domestic Refrigerators</span>
+      </div>
       <h2 class="k-title k-title-xl">Refrigerants are leaking the climate away.</h2>
       <p class="k-body">Refrigerants are the essential "working fluids" that enable cooling by circulating through equipment to absorb and release heat — but they present a massive "invisible" climate risk through leakage during manufacturing, operation, servicing, and disposal.</p>
       <p class="k-body">While the Montreal Protocol has already eliminated ozone-depleting CFCs and is phasing out HCFCs, their common replacements — hydrofluorocarbons (HFCs) — are potent greenhouse gases with a Global Warming Potential (GWP) thousands of times higher than CO₂. Common refrigerants like R-134a (GWP 1,430) and R-410A (GWP 2,088) mean that even minor leaks contribute significantly to global heating. Left unchecked, HFC growth alone would add 0.5°C of warming by 2100. To avert this, the Kigali Amendment establishes a legally binding pathway to phase down HFC production and consumption by over 80%, driving the global transition toward climate-friendly, low-GWP alternatives.</p>
@@ -952,7 +940,7 @@
         Without action, global HFC emissions triple by 2050
       </div>
       <div class="chart-card-header" style="padding: 1rem 1rem 0;">
-        <p class="chart-subtitle">Global direct (refrigerant) emissions: BAU vs Kigali Implementation vs Kigali+</p>
+        <p class="chart-subtitle">Global direct (refrigerant) emissions: BAU vs Kigali Implementation</p>
         <span style="font-size: 0.72rem; color: #64748b; display: inline-flex; align-items: center; gap: 0.3rem;">
           <i class="fa-solid fa-database" style="color: #0369a1; font-size: 0.65rem;"></i>
           Data from Global Cooling Initiative · HEAT &amp; GIZ &nbsp;·&nbsp;
@@ -962,7 +950,7 @@
       <div class="chart-card-body">
         <div id="chart-kigali-direct-emissions" class="chart-surface" style="width: 100%; height: 380px; min-height: 380px;"></div>
       </div>
-      <p class="kigali-chart-caption">Full Kigali implementation cuts direct refrigerant emissions by over 80% from BAU levels. Combining the phase-down with higher efficiency standards (Kigali+) delivers the deepest reductions — avoiding roughly 1 GtCO₂e per year by 2050.</p>
+      <p class="kigali-chart-caption">Full Kigali implementation cuts direct refrigerant emissions by over 80% from BAU levels, avoiding roughly 1 GtCO₂e per year by 2050.</p>
     </div>
 
     <!-- ═══════════════════════════════════════════════════
@@ -1307,6 +1295,27 @@
     font-size: 1.05rem;
     letter-spacing: 0.18em;
     margin-bottom: 6px;
+  }
+
+  .k-scope-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    padding: 0.2rem 0.55rem;
+    white-space: nowrap;
+  }
+
+  .k-scope-badge i {
+    font-size: 0.6rem;
+    color: #64748b;
   }
 
   /* Section title — subsections */

@@ -14,12 +14,12 @@
       comingSoon: false
     },
     {
-      id: 'meps',
-      icon: 'fa-bolt',
-      color: '#D4A843',
-      label: 'Energy Efficient Products',
-      description: 'Shielding global energy grids by ensuring every unit sold is a high-efficiency model.',
-      route: 'meps',
+      id: 'buildings',
+      icon: 'fa-building',
+      color: '#64748b',
+      label: 'Building & Passive Cooling',
+      description: 'Better building design, including insulation, shading, ventilation, and cool roofs, addresses cooling demand at the source. These passive measures can cut indoor temperatures by 5–8°C at near-zero operating cost.',
+      route: null,
       comingSoon: false
     },
     {
@@ -32,12 +32,12 @@
       comingSoon: false
     },
     {
-      id: 'buildings',
-      icon: 'fa-building',
-      color: '#64748b',
-      label: 'Building & Passive Cooling',
-      description: 'Better building design — including insulation, shading, ventilation, and cool roofs — addresses cooling demand at the source. These passive measures can cut indoor temperatures by 5–8°C at near-zero operating cost.',
-      route: null,
+      id: 'meps',
+      icon: 'fa-bolt',
+      color: '#D4A843',
+      label: 'Energy Efficient Products',
+      description: 'Shielding global energy grids by ensuring every unit sold is a high-efficiency model.',
+      route: 'meps',
       comingSoon: false
     }
   ];
@@ -51,13 +51,13 @@
   </div>
 
   <div class="way-forward-grid">
-    {#each pillars as pillar, i}
+    {#each pillars as pillar}
       <div class="way-item" style="--way-color: {pillar.color}">
+        <div class="way-accent-bar"></div>
         <div class="way-item-top">
           <div class="way-icon">
             <i class="fa-solid {pillar.icon}"></i>
           </div>
-          <span class="way-number">0{i + 1}</span>
         </div>
         <h3 class="way-title">{pillar.label}</h3>
         <p class="way-desc">{pillar.description}</p>
@@ -114,12 +114,14 @@
   }
 
   .way-item {
-    padding: 40px 32px;
+    padding: 0 32px 40px;
     border-right: 1px solid rgba(0,0,0,0.07);
     display: flex;
     flex-direction: column;
     gap: 14px;
     transition: background 0.2s ease;
+    position: relative;
+    overflow: hidden;
   }
 
   .way-item:last-child { border-right: none; }
@@ -128,36 +130,39 @@
     background: #f8fafc;
   }
 
+  .way-accent-bar {
+    height: 4px;
+    background: var(--way-color);
+    margin: 0 -32px 28px;
+    opacity: 0.75;
+    transition: opacity 0.2s ease;
+  }
+
+  .way-item:hover .way-accent-bar {
+    opacity: 1;
+  }
+
   .way-item-top {
     display: flex;
     align-items: center;
     gap: 14px;
-    margin-bottom: 16px;
+    margin-bottom: 4px;
   }
 
   .way-icon {
-    width: 72px; height: 72px;
+    width: 64px; height: 64px;
     border-radius: 14px;
     background: color-mix(in srgb, var(--way-color) 14%, transparent);
     color: var(--way-color);
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.85rem;
+    font-size: 1.65rem;
     flex-shrink: 0;
   }
 
-  .way-number {
-    font-size: 3.2rem;
-    font-weight: 900;
-    color: var(--way-color);
-    opacity: 0.55;
-    line-height: 1;
-    letter-spacing: -0.03em;
-  }
-
   .way-title {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--way-color);
     margin: 0;
     line-height: 1.3;
   }

@@ -54,7 +54,7 @@
     { id: 'meps', icon: 'fa-bolt', label: '2. Product Efficiency' },
     { id: 'kigali', icon: 'fa-snowflake', label: '3. Refrigerant Transition' },
     { id: 'access', icon: 'fa-people-group', label: '4. Access & Vulnerability' },
-    { id: 'policy', icon: 'fa-landmark', label: '5. Policy Framework' }
+    { id: 'policy', icon: 'fa-landmark', label: '5. Plans and Commitments' }
   ];
 
   let revealed = false;

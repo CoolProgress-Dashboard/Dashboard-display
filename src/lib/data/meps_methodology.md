@@ -19,7 +19,7 @@ This document explains the methodology used to harmonize Minimum Energy Performa
 
 ISO 16358-1 (Cooling Seasonal Performance Factor) provides the internationally agreed methodology for calculating seasonal cooling performance. Unlike steady-state metrics (EER), CSPF captures real-world performance by weighting efficiency across a range of operating temperatures and part-load conditions.
 
-CSPF is expressed in W/W (or equivalently Wh/Wh) and represents the ratio of total cooling energy delivered to total electrical energy consumed over a cooling season.
+CSPF is expressed in Wh/Wh (the correct unit for an energy ratio; sometimes written as W/W in older literature) and represents the ratio of total cooling energy delivered to total electrical energy consumed over a cooling season.
 
 ### 2.2 National Metrics and Their Relationship to ISO CSPF
 

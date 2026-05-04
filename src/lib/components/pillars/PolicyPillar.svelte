@@ -984,8 +984,7 @@
             <div style="flex:1;min-width:0;">
               <div style="font-size:0.9rem;font-weight:800;color:#0f172a;margin-bottom:0.3rem;letter-spacing:-0.01em;">Find NDCs &amp; NCAPs on Climate Policy Radar</div>
               <p style="font-size:0.81rem;color:#334155;line-height:1.65;margin:0 0 0.6rem;">
-                We are working on adding all NCAPs to the Climate Policy Radar search engine — check if your country's NCAP is already indexed.
-                All NDCs are searchable now. Compare and analyse cooling-related policy language across countries.
+                Climate Policy Radar's database contains a range of relevant documents on cooling (e.g. NDCs, national policies). Compare and analyse cooling-related policies across countries.
               </p>
               <div style="display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center;">
                 <a href="https://app.climatepolicyradar.org/?_gl=1*1orjtq2*_ga*MTk2OTA4ODMwNy4xNzc2MzQ2MzY4*_ga_ZD1WWE49TL*czE3NzYzNDYzNjckbzEkZzAkdDE3NzYzNDYzNjckajYwJGwwJGgw" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.35rem;background:#0369a1;color:#fff;font-size:0.78rem;font-weight:700;padding:0.38rem 0.9rem;border-radius:3px;text-decoration:none;">
@@ -1194,7 +1193,7 @@
             const viewingEl = document.getElementById('policy-viewing');
             if (viewingEl) viewingEl.textContent = 'Global';
             const statusTitle = document.getElementById('policy-status-title');
-            if (statusTitle) statusTitle.textContent = 'Policy Framework Analysis';
+            if (statusTitle) statusTitle.textContent = 'National Plans & Commitments Analysis';
             showGlobalPolicyDetail();
             if (typeof (window as any).__dashboardClearCountry === 'function') {
               (window as any).__dashboardClearCountry();
@@ -1442,7 +1441,7 @@
       <div class="card-header" style="border-bottom: none;">
         <div class="card-title">
           <i class="fa-solid fa-scale-balanced"></i>
-          Policy Framework Status by Country
+          National Plans & Commitments Status by Country
         </div>
         <span class="viewing-pill">Viewing: <strong id="policy-viewing">Global</strong></span>
       </div>
@@ -1609,7 +1608,7 @@
       <div class="policy-partner-bar">
         <div class="policy-partner-header">
           <i class="fa-solid fa-handshake"></i>
-          <span class="policy-partner-title">Data Partners</span>
+          <span class="policy-partner-title">Data Sources</span>
         </div>
         <div class="policy-partner-logos">
           {#each policyPartners as partner (partner.id)}

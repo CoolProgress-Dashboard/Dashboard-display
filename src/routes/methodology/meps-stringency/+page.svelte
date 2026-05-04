@@ -53,7 +53,7 @@
       <div class="concept-card">
         <div class="concept-icon"><i class="fa-solid fa-wind"></i></div>
         <h3>Air Conditioners</h3>
-        <p>Harmonized to <strong>ISO CSPF equivalent (W/W)</strong>. Higher = more efficient. Covers residential split ACs, the dominant appliance type.</p>
+        <p>Harmonized to <strong>ISO CSPF equivalent (Wh/Wh)</strong>. Higher = more efficient. Covers residential split ACs, the dominant appliance type.</p>
       </div>
       <div class="concept-card">
         <div class="concept-icon"><i class="fa-solid fa-snowflake"></i></div>
@@ -79,7 +79,7 @@
     <p>
       Countries regulate AC efficiency using different seasonal performance metrics, different test
       standards, and different capacity class definitions. To enable cross-country comparison, all
-      national MEPS values are converted to an approximate <strong>ISO 16358 CSPF equivalent (W/W)</strong>.
+      national MEPS values are converted to an approximate <strong>ISO 16358 CSPF equivalent (Wh/Wh)</strong>.
     </p>
 
     <div class="callout-wip">
