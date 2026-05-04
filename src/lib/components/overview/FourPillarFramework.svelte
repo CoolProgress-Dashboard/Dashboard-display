@@ -10,6 +10,11 @@
       color: '#2D7D5A',
       label: 'Access to Cooling',
       description: 'Ensuring cooling for all as a fundamental human right and a life-saving necessity.',
+      bullets: [
+        '1.2 billion people face life-threatening heat without adequate cooling',
+        'Leapfrogging to efficient, affordable technology bridges the equity gap',
+        'Cold chains for food and medicine are as critical as residential cooling'
+      ],
       route: 'access',
       comingSoon: false
     },
@@ -18,7 +23,12 @@
       icon: 'fa-building',
       color: '#64748b',
       label: 'Building & Passive Cooling',
-      description: 'Better building design, including insulation, shading, ventilation, and cool roofs, addresses cooling demand at the source. These passive measures can cut indoor temperatures by 5–8°C at near-zero operating cost.',
+      description: 'Better building design — insulation, shading, ventilation, and cool roofs — addresses cooling demand at the source.',
+      bullets: [
+        'Can cut indoor temperatures by 5–8°C at near-zero operating cost',
+        'Essential for new construction in fast-urbanising hot-climate regions',
+        'First and most cost-effective step in the cooling hierarchy'
+      ],
       route: null,
       comingSoon: false
     },
@@ -27,7 +37,12 @@
       icon: 'fa-snowflake',
       color: '#5A8FC2',
       label: 'Climate Friendly Refrigerants',
-      description: 'Moving to climate and environmentally friendly refrigerants under the Kigali Amendment — a strategic shift that can avert 0.5°C of global warming this century.',
+      description: 'Moving to low-GWP refrigerants under the Kigali Amendment — a strategic shift that can avert 0.5°C of warming this century.',
+      bullets: [
+        'HFCs are up to 12,000× more warming than CO₂ per molecule',
+        '172 countries have ratified the Kigali Amendment',
+        'Full phase-down avoids ~105 billion tonnes CO₂e by 2100'
+      ],
       route: 'kigali',
       comingSoon: false
     },
@@ -36,7 +51,12 @@
       icon: 'fa-bolt',
       color: '#D4A843',
       label: 'Energy Efficient Products',
-      description: 'Shielding global energy grids by ensuring every unit sold is a high-efficiency model.',
+      description: 'Shielding global energy grids by ensuring every unit sold meets a high-efficiency standard.',
+      bullets: [
+        'Best-in-class ACs are 3× more efficient than the least efficient on sale today',
+        'MEPS and energy labels close the efficiency gap across markets',
+        'Prevents 15–20 year lock-in of inefficient stock in growing markets'
+      ],
       route: 'meps',
       comingSoon: false
     }
@@ -61,6 +81,11 @@
         </div>
         <h3 class="way-title">{pillar.label}</h3>
         <p class="way-desc">{pillar.description}</p>
+        <ul class="way-bullets">
+          {#each pillar.bullets as bullet}
+            <li>{bullet}</li>
+          {/each}
+        </ul>
       </div>
     {/each}
   </div>
@@ -173,7 +198,36 @@
     color: #1e293b;
     line-height: 1.7;
     margin: 0;
+  }
+
+  .way-bullets {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
     flex: 1;
+  }
+
+  .way-bullets li {
+    font-size: 0.84rem;
+    color: #475569;
+    line-height: 1.5;
+    padding-left: 1.1em;
+    position: relative;
+  }
+
+  .way-bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--way-color);
+    opacity: 0.75;
   }
 
   @media (max-width: 900px) {

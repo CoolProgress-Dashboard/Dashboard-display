@@ -46,13 +46,13 @@
             <div class="flow-stat">
               <span class="flow-stat-num">3 billion</span>
               <span class="flow-stat-label">additional room air conditioners expected globally by mid-century</span>
-              <span class="flow-stat-source"><a href="https://www.cleancoolingcollaborative.org/the-challenge/" target="_blank" rel="noopener noreferrer">Clean Cooling Collaborative</a> / <a href="https://www.iea.org/reports/the-future-of-cooling" target="_blank" rel="noopener noreferrer">IEA Future of Cooling</a></span>
+              <span class="flow-stat-source"><a href="https://www.iea.org/reports/the-future-of-cooling" target="_blank" rel="noopener noreferrer">IEA Future of Cooling</a></span>
             </div>
             <div class="flow-stat-rule"></div>
             <div class="flow-stat">
               <span class="flow-stat-num">1.2 billion</span>
               <span class="flow-stat-label">people vulnerable to life-threatening heat without adequate cooling</span>
-              <span class="flow-stat-source"><a href="https://www.cleancoolingcollaborative.org/the-challenge/" target="_blank" rel="noopener noreferrer">Clean Cooling Collaborative</a> · <a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer">SEforAll Chilling Prospects 2025</a></span>
+              <span class="flow-stat-source"><a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer">SEforAll Chilling Prospects 2025</a></span>
             </div>
           </div>
         </div>
@@ -84,11 +84,10 @@
 
       <!-- 3 · OPPORTUNITY — dark green, full bleed -->
       <div class="flow-opportunity">
-        <div class="flow-opp-inner">
+        <div class="flow-opp-top">
           <div class="flow-opp-left">
             <span class="flow-eyebrow" style="color:#0e4f7a; font-size:0.9rem">The Opportunity</span>
             <h2 class="flow-opp-title">By achieving sustainable cooling we can prevent up to <em>100 gigatons</em> of emissions by 2050.</h2>
-            <p class="flow-opp-body">By transitioning to energy-efficient technology and climate-friendly refrigerants, we can significantly alleviate stress on the electrical grid, reducing the frequency of power outages and avoiding the costly need to build additional power generation infrastructure. Ultimately, these shifts directly improve quality of life, safeguarding public health by drastically reducing heat-related illnesses and deaths.</p>
           </div>
           <div class="flow-opp-right">
             <div class="flow-opp-stat">
@@ -96,12 +95,18 @@
               <span class="flow-opp-numlab">CO₂e emissions prevented by 2050</span>
               <a class="flow-opp-source" href="https://rmi.org/wp-content/uploads/2018/11/Global_Cooling_Challenge_Report_2018.pdf" target="_blank" rel="noopener noreferrer">Rocky Mountain Institute — Solving the Global Cooling Challenge (2018)</a>
             </div>
-            <div class="flow-opp-benefits">
-              <div class="flow-opp-benefit"><i class="fa-solid fa-bolt-lightning"></i><span>Grid stress relief &amp; fewer power outages</span></div>
-              <div class="flow-opp-benefit"><i class="fa-solid fa-heart-pulse"></i><span>Reduced heat-related illnesses and deaths</span></div>
-              <div class="flow-opp-benefit"><i class="fa-solid fa-leaf"></i><span>Avoided need for new power generation infrastructure</span></div>
-            </div>
           </div>
+        </div>
+        <p class="flow-opp-body">If transitioning to energy-efficient technology and climate-friendly refrigerants, we can significantly:</p>
+        <div class="flow-opp-benefits">
+          <div class="flow-opp-benefit"><i class="fa-solid fa-chart-line"></i><span>Cut cooling emissions by <strong>73%</strong> by 2050 through efficiency, refrigerant transition, and clean grids<a class="flow-benefit-src" href="https://www.unep.org/resources/global-cooling-watch-2025" target="_blank" rel="noopener noreferrer">UNEP Global Cooling Watch 2025</a></span></div>
+
+          <div class="flow-opp-benefit"><i class="fa-solid fa-bolt-lightning"></i><span>Relieve grid stress and reduce the frequency of power outages</span></div>
+          <div class="flow-opp-benefit"><i class="fa-solid fa-leaf"></i><span>Avoid the need for costly new power generation infrastructure</span></div>
+          <div class="flow-opp-benefit"><i class="fa-solid fa-snowflake"></i><span>Prevent <strong>0.5°C</strong> of warming this century by phasing down high-GWP refrigerants<a class="flow-benefit-src" href="https://ozone.unep.org/kigali-amendment-overview" target="_blank" rel="noopener noreferrer">UNEP — Kigali Amendment Overview</a></span></div>
+          <div class="flow-opp-benefit"><i class="fa-solid fa-bolt"></i><span>Save <strong>1,300 TWh</strong> of electricity per year through global MEPS harmonization<a class="flow-benefit-src" href="https://www.unsdsn.org/resources/energy-rating-labels-and-potential-for-energy-savings-across-the-global-south/" target="_blank" rel="noopener noreferrer">UNSDSN CEET — Energy Rating Labels (2024)</a></span></div>
+          <div class="flow-opp-benefit"><i class="fa-solid fa-heart-pulse"></i><span>Protect public health by drastically reducing heat-related illnesses and deaths</span></div>
+          <div class="flow-opp-benefit"><i class="fa-solid fa-wheat-awn"></i><span>Secure food and medicine cold chains for the world's most vulnerable communities<a class="flow-benefit-src" href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer">SEforAll — Chilling Prospects 2025</a></span></div>
         </div>
       </div>
 
@@ -454,11 +459,12 @@
     padding: 60px 64px;
     border-top: 1px solid rgba(0,0,0,0.06);
   }
-  .flow-opp-inner {
+  .flow-opp-top {
     display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 64px;
+    grid-template-columns: 2fr 1fr;
+    gap: 48px;
     align-items: start;
+    margin-bottom: 32px;
   }
   .flow-opp-title {
     font-size: 1.6rem;
@@ -480,9 +486,6 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-    margin-bottom: 28px;
-    padding-bottom: 28px;
-    border-bottom: 1px solid rgba(0,0,0,0.08);
   }
   .flow-opp-num {
     font-size: 3.6rem;
@@ -504,15 +507,26 @@
     color: #64748b;
     margin-top: 8px;
     text-decoration: none;
-    border-bottom: 1px solid rgba(100,116,139,0.3);
     line-height: 1.4;
-    transition: color 0.15s, border-color 0.15s;
+    transition: color 0.15s;
   }
   .flow-opp-source:hover {
     color: #0369a1;
-    border-color: #0369a1;
   }
-  .flow-opp-benefits { display: flex; flex-direction: column; gap: 18px; }
+
+
+  .flow-opp-benefits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 32px; margin-top: 24px; }
+  .flow-benefit-src {
+    display: block;
+    font-size: 0.67rem;
+    font-weight: 500;
+    color: #94a3b8;
+    text-decoration: none;
+    margin-top: 3px;
+    transition: color 0.15s;
+  }
+  .flow-benefit-src::before { content: '↳ '; }
+  .flow-benefit-src:hover { color: #0369a1; }
   .flow-opp-benefit {
     display: flex; align-items: flex-start; gap: 12px;
     font-size: 0.92rem; font-weight: 500; color: #1e293b; line-height: 1.6;
