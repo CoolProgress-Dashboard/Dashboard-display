@@ -46,15 +46,16 @@
 
   let chartContainer: HTMLElement;
   let chartInstance: any;
+  let echartsLib: any;
 
   let selectedAppliance: ApplianceType | 'All' = 'AC';
   let selectedMetric: MetricKey = 'stock';
 
   const applianceOptions: { key: ApplianceType | 'All'; label: string }[] = [
-    { key: 'AC', label: 'AC' },
-    { key: 'DomRef', label: 'Refrigerators' },
-    { key: 'Fans', label: 'Fans' },
-    { key: 'All', label: 'All' },
+    { key: 'AC', label: 'Residential AC' },
+    { key: 'DomRef', label: 'Domestic Refrigerators' },
+    { key: 'Fans', label: 'Ceiling Fans' },
+    { key: 'All', label: 'All Appliances' },
   ];
 
   const metricOptions: { key: MetricKey; label: string }[] = [
@@ -99,8 +100,9 @@
     // (2005 for CLASP, 1990 for hardcoded fallback). Using getYears() (hardcoded)
     // when live data is present would create empty slots for 1990/1995/2000 that
     // break the historical→projected bridge logic.
+    const startYear = selectedAppliance === 'All' ? 2025 : 2020;
     const years = [...new Set(effectiveData.map(d => d.year))]
-      .filter(y => y >= 2020 && y <= 2050)
+      .filter(y => y >= startYear && y <= 2050)
       .sort((a, b) => a - b);
     const field = METRIC_META[selectedMetric].field;
     const yLabel = METRIC_META[selectedMetric].yAxisLabel;
@@ -109,38 +111,20 @@
     const series: any[] = [];
 
     if (selectedAppliance === 'All') {
-      // Multi-line: one line per appliance (BAU only, solid throughout)
+      // Grouped bars: one bar group per year, one bar per appliance (BAU only)
       const appliances: ApplianceType[] = ['AC', 'DomRef', 'Fans'];
       for (const app of appliances) {
         const data = getApplianceData(app, 'BAU');
         const meta = APPLIANCE_META[app];
         series.push({
           name: meta.label,
-          type: 'line',
+          type: 'bar',
           data: years.map(y => {
             const pt = data.find(d => d.year === y);
             return pt ? (pt as any)[field] : null;
           }),
-          smooth: 0.5,
-          lineStyle: { width: 3, color: meta.color },
           itemStyle: { color: meta.color },
-          areaStyle: {
-            color: {
-              type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
-              colorStops: [
-                { offset: 0, color: meta.colorRgba + ' 0.15)' },
-                { offset: 1, color: meta.colorRgba + ' 0.02)' },
-              ]
-            }
-          },
-          symbol: 'circle',
-          symbolSize: 4,
-          markLine: app === 'AC' && demarcationIdx >= 0 ? {
-            silent: true, symbol: 'none',
-            data: [{ xAxis: demarcationIdx }],
-            lineStyle: { color: CHROME.DEMARCATION, width: 1, type: 'dashed' },
-            label: { show: false }
-          } : undefined
+          barMaxWidth: 28
         });
       }
     } else if (selectedMetric === 'emissions' && selectedAppliance !== 'Fans') {
@@ -323,7 +307,7 @@
       xAxis: {
         type: 'category',
         data: years,
-        boundaryGap: false,
+        boundaryGap: selectedAppliance === 'All',
         axisLabel: { fontSize: 10, color: CHROME.TEXT_SECONDARY },
         axisLine: { lineStyle: { color: CHROME.SPLIT_LINE } }
       },
@@ -344,8 +328,19 @@
     };
   }
 
+  let lastAppliance: string | null = null;
+
   function updateChart() {
-    if (!chartInstance) return;
+    if (!chartInstance || !echartsLib) return;
+    // Dispose and reinit when switching between All (bars) and single appliance (lines)
+    // to prevent ECharts from blending old series types across the type boundary
+    const wasAll = lastAppliance === 'All';
+    const isAll = selectedAppliance === 'All';
+    if (lastAppliance !== null && wasAll !== isAll) {
+      chartInstance.dispose();
+      chartInstance = echartsLib.init(chartContainer);
+    }
+    lastAppliance = selectedAppliance;
     chartInstance.setOption(buildChartOption(), true);
   }
 
@@ -353,6 +348,7 @@
 
   onMount(async () => {
     const echarts = await import('echarts');
+    echartsLib = echarts;
     chartInstance = echarts.init(chartContainer);
     chartInstance.setOption(buildChartOption());
 
@@ -444,6 +440,15 @@
     </div>
 
     <a href="/methodology/appliance-chart" class="chart-meth-link">Methodology</a>
+  </div>
+
+  <div class="chart-data-coverage">
+    <span class="coverage-label">Data coverage:</span>
+    <span class="coverage-item"><strong>Stock (units) &amp; Energy (TWh)</strong> — CLASP Mepsy · Residential AC, Domestic Refrigerators, Ceiling Fans</span>
+    <span class="coverage-sep">·</span>
+    <span class="coverage-item"><strong>Indirect emissions</strong> — CLASP Mepsy · all three appliances</span>
+    <span class="coverage-sep">·</span>
+    <span class="coverage-item"><strong>Direct emissions</strong> — GCI/HEAT · AC &amp; Refrigerators only (no refrigerant data for Fans)</span>
   </div>
 </div>
 
@@ -620,6 +625,38 @@
 
   .chart-meth-link:hover {
     text-decoration: underline;
+  }
+
+  .chart-data-coverage {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.3rem 0.45rem;
+    padding: 0.35rem 0 0;
+    margin-top: 0.25rem;
+    border-top: 1px solid #f1f5f9;
+    font-size: 0.66rem;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+
+  .coverage-label {
+    font-weight: 600;
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  .coverage-item {
+    color: #94a3b8;
+  }
+
+  .coverage-item strong {
+    color: #64748b;
+    font-weight: 600;
+  }
+
+  .coverage-sep {
+    color: #cbd5e1;
   }
 
 </style>

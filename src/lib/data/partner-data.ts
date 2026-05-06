@@ -28,7 +28,7 @@ export interface Partner {
 export const partners: Partner[] = [
   {
     id: 'clasp',
-    name: 'CLASP',
+    name: 'Collaborative Labeling and Appliance Standards Program - CLASP',
     fullName: 'Collaborative Labeling and Appliance Standards Program',
     tagline: 'Improving the energy and environmental performance of appliances worldwide',
     website: 'https://www.clasp.ngo',
@@ -51,7 +51,7 @@ export const partners: Partner[] = [
   },
   {
     id: 'cool-coalition',
-    name: 'Cool Coalition',
+    name: 'UNEP Cool Coalition',
     fullName: 'UNEP Cool Coalition',
     tagline: 'A unified front for clean and efficient cooling',
     website: 'https://coolcoalition.org',
@@ -74,7 +74,7 @@ export const partners: Partner[] = [
   },
   {
     id: 'u4e',
-    name: 'U4E',
+    name: 'United for Efficiency - U4E',
     fullName: 'United for Efficiency',
     tagline: 'Accelerating the global market transformation to energy-efficient products',
     website: 'https://united4efficiency.org',
@@ -98,7 +98,7 @@ export const partners: Partner[] = [
   },
   {
     id: 'iea',
-    name: 'IEA',
+    name: 'International Energy Agency - IEA',
     fullName: 'International Energy Agency',
     tagline: 'Shaping a secure and sustainable energy future',
     website: 'https://www.iea.org',
@@ -121,7 +121,7 @@ export const partners: Partner[] = [
   },
   {
     id: 'giz',
-    name: 'GIZ Proklima',
+    name: 'Deutsche Gesellschaft für Internationale Zusammenarbeit - GIZ Proklima',
     fullName: 'Deutsche Gesellschaft fuer Internationale Zusammenarbeit - Proklima',
     tagline: 'Promoting eco-friendly and sustainable cooling technologies worldwide',
     website: 'https://www.giz.de/en/worldwide/71271.html',
@@ -134,7 +134,7 @@ export const partners: Partner[] = [
       'Trained 600,000+ RAC technicians in natural refrigerants. Achieved 120M+ tonnes CO2e savings across 60+ countries through policy advice, capacity building, and technology transfer.',
     keyReport: 'Green Cooling Initiative',
     keyReportUrl: 'https://www.green-cooling-initiative.org/',
-    category: 'implementation',
+    category: 'data',
     resources: [
       { label: 'Green Cooling Initiative', url: 'https://www.green-cooling-initiative.org/', icon: 'fa-leaf', description: 'Country data, policy tracker, and technology guidance' },
       { label: 'RAC Technician Training', url: 'https://www.giz.de/en/worldwide/71271.html', icon: 'fa-graduation-cap', description: '600,000+ technicians trained in natural refrigerants' },
@@ -142,7 +142,7 @@ export const partners: Partner[] = [
   },
   {
     id: 'se4all',
-    name: 'SE4ALL',
+    name: 'Sustainable Energy for All - SEforALL',
     fullName: 'Sustainable Energy for All',
     tagline: 'Action towards affordable, reliable, sustainable and modern energy for all',
     website: 'https://www.seforall.org',
@@ -166,7 +166,7 @@ export const partners: Partner[] = [
   },
   {
     id: 'ccc',
-    name: 'CCC',
+    name: 'Clean Cooling Collaborative - CCC',
     fullName: 'Clean Cooling Collaborative',
     tagline: 'Transforming the cooling sector for people and the planet',
     website: 'https://www.cleancoolingcollaborative.org',
@@ -188,7 +188,7 @@ export const partners: Partner[] = [
   },
   {
     id: 'unep-ozone',
-    name: 'UNEP Ozone',
+    name: 'UNEP Ozone Secretariat',
     fullName: 'UNEP Ozone Secretariat',
     tagline: 'Protecting the ozone layer and phasing down climate-warming HFCs',
     website: 'https://ozone.unep.org',
@@ -231,7 +231,7 @@ export const partners: Partner[] = [
   },
   {
     id: 'lbnl',
-    name: 'LBNL',
+    name: 'Lawrence Berkeley National Laboratory - LBNL',
     fullName: 'Lawrence Berkeley National Laboratory — Energy Technologies Area',
     tagline: 'Science-based technical foundations for global appliance efficiency policy',
     website: 'https://eta.lbl.gov',

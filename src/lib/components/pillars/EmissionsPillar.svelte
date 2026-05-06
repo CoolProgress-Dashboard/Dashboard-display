@@ -300,10 +300,11 @@
       const logValue = Math.log10(value + 1);
       const logMax = Math.log10(maxValue + 1);
       const ratio = logValue / logMax;
-      if (ratio < 0.25) return ACCESS_RISK[0]; // very light cream
-      if (ratio < 0.5)  return ACCESS_RISK[2]; // gold
-      if (ratio < 0.75) return ACCESS_RISK[4]; // mid orange
-      return ACCESS_RISK[6];                    // deep red
+      if (ratio < 0.10) return ACCESS_RISK[1]; // Low         — light yellow
+      if (ratio < 0.35) return ACCESS_RISK[2]; // Medium      — gold
+      if (ratio < 0.55) return ACCESS_RISK[3]; // Medium-High — light orange
+      if (ratio < 0.78) return ACCESS_RISK[5]; // High        — dark terracotta
+      return ACCESS_RISK[6];                    // Very High   — deep red
     }
 
     // ---- ECharts helpers ----
@@ -375,9 +376,10 @@
       const el = document.getElementById('emissions-legend');
       if (!el) return;
       el.innerHTML = `
-        <div class="legend-item"><div class="legend-color" style="background:${ACCESS_RISK[0]}"></div>Low</div>
+        <div class="legend-item"><div class="legend-color" style="background:${ACCESS_RISK[1]}"></div>Low</div>
         <div class="legend-item"><div class="legend-color" style="background:${ACCESS_RISK[2]}"></div>Medium</div>
-        <div class="legend-item"><div class="legend-color" style="background:${ACCESS_RISK[4]}"></div>High</div>
+        <div class="legend-item"><div class="legend-color" style="background:${ACCESS_RISK[3]}"></div>Medium-High</div>
+        <div class="legend-item"><div class="legend-color" style="background:${ACCESS_RISK[5]}"></div>High</div>
         <div class="legend-item"><div class="legend-color" style="background:${ACCESS_RISK[6]}"></div>Very High</div>
         <div class="legend-item"><div class="legend-color" style="background:${NO_DATA}"></div>No Data</div>
       `;
@@ -386,9 +388,9 @@
     function updateNewEmissionsLegend(maxValue: number) {
       const container = document.getElementById('emissions-legend');
       if (!container) return;
-      const thresholds = [0.25, 0.5, 0.75, 1.0];
-      const colors = [ACCESS_RISK[0], ACCESS_RISK[2], ACCESS_RISK[4], ACCESS_RISK[6]];
-      const labels = ['Low', 'Medium', 'High', 'Very High'];
+      const thresholds = [0.10, 0.35, 0.55, 0.78, 1.0];
+      const colors = [ACCESS_RISK[1], ACCESS_RISK[2], ACCESS_RISK[3], ACCESS_RISK[5], ACCESS_RISK[6]];
+      const labels = ['Low', 'Medium', 'Medium-High', 'High', 'Very High'];
       container.innerHTML = thresholds.map((t, i) => {
         const val = Math.pow(10, t * Math.log10(maxValue + 1)) - 1;
         return `<div class="legend-item">
@@ -396,6 +398,14 @@
           ${labels[i]} (${val < 1 ? val.toFixed(2) : val.toFixed(0)}+)
         </div>`;
       }).join('') + `<div class="legend-item"><div class="legend-color" style="background:${NO_DATA}"></div>No Data</div>`;
+      // Update legend label to reflect current emission type
+      const labelEl = document.getElementById('emissions-legend-label');
+      if (labelEl) {
+        const typeText = emissionsDataSource === 'subcool'
+          ? (emissionsType === 'direct' ? 'Direct Emissions (Mt CO₂):' : emissionsType === 'indirect' ? 'Indirect Emissions (Mt CO₂):' : 'Total Emissions (Mt CO₂):')
+          : 'Indirect Emissions (Mt CO₂):';
+        labelEl.textContent = typeText;
+      }
     }
 
     function updateEmissionsProgress() {
@@ -407,23 +417,25 @@
         if (el) el.style.width = `${pct}%`;
       };
       if (!total) {
-        ['emissions-progress-low', 'emissions-progress-medium', 'emissions-progress-high', 'emissions-progress-critical'].forEach(id => setWidth(id, 0));
+        ['emissions-progress-low', 'emissions-progress-medium', 'emissions-progress-midhigh', 'emissions-progress-high', 'emissions-progress-critical'].forEach(id => setWidth(id, 0));
         return;
       }
       const maxEmissions = Math.max(...values, 0.1);
-      const counts = { high: 0, medium: 0, low: 0, critical: 0 };
+      const counts = { low: 0, medium: 0, midhigh: 0, high: 0, critical: 0 };
       values.forEach((v) => {
         const logValue = Math.log10(v + 1);
         const logMax = Math.log10(maxEmissions + 1);
         const ratio = logMax ? logValue / logMax : 0;
-        if (ratio < 0.25) counts.high += 1;
-        else if (ratio < 0.5) counts.medium += 1;
-        else if (ratio < 0.75) counts.low += 1;
-        else counts.critical += 1;
+        if (ratio < 0.10)      counts.low     += 1;
+        else if (ratio < 0.35) counts.medium  += 1;
+        else if (ratio < 0.55) counts.midhigh += 1;
+        else if (ratio < 0.78) counts.high    += 1;
+        else                   counts.critical += 1;
       });
-      setWidth('emissions-progress-low',      (counts.high     / total) * 100);
+      setWidth('emissions-progress-low',      (counts.low      / total) * 100);
       setWidth('emissions-progress-medium',   (counts.medium   / total) * 100);
-      setWidth('emissions-progress-high',     (counts.low      / total) * 100);
+      setWidth('emissions-progress-midhigh',  (counts.midhigh  / total) * 100);
+      setWidth('emissions-progress-high',     (counts.high     / total) * 100);
       setWidth('emissions-progress-critical', (counts.critical / total) * 100);
     }
 
@@ -1130,6 +1142,7 @@
               scenarioSelect.appendChild(opt);
             });
             emissionsScenario = (scenarios as string[])[0];
+            updateScenarioHint();
           }
           // Toggle appliance row vs emission-type row
           const appRow  = document.getElementById('emissions-appliance-row');
@@ -1171,13 +1184,33 @@
         requestAnimationFrame(() => updateYearThumbDisplay());
       }
 
+      // Scenario assumption hints
+      const SCENARIO_HINTS: Record<string, string> = {
+        'BAU':  'No new policies beyond today\'s baseline',
+        'GB':   'Building efficiency standards drive gradual improvements',
+        'NZH':  'Near-zero emission building targets applied globally',
+        'BAT':  'Average efficiency rises to match today\'s best available technology',
+        'Kigali Implementation': 'Full Kigali Amendment phase-down schedule implemented',
+        'Kigali+': 'Accelerated phase-down beyond Kigali Amendment targets',
+      };
+      function updateScenarioHint() {
+        const hint = document.getElementById('emissions-scenario-hint');
+        if (!hint) return;
+        const sel = document.getElementById('emissions-scenario-select') as HTMLSelectElement | null;
+        const key = sel?.value ?? '';
+        hint.textContent = SCENARIO_HINTS[key] ?? '';
+        hint.style.display = SCENARIO_HINTS[key] ? '' : 'none';
+      }
+
       // Scenario dropdown
       const emissionsScenarioSelect = document.getElementById('emissions-scenario-select') as HTMLSelectElement | null;
       if (emissionsScenarioSelect) {
         emissionsScenarioSelect.addEventListener('change', () => {
           emissionsScenario = emissionsScenarioSelect.value;
+          updateScenarioHint();
           updateEmissionsView(echartsLib);
         });
+        updateScenarioHint();
       }
 
       // Region dropdown
@@ -1345,7 +1378,12 @@
 
     <!-- DATA: CO2 Emissions Map & Charts -->
     <div class="chapter-card ep-map-intro" class:revealed>
-      <span class="ep-eyebrow">Country Emissions</span>
+      <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+        <span class="ep-eyebrow" style="margin-bottom:0;">Country Emissions</span>
+        <span class="ep-scope-badge"><i class="fa-solid fa-wind"></i> Residential AC</span>
+        <span class="ep-scope-badge"><i class="fa-solid fa-snowflake"></i> Domestic Refrigerators</span>
+        <span class="ep-scope-badge"><i class="fa-solid fa-fan"></i> Ceiling Fans</span>
+      </div>
       <h2 class="ep-section-title">Look at your country's cooling emissions.</h2>
       <p class="ep-body">Both <strong>direct emissions</strong> (refrigerant leaks from cooling equipment) and <strong>indirect emissions</strong> (electricity-related CO₂ from powering compressors) are shown on the map below. Click any country to explore its full breakdown by appliance type and emission source.</p>
     </div>
@@ -1379,13 +1417,14 @@
         {/if}
       </div>
       <div class="legend legend-row">
-        <span class="legend-label">Emissions (Mt CO2):</span>
+        <span class="legend-label" id="emissions-legend-label">Indirect Emissions (Mt CO₂):</span>
         <div id="emissions-legend" class="legend-items"></div>
       </div>
       <div class="progress-bar" id="emissions-progress">
-        <span class="progress-segment" id="emissions-progress-low" style="background: #F0F7F0;"></span>
-        <span class="progress-segment" id="emissions-progress-medium" style="background: #A8D5A2;"></span>
-        <span class="progress-segment" id="emissions-progress-high" style="background: #C25B33;"></span>
+        <span class="progress-segment" id="emissions-progress-low"      style="background: #F5E4A0;"></span>
+        <span class="progress-segment" id="emissions-progress-medium"   style="background: #F5C44A;"></span>
+        <span class="progress-segment" id="emissions-progress-midhigh"  style="background: #F0A47A;"></span>
+        <span class="progress-segment" id="emissions-progress-high"     style="background: #E07850;"></span>
         <span class="progress-segment" id="emissions-progress-critical" style="background: #8B2500;"></span>
       </div>
 
@@ -1449,15 +1488,16 @@
               <option value="NZH">Net Zero Homes</option>
               <option value="BAT">Best Available Tech</option>
             </select>
+            <div id="emissions-scenario-hint" class="ep-scenario-hint">No new policies beyond today's baseline</div>
           </div>
 
           <!-- Appliance Toggles (for CLASP) -->
           <div class="filter-group" id="emissions-appliance-row">
             <label class="filter-label">Appliances</label>
             <div class="toggle-group" id="emissions-appliance-toggles">
-              <button class="toggle-btn active" data-appliance="Air Conditioning" type="button">AC</button>
-              <button class="toggle-btn active" data-appliance="Ceiling and Portable Fans" type="button">Fans</button>
-              <button class="toggle-btn active" data-appliance="Refrigerator-Freezers" type="button">Refrigerators</button>
+              <button class="toggle-btn active" data-appliance="Air Conditioning" type="button">Residential AC</button>
+              <button class="toggle-btn active" data-appliance="Refrigerator-Freezers" type="button">Domestic Refrigerators</button>
+              <button class="toggle-btn active" data-appliance="Ceiling and Portable Fans" type="button">Ceiling Fans</button>
             </div>
           </div>
 
@@ -1647,7 +1687,12 @@
 
     <!-- ═══ GO DEEPER: Emissions Trajectory ═══ -->
     <div class="ep-chart-wrapper">
-      <span class="ep-eyebrow">Explore Global Pathways</span>
+      <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+        <span class="ep-eyebrow" style="margin-bottom:0;">Explore Global Pathways</span>
+        <span class="ep-scope-badge"><i class="fa-solid fa-wind"></i> Residential AC</span>
+        <span class="ep-scope-badge"><i class="fa-solid fa-snowflake"></i> Domestic Refrigerators</span>
+        <span class="ep-scope-badge"><i class="fa-solid fa-fan"></i> Ceiling Fans</span>
+      </div>
       <h2 class="ep-section-title">Emissions Trajectory — Scenario Comparison</h2>
       <p class="ep-body">Compare how different policy pathways bend the emissions curve from 2020 to 2050. Business as Usual (BAU) projects significant growth in cooling emissions; the DECARB scenarios show the impact of combining energy efficiency standards (MEPS), Kigali refrigerant phase-down, and grid decarbonisation.</p>
       <div style="position: relative;">
@@ -1673,7 +1718,12 @@
 
     <!-- Appliance Growth Chart -->
     <div class="ep-chart-wrapper">
-      <span class="ep-eyebrow">Appliance Growth</span>
+      <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+        <span class="ep-eyebrow" style="margin-bottom:0;">Appliance Growth</span>
+        <span class="ep-scope-badge"><i class="fa-solid fa-wind"></i> Residential AC</span>
+        <span class="ep-scope-badge"><i class="fa-solid fa-snowflake"></i> Domestic Refrigerators</span>
+        <span class="ep-scope-badge"><i class="fa-solid fa-fan"></i> Ceiling Fans</span>
+      </div>
       <h2 class="ep-section-title">Global Appliance Stock &amp; Emissions Trajectory</h2>
       <p class="ep-body">Select an appliance type (AC, Refrigerators, Fans) and a metric to explore projected growth through 2050.
         Toggle between <strong>stock (units)</strong>, <strong>energy demand (TWh)</strong>, and <strong>emissions</strong> — both indirect (electricity) and direct (refrigerant leaks).
@@ -1805,6 +1855,14 @@
   .ep-scope-badge i {
     font-size: 0.6rem;
     color: #64748b;
+  }
+
+  .ep-scenario-hint {
+    font-size: 0.68rem;
+    color: #64748b;
+    font-style: italic;
+    margin-top: 0.3rem;
+    line-height: 1.4;
   }
 
   .ep-scope-note {
