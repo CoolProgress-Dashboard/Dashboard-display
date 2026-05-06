@@ -163,8 +163,44 @@
         itemStyle: { color: EMISSION.DIRECT, opacity: 0.7 },
         barWidth: '60%',
       });
+    } else if (selectedMetric === 'stock') {
+      // Stock (units): vertical bar chart — avoids misleading stacked-area appearance
+      const data = getApplianceData(selectedAppliance, 'BAU');
+      const meta = APPLIANCE_META[selectedAppliance];
+      const isProjected = years.map(y => {
+        const pt = data.find(d => d.year === y);
+        return pt ? pt.isProjected : true;
+      });
+      const historicalData = years.map((y, i) => {
+        const pt = data.find(d => d.year === y);
+        return !isProjected[i] && pt ? (pt as any)[field] : null;
+      });
+      const projectedData = years.map((y, i) => {
+        const pt = data.find(d => d.year === y);
+        return isProjected[i] && pt ? (pt as any)[field] : null;
+      });
+      series.push({
+        name: 'Historical',
+        type: 'bar',
+        data: historicalData,
+        itemStyle: { color: meta.color },
+        barWidth: '60%',
+        markLine: demarcationIdx >= 0 ? {
+          silent: true, symbol: 'none',
+          data: [{ xAxis: demarcationIdx }],
+          lineStyle: { color: CHROME.DEMARCATION, width: 1, type: 'dashed' },
+          label: { show: false }
+        } : undefined
+      });
+      series.push({
+        name: 'Projected (BAU)',
+        type: 'bar',
+        data: projectedData,
+        itemStyle: { color: SCENARIO.PROJECTED, opacity: 0.75 },
+        barWidth: '60%',
+      });
     } else {
-      // Single appliance: stock, energy, or Fans emissions — historical (solid) + projected (dashed)
+      // Energy or Fans emissions — historical (solid line+area) + projected (dashed line+area)
       const data = getApplianceData(selectedAppliance, 'BAU');
       const meta = APPLIANCE_META[selectedAppliance];
       const values = years.map(y => {
@@ -307,7 +343,7 @@
       xAxis: {
         type: 'category',
         data: years,
-        boundaryGap: selectedAppliance === 'All',
+        boundaryGap: selectedAppliance === 'All' || (selectedAppliance !== 'All' && selectedMetric === 'stock'),
         axisLabel: { fontSize: 10, color: CHROME.TEXT_SECONDARY },
         axisLine: { lineStyle: { color: CHROME.SPLIT_LINE } }
       },
@@ -329,18 +365,22 @@
   }
 
   let lastAppliance: string | null = null;
+  let lastMetric: string | null = null;
 
   function updateChart() {
     if (!chartInstance || !echartsLib) return;
-    // Dispose and reinit when switching between All (bars) and single appliance (lines)
-    // to prevent ECharts from blending old series types across the type boundary
+    // Dispose and reinit when switching between chart types (bar vs line)
+    // to prevent ECharts blending old series types across the boundary
+    const wasBar = lastAppliance !== null && lastAppliance !== 'All' && lastMetric === 'stock';
+    const isBar  = selectedAppliance !== 'All' && selectedMetric === 'stock';
     const wasAll = lastAppliance === 'All';
-    const isAll = selectedAppliance === 'All';
-    if (lastAppliance !== null && wasAll !== isAll) {
+    const isAll  = selectedAppliance === 'All';
+    if (lastAppliance !== null && (wasAll !== isAll || wasBar !== isBar)) {
       chartInstance.dispose();
       chartInstance = echartsLib.init(chartContainer);
     }
     lastAppliance = selectedAppliance;
+    lastMetric    = selectedMetric;
     chartInstance.setOption(buildChartOption(), true);
   }
 

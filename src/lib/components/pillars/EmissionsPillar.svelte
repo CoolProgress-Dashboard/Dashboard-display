@@ -958,13 +958,14 @@
           );
           return +filtered.reduce((total: number, r: any) => total + getClaspCO2(r, 'BAU'), 0).toFixed(1);
         });
+        // NZH retired per Ari/CLASP 2026-04-22 — keep only BAU, Global Benchmarks, BAT
+        const CLASP_CHART_SCENARIOS = ['BAU', 'GB', 'BAT'];
         const CLASP_LINE_COLORS: Record<string, string> = {
           BAU: SCENARIO.BAU,       // terracotta — worst
           GB:  SCENARIO.KIP,       // amber — better
-          NZH: SCENARIO.NZH,       // mint — good
           BAT: SCENARIO.BAT,       // forest green — best
         };
-        (CLASP_SCENARIOS as string[]).forEach((scenario) => {
+        CLASP_CHART_SCENARIOS.forEach((scenario) => {
           const yearTotals: (number | null)[] = years.map((y, i) => {
             if (scenario === 'BAU') {
               // BAU shows the full historical + projected line
@@ -1026,7 +1027,9 @@
         };
       }
 
+      const timelineSource = emissionsDataSource === 'clasp' ? 'Source: CLASP Mepsy Tool' : 'Source: GCI / HEAT GmbH';
       setChart('chart-emissions-timeline-static', {
+        title: { text: '', subtext: timelineSource, subtextStyle: { fontSize: 9, color: '#94a3b8' }, right: 4, bottom: 18 },
         tooltip: { trigger: 'axis' },
         legend: { bottom: 0, textStyle: { fontSize: 11 } },
         grid: { left: '3%', right: '4%', bottom: '15%', top: '10%', containLabel: true },
@@ -1134,7 +1137,8 @@
           const scenarioSelect = document.getElementById('emissions-scenario-select') as HTMLSelectElement | null;
           if (scenarioSelect) {
             scenarioSelect.innerHTML = '';
-            const scenarios = emissionsDataSource === 'clasp' ? CLASP_SCENARIOS : HEAT_SCENARIOS;
+            // NZH retired per Ari/CLASP 2026-04-22
+            const scenarios = emissionsDataSource === 'clasp' ? ['BAU', 'GB', 'BAT'] : HEAT_SCENARIOS;
             const names     = emissionsDataSource === 'clasp' ? CLASP_SCENARIO_NAMES : HEAT_SCENARIO_NAMES;
             (scenarios as string[]).forEach(s => {
               const opt = document.createElement('option');
@@ -1184,11 +1188,10 @@
         requestAnimationFrame(() => updateYearThumbDisplay());
       }
 
-      // Scenario assumption hints
+      // Scenario assumption hints (NZH retired per Ari/CLASP 2026-04-22)
       const SCENARIO_HINTS: Record<string, string> = {
         'BAU':  'No new policies beyond today\'s baseline',
         'GB':   'Building efficiency standards drive gradual improvements',
-        'NZH':  'Near-zero emission building targets applied globally',
         'BAT':  'Average efficiency rises to match today\'s best available technology',
         'Kigali Implementation': 'Full Kigali Amendment phase-down schedule implemented',
         'Kigali+': 'Accelerated phase-down beyond Kigali Amendment targets',
@@ -1485,7 +1488,6 @@
             <select id="emissions-scenario-select" class="filter-select" style="min-width: 120px;">
               <option value="BAU">Business as Usual</option>
               <option value="GB">Green Buildings</option>
-              <option value="NZH">Net Zero Homes</option>
               <option value="BAT">Best Available Tech</option>
             </select>
             <div id="emissions-scenario-hint" class="ep-scenario-hint">No new policies beyond today's baseline</div>

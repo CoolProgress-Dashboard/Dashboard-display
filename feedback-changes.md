@@ -28,10 +28,10 @@
 - [x] **High | Content** — Rename trajectory chart series label: "Projected (2050)" → "Projected BAU 2050".
 - [x] **High | Content** — Add scope note directly below the emissions chart: "Residential AC, domestic refrigerators and ceiling fans only. Projected values show BAU 2050, not mitigation or pledge-aligned pathway. Commercial refrigeration and chillers are excluded."
 - [x] **High | UI** — Split the appliance selector into three explicit options: AC, Domestic Refrigerators (domref), Ceiling Fans — with clear labels for each.
-- [ ] **High | Data** — Retire "Net Zero Appliances" scenario from the emissions chart — CLASP is phasing it out. Keep only BAU, Global Benchmarks, and BAT. (Ari/CLASP, 2026-04-22)
-- [ ] **High | UI** — Switch the stock/units chart from a line chart to a vertical column/bar chart. The current shading looks stacked but is not — this actively misleads users. (Patrick + Ari, 2026-04-22)
+- [x] **High | Data** — Retire "Net Zero Appliances" (NZH) scenario from the emissions chart — CLASP is phasing it out. Keep only BAU, Global Benchmarks, and BAT. Removed from dropdown, timeline chart, scenario hints, and dropdown rebuild logic.
+- [x] **High | UI** — Switch the stock/units chart from a line chart to a vertical column/bar chart. The current shading looks stacked but is not — this actively misleads users. (Patrick + Ari, 2026-04-22)
 - [x] **High | Data** — ~~Use one data source per chart — do not mix CLASP and GCI in the same visualization.~~ DISMISSED — current combined approach validated.
-- [ ] **High | UI** — Label the data source directly on each chart (not only in methodology pages). (Patrick + Ari, 2026-04-22)
+- [x] **High | UI** — Label the data source directly on each chart (not only in methodology pages). Added source subtitle to timeline ECharts option; ApplianceGrowthChart and map already had source bars. (Patrick + Ari, 2026-04-22)
 - [x] **Medium | Content** — Add inline one-line assumption descriptions below each scenario name on the chart (e.g. "BAU — no new policies", "Global Benchmarks — all countries match best MEPS", "BAT — average = best on market today"). (Patrick, 2026-04-22)
 - [ ] **Medium | Content** — Replace undefined trajectory lines ("net zero homes", "green buildings", "best tech") with 3 clearly labeled alternatives: efficiency shift, refrigerant shift, grid decarbonization. (Pending scenario mapping confirmation — see PENDING DECISIONS.)
 - [ ] **Medium | Data** — Review and reconcile GCI vs CLASP country-level emissions discrepancies (specifically China AC vs refrigerator ratio and US refrigerators vs ACs). Add a methodology note explaining why figures from different sources may differ.
