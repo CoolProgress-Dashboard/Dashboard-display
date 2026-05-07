@@ -91,9 +91,9 @@
 - [x] **High | UI** — Appliance scope badges added to refrigerant bank chart header and direct emissions chart header (AC, Domestic Refrigerators, Commercial Refrigeration). (2026-05-07)
 - [x] **High | Content** — Workforce Training & Certification section added under "Managing the Transition": 2 cards covering National Certification Schemes (U4E) and Training Programmes (GIZ Proklima, NOUs). (2026-05-07)
 - [x] **High | UI** — Replaced 3-box "Managing the Transition" layout with 6-step lifecycle infographic (Policy & Standards → Technician Training → Responsible Deployment → Leak Prevention → End-of-Life Recovery → Reclamation & Destruction) plus Technical Safeguards bar (Flammability, Toxicity, High Pressure, PFAS). (2026-05-07)
-- [ ] **Medium | Content** — Add links to EIA fact sheets and other summaries of major regulations, including the EU F-Gas rule.
-- [ ] **Medium | UI** — Add a dedicated section showing Kigali Amendment ratification status and phase-down schedules by country group (Article 5 and non-Article 5).
-- [ ] **Medium | Data** — Ensure Kigali ratification count is kept current via API or automated update — do not leave as a hard-coded number. (Session 2, 2026-04-22)
+- [x] **Medium | Content** — EIA International, UNEP OzonAction Kigali fact sheet series, and EU F-Gas Regulation (2024/573) resource cards added to Resources section. (2026-05-07)
+- [x] **Medium | UI** — Ratification map restored in Section 2 (Global Progress); 4-group phase-down schedule cards (Non-A5, Non-A5★, A5 G1, A5 G2) with correct Annex F milestones and baselines; map color-coded by KIP ambition tier (ambitious >10% / standard 10% / no KIP / not ratified); country click shows approved KIP target. (2026-05-07)
+- [x] **Medium | Data** — Ratification count now derived live from kigaliData (kip table). Falls back to 172 if data not loaded. Hard-coded value removed from stat card and h2 heading. (2026-05-07)
 
 ---
 

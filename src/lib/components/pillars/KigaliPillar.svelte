@@ -31,12 +31,15 @@
   const meta = VIEW_META.kigali;
   const kigaliContent = pillarContent.kigali;
 
+  // Derive ratification count live from data (falls back to 172 if data not loaded yet)
+  $: ratifiedCount = kigaliData.filter((k: any) => k.kigali_party === 1).length || 172;
+
   // Animated stat cards
-  const kigaliStats = [
+  $: kigaliStats = [
     {
-      value: '172',
+      value: String(ratifiedCount),
       label: 'Kigali parties ratified',
-      context: '172 countries have ratified the Kigali Amendment, covering over 95% of global HFC consumption. Source: UNEP Ozone Secretariat (Feb 2026).'
+      context: `${ratifiedCount} countries have ratified the Kigali Amendment, covering over 95% of global HFC consumption. Source: UNEP Ozone Secretariat.`
     },
     {
       value: '0.5\u00B0C',
@@ -1051,7 +1054,7 @@
          ═══════════════════════════════════════════════════ -->
     <div class="k-section" class:revealed>
       <span class="k-eyebrow k-eyebrow-xl">Global Progress</span>
-      <h2 class="k-title k-title-xl">172 Countries Have Signed. Now Comes the Hard Part.</h2>
+      <h2 class="k-title k-title-xl">{ratifiedCount} Countries Have Signed. Now Comes the Hard Part.</h2>
       <p class="k-body">As of April 2026, 172 countries have ratified the Kigali Amendment, bringing 95% of global HFC consumption under a legally binding framework. However, ratification is only the initial milestone. The true measure of success lies in execution: whether national phasedown schedules translate into converted manufacturing lines, modernised safety codes for flammable alternatives, and robust recovery infrastructure. The transition depends on shifting the entire market from high-GWP HFCs to climate-safe, sustainable alternatives.</p>
 
       <!-- Chart highlights -->
