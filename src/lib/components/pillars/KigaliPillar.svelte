@@ -94,6 +94,56 @@
 
   let revealed = false;
 
+  // Group type normalizer — kip table stores short codes like "A2", "A5", "A5G2"
+  function getGroupCategory(g: string): 'nonA5' | 'nonA5star' | 'a5g1' | 'a5g2' | 'unknown' {
+    if (!g) return 'unknown';
+    const t = g.trim().toUpperCase().replace(/[\s-]+/g, '');
+    if (t.includes('*') || t.includes('STAR') || t === 'A2*' || t === 'NA5*') return 'nonA5star';
+    if (t === 'A2' || t === 'NA5' || t === 'NONA5' || t.startsWith('NONARTICLE5') || t.startsWith('NONARTICLE')) return 'nonA5';
+    if (t === 'A5G2' || t.includes('GROUP2')) return 'a5g2';
+    if (t === 'A5' || t === 'A5G1' || t.startsWith('ARTICLE5') || t.includes('GROUP1')) return 'a5g1';
+    return 'unknown';
+  }
+
+  function getGroupDisplayName(groupType: string): string {
+    const cat = getGroupCategory(groupType);
+    if (cat === 'nonA5')    return 'Non-Article 5';
+    if (cat === 'nonA5star') return 'Non-Article 5 ★';
+    if (cat === 'a5g1')     return 'Article 5 — Group 1';
+    if (cat === 'a5g2')     return 'Article 5 — Group 2';
+    return groupType || 'Unknown';
+  }
+
+  // ── EU F-Gas Regulation (2024/573) ───────────────────────────────────────────
+  // HFC quota as % of baseline — key transition steps (not every year)
+  const EU_FGAS_STEPS = [
+    { year: 2015, pct: 100, note: 'Baseline' },
+    { year: 2016, pct: 93  },
+    { year: 2018, pct: 63  },
+    { year: 2021, pct: 45  },
+    { year: 2024, pct: 31  },
+    { year: 2025, pct: 24  },
+    { year: 2027, pct: 12  },
+    { year: 2030, pct: 5   },
+    { year: 2036, pct: 4   },
+    { year: 2048, pct: 2   },
+    { year: 2050, pct: 0,  note: 'Complete phase-out' },
+  ];
+
+  // ISO alpha-3 codes of all 27 EU member states
+  const EU_MEMBER_STATES = new Set([
+    'AUT','BEL','BGR','HRV','CYP','CZE','DNK','EST','FIN','FRA',
+    'DEU','GRC','HUN','IRL','ITA','LVA','LTU','LUX','MLT','NLD',
+    'POL','PRT','ROU','SVK','SVN','ESP','SWE'
+  ]);
+
+  // Exposed from onMount so the reactive statement can trigger a map recolor
+  // when countryScheduleOverrides data arrives (handles late async data arrival)
+  let _refreshKigaliColors: (() => void) | null = null;
+  $: if (countryScheduleOverrides.length > 0 && _refreshKigaliColors) {
+    _refreshKigaliColors();
+  }
+
   // Country sync — exposed after D3 init
   let _applyKigaliCountry: ((code: string | null) => void) | null = null;
   $: { const _c = $page?.url?.searchParams?.get('country') ?? null; if (_applyKigaliCountry) _applyKigaliCountry(_c); }
@@ -277,14 +327,32 @@
         : { level: 'notratified', label: 'Not Ratified' };
     }
 
-    // Build override lookup (country_code → override row)
-    const overrideMap = new Map<string, any>(
-      countryScheduleOverrides.map((o: any) => [o.country_code, o])
-    );
+    // KIP override lookup — reads current prop value directly (not cached at mount time)
+    // This avoids a timing bug where data arrives after onMount and the map stays all-grey.
+    function getKipOverride(code: string): any | null {
+      return countryScheduleOverrides.find((o: any) => o.country_code === code) ?? null;
+    }
 
     function getKipTier(code: string): 'ambitious' | 'standard' | 'none' {
-      const o = overrideMap.get(code);
+      // All Non-Article 5 countries have legally binding phase-down plans → dark green
+      const kigaliRec = kigaliData.find((k: any) => k.country_code === code);
+      if (kigaliRec?.kigali_party === 1) {
+        const cat = getGroupCategory(kigaliRec.group_type ?? '');
+        if (cat === 'nonA5' || cat === 'nonA5star') return 'ambitious';
+      }
+      // EU member states also always ambitious (stricter domestic F-Gas regulation)
+      if (EU_MEMBER_STATES.has(code)) return 'ambitious';
+      const o = getKipOverride(code);
       if (!o) return 'none';
+      // A5 countries: ambitious if reduction > 10% (by 2029) or > 12% (by any later year)
+      const oCat = getGroupCategory(o.group_type ?? '');
+      if (oCat === 'a5g1' || oCat === 'a5g2') {
+        const pct = o.step1_pct ?? 0;
+        const yr  = o.step1_year;
+        if (yr === 2029 && pct > 10) return 'ambitious';
+        if (yr !== 2029 && yr != null && pct > 12) return 'ambitious';
+        return 'standard';
+      }
       return (o.step1_pct ?? 0) > 10 ? 'ambitious' : 'standard';
     }
 
@@ -334,9 +402,9 @@
       const legend = document.getElementById('kigali-legend');
       if (!legend) return;
       legend.innerHTML = `
-    <div class="legend-item"><div class="legend-color" style="background:#2D7D5A"></div>Ambitious KIP (&gt;10%)</div>
-    <div class="legend-item"><div class="legend-color" style="background:#6BADA0"></div>Standard KIP (10%)</div>
-    <div class="legend-item"><div class="legend-color" style="background:#B8D4C4;border:1px solid #a0c0b4;"></div>Ratified, no KIP yet</div>
+    <div class="legend-item"><div class="legend-color" style="background:#2D7D5A"></div>More ambitious reduction plan</div>
+    <div class="legend-item"><div class="legend-color" style="background:#6BADA0"></div>Standard reduction plan (A5 KIP)</div>
+    <div class="legend-item"><div class="legend-color" style="background:#B8D4C4;border:1px solid #a0c0b4;"></div>Ratified only</div>
     <div class="legend-item"><div class="legend-color" style="background:#e5e7eb;border:1px solid #cbd5e1;"></div>Not ratified</div>
   `;
     }
@@ -411,7 +479,7 @@
         })();
 
       try {
-        const world = await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json');
+        const world = await d3.json('/countries-50m.json');
         const countriesGeo = (window as any).topojson.feature(world, world.objects.countries);
 
         kigaliMapSvg.selectAll('path')
@@ -476,6 +544,8 @@
       updateKigaliLegend();
       updateKigaliProgress();
     }
+    // Expose so reactive statement can recolor when data arrives after mount
+    _refreshKigaliColors = updateKigaliMap;
 
     // ── Chart render functions ────────────────────────────────────────────────
 
@@ -789,26 +859,74 @@
 
       const kipSavings  = bauDirect > 0 ? ((bauDirect - kipDirect) / bauDirect * 100).toFixed(1) : '0';
 
-      let timeline = '';
-      if (groupType === 'Non-Article 5*' || groupType.includes('Non-Article 5*')) {
-        timeline = '5% by 2020 \u00B7 35% by 2025 \u00B7 70% by 2029 \u00B7 80% by 2034 \u00B7 85% by 2036';
-      } else if (groupType.includes('Non-Article')) {
-        timeline = '10% by 2019 \u00B7 40% by 2024 \u00B7 70% by 2029 \u00B7 80% by 2034 \u00B7 85% by 2036';
-      } else if (groupType.includes('Group 1')) {
-        timeline = 'Freeze: 2024 \u00B7 10% by 2029 \u00B7 30% by 2035 \u00B7 50% by 2040 \u00B7 80% by 2045';
-      } else if (groupType.includes('Group 2')) {
-        timeline = 'Freeze: 2028 \u00B7 10% by 2032 \u00B7 20% by 2037 \u00B7 30% by 2042 \u00B7 85% by 2047';
+      // Normalize raw group type code (e.g. "A2" → "nonA5") for display and logic
+      const groupCat = getGroupCategory(groupType);
+      const groupDisplayName = getGroupDisplayName(groupType);
+
+      const isEU = EU_MEMBER_STATES.has(code);
+      const kipOverride = getKipOverride(code);
+      const tier = getKipTier(code); // 'ambitious' | 'standard' | 'none'
+
+      // Timeline card colors based on tier
+      let timelineLabel = 'Phase-Down Timeline';
+      let timelineAccent: string;
+      let timelineBg: string;
+      if (isEU) {
+        timelineLabel = 'EU F-Gas Regulation (2024/573)';
+        timelineAccent = '#93c5fd';
+        timelineBg = 'linear-gradient(135deg,#1e3a5f,#2d6bb5)';
+      } else if (tier === 'ambitious') {
+        timelineAccent = '#A8D5A2';
+        timelineBg = 'linear-gradient(135deg,#1A3D2B 0%,#2D5A3D 100%)';
+      } else if (tier === 'standard') {
+        timelineAccent = '#A8D5C8';
+        timelineBg = 'linear-gradient(135deg,#1A3D3D 0%,#2D6060 100%)';
+      } else {
+        timelineAccent = '#C0DDD0';
+        timelineBg = 'linear-gradient(135deg,#2A4A40 0%,#3A6858 100%)';
       }
 
-      // Look up approved KIP target for this country
-      const kipOverride = overrideMap.get(code);
-      const kipLabel = kipOverride
-        ? `${kipOverride.step1_pct}% by ${kipOverride.step1_year}${kipOverride.step2_pct ? ` · ${kipOverride.step2_pct}% by ${kipOverride.step2_year}` : ''}`
-        : null;
-      const kipIsAmbitious = kipOverride && (kipOverride.step1_pct ?? 0) > 10;
+      // Build timeline as array — replace first step with actual KIP target when available
+      const tsEU = isEU ? EU_FGAS_STEPS.map((s: any) => ({ label: `${s.pct}% by ${s.year}${s.note ? ' (' + s.note + ')' : ''}`, isKip: false })) : null;
+      const kip1 = kipOverride ? { label: `${kipOverride.step1_pct}% by ${kipOverride.step1_year}`, isKip: true } : null;
+      const kip2 = kipOverride?.step2_pct ? { label: `${kipOverride.step2_pct}% by ${kipOverride.step2_year}`, isKip: true } : null;
+
+      let timelineSteps: { label: string; isKip: boolean }[] = [];
+      if (isEU && tsEU) {
+        timelineSteps = tsEU;
+      } else if (groupCat === 'nonA5star') {
+        timelineSteps = [
+          { label: '5% by 2020', isKip: false }, { label: '35% by 2025', isKip: false },
+          { label: '70% by 2029', isKip: false }, { label: '80% by 2034', isKip: false },
+          { label: '85% by 2036', isKip: false }
+        ];
+      } else if (groupCat === 'nonA5') {
+        timelineSteps = [
+          { label: '10% by 2019', isKip: false }, { label: '40% by 2024', isKip: false },
+          { label: '70% by 2029', isKip: false }, { label: '80% by 2034', isKip: false },
+          { label: '85% by 2036', isKip: false }
+        ];
+      } else if (groupCat === 'a5g1') {
+        timelineSteps = [
+          { label: 'Freeze: 2024', isKip: false },
+          kip1 ?? { label: '10% by 2029', isKip: false },
+          kip2 ?? { label: '30% by 2035', isKip: false },
+          { label: '50% by 2040', isKip: false },
+          { label: '80% by 2045', isKip: false }
+        ];
+      } else if (groupCat === 'a5g2') {
+        timelineSteps = [
+          { label: 'Freeze: 2028', isKip: false },
+          kip1 ?? { label: '10% by 2032', isKip: false },
+          { label: '20% by 2037', isKip: false },
+          { label: '30% by 2042', isKip: false },
+          { label: '85% by 2047', isKip: false }
+        ];
+      }
+
       const statusColor = !kigaliRecord?.kigali_party ? '#94a3b8'
-        : kipIsAmbitious ? '#2D7D5A'
-        : kipOverride   ? '#6BADA0'
+        : tier === 'ambitious' ? '#2D7D5A'
+        : tier === 'standard'  ? '#6BADA0'
         : '#B8D4C4';
 
       container.innerHTML = `
@@ -820,26 +938,17 @@
           </div>
           <div style="background:#f8fafb;border-radius:8px;padding:0.6rem 0.75rem;border-left:3px solid #6BADA0;">
             <div style="font-size:0.68rem;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Group Type</div>
-            <div style="font-size:0.9rem;font-weight:700;color:#1e293b;">${groupType}</div>
+            <div style="font-size:0.9rem;font-weight:700;color:#1e293b;">${groupDisplayName}</div>
           </div>
         </div>
-        ${kipLabel ? `
-        <div style="background:${kipIsAmbitious ? 'linear-gradient(135deg,#1A4A2E,#2D7D5A)' : 'linear-gradient(135deg,#1A3D3D,#2D6B6B)'};border-radius:10px;padding:0.75rem 1rem;margin-bottom:0.75rem;">
-          <div style="font-size:0.68rem;font-weight:700;color:${kipIsAmbitious ? '#A8D5A2' : '#A8D5C8'};text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.35rem;">
-            <i class="fa-solid fa-circle-check" style="margin-right:0.3rem;"></i>Approved KIP Target${kipIsAmbitious ? ' — More Ambitious' : ''}
-          </div>
-          <div style="font-size:0.9rem;font-weight:700;color:#fff;">${kipLabel}</div>
-        </div>` : kigaliRecord?.kigali_party ? `
-        <div style="background:#f8fafc;border-radius:10px;padding:0.6rem 0.85rem;margin-bottom:0.75rem;border:1px dashed #cbd5e1;">
-          <div style="font-size:0.75rem;color:#64748b;font-style:italic;"><i class="fa-solid fa-clock" style="margin-right:0.3rem;color:#94a3b8;"></i>No approved KIP target on record</div>
-        </div>` : ''}
-        ${timeline ? `
-<div style="background:linear-gradient(135deg,#1A3D2B 0%,#2D5A3D 100%);border-radius:12px;padding:1rem 1.25rem;margin-bottom:0.75rem;box-shadow:0 2px 8px rgba(0,0,0,0.15);">
-  <div style="font-size:0.75rem;font-weight:700;color:#A8D5A2;margin-bottom:0.65rem;letter-spacing:0.5px;text-transform:uppercase;">
-    <i class="fa-solid fa-clock-rotate-left" style="margin-right:0.4rem;"></i>Phase-Down Timeline
+        ${timelineSteps.length > 0 ? `
+<div style="background:${timelineBg};border-radius:12px;padding:1rem 1.25rem;margin-bottom:0.75rem;box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+  <div style="font-size:0.75rem;font-weight:700;color:${timelineAccent};margin-bottom:0.65rem;letter-spacing:0.5px;text-transform:uppercase;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+    <span><i class="fa-solid fa-clock-rotate-left" style="margin-right:0.4rem;"></i>${timelineLabel}</span>
+    ${tier === 'ambitious' && kipOverride && !isEU ? `<span style="font-size:0.62rem;font-weight:700;color:#fff;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.3);border-radius:12px;padding:0.15rem 0.55rem;text-transform:uppercase;letter-spacing:0.3px;">More ambitious first target</span>` : ''}
   </div>
   <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
-    ${timeline.split('\u00B7').map((m: string) => `<span style="background:rgba(255,255,255,0.15);color:#fff;padding:0.3rem 0.7rem;border-radius:20px;font-size:0.8rem;font-weight:600;white-space:nowrap;border:1px solid rgba(255,255,255,0.2);">${m.trim()}</span>`).join('')}
+    ${timelineSteps.map((s: any) => `<span style="background:${s.isKip ? 'rgba(255,255,255,0.28)' : 'rgba(255,255,255,0.13)'};color:#fff;padding:0.3rem 0.7rem;border-radius:20px;font-size:0.8rem;font-weight:${s.isKip ? '700' : '600'};white-space:nowrap;border:1px solid ${s.isKip ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.18)'};">${s.label}</span>`).join('')}
   </div>
 </div>` : ''}
         ${bauDirect > 0 ? `
@@ -859,7 +968,7 @@
         </div>
         <div style="font-size:0.72rem;color:#64748b;">
           <i class="fa-solid fa-bolt" style="color:#D4A843;margin-right:0.3rem;"></i>Indirect (electricity): ${bauIndirect.toFixed(2)} Mt (2030 BAU)
-        </div>` : '<div style="font-size:0.75rem;color:#94a3b8;font-style:italic;">No Subcool model data available for this country.</div>'}
+        </div>` : ''}
         <div style="margin-top:0.5rem;font-size:0.68rem;color:#94a3b8;">
           Montreal Protocol: ${montrealStatus} \u00B7 Source: UNEP Ozone Secretariat, HEAT Subcool Model
         </div>
@@ -1055,7 +1164,7 @@
     <div class="k-section" class:revealed>
       <span class="k-eyebrow k-eyebrow-xl">Global Progress</span>
       <h2 class="k-title k-title-xl">{ratifiedCount} Countries Have Signed. Now Comes the Hard Part.</h2>
-      <p class="k-body">As of April 2026, 172 countries have ratified the Kigali Amendment, bringing 95% of global HFC consumption under a legally binding framework. However, ratification is only the initial milestone. The true measure of success lies in execution: whether national phasedown schedules translate into converted manufacturing lines, modernised safety codes for flammable alternatives, and robust recovery infrastructure. The transition depends on shifting the entire market from high-GWP HFCs to climate-safe, sustainable alternatives.</p>
+      <p class="k-body">As of April 2026, {ratifiedCount} countries have ratified the Kigali Amendment, bringing 95% of global HFC consumption under a legally binding framework. However, ratification is only the initial milestone. The true measure of success lies in execution: whether national phasedown schedules translate into converted manufacturing lines, modernised safety codes for flammable alternatives, and robust recovery infrastructure. The transition depends on shifting the entire market from high-GWP HFCs to climate-safe, sustainable alternatives.</p>
 
       <!-- Chart highlights -->
       <div class="kigali-chart-highlights">
@@ -1101,82 +1210,65 @@
 
       <!-- Phase-down groups: 4-card grid (Annex F) -->
       <div class="kigali-stages-grid">
-        <div class="kigali-stage-item">
-          <div class="kigali-stage-label" style="background: #0369a1; color: #fff;">Non-Article 5</div>
-          <div class="kigali-stage-baseline">Baseline: avg HFC 2011–2013 + 15% of HCFC</div>
-          <ul class="kigali-stage-milestones">
-            <li><strong>2019</strong> — 10% reduction (→ 90%)</li>
-            <li><strong>2024</strong> — 40% reduction (→ 60%)</li>
-            <li><strong>2029</strong> — 70% reduction (→ 30%)</li>
-            <li><strong>2034</strong> — 80% reduction (→ 20%)</li>
-            <li><strong>2036</strong> — 85% reduction (→ 15%)</li>
-          </ul>
+        <div class="kigali-stage-item" style="--step-accent:#0369a1;">
+          <div class="kigali-stage-label" style="background:#0369a1;color:#fff;">
+            Non-Article 5
+            <div class="kgsl-sub">Developed countries</div>
+          </div>
+          <div class="kigali-stage-baseline">Avg HFC 2011–2013 + 15% of HCFC baseline</div>
+          <div class="kigali-stage-milestones">
+            <div class="kgs-step"><span class="kgs-yr">2019</span><span class="kgs-red">−10%</span></div>
+            <div class="kgs-step"><span class="kgs-yr">2024</span><span class="kgs-red">−40%</span></div>
+            <div class="kgs-step"><span class="kgs-yr">2029</span><span class="kgs-red">−70%</span></div>
+            <div class="kgs-step"><span class="kgs-yr">2034</span><span class="kgs-red">−80%</span></div>
+            <div class="kgs-step kgs-final"><span class="kgs-yr">2036</span><span class="kgs-red">−85%</span></div>
+          </div>
           <p class="kigali-stage-note">EU, USA, Japan, Australia, most OECD countries.</p>
         </div>
-        <div class="kigali-stage-item">
-          <div class="kigali-stage-label" style="background: #1d6d8f; color: #fff;">Non-Article 5 ★</div>
-          <div class="kigali-stage-baseline">Baseline: avg HFC 2011–2013 + 25% of HCFC</div>
-          <ul class="kigali-stage-milestones">
-            <li><strong>2020</strong> — 5% reduction (→ 95%)</li>
-            <li><strong>2025</strong> — 35% reduction (→ 65%)</li>
-            <li><strong>2029</strong> — 70% reduction (→ 30%)</li>
-            <li><strong>2034</strong> — 80% reduction (→ 20%)</li>
-            <li><strong>2036</strong> — 85% reduction (→ 15%)</li>
-          </ul>
-          <p class="kigali-stage-note">Belarus, Kazakhstan, Russian Federation, Tajikistan, Uzbekistan.</p>
+        <div class="kigali-stage-item" style="--step-accent:#1d6d8f;">
+          <div class="kigali-stage-label" style="background:#1d6d8f;color:#fff;">
+            Non-Article 5 ★
+            <div class="kgsl-sub">Belarus, Kazakhstan, Russia, Tajikistan, Uzbekistan</div>
+          </div>
+          <div class="kigali-stage-baseline">Avg HFC 2011–2013 + 25% of HCFC baseline</div>
+          <div class="kigali-stage-milestones">
+            <div class="kgs-step"><span class="kgs-yr">2020</span><span class="kgs-red">−5%</span></div>
+            <div class="kgs-step"><span class="kgs-yr">2025</span><span class="kgs-red">−35%</span></div>
+            <div class="kgs-step"><span class="kgs-yr">2029</span><span class="kgs-red">−70%</span></div>
+            <div class="kgs-step"><span class="kgs-yr">2034</span><span class="kgs-red">−80%</span></div>
+            <div class="kgs-step kgs-final"><span class="kgs-yr">2036</span><span class="kgs-red">−85%</span></div>
+          </div>
+          <p class="kigali-stage-note">Slightly later start, same end target as Non-Article 5.</p>
         </div>
-        <div class="kigali-stage-item">
-          <div class="kigali-stage-label" style="background: #0284c7; color: #fff;">Article 5 — Group 1</div>
-          <div class="kigali-stage-baseline">Baseline: avg HFC 2020–2022 + 65% of HCFC</div>
-          <ul class="kigali-stage-milestones">
-            <li><strong>2024</strong> — Freeze at baseline</li>
-            <li><strong>2029</strong> — 10% reduction (→ 90%)</li>
-            <li><strong>2035</strong> — 30% reduction (→ 70%)</li>
-            <li><strong>2040</strong> — 50% reduction (→ 50%)</li>
-            <li><strong>2045</strong> — 80% reduction (→ 20%)</li>
-          </ul>
-          <p class="kigali-stage-note">Most African, Latin American, and Southeast Asian developing countries.</p>
+        <div class="kigali-stage-item" style="--step-accent:#0284c7;">
+          <div class="kigali-stage-label" style="background:#0284c7;color:#fff;">
+            Article 5 — Group 1
+            <div class="kgsl-sub">Most developing countries</div>
+          </div>
+          <div class="kigali-stage-baseline">Avg HFC 2020–2022 + 65% of HCFC baseline</div>
+          <div class="kigali-stage-milestones">
+            <div class="kgs-step"><span class="kgs-yr">2024</span><span class="kgs-freeze-badge">Freeze</span></div>
+            <div class="kgs-step"><span class="kgs-yr">2029</span><span class="kgs-red">−10%</span></div>
+            <div class="kgs-step"><span class="kgs-yr">2035</span><span class="kgs-red">−30%</span></div>
+            <div class="kgs-step"><span class="kgs-yr">2040</span><span class="kgs-red">−50%</span></div>
+            <div class="kgs-step kgs-final"><span class="kgs-yr">2045</span><span class="kgs-red">−80%</span></div>
+          </div>
+          <p class="kigali-stage-note">Africa, Latin America, Southeast Asia and most other developing countries.</p>
         </div>
-        <div class="kigali-stage-item">
-          <div class="kigali-stage-label" style="background: #0ea5e9; color: #fff;">Article 5 — Group 2</div>
-          <div class="kigali-stage-baseline">Baseline: avg HFC 2024–2026 + 65% of HCFC</div>
-          <ul class="kigali-stage-milestones">
-            <li><strong>2028</strong> — Freeze at baseline</li>
-            <li><strong>2032</strong> — 10% reduction (→ 90%)</li>
-            <li><strong>2037</strong> — 20% reduction (→ 80%)</li>
-            <li><strong>2042</strong> — 30% reduction (→ 70%)</li>
-            <li><strong>2047</strong> — 85% reduction (→ 15%)</li>
-          </ul>
+        <div class="kigali-stage-item" style="--step-accent:#0ea5e9;">
+          <div class="kigali-stage-label" style="background:#0ea5e9;color:#fff;">
+            Article 5 — Group 2
+            <div class="kgsl-sub">High-ambient-temperature countries</div>
+          </div>
+          <div class="kigali-stage-baseline">Avg HFC 2024–2026 + 65% of HCFC baseline</div>
+          <div class="kigali-stage-milestones">
+            <div class="kgs-step"><span class="kgs-yr">2028</span><span class="kgs-freeze-badge">Freeze</span></div>
+            <div class="kgs-step"><span class="kgs-yr">2032</span><span class="kgs-red">−10%</span></div>
+            <div class="kgs-step"><span class="kgs-yr">2037</span><span class="kgs-red">−20%</span></div>
+            <div class="kgs-step"><span class="kgs-yr">2042</span><span class="kgs-red">−30%</span></div>
+            <div class="kgs-step kgs-final"><span class="kgs-yr">2047</span><span class="kgs-red">−85%</span></div>
+          </div>
           <p class="kigali-stage-note">Bahrain, India, Iran, Iraq, Kuwait, Oman, Pakistan, Qatar, Saudi Arabia, UAE.</p>
-        </div>
-      </div>
-
-      <!-- Ratification Map — directly under the schedule cards -->
-      <div class="chart-card map-card" style="margin-top:1.25rem;">
-        <div class="chart-card-header" style="padding:1rem 1rem 0.5rem; border-bottom:1px solid #e2e8f0;">
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
-            <div>
-              <p class="chart-subtitle" style="margin:0 0 0.25rem;">Ratification Status by Country</p>
-              <span style="font-size:0.72rem;color:#64748b;">Click any country to see its group and phase-down schedule &nbsp;·&nbsp; Source: UNEP Ozone Secretariat</span>
-            </div>
-            <div id="kigali-legend" style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;font-size:0.75rem;"></div>
-          </div>
-          <!-- Ratification progress bar -->
-          <div style="margin-top:0.75rem;height:8px;border-radius:999px;overflow:hidden;background:#e5e7eb;display:flex;">
-            <div id="kigali-progress-ratified" style="height:100%;background:#6BADA0;width:0%;transition:width 0.8s ease;border-radius:999px 0 0 999px;"></div>
-            <div id="kigali-progress-notratified" style="height:100%;background:#e5e7eb;width:0%;transition:width 0.8s ease;"></div>
-          </div>
-        </div>
-        <div class="chart-card-body" style="padding:0;">
-          <div id="kigali-map-container" style="width:100%;height:420px;cursor:pointer;"></div>
-        </div>
-        <!-- Country detail panel -->
-        <div id="kigali-country-detail" style="border-top:1px solid #e2e8f0;padding:1rem;">
-          <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;font-size:0.72rem;color:#64748b;">
-            <i class="fa-solid fa-location-dot" style="color:#6BADA0;"></i>
-            Viewing: <strong id="kigali-viewing" style="color:#1e293b;">Global</strong>
-          </div>
-          <div class="country-detail"></div>
         </div>
       </div>
 
@@ -1212,6 +1304,44 @@
       <!-- Market momentum callout -->
       <div class="k-callout">
         <strong>Market Momentum</strong>: Leading manufacturers in China and India are already producing R-290 split ACs at scale, proving that leapfrogging to natural refrigerants is a viable, ready-to-scale reality.
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         SECTION 3b — RATIFICATION & KIP PROGRESS MAP
+         ═══════════════════════════════════════════════════ -->
+    <div class="k-section" class:revealed>
+      <span class="k-eyebrow k-eyebrow-xl">Ratification Progress</span>
+      <h2 class="k-title k-title-xl">Who Has Ratified — and What Are Their Commitments?</h2>
+      <p class="k-body">{ratifiedCount} countries have ratified the Kigali Amendment, committing to legally binding HFC phase-down schedules. Developing countries (Article 5) with an approved Kigali Implementation Plan (KIP) have set their first reduction target — some going beyond the 10% default. Click any country to see its group, phase-down schedule, and approved KIP target.</p>
+
+      <!-- Ratification Map -->
+      <div class="chart-card map-card" style="margin-top:1.25rem;">
+        <div class="chart-card-body" style="padding:0;">
+          <div id="kigali-map-container" style="width:100%;height:420px;cursor:pointer;"></div>
+        </div>
+        <!-- Legend -->
+        <div id="kigali-legend" style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;font-size:0.75rem;padding:0.75rem 1rem;border-top:1px solid #e2e8f0;background:#f8fafb;"></div>
+        <!-- Ratification progress bar -->
+        <div style="padding:0.5rem 1rem 0.75rem;background:#f8fafb;border-top:1px solid #f1f5f9;">
+          <div style="height:8px;border-radius:999px;overflow:hidden;background:#e5e7eb;display:flex;">
+            <div id="kigali-progress-ratified" style="height:100%;background:#6BADA0;width:0%;transition:width 0.8s ease;border-radius:999px 0 0 999px;"></div>
+            <div id="kigali-progress-notratified" style="height:100%;background:#e5e7eb;width:0%;transition:width 0.8s ease;"></div>
+          </div>
+        </div>
+        <!-- Country detail panel -->
+        <div id="kigali-country-detail" style="border-top:1px solid #e2e8f0;padding:1rem;">
+          <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;font-size:0.72rem;color:#64748b;">
+            <i class="fa-solid fa-location-dot" style="color:#6BADA0;"></i>
+            Viewing: <strong id="kigali-viewing" style="color:#1e293b;">Global</strong>
+          </div>
+          <div class="country-detail"></div>
+        </div>
+        <!-- Source bar -->
+        <div class="kigali-map-source-bar">
+          <i class="fa-solid fa-database"></i>
+          <span>Source: <a href="https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment-2016" target="_blank" rel="noopener noreferrer">UNEP Ozone Secretariat</a> &nbsp;·&nbsp; KIP data: <a href="https://www.multilateralfund.org/" target="_blank" rel="noopener noreferrer">Multilateral Fund (ExCom 97)</a></span>
+        </div>
       </div>
     </div>
 
@@ -1917,37 +2047,90 @@
   }
 
   .kigali-stage-label {
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     font-weight: 700;
-    padding: 0.4rem 0.75rem;
+    padding: 0.5rem 0.75rem;
     letter-spacing: 0.01em;
+    line-height: 1.3;
+  }
+
+  .kgsl-sub {
+    font-size: 0.62rem;
+    font-weight: 500;
+    opacity: 0.85;
+    margin-top: 0.15rem;
+    white-space: normal;
+    line-height: 1.3;
   }
 
   .kigali-stage-baseline {
-    font-size: 0.68rem;
+    font-size: 0.64rem;
     color: #64748b;
-    padding: 0.25rem 0.75rem 0;
+    padding: 0.3rem 0.75rem 0;
     font-style: italic;
+    line-height: 1.4;
   }
 
+  /* Redesigned milestone list — year on left, reduction badge on right */
   .kigali-stage-milestones {
-    list-style: none;
     margin: 0;
-    padding: 0.6rem 0.75rem;
+    padding: 0.5rem 0.75rem 0.35rem;
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 0.18rem;
   }
 
-  .kigali-stage-milestones li {
-    font-size: 0.8rem;
-    color: #334155;
-    line-height: 1.5;
+  .kgs-step {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.15rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
   }
 
-  .kigali-stage-milestones strong {
+  .kgs-final { border-bottom: none; }
+
+  .kgs-yr {
+    font-size: 0.78rem;
+    font-weight: 700;
     color: #0f172a;
   }
+
+  .kgs-red {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--step-accent, #0369a1);
+    background: color-mix(in srgb, var(--step-accent, #0369a1) 12%, white);
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+  }
+
+  .kgs-freeze-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: #fef9c3;
+    color: #78350f;
+    border-radius: 4px;
+    padding: 0.1rem 0.45rem;
+    border: 1px solid #fde68a;
+  }
+
+  /* Source bar at bottom of map card */
+  .kigali-map-source-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    border-radius: 0 0 12px 12px;
+    font-size: 0.7rem;
+    color: #64748b;
+  }
+
+  .kigali-map-source-bar i { color: #0369a1; font-size: 0.65rem; }
+  .kigali-map-source-bar a { color: #0369a1; text-decoration: none; font-weight: 600; }
+  .kigali-map-source-bar a:hover { text-decoration: underline; }
 
   .kigali-stage-note {
     font-size: 0.78rem;

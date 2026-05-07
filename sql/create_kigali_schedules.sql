@@ -36,3 +36,18 @@ CREATE TABLE IF NOT EXISTS kigali_country_schedule_overrides (
   step5_year            INT,  step5_pct NUMERIC,
   notes                 TEXT
 );
+
+-- ── Row Level Security (required for browser / anon-key reads) ────────────────
+ALTER TABLE kigali_group_schedules ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='kigali_group_schedules' AND policyname='Allow anon reads') THEN
+    CREATE POLICY "Allow anon reads" ON kigali_group_schedules FOR SELECT USING (true);
+  END IF;
+END $$;
+
+ALTER TABLE kigali_country_schedule_overrides ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename='kigali_country_schedule_overrides' AND policyname='Allow anon reads') THEN
+    CREATE POLICY "Allow anon reads" ON kigali_country_schedule_overrides FOR SELECT USING (true);
+  END IF;
+END $$;

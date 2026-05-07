@@ -12,50 +12,15 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { readFileSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
 
 // ---------------------------------------------------------------------------
-// .env loader (manual parse — no dotenv package required)
+// Supabase credentials — URL hard-coded, key from environment
 // ---------------------------------------------------------------------------
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const envPath = resolve(__dirname, '../.env');
+const SUPABASE_URL = 'https://hcpmdkkavtadgugrqohl.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
 
-try {
-  const envFile = readFileSync(envPath, 'utf8');
-  for (const line of envFile.split('\n')) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-    const eqIdx = trimmed.indexOf('=');
-    if (eqIdx === -1) continue;
-    const key = trimmed.slice(0, eqIdx).trim();
-    const val = trimmed.slice(eqIdx + 1).trim().replace(/^["']|["']$/g, '');
-    if (!process.env[key]) process.env[key] = val;
-  }
-} catch {
-  console.warn('Warning: could not read .env file — falling back to process environment.');
-}
-
-// ---------------------------------------------------------------------------
-// Resolve Supabase credentials (try multiple common key names)
-// ---------------------------------------------------------------------------
-const SUPABASE_URL =
-  process.env.PUBLIC_SUPABASE_URL ||
-  process.env.VITE_SUPABASE_URL ||
-  process.env.SUPABASE_URL;
-
-const SUPABASE_KEY =
-  process.env.SUPABASE_SERVICE_KEY ||
-  process.env.VITE_SUPABASE_ANON_KEY ||
-  process.env.SUPABASE_KEY;
-
-if (!SUPABASE_URL || !SUPABASE_KEY) {
-  console.error(
-    'ERROR: Missing Supabase credentials.\n' +
-    'Set one of PUBLIC_SUPABASE_URL / VITE_SUPABASE_URL and ' +
-    'SUPABASE_SERVICE_KEY / VITE_SUPABASE_ANON_KEY in your .env file.'
-  );
+if (!SUPABASE_KEY) {
+  console.error('Error: Set SUPABASE_SERVICE_KEY environment variable.\nUsage: SUPABASE_SERVICE_KEY=eyJ... node scripts/populate_kigali_schedules.mjs');
   process.exit(1);
 }
 
