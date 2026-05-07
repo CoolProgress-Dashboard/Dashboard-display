@@ -1045,35 +1045,6 @@
         {/each}
       </div>
 
-      <!-- Ratification Map -->
-      <div class="chart-card map-card" style="margin-top:1.5rem;">
-        <div class="chart-card-header" style="padding:1rem 1rem 0.5rem; border-bottom:1px solid #e2e8f0;">
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
-            <div>
-              <p class="chart-subtitle" style="margin:0 0 0.25rem;">Kigali Amendment Ratification Status</p>
-              <span style="font-size:0.72rem;color:#64748b;">Click any country for phase-down schedule and emissions projections &nbsp;·&nbsp; Source: UNEP Ozone Secretariat</span>
-            </div>
-            <div id="kigali-legend" style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;font-size:0.75rem;"></div>
-          </div>
-          <!-- Ratification progress bar -->
-          <div style="margin-top:0.75rem;height:8px;border-radius:999px;overflow:hidden;background:#e5e7eb;display:flex;">
-            <div id="kigali-progress-ratified" style="height:100%;background:#6BADA0;width:0%;transition:width 0.8s ease;border-radius:999px 0 0 999px;"></div>
-            <div id="kigali-progress-notratified" style="height:100%;background:#e5e7eb;width:0%;transition:width 0.8s ease;"></div>
-          </div>
-        </div>
-        <div class="chart-card-body" style="padding:0;">
-          <!-- Map surface -->
-          <div id="kigali-map-container" style="width:100%;height:420px;cursor:pointer;"></div>
-        </div>
-        <!-- Country detail panel -->
-        <div id="kigali-country-detail" style="border-top:1px solid #e2e8f0;padding:1rem;">
-          <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;font-size:0.72rem;color:#64748b;">
-            <i class="fa-solid fa-location-dot" style="color:#6BADA0;"></i>
-            Viewing: <strong id="kigali-viewing" style="color:#1e293b;">Global</strong>
-          </div>
-          <div class="country-detail"></div>
-        </div>
-      </div>
     </div>
 
 
@@ -1116,6 +1087,35 @@
             <li><strong>2047</strong> — Reduce to 15% of baseline</li>
           </ul>
           <p class="kigali-stage-note">India, Pakistan, Iran, Iraq, Gulf states.</p>
+        </div>
+      </div>
+
+      <!-- Ratification Map — directly under the schedule cards -->
+      <div class="chart-card map-card" style="margin-top:1.25rem;">
+        <div class="chart-card-header" style="padding:1rem 1rem 0.5rem; border-bottom:1px solid #e2e8f0;">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+            <div>
+              <p class="chart-subtitle" style="margin:0 0 0.25rem;">Ratification Status by Country</p>
+              <span style="font-size:0.72rem;color:#64748b;">Click any country to see its group and phase-down schedule &nbsp;·&nbsp; Source: UNEP Ozone Secretariat</span>
+            </div>
+            <div id="kigali-legend" style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;font-size:0.75rem;"></div>
+          </div>
+          <!-- Ratification progress bar -->
+          <div style="margin-top:0.75rem;height:8px;border-radius:999px;overflow:hidden;background:#e5e7eb;display:flex;">
+            <div id="kigali-progress-ratified" style="height:100%;background:#6BADA0;width:0%;transition:width 0.8s ease;border-radius:999px 0 0 999px;"></div>
+            <div id="kigali-progress-notratified" style="height:100%;background:#e5e7eb;width:0%;transition:width 0.8s ease;"></div>
+          </div>
+        </div>
+        <div class="chart-card-body" style="padding:0;">
+          <div id="kigali-map-container" style="width:100%;height:420px;cursor:pointer;"></div>
+        </div>
+        <!-- Country detail panel -->
+        <div id="kigali-country-detail" style="border-top:1px solid #e2e8f0;padding:1rem;">
+          <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;font-size:0.72rem;color:#64748b;">
+            <i class="fa-solid fa-location-dot" style="color:#6BADA0;"></i>
+            Viewing: <strong id="kigali-viewing" style="color:#1e293b;">Global</strong>
+          </div>
+          <div class="country-detail"></div>
         </div>
       </div>
 
