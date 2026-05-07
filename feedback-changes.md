@@ -85,12 +85,12 @@
 ## Refrigerant Transition (Kigali) Pillar
 
 - [x] **High | Content** — Remove the "Kigali Plus" trajectory line. Keep only BAU and Kigali Implementation.
-- [ ] **High | Bug Fix** — Fix HFC emissions chart: all scenario lines (BAU, Kigali Implementation, Kigali+) must share identical values before the base year (~2025). Lines must not diverge in the historical period — there is only one observed history. (Patrick + Ari, 2026-04-22)
-- [ ] **High | Data** — Add LBNL refrigerant market share data showing the R-410A → R-32 transition trend by key market.
-- [ ] **High | UI** — Redesign the refrigerant bank chart with 3 toggle views: (1) tonnes / bank mass, (2) MtCO2e / climate impact, (3) GWP-weighted share (%). Add a methodology note explaining the bank calculation approach.
-- [ ] **High | UI** — Add appliance scope label to the refrigerant bank chart header — specify which appliance categories are included (ACs only? ACs + refrigerators? All cooling + heating?). (Ari/CLASP, 2026-04-22)
-- [ ] **High | Content** — Add workforce training & certification as an explicit item under "Technical Standards and QCR". Cover: certified technician counts (by country if available), training programs (NOU, U4E, industry), certification schemes for flammable refrigerants. Training is the enabling thread connecting leak prevention, recovery, and reclamation. (Ari + Patrick, 2026-04-22)
-- [ ] **High | UI** — Replace the 3-box "Managing the Transition" layout with a 6-step lifecycle infographic: (1) Policy & Standards, (2) Technician Training, (3) Responsible Deployment, (4) Leak Prevention, (5) End-of-Life Recovery, (6) Reclamation & Destruction. Add a Technical Safeguards bar (Flammability, Toxicity, High Pressure, PFAS). Adapt draft infographic to CoolProgress L&F. (Ari + Patrick, 2026-04-22)
+- [x] **High | Bug Fix** — Fix HFC emissions chart: pre-2025 shows BAU only (one historical line); Kigali Implementation and Kigali+ branch from 2025 onward. Kigali+ reinstated as 3rd scenario post-2025. (2026-05-07)
+- [ ] **High | Data** — Add LBNL refrigerant market share data showing the R-410A → R-32 transition trend by key market. (Data not yet available.)
+- [x] **High | UI** — Refrigerant bank chart redesigned with 3 toggle views: GWP Share (%) / Bank Mass (tonnes) / Climate Impact (MtCO₂e). Methodology note link to COPA GIZ paper already present. (2026-05-07)
+- [x] **High | UI** — Appliance scope badges added to refrigerant bank chart header and direct emissions chart header (AC, Domestic Refrigerators, Commercial Refrigeration). (2026-05-07)
+- [x] **High | Content** — Workforce Training & Certification section added under "Managing the Transition": 2 cards covering National Certification Schemes (U4E) and Training Programmes (GIZ Proklima, NOUs). (2026-05-07)
+- [x] **High | UI** — Replaced 3-box "Managing the Transition" layout with 6-step lifecycle infographic (Policy & Standards → Technician Training → Responsible Deployment → Leak Prevention → End-of-Life Recovery → Reclamation & Destruction) plus Technical Safeguards bar (Flammability, Toxicity, High Pressure, PFAS). (2026-05-07)
 - [ ] **Medium | Content** — Add links to EIA fact sheets and other summaries of major regulations, including the EU F-Gas rule.
 - [ ] **Medium | UI** — Add a dedicated section showing Kigali Amendment ratification status and phase-down schedules by country group (Article 5 and non-Article 5).
 - [ ] **Medium | Data** — Ensure Kigali ratification count is kept current via API or automated update — do not leave as a hard-coded number. (Session 2, 2026-04-22)
