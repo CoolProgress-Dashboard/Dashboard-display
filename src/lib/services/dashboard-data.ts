@@ -196,7 +196,7 @@ export const loadDashboardData = async (
         url,
         key,
         'kip',
-        'country_code,country_name,kigali_party,montreal_protocol_party,group_type'
+        '*'  // TODO: narrow columns once we confirm kip table schema for schedule overrides
       ),
       safeFetch(
         url,

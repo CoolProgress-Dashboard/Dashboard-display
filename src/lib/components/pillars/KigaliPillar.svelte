@@ -770,8 +770,10 @@
       const kipSavings  = bauDirect > 0 ? ((bauDirect - kipDirect) / bauDirect * 100).toFixed(1) : '0';
 
       let timeline = '';
-      if (groupType.includes('Non-Article')) {
-        timeline = 'Freeze: 2019 \u00B7 40% by 2024 \u00B7 70% by 2029 \u00B7 80% by 2034 \u00B7 85% by 2036';
+      if (groupType === 'Non-Article 5*' || groupType.includes('Non-Article 5*')) {
+        timeline = '5% by 2020 \u00B7 35% by 2025 \u00B7 70% by 2029 \u00B7 80% by 2034 \u00B7 85% by 2036';
+      } else if (groupType.includes('Non-Article')) {
+        timeline = '10% by 2019 \u00B7 40% by 2024 \u00B7 70% by 2029 \u00B7 80% by 2034 \u00B7 85% by 2036';
       } else if (groupType.includes('Group 1')) {
         timeline = 'Freeze: 2024 \u00B7 10% by 2029 \u00B7 30% by 2035 \u00B7 50% by 2040 \u00B7 80% by 2045';
       } else if (groupType.includes('Group 2')) {
@@ -1056,37 +1058,55 @@
       <h2 class="k-title k-title-xl">Safe Alternatives Exist — and Are Already Being Deployed.</h2>
       <p class="k-body">There are proven, climate-safe alternatives to high-GWP refrigerants. The Kigali Amendment, adopted in 2016, establishes a legally binding schedule to phase down the most harmful HFCs by over 80%.</p>
 
-      <!-- Phase-down groups: 3-card grid -->
+      <!-- Phase-down groups: 4-card grid (Annex F) -->
       <div class="kigali-stages-grid">
         <div class="kigali-stage-item">
-          <div class="kigali-stage-label" style="background: #0369a1; color: #fff;">Non-Article 5 (Developed countries)</div>
+          <div class="kigali-stage-label" style="background: #0369a1; color: #fff;">Non-Article 5</div>
+          <div class="kigali-stage-baseline">Baseline: avg HFC 2011–2013 + 15% of HCFC</div>
           <ul class="kigali-stage-milestones">
-            <li><strong>2019</strong> — Freeze at baseline</li>
-            <li><strong>2024</strong> — Reduce to 60%</li>
-            <li><strong>2029</strong> — Reduce to 30%</li>
-            <li><strong>2036</strong> — Reduce to 15% of baseline</li>
+            <li><strong>2019</strong> — 10% reduction (→ 90%)</li>
+            <li><strong>2024</strong> — 40% reduction (→ 60%)</li>
+            <li><strong>2029</strong> — 70% reduction (→ 30%)</li>
+            <li><strong>2034</strong> — 80% reduction (→ 20%)</li>
+            <li><strong>2036</strong> — 85% reduction (→ 15%)</li>
           </ul>
           <p class="kigali-stage-note">EU, USA, Japan, Australia, most OECD countries.</p>
         </div>
         <div class="kigali-stage-item">
-          <div class="kigali-stage-label" style="background: #0284c7; color: #fff;">Article 5 Group 1 (Most developing countries)</div>
+          <div class="kigali-stage-label" style="background: #1d6d8f; color: #fff;">Non-Article 5 ★</div>
+          <div class="kigali-stage-baseline">Baseline: avg HFC 2011–2013 + 25% of HCFC</div>
           <ul class="kigali-stage-milestones">
-            <li><strong>2024</strong> — Freeze at baseline</li>
-            <li><strong>2029</strong> — Reduce to 90%</li>
-            <li><strong>2035</strong> — Reduce to 70%</li>
-            <li><strong>2045</strong> — Reduce to 20% of baseline</li>
+            <li><strong>2020</strong> — 5% reduction (→ 95%)</li>
+            <li><strong>2025</strong> — 35% reduction (→ 65%)</li>
+            <li><strong>2029</strong> — 70% reduction (→ 30%)</li>
+            <li><strong>2034</strong> — 80% reduction (→ 20%)</li>
+            <li><strong>2036</strong> — 85% reduction (→ 15%)</li>
           </ul>
-          <p class="kigali-stage-note">Most African, Latin American, Southeast Asian countries.</p>
+          <p class="kigali-stage-note">Belarus, Kazakhstan, Russian Federation, Tajikistan, Uzbekistan.</p>
         </div>
         <div class="kigali-stage-item">
-          <div class="kigali-stage-label" style="background: #0ea5e9; color: #fff;">Article 5 Group 2 (India, Pakistan, Gulf States)</div>
+          <div class="kigali-stage-label" style="background: #0284c7; color: #fff;">Article 5 — Group 1</div>
+          <div class="kigali-stage-baseline">Baseline: avg HFC 2020–2022 + 65% of HCFC</div>
+          <ul class="kigali-stage-milestones">
+            <li><strong>2024</strong> — Freeze at baseline</li>
+            <li><strong>2029</strong> — 10% reduction (→ 90%)</li>
+            <li><strong>2035</strong> — 30% reduction (→ 70%)</li>
+            <li><strong>2040</strong> — 50% reduction (→ 50%)</li>
+            <li><strong>2045</strong> — 80% reduction (→ 20%)</li>
+          </ul>
+          <p class="kigali-stage-note">Most African, Latin American, and Southeast Asian developing countries.</p>
+        </div>
+        <div class="kigali-stage-item">
+          <div class="kigali-stage-label" style="background: #0ea5e9; color: #fff;">Article 5 — Group 2</div>
+          <div class="kigali-stage-baseline">Baseline: avg HFC 2024–2026 + 65% of HCFC</div>
           <ul class="kigali-stage-milestones">
             <li><strong>2028</strong> — Freeze at baseline</li>
-            <li><strong>2032</strong> — Reduce to 90%</li>
-            <li><strong>2042</strong> — Reduce to 50%</li>
-            <li><strong>2047</strong> — Reduce to 15% of baseline</li>
+            <li><strong>2032</strong> — 10% reduction (→ 90%)</li>
+            <li><strong>2037</strong> — 20% reduction (→ 80%)</li>
+            <li><strong>2042</strong> — 30% reduction (→ 70%)</li>
+            <li><strong>2047</strong> — 85% reduction (→ 15%)</li>
           </ul>
-          <p class="kigali-stage-note">India, Pakistan, Iran, Iraq, Gulf states.</p>
+          <p class="kigali-stage-note">Bahrain, India, Iran, Iraq, Kuwait, Oman, Pakistan, Qatar, Saudi Arabia, UAE.</p>
         </div>
       </div>
 
@@ -1844,7 +1864,7 @@
 
   .kigali-stages-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 0.75rem;
   }
 
@@ -1860,6 +1880,13 @@
     font-weight: 700;
     padding: 0.4rem 0.75rem;
     letter-spacing: 0.01em;
+  }
+
+  .kigali-stage-baseline {
+    font-size: 0.68rem;
+    color: #64748b;
+    padding: 0.25rem 0.75rem 0;
+    font-style: italic;
   }
 
   .kigali-stage-milestones {
