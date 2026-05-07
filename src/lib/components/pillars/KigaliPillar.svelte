@@ -1182,20 +1182,24 @@
           </div>
         </div>
         <div class="k-lifecycle-arrow">→</div>
-        <div class="k-lifecycle-step" style="--step-color: #0284c7;">
+        <!-- Step 2 — links to Workforce Training section below -->
+        <div class="k-lifecycle-step k-step-linked" style="--step-color: #0284c7;">
           <div class="k-lifecycle-step-num">2</div>
           <div class="k-lifecycle-step-body">
             <strong>Technician Training</strong>
             <span>Certified technicians for safe handling, installation, and servicing of flammable and toxic refrigerants.</span>
           </div>
+          <div class="k-step-more-indicator" style="color:#0284c7;"><i class="fa-solid fa-arrow-down" style="font-size:0.55rem;"></i> Workforce Training</div>
         </div>
         <div class="k-lifecycle-arrow">→</div>
-        <div class="k-lifecycle-step" style="--step-color: #2D7D5A;">
+        <!-- Step 3 — links to Technical Safeguards section below -->
+        <div class="k-lifecycle-step k-step-linked" style="--step-color: #2D7D5A;">
           <div class="k-lifecycle-step-num">3</div>
           <div class="k-lifecycle-step-body">
             <strong>Responsible Deployment</strong>
             <span>Updated installation codes, building regulations, and safety protocols for new low-GWP equipment.</span>
           </div>
+          <div class="k-step-more-indicator" style="color:#2D7D5A;"><i class="fa-solid fa-arrow-down" style="font-size:0.55rem;"></i> Technical Safeguards</div>
         </div>
         <div class="k-lifecycle-arrow">→</div>
         <div class="k-lifecycle-step" style="--step-color: #D4A843;">
@@ -1222,49 +1226,61 @@
           </div>
         </div>
       </div>
-      <!-- Technical Safeguards bar -->
-      <div class="k-safeguards-bar">
-        <span class="k-safeguards-label">Technical Safeguards:</span>
-        <span class="k-safeguard-tag" style="--tag-color:#C25B33;"><i class="fa-solid fa-fire"></i> Flammability</span>
-        <span class="k-safeguard-tag" style="--tag-color:#92400e;"><i class="fa-solid fa-skull-crossbones"></i> Toxicity</span>
-        <span class="k-safeguard-tag" style="--tag-color:#0369a1;"><i class="fa-solid fa-gauge-high"></i> High Pressure</span>
-        <span class="k-safeguard-tag" style="--tag-color:#7c3aed;"><i class="fa-solid fa-flask"></i> PFAS</span>
+
+      <!-- ── Connected section: Workforce Training (Step 2) ── -->
+      <div class="k-connected-heading" style="--ch-color: #0284c7; margin-top: 1.75rem;">
+        <div class="k-ch-badge">
+          <span class="k-ch-stepnum">2</span>
+          <span>Step 2: Technician Training — Details</span>
+        </div>
+        <h3 class="k-sub-heading" style="margin-top:0.5rem;margin-bottom:0.5rem;">Workforce Training &amp; Certification</h3>
+        <p class="k-body" style="font-size:0.9rem;margin-bottom:0.75rem;">Safe refrigerant transition depends on a trained, certified workforce. Technicians working with flammable (R-290, R-32) and toxic (NH₃) refrigerants must be qualified to handle, install, service, and recover these substances safely. Without certified technicians, low-GWP adoption stalls and refrigerants are vented rather than recovered.</p>
+        <div class="k-card-grid-2">
+          <div class="k-card k-step-card" style="--card-accent:#0284c7;">
+            <strong class="k-card-title"><i class="fa-solid fa-certificate" style="color:#0369a1;margin-right:0.5rem;"></i>National Certification Schemes</strong>
+            <p class="k-card-body">Countries implementing Kigali commitments are establishing mandatory certification for refrigerant handling. U4E and UNEP support national QCR (Qualifications, Certification, and Regulation) frameworks linking technician licensing to environmental outcomes.</p>
+            <a href="https://united4efficiency.org/" target="_blank" rel="noopener noreferrer" class="k-resource-link" style="font-size:0.75rem;margin-top:0.5rem;display:inline-block;">U4E Certification Guide <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          </div>
+          <div class="k-card k-step-card" style="--card-accent:#0284c7;">
+            <strong class="k-card-title"><i class="fa-solid fa-graduation-cap" style="color:#2D7D5A;margin-right:0.5rem;"></i>Training Programmes</strong>
+            <p class="k-card-body">GIZ Proklima's "Fit for Green Cooling" offers modular training on natural refrigerants (CO₂, NH₃, hydrocarbons) for technicians and trainers. UNEP's National Ozone Units (NOUs) coordinate in-country capacity building and industry programmes support peer learning.</p>
+            <a href="https://www.giz.de/en/worldwide/367.html" target="_blank" rel="noopener noreferrer" class="k-resource-link" style="font-size:0.75rem;margin-top:0.5rem;display:inline-block;">GIZ Proklima training <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          </div>
+        </div>
       </div>
 
-      <!-- Workforce Training & Certification -->
-      <h3 class="k-sub-heading" style="margin-top:1.25rem;">Workforce Training &amp; Certification</h3>
-      <p class="k-body" style="font-size:0.9rem;margin-bottom:0.75rem;">Safe refrigerant transition depends on a trained, certified workforce. Technicians working with flammable (R-290, R-32) and toxic (NH₃) refrigerants must be qualified to handle, install, service, and recover these substances safely. Without certified technicians, low-GWP adoption stalls and refrigerants are vented rather than recovered.</p>
-      <div class="k-card-grid-2" style="margin-bottom:0.75rem;">
-        <div class="k-card">
-          <strong class="k-card-title"><i class="fa-solid fa-certificate" style="color:#0369a1;margin-right:0.5rem;"></i>National Certification Schemes</strong>
-          <p class="k-card-body">Countries implementing Kigali commitments are establishing mandatory certification for refrigerant handling. U4E and UNEP support national QCR (Qualifications, Certification, and Regulation) frameworks linking technician licensing to environmental outcomes.</p>
-          <a href="https://united4efficiency.org/" target="_blank" rel="noopener noreferrer" class="k-resource-link" style="font-size:0.75rem;margin-top:0.5rem;display:inline-block;">U4E Certification Guide <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+      <!-- ── Connected section: Technical Safeguards (Steps 3–5) ── -->
+      <div class="k-connected-heading" style="--ch-color: #2D7D5A; margin-top: 1.75rem;">
+        <div class="k-ch-badge">
+          <span class="k-ch-stepnum" style="color:#2D7D5A;">3</span>
+          <span>Step 3: Responsible Deployment — Technical Safeguards</span>
+          <span class="k-safeguard-tag" style="--tag-color:#C25B33;font-size:0.62rem;padding:0.1rem 0.45rem;"><i class="fa-solid fa-fire"></i> Flammability</span>
+          <span class="k-safeguard-tag" style="--tag-color:#92400e;font-size:0.62rem;padding:0.1rem 0.45rem;"><i class="fa-solid fa-skull-crossbones"></i> Toxicity</span>
+          <span class="k-safeguard-tag" style="--tag-color:#0369a1;font-size:0.62rem;padding:0.1rem 0.45rem;"><i class="fa-solid fa-gauge-high"></i> High Pressure</span>
+          <span class="k-safeguard-tag" style="--tag-color:#7c3aed;font-size:0.62rem;padding:0.1rem 0.45rem;"><i class="fa-solid fa-flask"></i> PFAS</span>
         </div>
-        <div class="k-card">
-          <strong class="k-card-title"><i class="fa-solid fa-graduation-cap" style="color:#2D7D5A;margin-right:0.5rem;"></i>Training Programmes</strong>
-          <p class="k-card-body">GIZ Proklima's "Fit for Green Cooling" offers modular training on natural refrigerants (CO₂, NH₃, hydrocarbons) for technicians and trainers. UNEP's National Ozone Units (NOUs) coordinate in-country capacity building and industry programmes support peer learning.</p>
-          <a href="https://www.giz.de/en/worldwide/367.html" target="_blank" rel="noopener noreferrer" class="k-resource-link" style="font-size:0.75rem;margin-top:0.5rem;display:inline-block;">GIZ Proklima training <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-        </div>
-      </div>
-
-      <!-- Technical considerations: 2-column grid of 4 cards -->
-      <h3 class="k-sub-heading">Technical Considerations for Alternative Refrigerants</h3>
-      <div class="k-card-grid-2">
-        <div class="k-card">
-          <strong class="k-card-title"><i class="fa-solid fa-fire" style="color:#C25B33;margin-right:0.5rem;font-size:1.3rem;"></i>Flammability (A2L/A3)</strong>
-          <p class="k-card-body">R-32 and R-290 require updated building codes, installation standards, and technician training — protocols well-established where these refrigerants are already deployed at scale.</p>
-        </div>
-        <div class="k-card">
-          <strong class="k-card-title"><i class="fa-solid fa-skull-crossbones" style="color:#92400e;margin-right:0.5rem;font-size:1.3rem;"></i>Toxicity (Ammonia/R-717)</strong>
-          <p class="k-card-body">Highly efficient but toxic and corrosive to copper. Requires steel piping, ventilated machine rooms, and rigorous safety training, particularly in industrial refrigeration.</p>
-        </div>
-        <div class="k-card">
-          <strong class="k-card-title"><i class="fa-solid fa-gauge-high" style="color:#0369a1;margin-right:0.5rem;font-size:1.3rem;"></i>High Pressure (CO₂/R-744)</strong>
-          <p class="k-card-body">Operates at significantly higher pressures. Requires specialised "transcritical" equipment and technician expertise, but is widely deployed in commercial refrigeration.</p>
-        </div>
-        <div class="k-card">
-          <strong class="k-card-title"><i class="fa-solid fa-flask" style="color:#7c3aed;margin-right:0.5rem;font-size:1.3rem;"></i>PFAS Concerns (certain HFOs)</strong>
-          <p class="k-card-body">While some HFOs offer low GWP, they face regulatory scrutiny around PFAS substances. Natural refrigerants (R-290, CO₂, Ammonia) avoid these concerns entirely.</p>
+        <h3 class="k-sub-heading" style="margin-top:0.5rem;margin-bottom:0.5rem;">Technical Considerations for Alternative Refrigerants</h3>
+        <div class="k-card-grid-2">
+          <div class="k-card k-safeguard-card" style="--card-accent:#C25B33;">
+            <div class="k-card-tag" style="color:#C25B33;border-color:#C25B33;"><i class="fa-solid fa-fire"></i> Flammability</div>
+            <strong class="k-card-title">Flammability (A2L/A3)</strong>
+            <p class="k-card-body">R-32 and R-290 require updated building codes, installation standards, and technician training — protocols well-established where these refrigerants are already deployed at scale.</p>
+          </div>
+          <div class="k-card k-safeguard-card" style="--card-accent:#92400e;">
+            <div class="k-card-tag" style="color:#92400e;border-color:#92400e;"><i class="fa-solid fa-skull-crossbones"></i> Toxicity</div>
+            <strong class="k-card-title">Toxicity (Ammonia/R-717)</strong>
+            <p class="k-card-body">Highly efficient but toxic and corrosive to copper. Requires steel piping, ventilated machine rooms, and rigorous safety training, particularly in industrial refrigeration.</p>
+          </div>
+          <div class="k-card k-safeguard-card" style="--card-accent:#0369a1;">
+            <div class="k-card-tag" style="color:#0369a1;border-color:#0369a1;"><i class="fa-solid fa-gauge-high"></i> High Pressure</div>
+            <strong class="k-card-title">High Pressure (CO₂/R-744)</strong>
+            <p class="k-card-body">Operates at significantly higher pressures. Requires specialised "transcritical" equipment and technician expertise, but is widely deployed in commercial refrigeration.</p>
+          </div>
+          <div class="k-card k-safeguard-card" style="--card-accent:#7c3aed;">
+            <div class="k-card-tag" style="color:#7c3aed;border-color:#7c3aed;"><i class="fa-solid fa-flask"></i> PFAS</div>
+            <strong class="k-card-title">PFAS Concerns (certain HFOs)</strong>
+            <p class="k-card-body">While some HFOs offer low GWP, they face regulatory scrutiny around PFAS substances. Natural refrigerants (R-290, CO₂, Ammonia) avoid these concerns entirely.</p>
+          </div>
         </div>
       </div>
 
@@ -2571,10 +2587,17 @@
     min-width: 100px;
   }
   .k-lifecycle-step-num {
-    font-size: 1.1rem;
-    font-weight: 900;
-    color: var(--step-color);
-    line-height: 1;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--step-color);
+    color: white;
+    font-size: 0.82rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
   .k-lifecycle-step-body {
     display: flex;
@@ -2632,8 +2655,77 @@
     border-radius: 999px;
     padding: 0.2rem 0.55rem;
   }
+  /* ── Step linked: subtle highlight on steps with detail sections below ── */
+  .k-step-linked {
+    background: rgba(0, 0, 0, 0.015);
+    border-radius: 0 0 6px 6px;
+  }
+  .k-step-more-indicator {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    margin-top: 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  /* ── Connected headings: left-border connector from step → section ── */
+  .k-connected-heading {
+    border-left: 3px solid var(--ch-color);
+    padding-left: 1.25rem;
+    margin-top: 1.75rem;
+  }
+  .k-ch-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    background: color-mix(in srgb, var(--ch-color) 10%, white);
+    border: 1px solid color-mix(in srgb, var(--ch-color) 35%, white);
+    border-radius: 999px;
+    padding: 0.25rem 0.65rem 0.25rem 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+  }
+  .k-ch-stepnum {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--ch-color, #0284c7);
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* ── Card variants for connected sections ── */
+  .k-step-card {
+    border-top: 3px solid var(--card-accent, #0284c7);
+  }
+  .k-safeguard-card {
+    border-top: 3px solid var(--card-accent, #C25B33);
+  }
+  .k-card-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    border: 1px solid;
+    border-radius: 999px;
+    padding: 0.15rem 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+
   @media (max-width: 768px) {
     .k-lifecycle-steps { flex-direction: column; }
     .k-lifecycle-arrow { transform: rotate(90deg); align-self: center; }
+    .k-ch-badge { font-size: 0.65rem; }
   }
 </style>
