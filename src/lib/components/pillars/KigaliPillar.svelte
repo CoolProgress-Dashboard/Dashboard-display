@@ -1254,10 +1254,6 @@
         <div class="k-ch-badge">
           <span class="k-ch-stepnum" style="color:#2D7D5A;">3</span>
           <span>Step 3: Responsible Deployment — Technical Safeguards</span>
-          <span class="k-safeguard-tag" style="--tag-color:#C25B33;font-size:0.62rem;padding:0.1rem 0.45rem;"><i class="fa-solid fa-fire"></i> Flammability</span>
-          <span class="k-safeguard-tag" style="--tag-color:#92400e;font-size:0.62rem;padding:0.1rem 0.45rem;"><i class="fa-solid fa-skull-crossbones"></i> Toxicity</span>
-          <span class="k-safeguard-tag" style="--tag-color:#0369a1;font-size:0.62rem;padding:0.1rem 0.45rem;"><i class="fa-solid fa-gauge-high"></i> High Pressure</span>
-          <span class="k-safeguard-tag" style="--tag-color:#7c3aed;font-size:0.62rem;padding:0.1rem 0.45rem;"><i class="fa-solid fa-flask"></i> PFAS</span>
         </div>
         <h3 class="k-sub-heading" style="margin-top:0.5rem;margin-bottom:0.5rem;">Technical Considerations for Alternative Refrigerants</h3>
         <div class="k-card-grid-2">
