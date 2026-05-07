@@ -1339,8 +1339,20 @@
       <div class="k-card-grid-2">
         <div class="k-card k-resource-card">
           <strong class="k-card-title">EU F-Gas Regulation (2024/573)</strong>
-          <p class="k-card-body">World's most ambitious HFC phase-out. Mandates full phase-out of virgin HFCs by 2050, with GWP limits &lt;150 for most small split ACs by 2027/2029.</p>
-          <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32024R0573" target="_blank" rel="noopener noreferrer" class="k-resource-link">Read the regulation <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <p class="k-card-body">World's most ambitious HFC phase-out. Mandates full phase-out of virgin HFCs by 2050, with GWP limits &lt;150 for most small split ACs by 2027/2029. Entered into force March 2024.</p>
+          <a href="https://eur-lex.europa.eu/eli/reg/2024/573/oj/eng" target="_blank" rel="noopener noreferrer" class="k-resource-link">Full legal text (EUR-Lex) <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a href="https://eur-lex.europa.eu/EN/legal-content/summary/fluorinated-greenhouse-gases.html" target="_blank" rel="noopener noreferrer" class="k-resource-link" style="margin-left:0.75rem;">Readable summary <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="k-card k-resource-card">
+          <strong class="k-card-title">EIA International — F-Gas &amp; HFC Campaign</strong>
+          <p class="k-card-body">EIA's international policy work on EU HFC phase-down, Kigali Amendment implementation, and illegal refrigerant trade. Includes country briefings and regulatory analysis.</p>
+          <a href="https://eia-international.org/our-work/climate/f-gas/" target="_blank" rel="noopener noreferrer" class="k-resource-link">EIA F-Gas work <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="k-card k-resource-card">
+          <strong class="k-card-title">UNEP OzonAction — Kigali Fact Sheet Series</strong>
+          <p class="k-card-body">Index of Kigali-specific fact sheets covering HFC phase-down timetables, compliance assistance for developing countries, and technical guidance for National Ozone Units.</p>
+          <a href="https://www.unep.org/ozonaction/resources/factsheet/ozonaction-series-fact-sheets-relevant-kigali-amendment-quick-links" target="_blank" rel="noopener noreferrer" class="k-resource-link">Kigali fact sheets <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a href="https://www.unep.org/ozonaction/resources" target="_blank" rel="noopener noreferrer" class="k-resource-link" style="margin-left:0.75rem;">Full OzonAction library <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
         </div>
         <div class="k-card k-resource-card">
           <strong class="k-card-title">US EPA Technology Transitions Rule (AIM Act)</strong>
