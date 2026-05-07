@@ -7,8 +7,8 @@
 
 ## PENDING DECISIONS (blockers — do not implement until resolved)
 
-- [ ] **Medium | UI** — CONFLICT: Decide whether to cross-reference Kigali map from Policy pillar, duplicate it, or keep it only in Refrigerant Transition. Recommendation: cross-reference (Option B). To be discussed today. (2026-04-22)
-- [ ] **Medium | Data** — PENDING: Confirm whether "Green Buildings" and "Net Zero Homes" scenario labels map to "Global Benchmarks" and "BAT" respectively before renaming. (Ari/CLASP 2026-04-22)
+- [x] **Medium | UI** — RESOLVED (Option B): Cross-reference Kigali map from Emissions pillar with a link to Pillar 3: Refrigerant Transition. Implemented as styled note below direct-emissions intro. (2026-05-07)
+- [x] **Medium | Data** — RESOLVED: "Green Buildings" → "Global Benchmark" (GB), "Net Zero Homes" → BAT confirmed by Ari/CLASP. Dropdown and comments updated. (2026-05-07)
 
 ---
 
@@ -33,7 +33,7 @@
 - [x] **High | Data** — ~~Use one data source per chart — do not mix CLASP and GCI in the same visualization.~~ DISMISSED — current combined approach validated.
 - [x] **High | UI** — Label the data source directly on each chart (not only in methodology pages). Added source subtitle to timeline ECharts option; ApplianceGrowthChart and map already had source bars. (Patrick + Ari, 2026-04-22)
 - [x] **Medium | Content** — Add inline one-line assumption descriptions below each scenario name on the chart (e.g. "BAU — no new policies", "Global Benchmarks — all countries match best MEPS", "BAT — average = best on market today"). (Patrick, 2026-04-22)
-- [ ] **Medium | Content** — Replace undefined trajectory lines ("net zero homes", "green buildings", "best tech") with 3 clearly labeled alternatives: efficiency shift, refrigerant shift, grid decarbonization. (Pending scenario mapping confirmation — see PENDING DECISIONS.)
+- [x] **Medium | Content** — Rename "Green Buildings" → "Global Benchmark" in dropdown (decision resolved). Note: the broader trajectory line rename (efficiency shift / refrigerant shift / grid decarbonization) is a separate data task still pending.
 - [ ] **Medium | Data** — Review and reconcile GCI vs CLASP country-level emissions discrepancies (specifically China AC vs refrigerator ratio and US refrigerators vs ACs). Add a methodology note explaining why figures from different sources may differ.
 - [ ] **Medium | Content** — Update the 2050 direct emissions trajectory to reflect HFC phasedown impact — current projection does not adequately account for it.
 - [x] **High | Content** — Replace DECARB (73%) and IEA (460 Gt) stat cards with CLASP+GCI-only numbers: 60% indirect saving with BAT (CLASP Mepsy DB) and 80% direct saving under Kigali Implementation (GCI DB). Added explainer strip below cards.

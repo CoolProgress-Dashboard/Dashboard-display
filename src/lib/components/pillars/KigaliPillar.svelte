@@ -25,6 +25,7 @@
   let subcoolSummary: { scenario_name: string; year: number; direct_emission_mt: number }[] = [];
   // Lazily-loaded refrigerant bank data for the bank-share bar chart
   let bankShareData: RefrigerantBankRecord[] = [];
+  let bankViewMode: 'share' | 'tonnes' | 'climate' = 'share';
 
   const meta = VIEW_META.kigali;
   const kigaliContent = pillarContent.kigali;
@@ -480,6 +481,11 @@
     const BANK_YEARS = ['2015', '2020', '2025', '2030'];
 
     function renderRefrigerantBankShare() {
+      const REFR_GWP: Record<string, number> = {
+        'HCFC-22': 1810, 'HFC-134a': 1430, 'HFC-32': 675,
+        'HFC-125': 3500, 'HFC-143a': 4470, 'HFC-152a': 124,
+      };
+
       // Build per-year totals and per-refrigerant tonnes from Supabase or static
       const refrs = Object.keys(BANK_STATIC);
       const yearLabels = BANK_YEARS;
@@ -501,13 +507,31 @@
         refrs.forEach(r => { raw[r] = [...BANK_STATIC[r]]; });
       }
 
-      // Compute column totals then shares (%)
+      // Compute display data based on view mode
+      let displayData: Record<string, number[]> = {};
+      let yAxisName: string;
+      let yAxisFormatter: (v: number) => string;
       const totals = Array(nYears).fill(0);
-      refrs.forEach(r => raw[r].forEach((v, i) => { totals[i] += v; }));
-      const shares: Record<string, number[]> = {};
-      refrs.forEach(r => {
-        shares[r] = raw[r].map((v, i) => totals[i] > 0 ? Math.round(v / totals[i] * 1000) / 10 : 0);
-      });
+      refrs.forEach(r => raw[r].forEach((v: number, i: number) => { totals[i] += v; }));
+
+      if (bankViewMode === 'tonnes') {
+        refrs.forEach(r => { displayData[r] = raw[r]; });
+        yAxisName = 'Bank Mass (tonnes)';
+        yAxisFormatter = (v: number) => v >= 1000000 ? `${(v/1000000).toFixed(1)}Mt` : v >= 1000 ? `${(v/1000).toFixed(0)}kt` : `${v}`;
+      } else if (bankViewMode === 'climate') {
+        refrs.forEach(r => {
+          const gwp = REFR_GWP[r] ?? 1;
+          displayData[r] = raw[r].map((v: number) => Math.round(v * gwp / 100000) / 10);
+        });
+        yAxisName = 'Climate Impact (Mt CO\u2082e)';
+        yAxisFormatter = (v: number) => `${v}`;
+      } else {
+        refrs.forEach(r => {
+          displayData[r] = raw[r].map((v: number, i: number) => totals[i] > 0 ? Math.round(v / totals[i] * 1000) / 10 : 0);
+        });
+        yAxisName = 'Bank Share (%)';
+        yAxisFormatter = (v: number) => `${v}%`;
+      }
 
       setChart('chart-kigali-transition', {
         tooltip: {
@@ -515,10 +539,14 @@
           axisPointer: { type: 'shadow' },
           formatter: function(params: any) {
             let html = `<strong>${params[0].axisValue}</strong><br/>`;
-            const visible = params.filter((p: any) => p.value > 0.05);
+            const visible = params.filter((p: any) => p.value > 0);
             visible.sort((a: any, b: any) => b.value - a.value);
+            const unit = bankViewMode === 'share' ? '%' : bankViewMode === 'climate' ? ' Mt CO₂e' : ' t';
             visible.forEach((p: any) => {
-              html += `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${p.color};margin-right:4px;"></span>${p.seriesName}: <strong>${p.value.toFixed(1)}%</strong><br/>`;
+              const val = bankViewMode === 'tonnes'
+                ? (p.value >= 1000000 ? `${(p.value/1000000).toFixed(2)} Mt` : `${Math.round(p.value/1000)} kt`)
+                : `${p.value.toFixed(1)}${unit}`;
+              html += `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${p.color};margin-right:4px;"></span>${p.seriesName}: <strong>${val}</strong><br/>`;
             });
             return html;
           }
@@ -538,16 +566,16 @@
         },
         yAxis: {
           type: 'value',
-          name: 'Bank Share (%)',
+          name: yAxisName,
           nameTextStyle: { color: '#1e293b', fontSize: 13, fontWeight: 700 },
-          max: 100,
-          axisLabel: { formatter: '{value}%', fontSize: 13, color: '#1e293b', fontWeight: 700 }
+          ...(bankViewMode === 'share' ? { max: 100 } : {}),
+          axisLabel: { formatter: yAxisFormatter, fontSize: 13, color: '#1e293b', fontWeight: 700 }
         },
         series: refrs.map(r => ({
           name: r,
           type: 'bar',
           stack: 'total',
-          data: shares[r],
+          data: displayData[r],
           itemStyle: { color: REFR_COLORS[r] ?? '#94a3b8' },
           label: {
             show: false
@@ -559,11 +587,13 @@
     function renderKigaliDirectEmissions() {
       const scenarioColors: Record<string, string> = {
         'BAU': SCENARIO.BAU,
-        'KIP': SCENARIO.KIP
+        'KIP': SCENARIO.KIP,
+        'KIP_PLUS': SCENARIO.KIP_PLUS
       };
       const scenarioNames: Record<string, string> = {
         'BAU': 'BAU',
-        'KIP': 'Kigali Implementation'
+        'KIP': 'Kigali Implementation',
+        'KIP_PLUS': 'Kigali+'
       };
 
       // Static fallback scenario data (UNEP/HEAT reference trajectories, global, Mt CO₂e)
@@ -572,7 +602,8 @@
         years: [2020, 2025, 2030, 2035, 2040, 2045],
         series: [
           { name: 'BAU',                   data: [1.8, 1.8, 3.1, 4.0, 5.0, 6.1], color: SCENARIO.BAU },
-          { name: 'Kigali Implementation',  data: [1.8, 1.8, 2.6, 2.7, 2.4, 1.9], color: SCENARIO.KIP }
+          { name: 'Kigali Implementation',  data: [null, 1.8, 2.6, 2.7, 2.4, 1.9], color: SCENARIO.KIP },
+          { name: 'Kigali+',               data: [null, 1.8, 2.2, 2.0, 1.5, 1.0], color: SCENARIO.KIP_PLUS }
         ]
       };
 
@@ -591,7 +622,7 @@
         seriesData = STATIC_SCENARIO_DATA.series;
       } else {
         // Aggregate global direct emissions: sum across all countries + subsectors
-        const scenarios = ['BAU', 'KIP'];
+        const scenarios = ['BAU', 'KIP', 'KIP_PLUS'];
         const allYears = Array.from(new Set(subcoolSummary.map((r: any) => r.year)))
           .sort() as number[];
         // Show 2020–2045 at every 5-year mark
@@ -606,6 +637,14 @@
             const totalDirect = rows.reduce((sum: number, r: any) => sum + (r.direct_emission_mt || 0), 0);
             rawData[s].push(totalDirect > 0 ? Math.round(totalDirect * 10) / 10 : null);
           });
+        });
+
+        // Before 2025: only BAU is observed — null out scenario lines
+        years.forEach((y: number, i: number) => {
+          if (y < 2025) {
+            rawData['KIP'][i] = null;
+            rawData['KIP_PLUS'][i] = null;
+          }
         });
 
         // Normalise 2025: all scenarios share the BAU value at 2025 as the common start
@@ -681,6 +720,7 @@
           itemStyle: { color: s.color },
           areaStyle: s.name === 'Business as Usual' ? { color: `${s.color}15` }
                    : s.name === 'Kigali Implementation' ? { color: `${s.color}10` }
+                   : s.name === 'Kigali+' ? { color: `${s.color}08` }
                    : undefined
         }))
       });
@@ -786,6 +826,14 @@
     // ── Filters initialisation ────────────────────────────────────────────────
     function initKigaliFilters() {
       // (filter toggles removed — bank-share chart has no interactive filters)
+      document.querySelectorAll<HTMLButtonElement>('.k-bank-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.k-bank-toggle-btn').forEach((b: Element) => b.classList.remove('active'));
+          btn.classList.add('active');
+          bankViewMode = btn.dataset.bankView as 'share' | 'tonnes' | 'climate';
+          renderRefrigerantBankShare();
+        });
+      });
     }
 
     // ── Main view update ──────────────────────────────────────────────────────
@@ -941,6 +989,11 @@
       </div>
       <div class="chart-card-header" style="padding: 1rem 1rem 0;">
         <p class="chart-subtitle">Global direct (refrigerant) emissions: BAU vs Kigali Implementation</p>
+        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.3rem;">
+          <span class="k-scope-badge"><i class="fa-solid fa-wind"></i> Residential AC</span>
+          <span class="k-scope-badge"><i class="fa-solid fa-snowflake"></i> Domestic Refrigerators</span>
+          <span class="k-scope-badge" style="color:#64748b;background:#f8fafc;">Direct emissions only</span>
+        </div>
         <span style="font-size: 0.72rem; color: #64748b; display: inline-flex; align-items: center; gap: 0.3rem;">
           <i class="fa-solid fa-database" style="color: #0369a1; font-size: 0.65rem;"></i>
           Data from Global Cooling Initiative · HEAT &amp; GIZ &nbsp;·&nbsp;
@@ -1088,7 +1141,17 @@
         The refrigerant bank is shifting — but legacy HCFCs still dominate
       </div>
       <div class="chart-card-header" style="padding: 1rem 1rem 0; border-bottom: none; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem;">
+        <div class="k-bank-toggle-row">
+          <button class="k-bank-toggle-btn active" data-bank-view="share" type="button">GWP Share (%)</button>
+          <button class="k-bank-toggle-btn" data-bank-view="tonnes" type="button">Bank Mass (tonnes)</button>
+          <button class="k-bank-toggle-btn" data-bank-view="climate" type="button">Climate Impact (Mt CO₂e)</button>
+        </div>
         <p class="chart-subtitle" style="color: #334155; font-weight: 600;">Global refrigerant bank share by compound (A5 + Non-A5, bank tonnes)</p>
+        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.3rem;">
+          <span class="k-scope-badge"><i class="fa-solid fa-wind"></i> Residential AC</span>
+          <span class="k-scope-badge"><i class="fa-solid fa-snowflake"></i> Domestic Refrigerators</span>
+          <span class="k-scope-badge"><i class="fa-solid fa-truck-ramp-box"></i> Commercial Refrigeration</span>
+        </div>
         <span style="font-size: 0.72rem; color: #64748b; display: inline-flex; align-items: center; gap: 0.3rem;">
           <i class="fa-solid fa-database" style="color: #0369a1; font-size: 0.65rem;"></i>
           from consumption data reported to the Ozone Secretariat &nbsp;·&nbsp;
@@ -1109,22 +1172,78 @@
       <h2 class="k-title">Managing the Transition</h2>
       <p class="k-body">Transitioning to low-GWP alternatives requires addressing specific physical properties. These are not barriers, but technical requirements already being successfully managed in leading markets.</p>
 
-      <!-- LRM 3-column base grid -->
-      <div class="kigali-lifecycle-grid" style="margin-bottom: 0.75rem;">
-        <div class="kigali-lifecycle-item">
-          <i class="fa-solid fa-wrench"></i>
-          <strong>Leak Prevention</strong>
-          <span>Regular maintenance, better fittings, and leak detection systems reduce emissions from equipment in active use.</span>
+      <!-- 6-step lifecycle infographic -->
+      <div class="k-lifecycle-steps">
+        <div class="k-lifecycle-step" style="--step-color: #0369a1;">
+          <div class="k-lifecycle-step-num">1</div>
+          <div class="k-lifecycle-step-body">
+            <strong>Policy &amp; Standards</strong>
+            <span>GWP limits, import bans, labelling requirements, and phasedown schedules set the regulatory floor.</span>
+          </div>
         </div>
-        <div class="kigali-lifecycle-item">
-          <i class="fa-solid fa-box-archive"></i>
-          <strong>End-of-Life Recovery</strong>
-          <span>Capturing refrigerant when equipment is scrapped prevents venting. Requires collection infrastructure and trained technicians.</span>
+        <div class="k-lifecycle-arrow">→</div>
+        <div class="k-lifecycle-step" style="--step-color: #0284c7;">
+          <div class="k-lifecycle-step-num">2</div>
+          <div class="k-lifecycle-step-body">
+            <strong>Technician Training</strong>
+            <span>Certified technicians for safe handling, installation, and servicing of flammable and toxic refrigerants.</span>
+          </div>
         </div>
-        <div class="kigali-lifecycle-item">
-          <i class="fa-solid fa-industry"></i>
-          <strong>Reclamation &amp; Destruction</strong>
-          <span>Recovered gases can be purified for reuse or destroyed. Destruction facilities remain scarce in many regions.</span>
+        <div class="k-lifecycle-arrow">→</div>
+        <div class="k-lifecycle-step" style="--step-color: #2D7D5A;">
+          <div class="k-lifecycle-step-num">3</div>
+          <div class="k-lifecycle-step-body">
+            <strong>Responsible Deployment</strong>
+            <span>Updated installation codes, building regulations, and safety protocols for new low-GWP equipment.</span>
+          </div>
+        </div>
+        <div class="k-lifecycle-arrow">→</div>
+        <div class="k-lifecycle-step" style="--step-color: #D4A843;">
+          <div class="k-lifecycle-step-num">4</div>
+          <div class="k-lifecycle-step-body">
+            <strong>Leak Prevention</strong>
+            <span>Regular maintenance, better fittings, and leak detection reduce in-use emissions from active equipment.</span>
+          </div>
+        </div>
+        <div class="k-lifecycle-arrow">→</div>
+        <div class="k-lifecycle-step" style="--step-color: #C25B33;">
+          <div class="k-lifecycle-step-num">5</div>
+          <div class="k-lifecycle-step-body">
+            <strong>End-of-Life Recovery</strong>
+            <span>Capturing refrigerant at scrapping prevents venting. Requires collection infrastructure and trained technicians.</span>
+          </div>
+        </div>
+        <div class="k-lifecycle-arrow">→</div>
+        <div class="k-lifecycle-step" style="--step-color: #7c3aed;">
+          <div class="k-lifecycle-step-num">6</div>
+          <div class="k-lifecycle-step-body">
+            <strong>Reclamation &amp; Destruction</strong>
+            <span>Recovered gases purified for reuse or destroyed. Destruction capacity remains scarce in many regions.</span>
+          </div>
+        </div>
+      </div>
+      <!-- Technical Safeguards bar -->
+      <div class="k-safeguards-bar">
+        <span class="k-safeguards-label">Technical Safeguards:</span>
+        <span class="k-safeguard-tag" style="--tag-color:#C25B33;"><i class="fa-solid fa-fire"></i> Flammability</span>
+        <span class="k-safeguard-tag" style="--tag-color:#92400e;"><i class="fa-solid fa-skull-crossbones"></i> Toxicity</span>
+        <span class="k-safeguard-tag" style="--tag-color:#0369a1;"><i class="fa-solid fa-gauge-high"></i> High Pressure</span>
+        <span class="k-safeguard-tag" style="--tag-color:#7c3aed;"><i class="fa-solid fa-flask"></i> PFAS</span>
+      </div>
+
+      <!-- Workforce Training & Certification -->
+      <h3 class="k-sub-heading" style="margin-top:1.25rem;">Workforce Training &amp; Certification</h3>
+      <p class="k-body" style="font-size:0.9rem;margin-bottom:0.75rem;">Safe refrigerant transition depends on a trained, certified workforce. Technicians working with flammable (R-290, R-32) and toxic (NH₃) refrigerants must be qualified to handle, install, service, and recover these substances safely. Without certified technicians, low-GWP adoption stalls and refrigerants are vented rather than recovered.</p>
+      <div class="k-card-grid-2" style="margin-bottom:0.75rem;">
+        <div class="k-card">
+          <strong class="k-card-title"><i class="fa-solid fa-certificate" style="color:#0369a1;margin-right:0.5rem;"></i>National Certification Schemes</strong>
+          <p class="k-card-body">Countries implementing Kigali commitments are establishing mandatory certification for refrigerant handling. U4E and UNEP support national QCR (Qualifications, Certification, and Regulation) frameworks linking technician licensing to environmental outcomes.</p>
+          <a href="https://united4efficiency.org/" target="_blank" rel="noopener noreferrer" class="k-resource-link" style="font-size:0.75rem;margin-top:0.5rem;display:inline-block;">U4E Certification Guide <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="k-card">
+          <strong class="k-card-title"><i class="fa-solid fa-graduation-cap" style="color:#2D7D5A;margin-right:0.5rem;"></i>Training Programmes</strong>
+          <p class="k-card-body">GIZ Proklima's "Fit for Green Cooling" offers modular training on natural refrigerants (CO₂, NH₃, hydrocarbons) for technicians and trainers. UNEP's National Ozone Units (NOUs) coordinate in-country capacity building and industry programmes support peer learning.</p>
+          <a href="https://www.giz.de/en/worldwide/367.html" target="_blank" rel="noopener noreferrer" class="k-resource-link" style="font-size:0.75rem;margin-top:0.5rem;display:inline-block;">GIZ Proklima training <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
         </div>
       </div>
 
@@ -2409,5 +2528,112 @@
     .kigali-regulatory-grid {
       grid-template-columns: 1fr;
     }
+  }
+
+  /* ── Bank chart toggle buttons ── */
+  .k-bank-toggle-row {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin: 0.5rem 0 0.35rem;
+  }
+  .k-bank-toggle-btn {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid #cbd5e1;
+    background: white;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .k-bank-toggle-btn:hover { border-color: #3D6B6B; color: #3D6B6B; }
+  .k-bank-toggle-btn.active { background: #3D6B6B; color: white; border-color: #3D6B6B; }
+
+  /* ── 6-step lifecycle infographic ── */
+  .k-lifecycle-steps {
+    display: flex;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 0;
+    margin: 1rem 0 0;
+  }
+  .k-lifecycle-step {
+    flex: 1 1 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.75rem;
+    border-top: 3px solid var(--step-color);
+    background: transparent;
+    min-width: 100px;
+  }
+  .k-lifecycle-step-num {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--step-color);
+    line-height: 1;
+  }
+  .k-lifecycle-step-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .k-lifecycle-step-body strong {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #1e293b;
+  }
+  .k-lifecycle-step-body span {
+    font-size: 0.72rem;
+    color: #475569;
+    line-height: 1.4;
+  }
+  .k-lifecycle-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 0.1rem;
+    color: #cbd5e1;
+    font-size: 1.1rem;
+    padding-top: 1rem;
+    flex-shrink: 0;
+  }
+  .k-safeguards-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    margin-top: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+  .k-safeguards-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-right: 0.25rem;
+  }
+  .k-safeguard-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--tag-color);
+    background: white;
+    border: 1px solid var(--tag-color);
+    border-radius: 999px;
+    padding: 0.2rem 0.55rem;
+  }
+  @media (max-width: 768px) {
+    .k-lifecycle-steps { flex-direction: column; }
+    .k-lifecycle-arrow { transform: rotate(90deg); align-self: center; }
   }
 </style>
