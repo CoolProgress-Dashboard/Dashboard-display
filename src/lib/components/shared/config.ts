@@ -131,7 +131,7 @@ export const PILLAR_INFO: Record<string, { title: string; subtitle: string; body
 export const CLASP_SCENARIOS = ['BAU', 'GB', 'NZH', 'BAT'];
 export const CLASP_SCENARIO_NAMES: Record<string, string> = {
   BAU: 'Business as Usual',
-  GB: 'Green Buildings',
+  GB: 'Global Benchmark',
   NZH: 'Net Zero Homes',
   BAT: 'Best Available Tech'
 };

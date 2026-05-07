@@ -51,26 +51,31 @@
   const emissionsContent = pillarContent.emissions;
 
   // Animated stat cards data
+  // Stats 1–2: Combined CLASP indirect + GCI direct emissions (2025 baseline and BAU 2050)
+  // Stat 3: CLASP Mepsy — Best Available Tech (BAT) scenario vs BAU 2050 indirect savings
+  //         DB: BAU 3,236 Mt → BAT 1,297 Mt = 1,939 Mt saved = 60% reduction
+  // Stat 4: GCI/HEAT — Kigali Implementation (KIP) vs BAU 2050 direct emission savings
+  //         DB: BAU 601 Mt → KIP 117 Mt = 484 Mt saved = 80% reduction
   const emissionsStats = [
     {
       value: '2,401',
       label: 'Mt CO₂e from cooling today',
-      context: 'Total cooling emissions in 2025: AC (1,741 Mt), Refrigeration (440 Mt), Fans (220 Mt). Sources: HEAT Global Cooling Model + CLASP.'
+      context: 'Total cooling emissions in 2025: indirect energy-related (CLASP Mepsy: AC 994 Mt, Refrigerators 435 Mt, Fans 173 Mt = 1,602 Mt) + direct refrigerant leaks (GCI: 422 Mt). Source: CLASP Mepsy + GCI/HEAT.'
     },
     {
       value: '6,009',
       label: 'Mt CO₂e by 2050 under BAU',
-      context: 'Business-as-usual trajectory: emissions triple as cooling demand in South Asia, Africa, and SE Asia surges without efficiency interventions.'
+      context: 'Business-as-usual trajectory: indirect energy emissions (CLASP: 3,236 Mt) + direct refrigerant emissions (GCI: 601 Mt) by 2050. Cooling demand surges in South Asia, Africa, and SE Asia without policy intervention.'
     },
     {
-      value: '73%',
-      label: 'reduction achievable (DECARB)',
-      context: 'Three-layer DECARB pathway: energy efficiency (MEPS) + Kigali refrigerant transition + grid decarbonization = 1,554 Mt by 2050.'
+      value: '60%',
+      label: 'fewer indirect emissions with Best Available Tech',
+      context: 'CLASP Mepsy BAT scenario 2050: if all new appliances matched today\'s best available technology, indirect (energy-related) emissions fall from 3,236 Mt to 1,297 Mt — a saving of 1,939 Mt CO₂e. Source: CLASP Mepsy Tool.'
     },
     {
-      value: '460',
-      label: 'Gt CO₂e cumulative savings potential',
-      context: 'IEA Efficient Cooling Scenario: combining all interventions could avoid 460 Gt CO₂e cumulative emissions by 2060.'
+      value: '80%',
+      label: 'fewer direct emissions under Kigali Implementation',
+      context: 'GCI/HEAT Kigali Implementation (KIP) scenario 2050: full Kigali Amendment phase-down reduces direct refrigerant emissions from 601 Mt (BAU) to 117 Mt — a saving of 484 Mt CO₂e. Source: GCI / HEAT Global Cooling Model.'
     }
   ];
 
@@ -946,95 +951,66 @@
     }
 
     function renderNewEmissionsTimeline(echartsLib: any) {
-      const years = [2020, 2025, 2030, 2035, 2040, 2045, 2050];
-      // 2020–2025 is historical: all scenarios use BAU values (no divergence yet)
-      const HIST_IDX = 1; // index of 2025 — inclusive historical boundary
+      // x-axis runs 2023–2050 (min=2023 so 2025 sits slightly right of y-axis)
+      // BAU gets an interpolated 2023 value so the tail starts exactly at the y-axis
+      const projYears = [2025, 2030, 2035, 2040, 2045, 2050];
+      const bauYears  = [2023, 2025, 2030, 2035, 2040, 2045, 2050];
       const series: any[] = [];
 
-      if (emissionsDataSource === 'clasp') {
-        const bauTotals = years.map(y => {
+      const CLASP_CHART_SCENARIOS = ['BAU', 'GB', 'BAT'];
+      const CLASP_LINE_COLORS: Record<string, string> = {
+        BAU: SCENARIO.BAU,
+        GB:  SCENARIO.KIP,
+        BAT: SCENARIO.BAT,
+      };
+
+      // Pre-compute interpolated BAU 2023 value (3/5 of the way from 2020 to 2025)
+      const bau2020 = +localClaspEnergy
+        .filter((r: any) => r.year === 2020 && (localEmissionsAppliances.length === 0 || localEmissionsAppliances.includes(r.appliance)))
+        .reduce((t: number, r: any) => t + getClaspCO2(r, 'BAU'), 0).toFixed(1);
+      const bau2025 = +localClaspEnergy
+        .filter((r: any) => r.year === 2025 && (localEmissionsAppliances.length === 0 || localEmissionsAppliances.includes(r.appliance)))
+        .reduce((t: number, r: any) => t + getClaspCO2(r, 'BAU'), 0).toFixed(1);
+      const bau2023 = +(bau2020 * 0.4 + bau2025 * 0.6).toFixed(1);
+
+      CLASP_CHART_SCENARIOS.forEach((scenario) => {
+        const dataYears = scenario === 'BAU' ? bauYears : projYears;
+        const xyData: [number, number][] = dataYears.map((y) => {
+          if (scenario === 'BAU' && y === 2023) return [2023, bau2023];
           const filtered = localClaspEnergy.filter((r: any) =>
             r.year === y && (localEmissionsAppliances.length === 0 || localEmissionsAppliances.includes(r.appliance))
           );
-          return +filtered.reduce((total: number, r: any) => total + getClaspCO2(r, 'BAU'), 0).toFixed(1);
+          const val = +filtered.reduce((total: number, r: any) => total + getClaspCO2(r, scenario), 0).toFixed(1);
+          return [y, val];
         });
-        // NZH retired per Ari/CLASP 2026-04-22 — keep only BAU, Global Benchmarks, BAT
-        const CLASP_CHART_SCENARIOS = ['BAU', 'GB', 'BAT'];
-        const CLASP_LINE_COLORS: Record<string, string> = {
-          BAU: SCENARIO.BAU,       // terracotta — worst
-          GB:  SCENARIO.KIP,       // amber — better
-          BAT: SCENARIO.BAT,       // forest green — best
-        };
-        CLASP_CHART_SCENARIOS.forEach((scenario) => {
-          const yearTotals: (number | null)[] = years.map((y, i) => {
-            if (scenario === 'BAU') {
-              // BAU shows the full historical + projected line
-              const filtered = localClaspEnergy.filter((r: any) =>
-                r.year === y && (localEmissionsAppliances.length === 0 || localEmissionsAppliances.includes(r.appliance))
-              );
-              return +filtered.reduce((total: number, r: any) => total + getClaspCO2(r, scenario), 0).toFixed(1);
-            }
-            // Non-BAU: null before 2025 (not drawn), BAU value at 2025, scenario value after
-            if (i < HIST_IDX) return null;
-            if (i === HIST_IDX) return bauTotals[i];
-            const filtered = localClaspEnergy.filter((r: any) =>
-              r.year === y && (localEmissionsAppliances.length === 0 || localEmissionsAppliances.includes(r.appliance))
-            );
-            return +filtered.reduce((total: number, r: any) => total + getClaspCO2(r, scenario), 0).toFixed(1);
-          });
-          const lineColor = CLASP_LINE_COLORS[scenario] ?? SCENARIO.BAU;
-          series.push({ name: (CLASP_SCENARIO_NAMES as any)[scenario], type: 'line', smooth: true, connectNulls: false, data: yearTotals, lineStyle: { width: scenario === emissionsScenario ? 3 : 1.5, color: lineColor }, itemStyle: { color: lineColor }, symbol: scenario === emissionsScenario ? 'circle' : 'none', symbolSize: 6 });
+        const lineColor = CLASP_LINE_COLORS[scenario] ?? SCENARIO.BAU;
+        series.push({
+          name: (CLASP_SCENARIO_NAMES as any)[scenario],
+          type: 'line',
+          smooth: true,
+          clip: true,
+          data: xyData,
+          lineStyle: { width: 2, color: lineColor },
+          itemStyle: { color: lineColor },
+          // No dot on the 2023 tail point — only on real data years
+          symbol: scenario === 'BAU'
+            ? ((_val: any, params: any) => params.dataIndex === 0 ? 'none' : 'circle')
+            : 'circle',
+          symbolSize: 5
         });
-      } else {
-        const bauTotals = years.map(y => {
-          const filtered = subcoolData.filter((r: any) => r.year === y && r.scenario_name === 'BAU');
-          return +filtered.reduce((total: number, r: any) => total + (r.direct_emission_mt || 0) + (r.indirect_emission_mt || 0), 0).toFixed(1);
-        });
-        const HEAT_LINE_COLORS: Record<string, string> = {
-          BAU:     SCENARIO.BAU,       // terracotta — worst
-          KIP:     SCENARIO.KIP,       // amber — middle
-          KIP_PLUS:SCENARIO.KIP_PLUS,  // forest green — best
-        };
-        (HEAT_SCENARIOS as string[]).forEach((scenario) => {
-          const yearTotals: (number | null)[] = years.map((y, i) => {
-            if (scenario === 'BAU') {
-              const filtered = subcoolData.filter((r: any) => r.year === y && r.scenario_name === 'BAU');
-              return +filtered.reduce((total: number, r: any) => total + (r.direct_emission_mt || 0) + (r.indirect_emission_mt || 0), 0).toFixed(1);
-            }
-            if (i < HIST_IDX) return null;
-            if (i === HIST_IDX) return bauTotals[i];
-            const filtered = subcoolData.filter((r: any) => r.year === y && r.scenario_name === scenario);
-            return +filtered.reduce((total: number, r: any) => total + (r.direct_emission_mt || 0) + (r.indirect_emission_mt || 0), 0).toFixed(1);
-          });
-          const lineColor = HEAT_LINE_COLORS[scenario] ?? SCENARIO.BAU;
-          series.push({ name: (HEAT_SCENARIO_NAMES as any)[scenario], type: 'line', smooth: true, connectNulls: false, data: yearTotals, lineStyle: { width: scenario === emissionsScenario ? 3 : 1.5, color: lineColor }, itemStyle: { color: lineColor }, symbol: scenario === emissionsScenario ? 'circle' : 'none', symbolSize: 6 });
-        });
-      }
+      });
 
-      // Shade the historical period and add a separator at 2025
-      if (series.length > 0) {
-        series[0].markArea = {
-          silent: true,
-          itemStyle: { color: 'rgba(168, 213, 162, 0.10)' },
-          label: { show: true, position: 'insideTopLeft', fontSize: 10, color: '#94a3b8', formatter: 'Historical' },
-          data: [[{ xAxis: '2020' }, { xAxis: '2025' }]]
-        };
-        series[0].markLine = {
-          silent: true,
-          lineStyle: { color: '#94a3b8', type: 'dashed', width: 1.5 },
-          label: { show: true, position: 'insideEndTop', fontSize: 10, color: '#64748b', formatter: '← Projected BAU 2050' },
-          data: [{ xAxis: '2025' }]
-        };
-      }
-
-      const timelineSource = emissionsDataSource === 'clasp' ? 'Source: CLASP Mepsy Tool' : 'Source: GCI / HEAT GmbH';
       setChart('chart-emissions-timeline-static', {
-        title: { text: '', subtext: timelineSource, subtextStyle: { fontSize: 9, color: '#94a3b8' }, right: 4, bottom: 18 },
+        title: { text: '', subtext: 'Source: CLASP Mepsy Tool', subtextStyle: { fontSize: 9, color: '#94a3b8' }, left: 4, bottom: 18 },
         tooltip: { trigger: 'axis' },
         legend: { bottom: 0, textStyle: { fontSize: 11 } },
-        grid: { left: '3%', right: '4%', bottom: '15%', top: '10%', containLabel: true },
-        xAxis: { type: 'category', data: years.map(String), axisLabel: { fontSize: 11 } },
-        yAxis: { type: 'value', name: 'Mt CO2', nameLocation: 'middle', nameGap: 45, axisLabel: { fontSize: 10 } },
+        grid: { left: 70, right: '4%', bottom: '15%', top: '10%', containLabel: false },
+        xAxis: {
+          type: 'value',
+          min: 2023, max: 2050,
+          axisLabel: { fontSize: 11, formatter: (v: number) => (v % 5 === 0 && v >= 2025) ? String(v) : '' }
+        },
+        yAxis: { type: 'value', name: 'Mt CO₂', nameLocation: 'middle', nameGap: 45, axisLabel: { fontSize: 10 } },
         series
       }, echartsLib);
     }
@@ -1377,6 +1353,12 @@
           </div>
         {/each}
       </div>
+
+      <p class="ep-stats-note">
+        Stats 1 & 2 combine indirect (energy) + direct (refrigerant) emissions.
+        Stat 3 source: <strong>CLASP Mepsy</strong> — energy efficiency (Best Available Tech).
+        Stat 4 source: <strong>GCI / HEAT</strong> — refrigerant phase-down (Kigali Implementation).
+      </p>
     </div>
 
     <!-- DATA: CO2 Emissions Map & Charts -->
@@ -1389,6 +1371,10 @@
       </div>
       <h2 class="ep-section-title">Look at your country's cooling emissions.</h2>
       <p class="ep-body">Both <strong>direct emissions</strong> (refrigerant leaks from cooling equipment) and <strong>indirect emissions</strong> (electricity-related CO₂ from powering compressors) are shown on the map below. Click any country to explore its full breakdown by appliance type and emission source.</p>
+      <p class="ep-xref-note">
+        <i class="fa-solid fa-arrow-right-long" style="color: #6BADA0;"></i>
+        For the full HFC refrigerant phase-down trajectory and Kigali Amendment ratification status, see <a href="/dashboard/kigali" class="ep-xref-link"><strong>Pillar 3: Refrigerant Transition</strong></a>.
+      </p>
     </div>
 
     <div class="map-charts-connected emissions-map-block">
@@ -1487,7 +1473,7 @@
             <label class="filter-label" for="emissions-scenario-select">Scenario</label>
             <select id="emissions-scenario-select" class="filter-select" style="min-width: 120px;">
               <option value="BAU">Business as Usual</option>
-              <option value="GB">Green Buildings</option>
+              <option value="GB">Global Benchmark</option>
               <option value="BAT">Best Available Tech</option>
             </select>
             <div id="emissions-scenario-hint" class="ep-scenario-hint">No new policies beyond today's baseline</div>
@@ -1667,24 +1653,6 @@
         </div>
       </div>
 
-      <div class="emissions-source-footer" style="opacity:1;display:flex;justify-content:flex-end;align-items:center;gap:0.75rem;flex-wrap:wrap;">
-        <span>CLASP:
-          <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">MEPSY tool</a>
-        </span>
-        <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">
-          <img src="/images/clasp-logo.png" alt="CLASP" style="height:14px;vertical-align:middle;opacity:0.8;" />
-        </a>
-        <span style="color:#cbd5e1;">·</span>
-        <span>GCI:
-          <a href="https://www.green-cooling-initiative.org/country-data#!total-emissions/all-sectors/absolute" target="_blank" rel="noopener noreferrer">Country Data</a>
-        </span>
-        <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">
-          <img src="/images/heat-logo.png" alt="HEAT GmbH" style="height:14px;vertical-align:middle;opacity:0.8;" />
-        </a>
-        <a href="https://www.giz.de" target="_blank" rel="noopener noreferrer">
-          <img src="/images/giz-logo.png" alt="GIZ" style="height:14px;vertical-align:middle;opacity:0.8;" />
-        </a>
-      </div>
     </div>
 
     <!-- ═══ GO DEEPER: Emissions Trajectory ═══ -->
@@ -1696,7 +1664,7 @@
         <span class="ep-scope-badge"><i class="fa-solid fa-fan"></i> Ceiling Fans</span>
       </div>
       <h2 class="ep-section-title">Emissions Trajectory — Scenario Comparison</h2>
-      <p class="ep-body">Compare how different policy pathways bend the emissions curve from 2020 to 2050. Business as Usual (BAU) projects significant growth in cooling emissions; the DECARB scenarios show the impact of combining energy efficiency standards (MEPS), Kigali refrigerant phase-down, and grid decarbonisation.</p>
+      <p class="ep-body">Compare how different policy pathways bend the indirect energy emissions curve from 2025 to 2050. <strong>Business as Usual (BAU)</strong> projects significant growth; <strong>Global Benchmark (GB)</strong> reflects adoption of today's best market standards; <strong>Best Available Tech (BAT)</strong> shows the maximum efficiency potential. All scenarios from the CLASP Mepsy Tool — indirect (energy-related) emissions only.</p>
       <div style="position: relative;">
         <div id="chart-emissions-timeline-static" class="chart-surface" style="width:100%;height:340px;min-height:340px;"></div>
         {#if !mapDataLoaded}
@@ -1706,11 +1674,21 @@
           </div>
         {/if}
       </div>
-      <div class="ep-scope-note">
-        <i class="fa-solid fa-circle-info"></i>
-        Residential AC, domestic refrigerators and ceiling fans only. Projected values show BAU 2050, not a mitigation or pledge-aligned pathway. Commercial refrigeration and chillers are excluded.
+      <div class="ep-scenario-legend">
+        <div class="ep-scenario-item">
+          <span class="ep-scenario-dot" style="background:{SCENARIO.BAU}"></span>
+          <span><strong>Business as Usual (BAU):</strong> The model assumes that before any policy being implemented, all appliances on the market operate at a well-defined baseline efficiency.</span>
+        </div>
+        <div class="ep-scenario-item">
+          <span class="ep-scenario-dot" style="background:{SCENARIO.KIP}"></span>
+          <span><strong>Global Benchmark (GB):</strong> A low-ambition policy scenario. The global benchmarks are efficiency levels recommended by CLASP and others such as United for Efficiency.</span>
+        </div>
+        <div class="ep-scenario-item">
+          <span class="ep-scenario-dot" style="background:{SCENARIO.BAT}"></span>
+          <span><strong>Best Available Technology (BAT):</strong> All new appliances operate at the highest efficiency levels currently achievable, using the most advanced technologies available today.</span>
+        </div>
       </div>
-      <div class="ep-chart-source" style="display:flex;justify-content:flex-end;align-items:center;gap:0.5rem;flex-wrap:wrap;font-size:0.78rem;margin-top:1rem;">
+      <div class="ep-chart-source" style="display:flex;justify-content:flex-start;align-items:center;gap:0.5rem;flex-wrap:wrap;font-size:0.78rem;margin-top:1rem;">
         <span>Data from the <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">MEPSY tool</a></span>
         <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer">
           <img src="/images/clasp-logo.png" alt="CLASP" style="height:16px;vertical-align:middle;opacity:0.8;" />
@@ -1743,6 +1721,36 @@
 </section>
 
 <style>
+  /* ===========================
+     STATS NOTE
+     =========================== */
+  .ep-stats-note {
+    margin-top: 1.25rem;
+    font-size: 0.72rem;
+    color: #94a3b8;
+    line-height: 1.5;
+    text-align: left;
+    padding-left: 0.5rem;
+  }
+
+  .ep-xref-note {
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .ep-xref-link {
+    color: #0f766e;
+    text-decoration: none;
+  }
+
+  .ep-xref-link:hover {
+    text-decoration: underline;
+  }
+
   /* ===========================
      MAP INTRO SECTION
      =========================== */
@@ -1865,6 +1873,31 @@
     font-style: italic;
     margin-top: 0.3rem;
     line-height: 1.4;
+  }
+
+  .ep-scenario-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+    font-size: 0.74rem;
+    color: #475569;
+    line-height: 1.5;
+  }
+
+  .ep-scenario-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .ep-scenario-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 0.3rem;
   }
 
   .ep-scope-note {

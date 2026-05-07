@@ -100,18 +100,18 @@
     // (2005 for CLASP, 1990 for hardcoded fallback). Using getYears() (hardcoded)
     // when live data is present would create empty slots for 1990/1995/2000 that
     // break the historical→projected bridge logic.
-    const startYear = selectedAppliance === 'All' ? 2025 : 2020;
+    const startYear = 2025;
     const years = [...new Set(effectiveData.map(d => d.year))]
       .filter(y => y >= startYear && y <= 2050)
       .sort((a, b) => a - b);
     const field = METRIC_META[selectedMetric].field;
     const yLabel = METRIC_META[selectedMetric].yAxisLabel;
-    const demarcationIdx = years.indexOf(2025);
+    const demarcationIdx = years.indexOf(2025) > 0 ? years.indexOf(2025) : -1;
 
     const series: any[] = [];
 
     if (selectedAppliance === 'All') {
-      // Grouped bars: one bar group per year, one bar per appliance (BAU only)
+      // Stacked bars: one stack per year, one segment per appliance (BAU only)
       const appliances: ApplianceType[] = ['AC', 'DomRef', 'Fans'];
       for (const app of appliances) {
         const data = getApplianceData(app, 'BAU');
@@ -119,12 +119,13 @@
         series.push({
           name: meta.label,
           type: 'bar',
+          stack: 'total',
           data: years.map(y => {
             const pt = data.find(d => d.year === y);
             return pt ? (pt as any)[field] : null;
           }),
           itemStyle: { color: meta.color },
-          barMaxWidth: 28
+          barMaxWidth: 40
         });
       }
     } else if (selectedMetric === 'emissions' && selectedAppliance !== 'Fans') {
@@ -164,25 +165,16 @@
         barWidth: '60%',
       });
     } else if (selectedMetric === 'stock') {
-      // Stock (units): vertical bar chart — avoids misleading stacked-area appearance
+      // Stock (units): single-color vertical bar chart — all years same color, legend reads "Stocks"
       const data = getApplianceData(selectedAppliance, 'BAU');
       const meta = APPLIANCE_META[selectedAppliance];
-      const isProjected = years.map(y => {
-        const pt = data.find(d => d.year === y);
-        return pt ? pt.isProjected : true;
-      });
-      const historicalData = years.map((y, i) => {
-        const pt = data.find(d => d.year === y);
-        return !isProjected[i] && pt ? (pt as any)[field] : null;
-      });
-      const projectedData = years.map((y, i) => {
-        const pt = data.find(d => d.year === y);
-        return isProjected[i] && pt ? (pt as any)[field] : null;
-      });
       series.push({
-        name: 'Historical',
+        name: 'Stocks',
         type: 'bar',
-        data: historicalData,
+        data: years.map(y => {
+          const pt = data.find(d => d.year === y);
+          return pt ? (pt as any)[field] : null;
+        }),
         itemStyle: { color: meta.color },
         barWidth: '60%',
         markLine: demarcationIdx >= 0 ? {
@@ -192,81 +184,45 @@
           label: { show: false }
         } : undefined
       });
+    } else if (selectedMetric === 'emissions' && selectedAppliance === 'Fans') {
+      // Fans emissions: medium shade (0.75) — distinct from Stock (1.0) and Energy (0.45)
+      const data = getApplianceData('Fans', 'BAU');
+      const meta = APPLIANCE_META['Fans'];
       series.push({
-        name: 'Projected (BAU)',
+        name: 'BAU (indirect)',
         type: 'bar',
-        data: projectedData,
-        itemStyle: { color: SCENARIO.PROJECTED, opacity: 0.75 },
+        data: years.map(y => {
+          const pt = data.find(d => d.year === y);
+          return pt ? (pt as any)[field] : null;
+        }),
+        itemStyle: { color: meta.color, opacity: 0.75 },
         barWidth: '60%',
+        markLine: demarcationIdx >= 0 ? {
+          silent: true, symbol: 'none',
+          data: [{ xAxis: demarcationIdx }],
+          lineStyle: { color: CHROME.DEMARCATION, width: 1, type: 'dashed' },
+          label: { show: false }
+        } : undefined
       });
     } else {
-      // Energy or Fans emissions — historical (solid line+area) + projected (dashed line+area)
+      // Energy (TWh) — lighter shade of meta.color to distinguish from Stock bars
       const data = getApplianceData(selectedAppliance, 'BAU');
       const meta = APPLIANCE_META[selectedAppliance];
-      const values = years.map(y => {
-        const pt = data.find(d => d.year === y);
-        return pt ? (pt as any)[field] : null;
-      });
-      const isProjected = years.map(y => {
-        const pt = data.find(d => d.year === y);
-        return pt ? pt.isProjected : true;
-      });
-
-      const historicalData = values.map((v, i) => isProjected[i] ? null : v);
-      const projectedData = values.map((v, i) => isProjected[i] ? v : null);
-
-      // Bridge point
-      const lastHistIdx = isProjected.indexOf(true) - 1;
-      if (lastHistIdx >= 0 && lastHistIdx < projectedData.length) {
-        projectedData[lastHistIdx] = values[lastHistIdx];
-      }
-
       series.push({
-        name: 'Historical',
-        type: 'line',
-        data: historicalData,
-        smooth: 0.5,
-        connectNulls: false,
-        lineStyle: { width: 3, color: meta.color },
-        itemStyle: { color: meta.color },
-        areaStyle: {
-          color: {
-            type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
-            colorStops: [
-              { offset: 0, color: meta.colorRgba + ' 0.25)' },
-              { offset: 1, color: meta.colorRgba + ' 0.02)' },
-            ]
-          }
-        },
-        symbol: 'circle',
-        symbolSize: 5,
+        name: 'BAU',
+        type: 'bar',
+        data: years.map(y => {
+          const pt = data.find(d => d.year === y);
+          return pt ? (pt as any)[field] : null;
+        }),
+        itemStyle: { color: meta.color, opacity: 0.45 },
+        barWidth: '60%',
         markLine: demarcationIdx >= 0 ? {
           silent: true, symbol: 'none',
           data: [{ xAxis: demarcationIdx }],
           lineStyle: { color: CHROME.DEMARCATION, width: 1, type: 'dashed' },
           label: { show: false }
         } : undefined
-      });
-
-      series.push({
-        name: 'Projected (BAU)',
-        type: 'line',
-        data: projectedData,
-        smooth: 0.5,
-        connectNulls: false,
-        lineStyle: { width: 3, color: SCENARIO.PROJECTED, type: 'dashed' },
-        itemStyle: { color: SCENARIO.PROJECTED },
-        areaStyle: {
-          color: {
-            type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
-            colorStops: [
-              { offset: 0, color: 'rgba(240, 164, 122, 0.2)' },
-              { offset: 1, color: 'rgba(240, 164, 122, 0.02)' },
-            ]
-          }
-        },
-        symbol: 'circle',
-        symbolSize: 5,
       });
     }
 
@@ -339,13 +295,14 @@
 
     return {
       tooltip,
-      grid: { left: '3%', right: '4%', bottom: '12%', top: '8%', containLabel: true },
+      grid: { left: '8%', right: '4%', bottom: '12%', top: '8%', containLabel: true },
       xAxis: {
         type: 'category',
-        data: years,
-        boundaryGap: selectedAppliance === 'All' || (selectedAppliance !== 'All' && selectedMetric === 'stock'),
+        data: years.map(String),
+        boundaryGap: true,
         axisLabel: { fontSize: 10, color: CHROME.TEXT_SECONDARY },
-        axisLine: { lineStyle: { color: CHROME.SPLIT_LINE } }
+        axisLine: { lineStyle: { color: CHROME.SPLIT_LINE } },
+        axisTick: { alignWithLabel: true }
       },
       yAxis: {
         type: 'value',
@@ -371,8 +328,8 @@
     if (!chartInstance || !echartsLib) return;
     // Dispose and reinit when switching between chart types (bar vs line)
     // to prevent ECharts blending old series types across the boundary
-    const wasBar = lastAppliance !== null && lastAppliance !== 'All' && lastMetric === 'stock';
-    const isBar  = selectedAppliance !== 'All' && selectedMetric === 'stock';
+    const wasBar = lastAppliance !== null && lastAppliance !== 'All' && lastMetric !== null;
+    const isBar  = selectedAppliance !== 'All';
     const wasAll = lastAppliance === 'All';
     const isAll  = selectedAppliance === 'All';
     if (lastAppliance !== null && (wasAll !== isAll || wasBar !== isBar)) {
@@ -406,7 +363,7 @@
   <div class="chart-header">
     <div class="chart-title">
       <i class={titleIcon}></i>
-      Global {applianceLabel} {metricLabel} (2020 - 2050)
+      Global {applianceLabel} {metricLabel} (2025 - 2050)
     </div>
     {#if summary}
       <div class="chart-subtitle-row">
@@ -560,14 +517,14 @@
   }
 
   .chart-pill:hover {
-    border-color: #2D7D5A;
-    color: #2D7D5A;
+    border-color: #3D6B6B;
+    color: #3D6B6B;
   }
 
   .chart-pill.active {
-    background: #2D7D5A;
+    background: #3D6B6B;
     color: white;
-    border-color: #2D7D5A;
+    border-color: #3D6B6B;
   }
 
   .chart-wrap {

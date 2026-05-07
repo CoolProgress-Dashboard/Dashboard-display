@@ -36,6 +36,7 @@
 - [ ] **Medium | Content** — Replace undefined trajectory lines ("net zero homes", "green buildings", "best tech") with 3 clearly labeled alternatives: efficiency shift, refrigerant shift, grid decarbonization. (Pending scenario mapping confirmation — see PENDING DECISIONS.)
 - [ ] **Medium | Data** — Review and reconcile GCI vs CLASP country-level emissions discrepancies (specifically China AC vs refrigerator ratio and US refrigerators vs ACs). Add a methodology note explaining why figures from different sources may differ.
 - [ ] **Medium | Content** — Update the 2050 direct emissions trajectory to reflect HFC phasedown impact — current projection does not adequately account for it.
+- [x] **High | Content** — Replace DECARB (73%) and IEA (460 Gt) stat cards with CLASP+GCI-only numbers: 60% indirect saving with BAT (CLASP Mepsy DB) and 80% direct saving under Kigali Implementation (GCI DB). Added explainer strip below cards.
 - [ ] **Medium | Content** — Update "The Challenge" and "The Way Forward" body text with the revised copy from Textbausteine.
 - [x] **Low | UI** — Add sector scope filter or flag to all visualizations in this pillar indicating which appliance categories are included.
 

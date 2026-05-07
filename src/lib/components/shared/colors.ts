@@ -94,7 +94,7 @@ export const SCENARIO = {
   BAU:        '#C25B33', // Business as Usual — terracotta
   KIP:        '#D4A843', // Kigali Implementation — amber
   KIP_PLUS:   '#2D7D5A', // Kigali+ — forest green
-  GB:         '#A8D5A2', // Green Buildings — sage
+  GB:         '#A8D5A2', // Global Benchmark — sage
   NZH:        '#52B788', // Net Zero Homes — mint
   BAT:        '#2D7D5A', // Best Available Technology — forest
   HISTORICAL: '#2D7D5A', // historical line — forest green

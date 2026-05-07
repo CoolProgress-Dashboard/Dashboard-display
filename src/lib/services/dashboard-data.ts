@@ -411,7 +411,7 @@ export const buildApplianceTimeseries = (
       const gb        = claspGb[k]     ?? { energy: 0, indirect: 0 };
       const heat      = heatDirect[k]  ?? { bau: 0, kipPlus: 0 };
       const gridRatio = IEA_GRID_RATIO[year] ?? 1.0;
-      const projected = year >= 2025;
+      const projected = year > 2025; // 2025 = observed baseline; 2026+ = projected
 
       // BAU: CLASP BAU columns + HEAT BAU direct
       // appliance_units_in_use is in actual units → divide by 1,000,000 for "millions" field
