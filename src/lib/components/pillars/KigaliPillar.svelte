@@ -334,14 +334,14 @@
     }
 
     function getKipTier(code: string): 'ambitious' | 'standard' | 'none' {
-      // All Non-Article 5 countries have legally binding phase-down plans → dark green
+      // EU member states → ambitious (stricter domestic F-Gas regulation)
+      if (EU_MEMBER_STATES.has(code)) return 'ambitious';
+      // Other Non-Article 5 countries → standard (teal); they have binding plans but not more ambitious than Kigali
       const kigaliRec = kigaliData.find((k: any) => k.country_code === code);
       if (kigaliRec?.kigali_party === 1) {
         const cat = getGroupCategory(kigaliRec.group_type ?? '');
-        if (cat === 'nonA5' || cat === 'nonA5star') return 'ambitious';
+        if (cat === 'nonA5' || cat === 'nonA5star') return 'standard';
       }
-      // EU member states also always ambitious (stricter domestic F-Gas regulation)
-      if (EU_MEMBER_STATES.has(code)) return 'ambitious';
       const o = getKipOverride(code);
       if (!o) return 'none';
       // A5 countries: ambitious if reduction > 10% (by 2029) or > 12% (by any later year)
@@ -403,7 +403,7 @@
       if (!legend) return;
       legend.innerHTML = `
     <div class="legend-item"><div class="legend-color" style="background:#2D7D5A"></div>More ambitious reduction plan</div>
-    <div class="legend-item"><div class="legend-color" style="background:#6BADA0"></div>Standard reduction plan (A5 KIP)</div>
+    <div class="legend-item"><div class="legend-color" style="background:#6BADA0"></div>Standard reduction plan</div>
     <div class="legend-item"><div class="legend-color" style="background:#B8D4C4;border:1px solid #a0c0b4;"></div>Ratified only</div>
     <div class="legend-item"><div class="legend-color" style="background:#e5e7eb;border:1px solid #cbd5e1;"></div>Not ratified</div>
   `;
