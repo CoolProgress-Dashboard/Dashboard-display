@@ -11,5 +11,6 @@
   kigaliData={data.kigali ?? []}
   countries={data.countries ?? []}
   refrigerants={data.refrigerants ?? []}
+  countryScheduleOverrides={data.kigaliCountryOverrides ?? []}
   onPillarInfoClick={() => pillarModalOpen.set(true)}
 />

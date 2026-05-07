@@ -20,6 +20,7 @@
   export let kigaliData: any[] = [];
   export let countries: any[] = [];
   export let refrigerants: any[] = [];
+  export let countryScheduleOverrides: any[] = [];
 
   // Lazily-loaded subcool summary for the direct-emissions chart
   let subcoolSummary: { scenario_name: string; year: number; direct_emission_mt: number }[] = [];
@@ -273,12 +274,27 @@
         : { level: 'notratified', label: 'Not Ratified' };
     }
 
-    function getKigaliColor(level: string): string {
-      switch (level) {
-        case 'ratified':    return YES;
-        case 'notratified': return '#e5e7eb';
-        default:            return NO_DATA;
+    // Build override lookup (country_code → override row)
+    const overrideMap = new Map<string, any>(
+      countryScheduleOverrides.map((o: any) => [o.country_code, o])
+    );
+
+    function getKipTier(code: string): 'ambitious' | 'standard' | 'none' {
+      const o = overrideMap.get(code);
+      if (!o) return 'none';
+      return (o.step1_pct ?? 0) > 10 ? 'ambitious' : 'standard';
+    }
+
+    function getKigaliColor(level: string, code?: string): string {
+      if (level === 'notratified') return '#e5e7eb';
+      if (level === 'nodata')      return NO_DATA;
+      // ratified — shade by KIP ambition
+      if (code) {
+        const tier = getKipTier(code);
+        if (tier === 'ambitious') return '#2D7D5A'; // forest green — exceeds 10%
+        if (tier === 'standard')  return '#6BADA0'; // teal — approved 10% KIP
       }
+      return '#B8D4C4'; // light sage — ratified, no approved KIP yet
     }
 
     // ── Filtered data helper ──────────────────────────────────────────────────
@@ -315,9 +331,10 @@
       const legend = document.getElementById('kigali-legend');
       if (!legend) return;
       legend.innerHTML = `
-    <div class="legend-item"><div class="legend-color" style="background:#6BADA0"></div>Ratified</div>
-    <div class="legend-item"><div class="legend-color" style="background:#e5e7eb;border:1px solid #cbd5e1;"></div>Not yet ratified</div>
-    <div class="legend-item"><div class="legend-color" style="background:#E5E1D8"></div>No Data</div>
+    <div class="legend-item"><div class="legend-color" style="background:#2D7D5A"></div>Ambitious KIP (&gt;10%)</div>
+    <div class="legend-item"><div class="legend-color" style="background:#6BADA0"></div>Standard KIP (10%)</div>
+    <div class="legend-item"><div class="legend-color" style="background:#B8D4C4;border:1px solid #a0c0b4;"></div>Ratified, no KIP yet</div>
+    <div class="legend-item"><div class="legend-color" style="background:#e5e7eb;border:1px solid #cbd5e1;"></div>Not ratified</div>
   `;
     }
 
@@ -403,7 +420,7 @@
           .attr('data-code', (d: any) => countryIdToCode[normalizeId(d.id)] || '')
           .attr('fill', (d: any) => {
             const code = countryIdToCode[normalizeId(d.id)];
-            return getKigaliColor(getKigaliStatus(code).level);
+            return getKigaliColor(getKigaliStatus(code).level, code);
           })
           .on('mouseover', (event: MouseEvent, d: any) => {
             const code = countryIdToCode[normalizeId((d as any).id)];
@@ -451,7 +468,7 @@
         .duration(300)
         .attr('fill', function(this: any) {
           const code = d3Lib.select(this).attr('data-code');
-          return getKigaliColor(getKigaliStatus(code).level);
+          return getKigaliColor(getKigaliStatus(code).level, code);
         });
       updateKigaliLegend();
       updateKigaliProgress();
@@ -780,18 +797,39 @@
         timeline = 'Freeze: 2028 \u00B7 10% by 2032 \u00B7 20% by 2037 \u00B7 30% by 2042 \u00B7 85% by 2047';
       }
 
+      // Look up approved KIP target for this country
+      const kipOverride = overrideMap.get(code);
+      const kipLabel = kipOverride
+        ? `${kipOverride.step1_pct}% by ${kipOverride.step1_year}${kipOverride.step2_pct ? ` · ${kipOverride.step2_pct}% by ${kipOverride.step2_year}` : ''}`
+        : null;
+      const kipIsAmbitious = kipOverride && (kipOverride.step1_pct ?? 0) > 10;
+      const statusColor = !kigaliRecord?.kigali_party ? '#94a3b8'
+        : kipIsAmbitious ? '#2D7D5A'
+        : kipOverride   ? '#6BADA0'
+        : '#B8D4C4';
+
       container.innerHTML = `
         <h4 style="margin:0 0 0.75rem;color:#2D5A3D;font-size:1rem;">${country.country_name}</h4>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
-          <div style="background:#f8fafb;border-radius:8px;padding:0.6rem 0.75rem;border-left:3px solid ${kigaliRecord?.kigali_party === 1 ? '#6BADA0' : '#94a3b8'};">
+          <div style="background:#f8fafb;border-radius:8px;padding:0.6rem 0.75rem;border-left:3px solid ${statusColor};">
             <div style="font-size:0.68rem;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Kigali Status</div>
-            <div style="font-size:0.9rem;font-weight:700;color:${kigaliRecord?.kigali_party === 1 ? '#6BADA0' : '#64748b'};">${kigaliStatus}</div>
+            <div style="font-size:0.9rem;font-weight:700;color:${statusColor};">${kigaliStatus}</div>
           </div>
           <div style="background:#f8fafb;border-radius:8px;padding:0.6rem 0.75rem;border-left:3px solid #6BADA0;">
             <div style="font-size:0.68rem;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Group Type</div>
             <div style="font-size:0.9rem;font-weight:700;color:#1e293b;">${groupType}</div>
           </div>
         </div>
+        ${kipLabel ? `
+        <div style="background:${kipIsAmbitious ? 'linear-gradient(135deg,#1A4A2E,#2D7D5A)' : 'linear-gradient(135deg,#1A3D3D,#2D6B6B)'};border-radius:10px;padding:0.75rem 1rem;margin-bottom:0.75rem;">
+          <div style="font-size:0.68rem;font-weight:700;color:${kipIsAmbitious ? '#A8D5A2' : '#A8D5C8'};text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.35rem;">
+            <i class="fa-solid fa-circle-check" style="margin-right:0.3rem;"></i>Approved KIP Target${kipIsAmbitious ? ' — More Ambitious' : ''}
+          </div>
+          <div style="font-size:0.9rem;font-weight:700;color:#fff;">${kipLabel}</div>
+        </div>` : kigaliRecord?.kigali_party ? `
+        <div style="background:#f8fafc;border-radius:10px;padding:0.6rem 0.85rem;margin-bottom:0.75rem;border:1px dashed #cbd5e1;">
+          <div style="font-size:0.75rem;color:#64748b;font-style:italic;"><i class="fa-solid fa-clock" style="margin-right:0.3rem;color:#94a3b8;"></i>No approved KIP target on record</div>
+        </div>` : ''}
         ${timeline ? `
 <div style="background:linear-gradient(135deg,#1A3D2B 0%,#2D5A3D 100%);border-radius:12px;padding:1rem 1.25rem;margin-bottom:0.75rem;box-shadow:0 2px 8px rgba(0,0,0,0.15);">
   <div style="font-size:0.75rem;font-weight:700;color:#A8D5A2;margin-bottom:0.65rem;letter-spacing:0.5px;text-transform:uppercase;">

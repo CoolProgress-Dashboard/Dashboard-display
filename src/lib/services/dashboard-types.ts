@@ -16,6 +16,31 @@ export type Kigali = {
   kigali_party: number;
   montreal_protocol_party: number;
   group_type?: string | null;
+  [key: string]: unknown; // allow extra columns from select=*
+};
+
+export type KigaliGroupSchedule = {
+  group_type: string;
+  group_display_name: string;
+  baseline_description?: string | null;
+  freeze_year?: number | null;
+  step1_year?: number | null; step1_pct?: number | null;
+  step2_year?: number | null; step2_pct?: number | null;
+  step3_year?: number | null; step3_pct?: number | null;
+  step4_year?: number | null; step4_pct?: number | null;
+  step5_year?: number | null; step5_pct?: number | null;
+};
+
+export type KigaliCountryOverride = {
+  country_code: string;
+  group_type: string;
+  freeze_year?: number | null;
+  step1_year?: number | null; step1_pct?: number | null;
+  step2_year?: number | null; step2_pct?: number | null;
+  step3_year?: number | null; step3_pct?: number | null;
+  step4_year?: number | null; step4_pct?: number | null;
+  step5_year?: number | null; step5_pct?: number | null;
+  notes?: string | null;
 };
 
 export type Meps = {
@@ -96,6 +121,8 @@ export type DashboardData = {
   countries: Country[];
   pledge: Pledge[];
   kigali: Kigali[];
+  kigaliGroupSchedules: KigaliGroupSchedule[];
+  kigaliCountryOverrides: KigaliCountryOverride[];
   meps: Meps[];
   access: AccessRecord[];
   accessForecast: AccessForecastRecord[];

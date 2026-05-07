@@ -188,7 +188,7 @@ export const loadDashboardData = async (
 ): Promise<DashboardData> => {
   // clasp_energy_consumption and global_model_subcool are intentionally excluded —
   // they require 60+ sequential requests. EmissionsPillar loads them lazily.
-  const [countries, pledge, kigali, meps, access, accessForecast, emissions, ndcTracker, ncap, regions, refrigerants, acInverterShare, acGrowthData, coolingMilestones, applianceTimeseries, peakLoadData, countrySpotlights] =
+  const [countries, pledge, kigali, meps, access, accessForecast, emissions, ndcTracker, ncap, regions, refrigerants, acInverterShare, acGrowthData, coolingMilestones, applianceTimeseries, peakLoadData, countrySpotlights, kigaliGroupSchedules, kigaliCountryOverrides] =
     await Promise.all([
       safeFetch(url, key, 'countries', 'country_code,country_name,region'),
       safeFetch(url, key, 'global_cooling_pledge', 'country_code,country_name,signatory'),
@@ -279,7 +279,9 @@ export const loadDashboardData = async (
         key,
         'country_spotlights',
         'id,spotlight_id,name,region,flag_emoji,narrative,meps_status,dominant_refrigerant,key_challenge,source,stats'
-      )
+      ),
+      safeFetch(url, key, 'kigali_group_schedules', '*'),
+      safeFetch(url, key, 'kigali_country_schedule_overrides', '*')
     ]);
   // meps_level_timeline and meps_levels tables do not yet exist in Supabase.
   // MepsLevelChart falls back to the bundled JSON files (src/lib/data/meps_timeline.json
@@ -291,6 +293,8 @@ export const loadDashboardData = async (
     countries,
     pledge,
     kigali,
+    kigaliGroupSchedules: kigaliGroupSchedules ?? [],
+    kigaliCountryOverrides: kigaliCountryOverrides ?? [],
     meps,
     access,
     accessForecast,
