@@ -1469,7 +1469,7 @@
         &middot;
         <a href="https://united4efficiency.org/resources/model-regulation-guidelines/" target="_blank" rel="noopener noreferrer">U4E Model Regulations</a>
         &middot;
-        <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH</a>
+        <a href="https://www.heat-international.de/" target="_blank" rel="noopener noreferrer">HEAT GmbH</a>
         &middot;
         <a href="/methodology">Methodology</a>
       </div>

@@ -65,7 +65,7 @@
   <footer class="idx-footer">
     <p>
       <strong>CoolProgress</strong> is developed by
-      <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH</a>
+      <a href="https://www.heat-international.de/" target="_blank" rel="noopener noreferrer">HEAT GmbH</a>
       in partnership with CLASP, IEA, UNEP U4E, and GIZ Proklima.
     </p>
   </footer>

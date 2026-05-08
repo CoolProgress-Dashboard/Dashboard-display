@@ -647,7 +647,7 @@
   <footer class="meth-footer">
     <p>
       <strong>CoolProgress</strong> is developed by
-      <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH</a>
+      <a href="https://www.heat-international.de/" target="_blank" rel="noopener noreferrer">HEAT GmbH</a>
       in partnership with CLASP, IEA, SEforALL, UNEP, GIZ Proklima, and Cool Coalition.
     </p>
     <p class="meth-version">Chart methodology v1.2 &middot; April 2026</p>

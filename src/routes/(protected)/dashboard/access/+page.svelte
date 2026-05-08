@@ -10,6 +10,7 @@
   active={true}
   accessData={data.access ?? []}
   accessForecast={data.accessForecast ?? []}
+  accessCountryPct={data.accessCountryPct ?? []}
   countries={data.countries ?? []}
   onPillarInfoClick={() => pillarModalOpen.set(true)}
 />

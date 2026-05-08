@@ -10,8 +10,8 @@
   export let compact: boolean = false;
 
   const sourceLinks: Record<string, string> = {
-    'HEAT': 'https://www.heat-gmbh.de',
-    'HEAT GmbH': 'https://www.heat-gmbh.de',
+    'HEAT': 'https://www.heat-international.de/',
+    'HEAT GmbH': 'https://www.heat-international.de/',
     'CLASP': 'https://www.clasp.ngo/tools/mepsy/',
     'CLASP Mepsy': 'https://www.clasp.ngo/tools/mepsy/',
     'CLASP CPRC': 'https://cprc-clasp.ngo/',

@@ -11,8 +11,8 @@
   import {
     ACCESS_ALL_YEARS
   } from '$lib/components/shared/config';
-  import type { AccessRecord, AccessForecastRecord, Country } from '$lib/services/dashboard-types';
-  import { SEQ, CAT, ACCESS_RISK, CHROME, NO_DATA, rgba } from '$lib/components/shared/colors';
+  import type { AccessRecord, AccessForecastRecord, AccessCountryPct, Country } from '$lib/services/dashboard-types';
+  import { SEQ, CAT, CHROME, NO_DATA, rgba } from '$lib/components/shared/colors';
 
   // -------------------------------------------------------
   // Props
@@ -25,6 +25,12 @@
   export let accessForecast: AccessForecastRecord[] = [];
   /** Countries lookup (data.countries) */
   export let countries: Country[] = [];
+  /** SEforALL country-level high-risk % data (data.accessCountryPct) */
+  export let accessCountryPct: AccessCountryPct[] = [];
+
+  // PCT lookup keyed by country_code — rebuilt reactively whenever prop changes
+  let pctLookup: Record<string, number> = {};
+  $: pctLookup = Object.fromEntries(accessCountryPct.map(r => [r.country_code, r.pct_at_risk ?? 0]));
 
   // Exposed apply function — assigned after D3 init so reactive block can call it
   let _applyCountry: ((code: string | null) => void) | null = null;
@@ -43,24 +49,24 @@
 
   const accessStats = [
     {
-      value: '1.2B',
-      label: 'people lack adequate cooling',
-      context: 'Over 1.2 billion people in low- and middle-income countries face dangerous heat without access to cooling. Source: SEforALL Chilling Prospects 2025.'
+      value: '1B+',
+      label: 'people at high risk of inadequate cooling',
+      context: 'Just over 1 billion people are at high risk of a lack of access to crucial cooling solutions across 77 countries analyzed. Source: SEforALL Chilling Prospects 2025.'
     },
     {
-      value: '420K',
-      label: 'deaths/year from food spoilage',
-      context: 'An estimated 420,000 people die annually from unsafe food, much of it due to broken cold chains in developing countries. Source: WHO/SEforALL.'
+      value: '2.83B',
+      label: 'people at medium risk — the "double burden"',
+      context: 'The medium-risk group faces a double burden: unaffordable quality cooling leaves them exposed to heat, while cheaper inefficient options risk locking in a high-emissions trajectory. Source: SEforALL Chilling Prospects 2025.'
     },
     {
-      value: '80M',
-      label: 'jobs lost to heat stress by 2030',
-      context: 'Heat stress could reduce total working hours by 2.2% globally by 2030, equivalent to 80 million full-time jobs. Losses concentrate in cooling-poor regions. Source: ILO.'
+      value: '1.05B',
+      label: 'people forecast at high risk by 2030',
+      context: 'Under a business-as-usual scenario, approximately 1.05 billion people will remain at high risk by 2030 — around 50 million more than in 2024 — as population growth outpaces access gains. Source: SEforALL Chilling Prospects 2025.'
     },
     {
-      value: '40%',
-      label: 'African food lost post-harvest',
-      context: 'Up to 40% of food production in Africa is lost post-harvest due to lack of cold chain infrastructure. Cold chain access could prevent millions of tonnes of food waste.'
+      value: '512M',
+      label: 'women among those at highest risk',
+      context: 'Women make up 512 million of those at high risk — slightly more than men (492M). Women face compounded vulnerability through higher care burdens, poorly built homes, and intersecting inequalities in services and employment. Source: SEforALL Chilling Prospects 2025.'
     }
   ];
 
@@ -184,11 +190,22 @@
     let selectedCountry: string | null = null;
 
     // -------------------------------------------------------
-    // Color / threshold config
+    // Color / threshold config — SEforALL % based system
     // -------------------------------------------------------
-    const ACCESS_THRESHOLDS = [1e6, 5e6, 20e6, 50e6, 200e6, 500e6];
-    const ACCESS_COLORS = [...ACCESS_RISK];
-    const ACCESS_LABELS = ['<1M', '1-5M', '5-20M', '20-50M', '50-200M', '200-500M', '>500M'];
+    const PCT_THRESHOLDS = [0.05, 0.30, 0.50]; // Low | Moderate | High | Critical
+    const PCT_COLORS = [
+      '#F59E0B', // <5%   — Low (amber)
+      '#F97316', // 5-30% — Moderate (orange)
+      '#DC2626', // 30-50% — High (red)
+      '#7F1D1D', // >50%   — Critical (dark red)
+    ] as const;
+    const PCT_LABELS = ['Low (<5%)', 'Moderate (5–30%)', 'High (30–50%)', 'Critical (>50%)'];
+
+    const SEFORALL_RISK_COLORS: Record<string, string> = {
+      'High':   '#C5443A',  // SEforALL red
+      'Medium': '#C9921A',  // SEforALL amber
+      'Low':    '#2D7D32',  // SEforALL green
+    };
 
     // -------------------------------------------------------
     // Chart instances
@@ -208,23 +225,12 @@
       return isNaN(num) ? String(id) : String(num);
     }
 
-    function getAccessColorByValue(value: number): string {
-      if (value <= 0) return NO_DATA;
-      for (let i = 0; i < ACCESS_THRESHOLDS.length; i++) {
-        if (value < ACCESS_THRESHOLDS[i]) return ACCESS_COLORS[i];
-      }
-      return ACCESS_COLORS[ACCESS_COLORS.length - 1];
-    }
-
-    function getAccessLevel(value: number, maxValue: number) {
-      if (value <= 0) return { level: 'low', label: 'Low Gap' };
-      const logValue = Math.log10(value + 1);
-      const logMax = Math.log10(maxValue + 1);
-      const ratio = logMax ? logValue / logMax : 0;
-      if (ratio < 0.25) return { level: 'low', label: 'Low Gap' };
-      if (ratio < 0.5)  return { level: 'medium', label: 'Medium Gap' };
-      if (ratio < 0.75) return { level: 'high', label: 'High Gap' };
-      return { level: 'critical', label: 'Critical Gap' };
+    function getColorByPct(pct: number): string {
+      if (pct <= 0) return NO_DATA;
+      if (pct < PCT_THRESHOLDS[0]) return PCT_COLORS[0];
+      if (pct < PCT_THRESHOLDS[1]) return PCT_COLORS[1];
+      if (pct < PCT_THRESHOLDS[2]) return PCT_COLORS[2];
+      return PCT_COLORS[3];
     }
 
     /** Aggregate population_without_cooling by country for current filters */
@@ -249,10 +255,10 @@
     function updateAccessLegend() {
       const legend = document.getElementById('access-legend');
       if (!legend) return;
-      legend.innerHTML = ACCESS_COLORS.map((color, i) => `
+      legend.innerHTML = PCT_COLORS.map((color, i) => `
         <div class="legend-item">
           <div class="legend-color" style="background:${color}"></div>
-          ${ACCESS_LABELS[i]}
+          ${PCT_LABELS[i]}
         </div>
       `).join('');
     }
@@ -262,27 +268,17 @@
         const el = document.getElementById(id);
         if (el) el.style.width = `${pct}%`;
       };
-      const accessTotals = getAccessTotalsFiltered();
-      const values = Object.values(accessTotals);
-      const total = values.length;
-      const counts = { low: 0, medium: 0, high: 0, critical: 0 };
-      const maxValue = Math.max(...values, 1);
-      values.forEach(value => {
-        const level = getAccessLevel(value, maxValue).level;
-        if (level === 'low') counts.low++;
-        else if (level === 'medium') counts.medium++;
-        else if (level === 'high') counts.high++;
+      const pctValues = Object.values(pctLookup);
+      const total = pctValues.length || 1;
+      let counts = { low: 0, moderate: 0, high: 0, critical: 0 };
+      pctValues.forEach(pct => {
+        if (pct < PCT_THRESHOLDS[0]) counts.low++;
+        else if (pct < PCT_THRESHOLDS[1]) counts.moderate++;
+        else if (pct < PCT_THRESHOLDS[2]) counts.high++;
         else counts.critical++;
       });
-      if (!total) {
-        setWidth('access-progress-low', 0);
-        setWidth('access-progress-medium', 0);
-        setWidth('access-progress-high', 0);
-        setWidth('access-progress-critical', 0);
-        return;
-      }
       setWidth('access-progress-low', (counts.low / total) * 100);
-      setWidth('access-progress-medium', (counts.medium / total) * 100);
+      setWidth('access-progress-medium', (counts.moderate / total) * 100);
       setWidth('access-progress-high', (counts.high / total) * 100);
       setWidth('access-progress-critical', (counts.critical / total) * 100);
     }
@@ -379,6 +375,7 @@
         .style('cursor', 'pointer')
         .on('click', () => {
           selectedCountry = null;
+          highlightAccessCountry(null);
           updateAccessViewingBadge();
           showGlobalAccessDetail();
           syncAccessPanelVisibility();
@@ -403,23 +400,21 @@
           .attr('fill', (d: any) => {
             const code = countryIdToCode[normalizeId(d.id)];
             if (!code) return NO_DATA;
-            const value = accessTotals[code];
-            if (value === undefined || value <= 0) return NO_DATA;
-            return getAccessColorByValue(value);
+            return getColorByPct(pctLookup[code] ?? 0);
           })
           .on('mouseover', (event: MouseEvent, d: any) => {
             const code = countryIdToCode[normalizeId(d.id)];
             if (!code) return;
             const country = countries.find(c => c.country_code === code);
-            const totals = getAccessTotalsFiltered();
-            const value = totals[code] || 0;
-            const valueLabel = value ? `${(value / 1e6).toFixed(1)}M` : 'No data';
+            const summary = accessCountryPct.find(r => r.country_code === code);
+            const totalM = summary?.total_at_risk ? `${(summary.total_at_risk / 1e6).toFixed(1)}M` : 'No data';
+            const pct = pctLookup[code] ?? 0;
             const tt = getTooltip();
             if (!tt) return;
             tt.innerHTML = `
               <strong>${country?.country_name || code}</strong><br>
-              <span style="color: var(--text-secondary)">Year: ${accessYear}</span><br>
-              Population at Risk: ${valueLabel}
+              <span style="font-weight:600;">At risk: ${totalM}${pct > 0 ? ` (${(pct * 100).toFixed(1)}% of population)` : ''}</span><br>
+              <span style="color:#94a3b8;font-size:0.8em;">Click for breakdown by risk level</span>
             `;
             tt.style.opacity = '1';
             tt.style.left = (event.pageX + 10) + 'px';
@@ -455,7 +450,6 @@
     // -------------------------------------------------------
     function updateAccessMap() {
       if (!accessMapSvg) return;
-      const accessTotals = getAccessTotalsFiltered();
 
       accessMapSvg.selectAll('.access-path')
         .transition()
@@ -463,9 +457,7 @@
         .attr('fill', function(this: any) {
           const code = d3.select(this).attr('data-code');
           if (!code) return NO_DATA;
-          const value = accessTotals[code];
-          if (value === undefined || value <= 0) return NO_DATA;
-          return getAccessColorByValue(value);
+          return getColorByPct(pctLookup[code] ?? 0);
         });
 
       updateAccessLegend();
@@ -476,11 +468,11 @@
     // -------------------------------------------------------
     // Highlight selected country on the access map
     // -------------------------------------------------------
-    function highlightAccessCountry(code: string) {
+    function highlightAccessCountry(code: string | null) {
       if (!accessMapSvg) return;
       accessMapSvg.selectAll('.access-path')
         .classed('country-selected', function(this: any) {
-          return d3.select(this).attr('data-code') === code;
+          return code !== null && d3.select(this).attr('data-code') === code;
         });
     }
 
@@ -505,8 +497,8 @@
           : r.region
       }));
 
-      // Range: 2015–2030 — SEforALL data only (no HEAT projections beyond 2030)
-      const allRecords = [...accessData, ...normalizedForecast].filter(r => r.year >= 2015 && r.year <= 2030);
+      // Range: 2022–2030 — SEforALL data only (no HEAT projections beyond 2030)
+      const allRecords = [...accessData, ...normalizedForecast].filter(r => r.year >= 2022 && r.year <= 2030);
 
       // Apply risk level filter only
       const filtered = allRecords.filter(r => {
@@ -515,12 +507,8 @@
       });
 
       const years = Array.from(new Set(filtered.map(r => r.year))).sort((a, b) => a - b);
-      const riskLevels = ['High', 'Medium', 'Low'];
-      const riskColors: Record<string, string> = {
-        'High': '#C25B33',
-        'Medium': '#D4A843',
-        'Low': '#F5C44A'
-      };
+      // Low first → High last so High renders on top of the stack
+      const riskLevels = ['Low', 'Medium', 'High'];
 
       const seriesData: Record<string, number[]> = {};
       riskLevels.forEach(lvl => { seriesData[lvl] = []; });
@@ -554,12 +542,12 @@
           }
         },
         legend: {
-          data: activeRisks,
+          data: activeRisks.map(lvl => ({ name: lvl, itemStyle: { color: SEFORALL_RISK_COLORS[lvl] } })),
           bottom: 0,
           left: 'center',
           textStyle: { fontSize: 11, color: '#1e293b', fontWeight: 700 }
         },
-        grid: { left: '3%', right: '4%', bottom: '14%', top: '8%', containLabel: true },
+        grid: { left: '3%', right: '6%', bottom: '14%', top: '14%', containLabel: true },
         xAxis: {
           type: 'category',
           data: years,
@@ -567,7 +555,7 @@
             fontSize: 10, color: '#1e293b', fontWeight: 700,
             interval: 0,
             showMaxLabel: true,
-            formatter: (val: string | number) => [2015, 2020, 2025, 2030].includes(Number(val)) ? String(val) : ''
+            formatter: (val: string | number) => [2022, 2024, 2026, 2028, 2030].includes(Number(val)) ? String(val) : ''
           },
           boundaryGap: false
         },
@@ -581,12 +569,12 @@
           name: lvl,
           type: 'line',
           stack: 'total',
-          areaStyle: { opacity: 0.7, color: riskColors[lvl] },
+          areaStyle: { opacity: 0.7, color: SEFORALL_RISK_COLORS[lvl] },
           data: seriesData[lvl],
           smooth: false,
           symbol: 'none',
-          lineStyle: { color: riskColors[lvl], width: 1.5 },
-          itemStyle: { color: riskColors[lvl] },
+          lineStyle: { color: SEFORALL_RISK_COLORS[lvl], width: 1.5 },
+          itemStyle: { color: SEFORALL_RISK_COLORS[lvl] },
           markLine: idx === 0 ? {
             silent: true,
             symbol: 'none',
@@ -629,24 +617,20 @@
 
       const countryData = [...accessData, ...accessForecast].filter(r => r.country_code === code);
 
-      const riskColors: Record<string, string> = {
-        'High': '#C25B33',
-        'Medium': '#D4A843',
-        'Low': '#F5C44A'
-      };
-      const riskLevels = ['High', 'Medium', 'Low'];
+      // Low first → High last so High renders on top of the stack
+      const riskLevels = ['Low', 'Medium', 'High'];
 
-      // Cap at 2030 — SEforALL data only
-      const CHART_YEARS = ACCESS_ALL_YEARS.filter((y: number) => y <= 2030);
+      // 2022–2030 — SEforALL data only
+      const CHART_YEARS = ACCESS_ALL_YEARS.filter((y: number) => y >= 2022 && y <= 2030);
 
-      // Build stacked data by risk level over 2013–2030
+      // Build stacked data by risk level over 2022–2030
       const stackedData = riskLevels.map(lvl => ({
         name: lvl,
         data: CHART_YEARS.map((year: number) => {
           const yearLvlData = countryData.filter(r => r.year === year && r.impact_level === lvl);
           return yearLvlData.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
         }),
-        color: riskColors[lvl]
+        color: SEFORALL_RISK_COLORS[lvl]
       }));
 
       // 2024 breakdown for pie chart by risk level
@@ -655,7 +639,7 @@
         const total = currentYearData
           .filter(r => r.impact_level === lvl)
           .reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
-        return { category: lvl, value: total, color: riskColors[lvl] };
+        return { category: lvl, value: total, color: SEFORALL_RISK_COLORS[lvl] };
       }).filter(cb => cb.value > 0);
 
       const currentYearTotal = currentYearData.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
@@ -676,7 +660,7 @@
       ).category;
       const trendDescription = `Population without cooling access has ${trendDirection} by ${Math.abs(Number(changePercent))}% since ${baselineYear}.`;
       const breakdownDescription = dominantRisk
-        ? `The highest concentration is in the <strong style="color:${riskColors[dominantRisk] || '#C25B33'}">${dominantRisk} risk</strong> category.`
+        ? `The highest concentration is in the <strong style="color:${SEFORALL_RISK_COLORS[dominantRisk] || '#C5443A'}">${dominantRisk} risk</strong> category.`
         : '';
 
       accessDetail.innerHTML = `
@@ -707,10 +691,10 @@
           </div>
           <div class="chart-box" style="background: transparent; border: none; border-top: 1px solid rgba(0,0,0,0.06); padding: 0.75rem 0;">
             <div style="font-size: 0.75rem; font-weight: 600; color: #8B5E3C; margin-bottom: 0.5rem;">
-              <i class="fa-solid fa-chart-pie" style="margin-right: 0.3rem; color: #D4A843;"></i>
-              2024 Category Breakdown
+              <i class="fa-solid fa-venus-mars" style="margin-right: 0.3rem; color: #D4A843;"></i>
+              2024 Gender Breakdown
             </div>
-            <div class="access-pie-chart" style="width: 100%; height: 200px;"></div>
+            <div class="access-gender-chart" style="width: 100%; height: 200px;"></div>
           </div>
         </div>
         <div class="country-insight" style="background: transparent; border-radius: 0; padding: 1rem 0 1rem 1rem; border: none; border-left: 3px solid #D4A843;">
@@ -730,7 +714,7 @@
       // Render ECharts inside the newly-created DOM nodes
       setTimeout(() => {
         const stackedContainer = accessDetail.querySelector('.access-stacked-chart') as HTMLElement | null;
-        const pieContainer = accessDetail.querySelector('.access-pie-chart') as HTMLElement | null;
+        const genderContainer = accessDetail.querySelector('.access-gender-chart') as HTMLElement | null;
 
         if (accessCountryStackedChart) { accessCountryStackedChart.dispose(); accessCountryStackedChart = null; }
         if (accessCountryPieChart) { accessCountryPieChart.dispose(); accessCountryPieChart = null; }
@@ -738,7 +722,7 @@
         if (stackedContainer) {
           accessCountryStackedChart = echarts.init(stackedContainer);
           accessCountryStackedChart.setOption({
-            grid: { top: 30, right: 10, bottom: 28, left: 50 },
+            grid: { top: 30, right: 30, bottom: 28, left: 70 },
             legend: {
               show: true, top: 0, left: 'center',
               itemWidth: 14, itemHeight: 10,
@@ -760,7 +744,7 @@
                 formatter: (v: number) => v >= 1e6 ? `${(v / 1e6).toFixed(0)}M` : v >= 1e3 ? `${(v / 1e3).toFixed(0)}K` : String(v)
               },
               splitLine: { lineStyle: { color: '#e2e8f0' } },
-              name: 'Population', nameLocation: 'middle', nameGap: 35,
+              name: 'Population', nameLocation: 'middle', nameGap: 55,
               nameTextStyle: { fontSize: 10, color: '#64748b', fontWeight: 500 }
             },
             series: stackedData.map((cat, idx) => ({
@@ -802,49 +786,54 @@
           });
         }
 
-        if (pieContainer && categoryBreakdown.length > 0) {
-          accessCountryPieChart = echarts.init(pieContainer);
+        const genderSummary = accessCountryPct.find(r => r.country_code === code);
+        const femaleTotal = genderSummary?.female_at_risk ?? 0;
+        const maleTotal = genderSummary?.male_at_risk ?? 0;
+
+        if (genderContainer && (femaleTotal > 0 || maleTotal > 0)) {
+          accessCountryPieChart = echarts.init(genderContainer);
+          const genderSum = femaleTotal + maleTotal;
+          const femalePct = genderSum > 0 ? ((femaleTotal / genderSum) * 100).toFixed(1) : '0';
+          const malePct   = genderSum > 0 ? ((maleTotal   / genderSum) * 100).toFixed(1) : '0';
           accessCountryPieChart.setOption({
             tooltip: {
               trigger: 'item',
               textStyle: { fontSize: 12 },
-              formatter: (params: any) => `<strong style="font-size:13px">${params.name}</strong><br/>${(params.value / 1e6).toFixed(2)}M (${params.percent}%)`
+              formatter: (params: any) => `<strong>${params.name}</strong><br/>${(params.value / 1e6).toFixed(2)}M (${params.percent}%)`
             },
-            legend: { show: false },
+            legend: {
+              show: true,
+              orient: 'horizontal',
+              bottom: 0,
+              left: 'center',
+              itemWidth: 12, itemHeight: 10,
+              textStyle: { fontSize: 11, color: '#1e293b', fontWeight: 600 },
+              data: [
+                { name: 'Female', icon: 'circle' },
+                { name: 'Male',   icon: 'circle' }
+              ],
+              formatter: (name: string) => name
+            },
             series: [{
               type: 'pie',
-              radius: ['35%', '65%'],
-              center: ['50%', '50%'],
-              avoidLabelOverlap: true,
-              itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 },
+              radius: ['30%', '55%'],
+              center: ['50%', '44%'],
+              startAngle: 90,
+              avoidLabelOverlap: false,
+              itemStyle: { borderRadius: 3, borderColor: '#fff', borderWidth: 2 },
               label: {
-                show: true,
-                position: 'outside',
-                fontSize: 11,
-                fontWeight: 500,
-                formatter: (params: any) => {
-                  const shortName = params.name
-                    .replace('Rural Poor', 'Rural')
-                    .replace('Urban Poor', 'Urban')
-                    .replace('Lower-Middle Income', 'Lower-Mid')
-                    .replace('Middle-Income', 'Middle');
-                  return `${shortName}\n${params.percent}%`;
-                }
+                show: true, position: 'outside', fontSize: 11, fontWeight: 700,
+                formatter: (params: any) => `${params.percent?.toFixed(1)}%`
               },
-              labelLine: { show: true, length: 8, length2: 8 },
-              emphasis: {
-                label: { show: true, fontSize: 13, fontWeight: 'bold' },
-                itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0,0,0,0.5)' }
-              },
-              data: categoryBreakdown.map(c => ({
-                name: c.category,
-                value: c.value,
-                itemStyle: { color: c.color }
-              }))
+              labelLine: { show: true, length: 8, length2: 6 },
+              data: [
+                { name: 'Male',   value: maleTotal,   itemStyle: { color: '#06B6D4' } },
+                { name: 'Female', value: femaleTotal, itemStyle: { color: '#7C3AED' } }
+              ]
             }]
           });
-        } else if (pieContainer) {
-          pieContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:0.75rem;">No data for selected year</div>';
+        } else if (genderContainer) {
+          genderContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:0.75rem;">No gender data available</div>';
         }
       }, 100);
     }
@@ -863,8 +852,10 @@
 
     function syncAccessPanelVisibility() {
       const timelineContainer = document.getElementById('access-timeline-container');
+      const filtersPanel = document.getElementById('access-filters-panel');
       const countryDetail = document.getElementById('access-country-detail');
       if (timelineContainer) timelineContainer.style.display = selectedCountry ? 'none' : '';
+      if (filtersPanel) filtersPanel.style.display = selectedCountry ? 'none' : '';
       if (countryDetail) countryDetail.style.display = selectedCountry ? '' : 'none';
     }
 
@@ -929,6 +920,7 @@
       function applyCountry(code: string | null) {
         if (!code) {
           selectedCountry = null;
+          highlightAccessCountry(null);
           updateAccessViewingBadge();
           showGlobalAccessDetail();
           syncAccessPanelVisibility();
@@ -976,8 +968,8 @@
     <!-- ═══ Ch01 THE CHALLENGE ═══ -->
     <div class="access-narrative-section" class:revealed>
       <span class="access-eyebrow">The Challenge</span>
-      <h2 class="access-section-title">Access to cooling is not a luxury — it is a human right.</h2>
-      <p class="access-body-text">As global temperatures break records, the "cooling gap" has become a matter of survival, particularly for the 1.2 billion people identified in the <a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(3,105,161,0.3);">SEforALL Chilling Prospects 2025/2026</a> data as being at high risk.</p>
+      <h2 class="access-section-title">Access to cooling is not a luxury, it is a human right.</h2>
+      <p class="access-body-text">As temperatures rise and the effects of extreme and prolonged heat stress become apparent, access to cooling becomes essential to address three interconnected needs: <strong>agriculture, food security and nutrition</strong>; <strong>health services</strong>; and <strong>human safety and comfort</strong>. Just over 1 billion people are at high risk of a lack of access to crucial cooling solutions across 77 countries analyzed by <a href="https://www.seforall.org/our-work/research-analysis/chilling-prospects-series" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(3,105,161,0.3);">SEforALL Chilling Prospects</a>.</p>
 
       <div class="access-counters">
         {#each accessStats as stat, i}
@@ -997,7 +989,7 @@
         <div class="access-impact-card">
           <div class="access-impact-icon"><i class="fa-solid fa-heart-crack"></i></div>
           <h4 class="access-impact-title">The Human Cost</h4>
-          <p class="access-impact-body">Heat is now the leading weather-related cause of death. In the summer of 2024 alone, over 62,700 heat-related deaths were recorded in Europe. In the Global South, where data is often under-reported, the impact is even more severe, particularly in dense informal settlements that act as "heat traps."</p>
+          <p class="access-impact-body">Heat is now the leading weather-related cause of death. In the Global South, where data is often under-reported, the impact is most severe in dense informal settlements that act as heat traps — particularly for the elderly, young children, and outdoor workers.</p>
         </div>
         <div class="access-impact-card">
           <div class="access-impact-icon"><i class="fa-solid fa-briefcase"></i></div>
@@ -1007,12 +999,12 @@
         <div class="access-impact-card">
           <div class="access-impact-icon"><i class="fa-solid fa-temperature-low"></i></div>
           <h4 class="access-impact-title">The Cold Chain Crisis</h4>
-          <p class="access-impact-body">In rural communities, a lack of cooling results in up to 40% post-harvest food loss and breakdown of life-saving vaccine chains. For these populations, sustainable cooling is the difference between economic stability and deep poverty.</p>
+          <p class="access-impact-body">A lack of cooling leads to significant post-harvest food losses and breaks down the supply of life-saving medicines and vaccines. For rural communities, sustainable cooling is the foundation of food security and economic resilience.</p>
         </div>
         <div class="access-impact-card">
           <div class="access-impact-icon"><i class="fa-solid fa-person-dress"></i></div>
           <h4 class="access-impact-title">Gender &amp; Vulnerability</h4>
-          <p class="access-impact-body">Women and children face disproportionate risks. Women often bear the "indoor heat burden" in poorly ventilated homes, while children under five and the elderly are physiologically more vulnerable to heatstroke and dehydration.</p>
+          <p class="access-impact-body">Women are more vulnerable to heat than men due to intersecting disparities: higher care burdens in crowded and poorly built homes; limited access to safe water and sanitation; and a higher likelihood of working in low-paid, strenuous and exploitative jobs. Of those at high risk, 512 million are women.</p>
         </div>
       </div>
     </div>
@@ -1034,7 +1026,37 @@
     <!-- ═══ Ch02 WHO IS MOST AFFECTED ═══ -->
     <div class="access-narrative-section" style="border-top: 1px solid rgba(0,0,0,0.06);" class:revealed>
       <span class="access-eyebrow">Who Is Most Affected</span>
-      <h2 class="access-section-title">Heat stress hits hardest where cooling is least affordable.</h2>
+      <h2 class="access-section-title">Three groups face distinct but interconnected cooling risks.</h2>
+      <p class="access-body-text">The Chilling Prospects framework identifies populations by their level of risk and the nature of the cooling challenge they face. Understanding each group is essential — because the solutions are different.</p>
+
+      <div class="access-risk-groups">
+        <div class="access-risk-group access-risk-high">
+          <div class="access-risk-group-header">
+            <span class="access-risk-badge" style="background:#C5443A;">HIGH RISK</span>
+            <strong>1 billion+ people</strong>
+          </div>
+          <p>The rural and urban poor who cannot afford or access any cooling solution. This group faces the most severe and immediate threat from extreme heat — to their health, food security, and livelihoods. Over 309 million are among the rural poor; 695 million among the urban poor.</p>
+        </div>
+        <div class="access-risk-group access-risk-medium">
+          <div class="access-risk-group-header">
+            <span class="access-risk-badge" style="background:#C9921A;">MEDIUM RISK</span>
+            <strong>2.83 billion people</strong>
+          </div>
+          <p>Lower-middle-income households who face a <strong>double burden</strong>: quality cooling solutions remain unaffordable, leaving them exposed to heat — but the cheaper, inefficient options available risk locking in a high-emissions trajectory for decades.</p>
+        </div>
+        <div class="access-risk-group access-risk-low">
+          <div class="access-risk-group-header">
+            <span class="access-risk-badge" style="background:#2D7D32;">LOW RISK</span>
+            <strong>1.2 billion people</strong>
+          </div>
+          <p>Middle-income households who can access efficient cooling solutions today. As heat extremes increase globally, this group must be supported by policy and technology to make sustainable choices — or they will drive significant emissions growth.</p>
+        </div>
+      </div>
+
+      <aside class="access-trajectory-callout">
+        <i class="fa-solid fa-arrow-trend-up" style="color:#C5443A; font-size:1.1rem; flex-shrink:0;"></i>
+        <p><strong>The trajectory is heading in the wrong direction.</strong> Under a business-as-usual scenario, 1.05 billion people will remain at high risk by 2030 — approximately 50 million more than in 2024. Population growth is outpacing progress on energy access and affordability, particularly in urban areas where the urban poor at high risk are projected to grow by 7% to 744 million people.</p>
+      </aside>
 
       <div class="access-highlights-grid">
         {#each chartHighlights as highlight}
@@ -1065,6 +1087,7 @@
         <div class="card-title">
           <i class="fa-solid fa-earth-americas"></i>
           Cooling Access Risk by Country
+          <span style="font-size:0.72rem;font-weight:500;color:#64748b;margin-left:0.5rem;letter-spacing:0;">Data: 2024</span>
         </div>
         <span class="viewing-pill">Viewing: <strong id="access-viewing">Global</strong></span>
       </div>
@@ -1084,7 +1107,24 @@
         <span class="progress-segment access-critical" id="access-progress-critical"></span>
       </div>
 
-      <!-- Risk Level filter only -->
+      <!-- Global Timeline Chart (2022-2030) -->
+      <div id="access-timeline-container" style="margin-top: 0.5rem;">
+        <div class="chart-card-header" style="padding: 0.75rem 1rem; border-bottom: none;">
+          <h3 style="font-size: 0.88rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 0.4rem; margin: 0;">
+            <i class="fa-solid fa-chart-area" style="color: #D4A843;"></i>
+            Population at Risk: 2022&ndash;2030
+          </h3>
+          <p style="font-size: 0.72rem; color: #334155; font-weight: 600; margin: 0.2rem 0 0;">
+            SEforALL Chilling Prospects data &middot; Stacked by risk level &middot; Forecast to 2030
+          </p>
+        </div>
+        <div class="chart-card-body">
+          <p class="chart-hint">Map shows high-risk population only. Use the filter below to adjust the timeline chart.</p>
+          <div id="chart-access-timeline" class="chart-surface" style="width: 100%; height: 280px; min-height: 280px;"></div>
+        </div>
+      </div>
+
+      <!-- Risk Level filter — below the timeline chart -->
       <div class="access-checkboxes" id="access-filters-panel">
         <div class="checkbox-group">
           <span class="checkbox-label"><i class="fa-solid fa-triangle-exclamation"></i> Risk Level <i class="fa-solid fa-circle-info" style="font-size:0.7rem;color:#94a3b8;margin-left:0.3rem;" title="Hover over each filter for more information"></i></span>
@@ -1093,23 +1133,6 @@
             <label class="tick-box" title="MEDIUM RISK: Populations on the brink of purchasing inefficient cooling devices; at risk of locking into high-emissions solutions without access to efficient alternatives."><input type="checkbox" value="Medium" checked /><span class="tick-mark risk-medium"></span>Medium</label>
             <label class="tick-box" title="LOW RISK: Populations with growing access to cooling but still facing affordability and efficiency challenges."><input type="checkbox" value="Low" checked /><span class="tick-mark risk-low"></span>Low</label>
           </div>
-        </div>
-      </div>
-
-      <!-- Global Timeline Chart (2013-2050) -->
-      <div id="access-timeline-container" style="margin-top: 0.75rem; border-top: 1px solid #f1f5f9; padding-top: 0.25rem;">
-        <div class="chart-card-header" style="padding: 0.75rem 1rem; border-bottom: none;">
-          <h3 style="font-size: 0.88rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 0.4rem; margin: 0;">
-            <i class="fa-solid fa-chart-area" style="color: #D4A843;"></i>
-            Population at Risk: 2015&ndash;2030
-          </h3>
-          <p style="font-size: 0.72rem; color: #334155; font-weight: 600; margin: 0.2rem 0 0;">
-            SEforALL Chilling Prospects data &middot; Stacked by risk level &middot; Forecast to 2030
-          </p>
-        </div>
-        <div class="chart-card-body">
-          <p class="chart-hint">Use the Risk Level filter to focus on specific vulnerability groups.</p>
-          <div id="chart-access-timeline" class="chart-surface" style="width: 100%; height: 400px; min-height: 400px;"></div>
         </div>
       </div>
     </div>
@@ -1126,36 +1149,81 @@
     </div>
 
     <!-- ═══ THE WAY FORWARD ═══ -->
+    <!-- ═══ THE WAY FORWARD + SOLUTIONS ═══ -->
     <div class="access-narrative-section" style="border-top: 1px solid rgba(0,0,0,0.06);" class:revealed>
       <span class="access-eyebrow">The Way Forward</span>
       <h2 class="access-section-title">Sustainable Cooling for All: Fast Enough to Matter</h2>
-      <p class="access-body-text">Closing the global cooling access gap sustainably requires moving beyond individual air conditioners. To meet climate targets while protecting 1.2 billion vulnerable people, strategies must be prioritised that provide relief at near-zero operating costs.</p>
+      <p class="access-body-text">Closing the global cooling access gap sustainably requires a comprehensive and systemic shift. Economic growth alone will not be sufficient to bridge the gap for the poorest households. SEforALL organises sustainable cooling solutions into <strong>five approaches in order of priority</strong> — from protecting the most vulnerable today, to building systemic conditions for long-term impact — delivered across four solution types. Source: <a href="https://www.seforall.org/chilling-prospects-2020/sustainable-cooling-solutions" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(3,105,161,0.3);">SEforALL Sustainable Cooling Solutions</a></p>
 
-      <!-- 4-card strategy grid -->
-      <div class="access-impact-grid">
-        <div class="access-impact-card">
-          <div class="access-impact-icon" style="background: rgba(217,119,6,0.1); color: #d97706;"><i class="fa-solid fa-sun"></i></div>
-          <h4 class="access-impact-title">Passive Cooling &amp; Material Innovation</h4>
-          <p class="access-impact-body">Cool roofs, shading, and natural ventilation can reduce indoor temperatures by 5–8°C. New Passive Daytime Radiative Cooling (PDRC) materials are scaling globally, reflecting over 96% of sunlight and reducing building energy consumption by up to 20%.</p>
+      <!-- 5 approaches as a visual flow -->
+      <div class="sol-approach-flow">
+        <div class="sol-approach-step">
+          <div class="sol-approach-num" style="background:#2D7D32;">1</div>
+          <div class="sol-approach-icon" style="color:#2D7D32;"><i class="fa-solid fa-shield-halved"></i></div>
+          <h4 class="sol-approach-title" style="color:#2D7D32;">Protect</h4>
+          <p class="sol-approach-desc">Reduce vulnerability to heat with cooling solutions that are <strong>affordable, safe and reliable</strong> — prioritising people, businesses, and governments most at risk.</p>
         </div>
-        <div class="access-impact-card">
-          <div class="access-impact-icon" style="background: rgba(22,163,74,0.1); color: #16a34a;"><i class="fa-solid fa-tree"></i></div>
-          <h4 class="access-impact-title">Urban Green Infrastructure</h4>
-          <p class="access-impact-body">Expanding tree cover and urban green spaces saves lives. Increasing urban tree cover by 10% could prevent up to 25% of heat-related deaths during extreme events by mitigating the Urban Heat Island effect.</p>
+        <div class="sol-approach-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+        <div class="sol-approach-step">
+          <div class="sol-approach-num" style="background:#0369a1;">2</div>
+          <div class="sol-approach-icon" style="color:#0369a1;"><i class="fa-solid fa-leaf"></i></div>
+          <h4 class="sol-approach-title" style="color:#0369a1;">Reduce</h4>
+          <p class="sol-approach-desc">Lower demand for active cooling through <strong>passive design, urban planning, and nature-based solutions</strong> — water, trees, earth, and traditional low-tech approaches.</p>
         </div>
-        <div class="access-impact-card">
-          <div class="access-impact-icon" style="background: rgba(3,105,161,0.1); color: #0369a1;"><i class="fa-solid fa-building-columns"></i></div>
-          <h4 class="access-impact-title">District &amp; Shared Cooling</h4>
-          <p class="access-impact-body">District Cooling Systems reduce carbon emissions by up to 40% compared to conventional AC. By delivering chilled water through centralised networks, cities eliminate the need for millions of individual inefficient units.</p>
+        <div class="sol-approach-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+        <div class="sol-approach-step">
+          <div class="sol-approach-num" style="background:#7C3AED;">3</div>
+          <div class="sol-approach-icon" style="color:#7C3AED;"><i class="fa-solid fa-rotate"></i></div>
+          <h4 class="sol-approach-title" style="color:#7C3AED;">Shift</h4>
+          <p class="sol-approach-desc">Change the approach to achieve emissions savings — <strong>renewable energy, natural refrigerants</strong>, and conservation measures that transform how cooling is delivered.</p>
         </div>
-        <div class="access-impact-card">
-          <div class="access-impact-icon" style="background: rgba(234,179,8,0.1); color: #ca8a04;"><i class="fa-solid fa-solar-panel"></i></div>
-          <h4 class="access-impact-title">Solar-Powered Cold Chains</h4>
-          <p class="access-impact-body">Decentralised solar cooling is transforming food security. Solar-powered cold rooms can reduce post-harvest spoilage from 17% to just 4%, boosting farmer incomes by 30%.</p>
+        <div class="sol-approach-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+        <div class="sol-approach-step">
+          <div class="sol-approach-num" style="background:#B8860B;">4</div>
+          <div class="sol-approach-icon" style="color:#B8860B;"><i class="fa-solid fa-gauge-high"></i></div>
+          <h4 class="sol-approach-title" style="color:#B8860B;">Improve</h4>
+          <p class="sol-approach-desc">Pure <strong>efficiency measures</strong> — delivering the same cooling with less energy through MEPS, energy labels, and best-available-technology standards.</p>
+        </div>
+        <div class="sol-approach-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+        <div class="sol-approach-step">
+          <div class="sol-approach-num" style="background:#C25B33;">5</div>
+          <div class="sol-approach-icon" style="color:#C25B33;"><i class="fa-solid fa-people-group"></i></div>
+          <h4 class="sol-approach-title" style="color:#C25B33;">Leverage</h4>
+          <p class="sol-approach-desc"><strong>Collective impact</strong> through cooperation, financing mechanisms, policy coherence, capacity building, and cross-sector partnerships.</p>
         </div>
       </div>
 
-      <p class="access-body-text" style="margin-top: 8px;">A rights-based approach to cooling recognises that access is a prerequisite for health, food security, and economic participation. By integrating these shared and passive solutions into NDCs, we can break the vicious cycle of emissions and heat, ensuring that cooling is sustainable, equitable, and fast enough to matter.</p>
+      <!-- 4 solution type cards -->
+      <h3 class="sol-types-heading">Solutions are delivered across four types</h3>
+      <div class="access-impact-grid">
+        <div class="access-impact-card">
+          <div class="access-impact-icon" style="background:rgba(3,105,161,0.1);color:#0369a1;"><i class="fa-solid fa-microchip"></i></div>
+          <h4 class="access-impact-title">Technology</h4>
+          <p class="access-impact-body"><strong>Nature-based &amp; passive:</strong> water, trees, plants, earth — traditional low-tech and modern high-tech approaches. <strong>Active:</strong> fans, air conditioners, refrigerators, and district cooling systems — varying in efficiency and refrigerant type.</p>
+        </div>
+        <div class="access-impact-card">
+          <div class="access-impact-icon" style="background:rgba(22,163,74,0.1);color:#15803d;"><i class="fa-solid fa-briefcase"></i></div>
+          <h4 class="access-impact-title">Services</h4>
+          <p class="access-impact-body"><strong>Preparational:</strong> education, skills training, and project services (engineering, design, architecture). <strong>Operational:</strong> direct operation of cooling centres and district systems, management, and maintenance for optimal performance.</p>
+        </div>
+        <div class="access-impact-card">
+          <div class="access-impact-icon" style="background:rgba(124,58,237,0.1);color:#7C3AED;"><i class="fa-solid fa-landmark"></i></div>
+          <h4 class="access-impact-title">Policy</h4>
+          <p class="access-impact-body"><strong>Regulatory:</strong> building codes and product standards. <strong>Information:</strong> voluntary labels, certifications, and awareness campaigns. <strong>Incentive:</strong> financial and non-financial incentives that shift market behaviour toward sustainable solutions.</p>
+        </div>
+        <div class="access-impact-card">
+          <div class="access-impact-icon" style="background:rgba(184,134,11,0.1);color:#B8860B;"><i class="fa-solid fa-coins"></i></div>
+          <h4 class="access-impact-title">Financial</h4>
+          <p class="access-impact-body"><strong>Finance:</strong> loans enabling access to sustainable technology. <strong>Fiscal:</strong> tax credits, energy and carbon pricing, import duties and subsidy reform. <strong>Funding:</strong> grants and rebates that require no repayment — critical for reaching the poorest households.</p>
+        </div>
+      </div>
+
+      <p class="access-body-text" style="margin-top: 1rem;">A rights-based approach to cooling recognises that access is a prerequisite for health, food security, and economic participation. By integrating these solutions into NDCs and national development plans, we can break the cycle of emissions and heat — ensuring that cooling is sustainable, equitable, and fast enough to matter.</p>
+
+      <div class="sol-thisiscool">
+        <i class="fa-solid fa-circle-check" style="color:#2D7D32; flex-shrink:0;"></i>
+        <p>The <strong>#ThisIsCool</strong> solutions directory helps communities find the best sustainable cooling solutions matched to their specific context and needs. <a href="https://www.seforall.org/chilling-prospects-2020/sustainable-cooling-solutions" target="_blank" rel="noopener noreferrer">Explore solutions on SEforALL →</a></p>
+      </div>
 
       <div class="access-pledge-badge">
         <div class="pledge-icon"><i class="fa-solid fa-handshake-angle"></i></div>
@@ -1173,9 +1241,17 @@
       <h2 class="access-section-title">Resources on Cooling Access &amp; Vulnerability</h2>
 
       <div class="access-resources-grid">
-        <a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer" class="access-resource-card">
-          <strong class="access-resource-title">Chilling Prospects (SEforALL)</strong>
-          <span class="access-resource-desc">The lead resource for tracking the 1.2 billion people who lack access to cooling. Vital for understanding the human cost of the cooling gap.</span>
+        <a href="https://www.seforall.org/our-work/research-analysis/chilling-prospects-series" target="_blank" rel="noopener noreferrer" class="access-resource-card">
+          <strong class="access-resource-title">Chilling Prospects Series (SEforALL)</strong>
+          <span class="access-resource-desc">The definitive annual tracker of cooling access gaps across 77 countries — identifying who is at risk, where, and why. Includes the 2025 data release and all previous editions.</span>
+        </a>
+        <a href="https://thisiscool.seforall.org/solutions" target="_blank" rel="noopener noreferrer" class="access-resource-card">
+          <strong class="access-resource-title">#ThisIsCool — Sustainable Cooling Solutions Tool</strong>
+          <span class="access-resource-desc">SEforALL's interactive directory of sustainable cooling solutions. Find the best options matched to community context across Technology, Services, Policy, and Financial solution types.</span>
+        </a>
+        <a href="https://documents1.worldbank.org/curated/en/099053124150533090/pdf/P174321194a3b10131a1ee1c550a837e664.pdf" target="_blank" rel="noopener noreferrer" class="access-resource-card">
+          <strong class="access-resource-title">World Bank: Sustainable Cooling in Off-Grid Rural Areas</strong>
+          <span class="access-resource-desc">World Bank / ESMAP report on the nexus between energy access and clean cooling in off-grid rural communities — cold chains, solar cooling, and financing pathways for the most underserved populations.</span>
         </a>
         <a href="https://aseanenergy.org/publications/roadmap-for-extreme-heat-protection-through-passive-cooling-in-asean-region/" target="_blank" rel="noopener noreferrer" class="access-resource-card">
           <strong class="access-resource-title">UNEP/ASEAN: Roadmap for Extreme Heat Protection</strong>
@@ -1215,11 +1291,11 @@
 
       <div class="access-source-footer">
         Sources:
-        <a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer">SEforALL Chilling Prospects</a>
+        <a href="https://www.seforall.org/our-work/research-analysis/chilling-prospects-series" target="_blank" rel="noopener noreferrer">SEforALL Chilling Prospects</a>
         &middot;
         <a href="https://coolcoalition.org/" target="_blank" rel="noopener noreferrer">UNEP Cool Coalition</a>
         &middot;
-        <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer">HEAT GmbH</a>
+        <a href="https://www.heat-international.de/" target="_blank" rel="noopener noreferrer">HEAT GmbH</a>
         &middot;
         <a href="/methodology">Methodology</a>
       </div>
@@ -1261,7 +1337,6 @@
     color: #1e293b;
     line-height: 1.78;
     margin: 0 0 16px;
-    max-width: 900px;
   }
 
   /* ===========================
@@ -1576,6 +1651,170 @@
   }
 
   .pledge-link:hover { color: #166534; }
+
+  /* Risk groups (High / Medium / Low three-column) */
+  .access-risk-groups {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  .access-risk-group {
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    border-left: 4px solid transparent;
+    background: #f8fafc;
+    font-size: 0.78rem;
+    color: #334155;
+    line-height: 1.5;
+  }
+
+  .access-risk-group-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .access-risk-group-header strong {
+    font-size: 0.82rem;
+    color: #0f172a;
+  }
+
+  .access-risk-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: #fff;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .access-risk-high  { border-left-color: #C5443A; }
+  .access-risk-medium { border-left-color: #C9921A; }
+  .access-risk-low   { border-left-color: #2D7D32; }
+
+  /* Trajectory callout */
+  .access-trajectory-callout {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: rgba(197,68,58,0.07);
+    border-left: 3px solid #C5443A;
+    border-radius: 6px;
+    padding: 0.85rem 1rem;
+    margin: 0.5rem 0 1rem;
+    font-size: 0.78rem;
+    color: #334155;
+    line-height: 1.55;
+  }
+
+  .access-trajectory-callout p { margin: 0; }
+
+  @media (max-width: 700px) {
+    .access-risk-groups { grid-template-columns: 1fr; }
+  }
+
+  /* ═══ SOLUTIONS SECTION ═══ */
+
+  /* 5-approach horizontal flow */
+  .sol-approach-flow {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    margin: 1.25rem 0 2rem;
+    flex-wrap: wrap;
+  }
+
+  .sol-approach-step {
+    flex: 1;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 0.5rem;
+  }
+
+  .sol-approach-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .sol-approach-icon {
+    font-size: 1.4rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .sol-approach-title {
+    font-size: 0.88rem;
+    font-weight: 800;
+    margin: 0 0 0.4rem;
+    letter-spacing: 0.01em;
+  }
+
+  .sol-approach-desc {
+    font-size: 0.75rem;
+    color: #475569;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .sol-approach-arrow {
+    display: flex;
+    align-items: center;
+    padding-top: 2.4rem;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .sol-types-heading {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #334155;
+    margin: 0 0 0.75rem;
+    padding-top: 0.25rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .sol-thisiscool {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-top: 1.25rem;
+    font-size: 0.8rem;
+    color: #334155;
+    line-height: 1.55;
+  }
+
+  .sol-thisiscool p { margin: 0; }
+
+  .sol-thisiscool a {
+    color: #0369a1;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(3,105,161,0.3);
+  }
+
+  @media (max-width: 700px) {
+    .sol-approach-flow { flex-direction: column; align-items: stretch; }
+    .sol-approach-step { flex-direction: row; text-align: left; align-items: flex-start; gap: 0.75rem; padding: 0.5rem 0; }
+    .sol-approach-arrow { display: none; }
+    .sol-approach-num { margin-bottom: 0; }
+    .sol-approach-icon { margin-bottom: 0; font-size: 1.1rem; }
+  }
 
   /* Cool Coalition reference */
   .access-cool-coalition {

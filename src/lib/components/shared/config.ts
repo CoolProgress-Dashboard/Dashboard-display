@@ -18,7 +18,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
     insight:
       'Ten air conditioners are sold every second. Most are the least efficient models available. This creates a vicious cycle: rising heat drives demand, inefficient units strain power grids, grid stress increases emissions, and emissions drive more heat. By 2050, cooling could consume more electricity than China uses today \u2014 or we cut 73% through efficiency, Kigali, and clean grids.',
     sources: [
-      { name: 'HEAT GmbH', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' },
+      { name: 'HEAT GmbH', url: 'https://www.heat-international.de/', logo: '/images/heat-logo.png' },
       { name: 'CLASP', url: 'https://www.clasp.ngo/', logo: '/images/clasp-logo.png' },
       { name: 'IEA', url: 'https://www.iea.org/reports/the-future-of-cooling', logo: '/images/iea-logo.png' }
     ]
@@ -30,7 +30,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
       'Today\u2019s cooling sector emits 2,401 Mt CO\u2082e annually \u2014 more than the entire EU. On the current trajectory, that triples to 6,009 Mt by 2050. But three proven interventions \u2014 efficient appliances, low-GWP refrigerants, and clean grids \u2014 can cut 4,455 Mt per year. That is like taking every car in Europe and North America off the road.',
     methodology: 'Three-layer DECARB: HEAT GmbH (direct emissions, Kigali phase-down) + CLASP (efficiency scenarios) + IEA STEPS (grid decarbonization). See /methodology for details.',
     sources: [
-      { name: 'HEAT GmbH', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' },
+      { name: 'HEAT GmbH', url: 'https://www.heat-international.de/', logo: '/images/heat-logo.png' },
       { name: 'Mepsy by CLASP', url: 'https://www.clasp.ngo/tools/mepsy/', logo: '/images/clasp-logo.png' },
       { name: 'IEA STEPS', url: 'https://www.iea.org/reports/world-energy-outlook-2025' }
     ]
@@ -43,7 +43,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
     methodology: 'MEPS & Labels data: CLASP Policy Resource Center (CPRC). Efficiency metrics: CSPF, EER, AEC. Coverage: AC, Refrigerators, Fans across 80+ countries.',
     sources: [
       { name: 'CLASP Policy Resource Center', url: 'https://cprc-clasp.ngo/', logo: '/images/clasp-logo.png' },
-      { name: 'HEAT GmbH (integration)', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' }
+      { name: 'HEAT GmbH (integration)', url: 'https://www.heat-international.de/', logo: '/images/heat-logo.png' }
     ]
   },
   kigali: {
@@ -54,7 +54,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
     methodology: 'Kigali ratification and implementation data: UNEP Ozone Secretariat. HFC baselines and allowable emissions: KIP database. GWP values: IPCC AR6.',
     sources: [
       { name: 'UNEP Ozone Secretariat', url: 'https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment', logo: '/images/unep.png', logoLarge: true },
-      { name: 'HEAT GmbH (integration)', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' }
+      { name: 'HEAT GmbH (integration)', url: 'https://www.heat-international.de/', logo: '/images/heat-logo.png' }
     ]
   },
   access: {
@@ -65,7 +65,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
     methodology: 'Cooling access data: SEforALL Chilling Prospects 2025. Risk levels by income group, region, and infrastructure. Dashboard integration: HEAT GmbH.',
     sources: [
       { name: 'SEforALL Chilling Prospects 2025', url: 'https://www.seforall.org/data-stories/chilling-prospects-2025', logo: '/images/seforall-logo.jpg', logoLarge: true },
-      { name: 'HEAT GmbH (integration)', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' }
+      { name: 'HEAT GmbH (integration)', url: 'https://www.heat-international.de/', logo: '/images/heat-logo.png' }
     ]
   },
   policy: {
@@ -86,7 +86,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
     insight:
       'CoolProgress integrates authoritative data from leading global partners. HEAT GmbH provides the analytical backbone, CLASP the efficiency data, IEA the energy projections, and SEforALL the access tracking.',
     sources: [
-      { name: 'HEAT GmbH', url: 'https://www.heat-gmbh.de', logo: '/images/heat-logo.png' },
+      { name: 'HEAT GmbH', url: 'https://www.heat-international.de/', logo: '/images/heat-logo.png' },
       { name: 'Cool Coalition', url: 'https://coolcoalition.org/', logo: '/images/cool-coalition.png' },
       { name: 'CLASP', url: 'https://www.clasp.ngo/', logo: '/images/clasp-logo.png' }
     ]

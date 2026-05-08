@@ -79,14 +79,14 @@ describe('Header component', () => {
         props: {
           methodology: 'Some methodology',
           sources: [
-            { name: 'HEAT GmbH', url: 'https://www.heat-gmbh.de' },
+            { name: 'HEAT GmbH', url: 'https://www.heat-international.de/' },
             { name: 'CLASP', url: 'https://www.clasp.ngo' }
           ]
         }
       });
       expect(getByRole('link', { name: 'HEAT GmbH' })).toHaveAttribute(
         'href',
-        'https://www.heat-gmbh.de'
+        'https://www.heat-international.de/'
       );
       expect(getByRole('link', { name: 'CLASP' })).toHaveAttribute('href', 'https://www.clasp.ngo');
     });

@@ -25,23 +25,23 @@
   const policyStats = [
     {
       value: '172',
-      label: 'Kigali Amendment parties',
+      label: 'Countries that have ratified the Kigali Amendment (Montreal Protocol)',
       context: '172 countries have ratified the Kigali Amendment to the Montreal Protocol, creating a legally binding framework to phase down HFCs by over 80%. Source: UN Treaty Collection (Feb 2026).'
     },
     {
-      value: '71',
-      label: 'Global Cooling Pledge nations',
-      context: '71 countries signed the Global Cooling Pledge at COP28 in Dubai, December 2023. 49 have MEPS, 37 include cooling in their NDCs.'
+      value: '74',
+      label: 'Global Cooling Pledge countries',
+      context: '74 countries signed the Global Cooling Pledge at COP28 in Dubai, December 2023. 49 have MEPS, 37 include cooling in their NDCs.'
     },
     {
       value: '<30%',
-      label: 'NDCs mention cooling',
+      label: 'NDCs mentioning cooling',
       context: 'Fewer than 30% of all NDCs explicitly mention cooling, refrigerants, or the Kigali Amendment. The policy gap between awareness and integration remains significant.'
     },
     {
-      value: '~20',
+      value: '~25',
       label: 'NCAPs completed or in development',
-      context: 'Roughly 20 countries have completed or are developing National Cooling Action Plans. These dedicated roadmaps link efficiency, refrigerant transition, and access goals.'
+      context: 'Roughly 25 countries have completed or are developing National Cooling Action Plans. These dedicated roadmaps link efficiency, refrigerant transition, and access goals.'
     }
   ];
 
@@ -979,7 +979,7 @@
         const cprBox = `
           <div style="display:flex;align-items:flex-start;gap:1.25rem;padding:1.1rem 1.4rem;background:#f0f7ff;border-top:3px solid #0369a1;border-bottom:1px solid #bae0ff;margin-top:1rem;">
             <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="flex-shrink:0;display:flex;align-items:center;padding-top:2px;">
-              <img src="/images/climate-policy-radar-logo.png" alt="Climate Policy Radar" style="height:32px;width:auto;object-fit:contain;" />
+              <img src="/images/cpr-logo-dark.png" alt="Climate Policy Radar" style="height:32px;width:auto;object-fit:contain;" />
             </a>
             <div style="flex:1;min-width:0;">
               <div style="font-size:0.9rem;font-weight:800;color:#0f172a;margin-bottom:0.3rem;letter-spacing:-0.01em;">Find NDCs &amp; NCAPs on Climate Policy Radar</div>
@@ -1372,8 +1372,8 @@
     <div class="chapter-card" class:revealed style="border-top: none;">
       <span class="ns-eyebrow">The Landscape</span>
       <h2 class="ns-title">Cooling has historically been invisible in climate policy — that is changing.</h2>
-      <p class="ns-body">Historically, cooling was a "blind spot" in climate policy. That changed at COP28 with the launch of the <a href="https://www.coolcoalition.org/global-cooling-pledge/" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;border-bottom:1px solid rgba(3,105,161,0.3);text-decoration:none;">Global Cooling Pledge</a> — a voluntary commitment by national governments to reduce cooling-related emissions by 68% by 2050 through three core pillars: passive cooling, energy efficiency, and a rapid refrigerant transition. As of April 2026, more than 70 countries have signed on, signalling intention to integrate cooling into the heart of national climate strategies.</p>
-      <p class="ns-body">While many countries have signed the pledge, very few have implemented the full regulatory framework required to reach the target emissions reduction. The gap between commitment and implementation remains the central challenge of global cooling governance.</p>
+      <p class="ns-body">Historically, cooling was a "blind spot" in climate policy. That changed at COP28 with the launch of the <a href="https://www.coolcoalition.org/global-cooling-pledge/" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;border-bottom:1px solid rgba(3,105,161,0.3);text-decoration:none;">Global Cooling Pledge</a> — a voluntary commitment by national governments to reduce cooling-related emissions by 68% by 2050 through three core areas: passive cooling, energy efficiency, and a rapid refrigerant transition. As of April 2026, 74 countries have signed on, signalling intention to integrate cooling into the heart of national climate strategies. An additional 235 subnational governments have also endorsed the Pledge.</p>
+      <p class="ns-body">While many countries have signed the Pledge, very few have implemented the full regulatory framework required to reach the target emissions reduction. The gap between commitment and implementation remains the central challenge of global cooling governance.</p>
       <p class="ns-body" style="font-size:0.88rem;padding:0.7rem 0 0.7rem 1rem;border-left:3px solid #6BADA0;color:#334155;background:transparent;">
         <i class="fa-solid fa-circle-info" style="color:#6BADA0;margin-right:0.4rem;"></i>
         The <strong>Kigali Amendment</strong> — the legally binding framework for phasing down HFC refrigerants — is tracked in detail under <strong>Pillar 3: Refrigerant Transition</strong>. This pillar focuses on the broader policy framework: NDCs, NCAPs, and pledge commitments.
@@ -1383,7 +1383,7 @@
     <!-- ═══ POLICY INSTRUMENT EXPLAINERS ═══ -->
     <div class="chapter-card" class:revealed>
       <span class="ns-eyebrow">Policy Instruments</span>
-      <h2 class="ns-title">Understanding Global Cooling Policy</h2>
+      <h2 class="ns-title">Understanding National Cooling Policy Instruments</h2>
       <div class="policy-explainer-grid">
         <div class="policy-explainer-card">
           <div class="policy-explainer-icon"><i class="fa-solid fa-file-contract" style="color:#0369a1;"></i></div>
@@ -1410,7 +1410,7 @@
           <div class="policy-explainer-icon"><i class="fa-solid fa-handshake-angle" style="color:#0369a1;"></i></div>
           <div>
             <strong>The Global Cooling Pledge</strong>
-            <p>Launched at COP28, the Global Cooling Pledge commits signatory governments to reduce cooling-related emissions 68% by 2050 and improve appliance efficiency. It currently has 71 signatories.</p>
+            <p>Launched at COP28, the Global Cooling Pledge commits signatory governments to reduce cooling-related emissions 68% by 2050 and improve appliance efficiency. It currently has 74 signatories.</p>
           </div>
         </div>
       </div>
@@ -1433,7 +1433,38 @@
     <div class="chapter-card" class:revealed>
       <span class="ns-eyebrow">Where Things Stand</span>
       <h2 class="ns-title">Cooling Policy: From Pledges to Implementation</h2>
-      <p class="ns-body">The cooling policy landscape is defined by a multi-layered framework where Nationally Determined Contributions (NDCs) serve as the legally binding anchor under the Paris Agreement. While the Global Cooling Watch 2025 reports that 134 countries now reference cooling in their national climate strategies, a significant implementation gap persists: only 54 countries have enforceable regulations covering the three critical pillars of passive cooling, high-efficiency standards (MEPS), and refrigerant transitions. As of 2026, the focus has shifted toward National Cooling Action Plans (NCAPs), with roughly 30 countries having finalised or initiated these roadmaps to bridge the gap between high-level pledges and ground-level enforcement. Beyond national efforts, the pace of transition is increasingly dictated by regional harmonisation — such as the ASEAN and ECOWAS efficiency standards — and targeted climate finance from the Montreal Protocol's Multilateral Fund and the Green Climate Fund. Ultimately, the effectiveness of the cooling transition depends on policy coherence, ensuring that NDCs, NCAPs, and Kigali Amendment compliance function as a unified system.</p>
+      <p class="ns-body">The cooling policy landscape is defined by a multi-layered framework where Nationally Determined Contributions (NDCs) serve as the legally binding anchor under the Paris Agreement. The Global Cooling Watch 2025 reports that 134 countries now reference cooling in their national climate strategies, yet only 54 of those countries have enforceable regulations covering the three critical areas of passive cooling, high-efficiency standards (MEPS), and refrigerant transitions.</p>
+      <p class="ns-body">As of 2026, there is an increasing focus on National Cooling Action Plans (NCAPs), with ~25 countries having finalised or initiated these roadmaps to bridge the gap between high-level pledges and ground-level enforcement. Beyond national efforts, the pace of transition is increasingly dictated by regional harmonisation — such as the ASEAN and ECOWAS efficiency standards.</p>
+      <p class="ns-body">Targeted climate finance from the Montreal Protocol's Multilateral Fund and the Green Climate Fund is helping close the gap between planning and implementation across developing economies.</p>
+      <p class="ns-body" style="font-size:0.88rem;padding:0.7rem 0 0.7rem 1rem;border-left:3px solid #D4A843;color:#334155;background:transparent;">
+        <i class="fa-solid fa-circle-info" style="color:#D4A843;margin-right:0.4rem;"></i>
+        Of the 74 Global Cooling Pledge signatories, 37 explicitly include cooling in their NDCs. NDC 3.0s — the latest round of updated climate commitments — are currently being submitted, but very few contain specific AC efficiency requirements.
+      </p>
+      <div class="policy-layers">
+        <div class="policy-layer">
+          <div class="policy-layer-badge commitment">Commitment</div>
+          <div class="policy-layer-content">
+            <strong>Pledge signatures · Kigali ratification · NDC mentions</strong>
+            <p>Countries signal intent through international agreements and updated climate plans.</p>
+          </div>
+        </div>
+        <div class="policy-layer-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+        <div class="policy-layer">
+          <div class="policy-layer-badge planning">Planning</div>
+          <div class="policy-layer-content">
+            <strong>NCAPs · National strategies · Roadmaps</strong>
+            <p>Dedicated national plans translate pledges into sector-specific targets and timelines.</p>
+          </div>
+        </div>
+        <div class="policy-layer-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+        <div class="policy-layer">
+          <div class="policy-layer-badge implementation">Implementation</div>
+          <div class="policy-layer-content">
+            <strong>Standards · Market transition · Finance · Refrigerant phase-down</strong>
+            <p>On-the-ground enforcement and financing close the gap between plans and outcomes. Full implementation tracking lives in Pillars 2–3.</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- DATA: Policy Maps & Charts -->
@@ -1534,7 +1565,7 @@
       <div class="policy-cooling-watch-link">
         <i class="fa-solid fa-arrow-up-right-from-square" style="color: #0369a1; margin-right: 0.4rem;"></i>
         For the latest analysis of cooling policy commitments and implementation, see the Cool Coalition's
-        <a href="https://www.coolcoalition.org/cooling-watch/" target="_blank" rel="noopener noreferrer"><strong>Cooling Watch Report</strong></a> ↗
+        <a href="https://www.coolcoalition.org/global-cooling-watch/" target="_blank" rel="noopener noreferrer"><strong>Cooling Watch Report</strong></a> ↗
       </div>
 
       <div class="policy-registry-note">
@@ -1543,14 +1574,15 @@
         <a href="https://unfccc.int/NDCREG" target="_blank" rel="noopener noreferrer"><strong>UNFCCC NDC Registry</strong></a>,
         the <a href="https://www.coolcoalition.org/ncap/" target="_blank" rel="noopener noreferrer"><strong>Cool Coalition NCAP tracker</strong></a>,
         or search across national climate policies on
-        <a href="https://climatepolicyradar.org/" target="_blank" rel="noopener noreferrer"><strong>Climate Policy Radar</strong></a> ↗
+        <a href="https://app.climatepolicyradar.org" target="_blank" rel="noopener noreferrer"><strong>Climate Policy Radar</strong></a> ↗
       </div>
+      <p class="ns-body" style="margin-top:1rem;">Ultimately, the effectiveness of the cooling transition depends on policy coherence — ensuring that NDCs, NCAPs, Kigali Amendment compliance, and the wider Global Cooling Pledge commitments function as a unified system rather than parallel tracks. For full signatory progress against all 14 Global Cooling Pledge commitments, refer to the <a href="https://www.coolcoalition.org/global-cooling-pledge/" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;border-bottom:1px solid rgba(3,105,161,0.3);text-decoration:none;">Global Cooling Pledge progress tracker</a>.</p>
     </div>
 
     <!-- ═══ KEY STATS BAR ═══ -->
     <div class="chapter-card ns-stat-bar" class:revealed>
       <div class="ns-stat-item">
-        <span class="ns-stat-num">70+</span>
+        <span class="ns-stat-num">74</span>
         <span class="ns-stat-label">countries signed the Global Cooling Pledge</span>
       </div>
       <div class="ns-stat-divider"></div>
@@ -1602,6 +1634,22 @@
         <a href="https://www.green-cooling-initiative.org/ndcs" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
           <strong>Green Cooling Initiative: NDC Publications</strong>
           <p>Modular toolkits and sectoral guides to help countries quantify the mitigation potential of their cooling sectors.</p>
+        </a>
+        <a href="https://wedocs.unep.org/handle/20.500.11822/42705" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+          <strong>NDCs &amp; Cooling: A Guide for Practitioners</strong>
+          <p>UNEP guide on integrating cooling into Nationally Determined Contributions, covering methodology and best practices.</p>
+        </a>
+        <a href="https://www.ifc.org/content/dam/ifc/doc/mgrt/cooler-finance.pdf" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+          <strong>Cooler Finance</strong>
+          <p>IFC report on financing sustainable cooling — tools, mechanisms, and investment opportunities for the cooling sector.</p>
+        </a>
+        <a href="https://www.seforall.org/publications/national-cooling-action-plan-methodology" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+          <strong>NCAP Methodology for MENA</strong>
+          <p>Methodological guidance for developing National Cooling Action Plans, with a focus on the MENA region.</p>
+        </a>
+        <a href="https://openknowledge.worldbank.org/handle/10986/37038" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+          <strong>World Bank Urban Heat Handbook</strong>
+          <p>Guidance for city planners on managing urban heat islands and integrating cooling into urban development strategies.</p>
         </a>
       </div>
 

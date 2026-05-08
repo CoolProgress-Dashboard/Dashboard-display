@@ -1,7 +1,7 @@
 <script lang="ts">
   const partnerLogos = [
     { src: '/images/cool-coalition.png', alt: 'Cool Coalition', url: 'https://coolcoalition.org' },
-    { src: '/images/heat-logo.png', alt: 'HEAT GmbH', url: 'https://www.heat-gmbh.de' },
+    { src: '/images/heat-logo.png', alt: 'HEAT GmbH', url: 'https://www.heat-international.de/' },
     { src: '/images/clasp-logo.png', alt: 'CLASP', url: 'https://www.clasp.ngo' },
     { src: '/images/u4e-logo.png', alt: 'United for Efficiency', url: 'https://united4efficiency.org' },
     { src: '/images/iea-logo.png', alt: 'IEA', url: 'https://www.iea.org' },

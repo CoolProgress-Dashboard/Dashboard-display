@@ -42,7 +42,7 @@ export const viewMetaV2: ViewMetaMap = {
 		sources: [
 			{
 				name: 'HEAT GmbH',
-				url: 'https://www.heat-gmbh.de',
+				url: 'https://www.heat-international.de/',
 				logo: '/images/heat-logo.png'
 			},
 			{
@@ -70,7 +70,7 @@ export const viewMetaV2: ViewMetaMap = {
 		sources: [
 			{
 				name: 'HEAT GmbH',
-				url: 'https://www.heat-gmbh.de',
+				url: 'https://www.heat-international.de/',
 				logo: '/images/heat-logo.png'
 			},
 			{

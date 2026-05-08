@@ -131,7 +131,7 @@
     <!-- Attribution -->
     <p class="hero-attribution">
       Data:
-      <a href="https://www.heat-gmbh.de" target="_blank" rel="noreferrer">HEAT</a>
+      <a href="https://www.heat-international.de/" target="_blank" rel="noreferrer">HEAT</a>
       &middot;
       <a href="https://www.clasp.ngo/" target="_blank" rel="noreferrer">CLASP</a>
       &middot;

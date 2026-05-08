@@ -1616,7 +1616,7 @@
       &middot;
       <a href="https://iifiir.org" target="_blank" rel="noopener noreferrer" style="color: #64748b;">IIR</a>
       &middot;
-      <a href="https://www.heat-gmbh.de" target="_blank" rel="noopener noreferrer" style="color: #64748b;">HEAT GmbH</a>
+      <a href="https://www.heat-international.de/" target="_blank" rel="noopener noreferrer" style="color: #64748b;">HEAT GmbH</a>
       &middot;
       <a href="https://www.multilateralfund.org/OurWork/default.aspx" target="_blank" rel="noopener noreferrer" style="color: #64748b;">MLF</a>
       &middot;

@@ -277,7 +277,7 @@ export const partners: Partner[] = [
     name: 'HEAT GmbH',
     fullName: 'HEAT GmbH - Climate Intelligence & Green Cooling',
     tagline: 'Developer of the CoolProgress Dashboard',
-    website: 'https://www.heat-gmbh.de',
+    website: 'https://www.heat-international.de/',
     coolingUrl: 'https://www.green-cooling-initiative.org/',
     logoPath: '/images/heat-logo.png',
     logoPlaceholder: 'heat',
@@ -313,6 +313,6 @@ export const globalCoolingPledge = {
   countriesWithMEPS: 49, // 69% of signatories
   countriesWithBuildingCodes: 40, // 56% of signatories
   progressReportUrl:
-    'https://coolcoalition.org/wp-content/uploads/2024/11/2024-Global-Cooling-Pledge-Progress-Report.pdf',
+    'https://coolcoalition.org/global-cooling-pledge/',
   source: 'Cool Coalition Global Cooling Pledge Progress Report, November 2024',
 };

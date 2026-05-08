@@ -142,6 +142,7 @@ export type DashboardData = {
   countrySpotlights: CountrySpotlightRecord[];
   mepsTimeline: MepsTimelineRecord[];
   mepsLevels: MepsLevelRecord[];
+  accessCountryPct: AccessCountryPct[];
 };
 
 export type EmissionsFilters = {
@@ -345,6 +346,18 @@ export type MepsLevelRecord = {
   is_mandatory?: boolean | null;
   standard_name?: string | null;
   notes?: string | null;
+};
+
+// SEforALL country-level population at risk (2024 summary)
+export type AccessCountryPct = {
+  country_code: string;
+  country_name: string;
+  national_pop?: number | null;    // col P: total national population
+  total_at_risk?: number | null;   // D+E+F+G: all 4 risk groups combined
+  pct_at_risk?: number | null;     // (D+E) / national_pop = high risk % (col Q)
+  female_at_risk?: number | null;  // H+I+J+K: all 4 risk groups, female
+  male_at_risk?: number | null;    // L+M+N+O: all 4 risk groups, male
+  year?: number | null;
 };
 
 // AC inverter technology share data
