@@ -1343,6 +1343,21 @@
           <span>Source: <a href="https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment-2016" target="_blank" rel="noopener noreferrer">UNEP Ozone Secretariat</a> &nbsp;·&nbsp; KIP data: <a href="https://www.multilateralfund.org/" target="_blank" rel="noopener noreferrer">Multilateral Fund (ExCom 97)</a></span>
         </div>
       </div>
+
+      <!-- Phase-down vs Phase-out insight -->
+      <div style="margin-top:1.75rem;">
+        <h3 class="k-title" style="font-size:1.15rem;margin-bottom:0.6rem;">Kigali Phases Down HFCs — The World Still Needs a Phase-Out</h3>
+        <p class="k-body">The Kigali Amendment commits parties to reducing HFC consumption by 80–85% from baseline levels, but not to zero. HFCs will continue to be produced and used at reduced volumes indefinitely under current international law. Closing the climate gap fully requires a complete phase-<em>out</em> — eliminating HFC production and consumption entirely. The EU has already shown it is achievable: the F-Gas Regulation (2024/573) mandates a full HFC phase-out by 2050, going far beyond what Kigali demands. For the world to stay on a 1.5°C pathway, other major economies will need to follow.</p>
+
+        <div style="margin-top:1rem;background:#f0f9ff;border-radius:10px;padding:0.85rem 1rem;border-left:3px solid #0369a1;display:flex;align-items:flex-start;gap:0.75rem;">
+          <i class="fa-solid fa-book-open" style="color:#0369a1;margin-top:0.1rem;flex-shrink:0;font-size:0.9rem;"></i>
+          <div>
+            <div style="font-size:0.7rem;font-weight:700;color:#0369a1;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.25rem;">IEA — The Future of Cooling</div>
+            <p style="font-size:0.82rem;color:#1e293b;margin:0 0 0.35rem;line-height:1.5;">Space cooling demand is projected to triple by 2050. The IEA identifies refrigerant transition alongside efficiency improvements as critical to limiting warming — underscoring that a phase-out of high-GWP refrigerants, not merely a phase-down, is essential.</p>
+            <a href="https://www.iea.org/reports/the-future-of-cooling" target="_blank" rel="noopener noreferrer" style="font-size:0.75rem;color:#0369a1;font-weight:600;text-decoration:none;">IEA — The Future of Cooling (2018) <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.65rem;margin-left:0.2rem;"></i></a>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- ═══════════════════════════════════════════════════
@@ -1479,22 +1494,18 @@
         <h3 class="k-sub-heading" style="margin-top:0.5rem;margin-bottom:0.5rem;">Technical Considerations for Alternative Refrigerants</h3>
         <div class="k-card-grid-2">
           <div class="k-card k-safeguard-card" style="--card-accent:#C25B33;">
-            <div class="k-card-tag" style="color:#C25B33;border-color:#C25B33;"><i class="fa-solid fa-fire"></i> Flammability</div>
             <strong class="k-card-title">Flammability (A2L/A3)</strong>
             <p class="k-card-body">R-32 and R-290 require updated building codes, installation standards, and technician training — protocols well-established where these refrigerants are already deployed at scale.</p>
           </div>
           <div class="k-card k-safeguard-card" style="--card-accent:#92400e;">
-            <div class="k-card-tag" style="color:#92400e;border-color:#92400e;"><i class="fa-solid fa-skull-crossbones"></i> Toxicity</div>
             <strong class="k-card-title">Toxicity (Ammonia/R-717)</strong>
             <p class="k-card-body">Highly efficient but toxic and corrosive to copper. Requires steel piping, ventilated machine rooms, and rigorous safety training, particularly in industrial refrigeration.</p>
           </div>
           <div class="k-card k-safeguard-card" style="--card-accent:#0369a1;">
-            <div class="k-card-tag" style="color:#0369a1;border-color:#0369a1;"><i class="fa-solid fa-gauge-high"></i> High Pressure</div>
             <strong class="k-card-title">High Pressure (CO₂/R-744)</strong>
             <p class="k-card-body">Operates at significantly higher pressures. Requires specialised "transcritical" equipment and technician expertise, but is widely deployed in commercial refrigeration.</p>
           </div>
           <div class="k-card k-safeguard-card" style="--card-accent:#7c3aed;">
-            <div class="k-card-tag" style="color:#7c3aed;border-color:#7c3aed;"><i class="fa-solid fa-flask"></i> PFAS</div>
             <strong class="k-card-title">PFAS Concerns (certain HFOs)</strong>
             <p class="k-card-body">While some HFOs offer low GWP, they face regulatory scrutiny around PFAS substances. Natural refrigerants (R-290, CO₂, Ammonia) avoid these concerns entirely.</p>
           </div>
