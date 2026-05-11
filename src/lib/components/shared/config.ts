@@ -69,10 +69,10 @@ export const VIEW_META: Record<string, ViewMeta> = {
     ]
   },
   policy: {
-    headline: '71 countries pledged. Fewer than 30% of NDCs mention cooling.',
+    headline: '74 countries pledged. Fewer than 30% of NDCs mention cooling.',
     subhead: 'The gap between political commitment and policy implementation is the central challenge of cooling governance.',
     insight:
-      'At COP28, 71 nations signed the Global Cooling Pledge. Eighteen months later, fewer than 30% of NDCs even mention cooling. Only 20 countries have completed National Cooling Action Plans. The gap between a signature in Dubai and a regulation in Delhi is where climate ambition goes to die \u2014 unless we track it, fund it, and enforce it.',
+      'At COP28, 74 nations signed the Global Cooling Pledge. Eighteen months later, fewer than 30% of NDCs even mention cooling. Only ~25 countries have completed or are developing National Cooling Action Plans. The gap between a signature in Dubai and a regulation in Delhi is where climate ambition goes to die \u2014 unless we track it, fund it, and enforce it.',
     methodology: 'GCP signatories: Cool Coalition. NDC analysis: CLASP NDC Toolkit. NCAPs: Climate Policy Radar. Dashboard integration: HEAT GmbH.',
     sources: [
       { name: 'Cool Coalition Pledge', url: 'https://coolcoalition.org/global-cooling-pledge/', logo: '/images/unep.png', logoLarge: true },

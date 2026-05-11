@@ -37,7 +37,7 @@
     { view: 'meps',      label: '2. Product Efficiency',    icon: 'fa-bolt',           color: '#d97706' },
     { view: 'kigali',    label: '3. Refrigerant Transition',icon: 'fa-flask',          color: '#0891b2' },
     { view: 'access',    label: '4. Access & Vulnerability',icon: 'fa-people-roof',    color: '#2D7D5A' },
-    { view: 'policy',    label: '5. Plans and Commitments',  icon: 'fa-scale-balanced', color: '#7c3aed' },
+    { view: 'policy',    label: '5. National Plans & Commitments',  icon: 'fa-scale-balanced', color: '#7c3aed' },
   ];
 </script>
 
@@ -89,6 +89,19 @@
     >
       <span class="nav-icon"><i class="fa-solid fa-handshake"></i></span>
       <span>Partner Ecosystem</span>
+    </a>
+  </div>
+
+  <!-- Feedback -->
+  <div class="nav-section nav-section-feedback">
+    <a
+      href="/dashboard/feedback"
+      class="nav-btn nav-item nav-item-feedback"
+      class:active={activeView === 'feedback'}
+      data-view="feedback"
+    >
+      <span class="nav-icon"><i class="fa-solid fa-comment-dots"></i></span>
+      <span>Give Feedback</span>
     </a>
   </div>
 
@@ -188,6 +201,17 @@
   /* Override the global ::before bar color */
   .nav-btn.active::before {
     background: var(--nav-color, #0369a1) !important;
+  }
+
+  /* Feedback nav item */
+  .nav-section-feedback {
+    margin-top: auto;
+    padding-top: 0.25rem;
+  }
+
+  .nav-item-feedback {
+    --nav-color: #1a6b5a;
+    --nav-bg: #1a6b5a12;
   }
 
   /* Latest News - Sidebar Section */

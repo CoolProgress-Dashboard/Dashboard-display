@@ -67,7 +67,7 @@ export const partners: Partner[] = [
       'https://coolcoalition.org/wp-content/uploads/2024/11/2024-Global-Cooling-Pledge-Progress-Report.pdf',
     category: 'policy',
     resources: [
-      { label: 'Global Cooling Pledge', url: 'https://coolcoalition.org/global-cooling-pledge/', icon: 'fa-earth-americas', description: '71 nations committed to cooling transition' },
+      { label: 'Global Cooling Pledge', url: 'https://coolcoalition.org/global-cooling-pledge/', icon: 'fa-earth-americas', description: '74 nations committed to cooling transition' },
       { label: 'Pledge Progress Report 2024', url: 'https://coolcoalition.org/wp-content/uploads/2024/11/2024-Global-Cooling-Pledge-Progress-Report.pdf', icon: 'fa-file-pdf', description: 'Annual tracking of pledge implementation' },
       { label: 'Cool Coalition Resources', url: 'https://coolcoalition.org/resources/', icon: 'fa-folder-open', description: 'Policy briefs, case studies, and guidance documents' },
     ],
@@ -176,7 +176,7 @@ export const partners: Partner[] = [
     description:
       'A philanthropic initiative coordinating funding and action across the cooling sector. Aims to reduce cumulative CO2 emissions by 100 Gt and expand access to clean cooling by 2050.',
     keyContribution:
-      'Coordinated the Global Cooling Watch, mobilized 71 national governments for the Global Cooling Pledge at COP28, and has already exceeded 5 of its 20 indicator targets by mid-2024.',
+      'Coordinated the Global Cooling Watch, mobilized 74 national governments for the Global Cooling Pledge at COP28, and has already exceeded 5 of its 20 indicator targets by mid-2024.',
     keyReport: 'Global Cooling Watch 2023',
     keyReportUrl:
       'https://www.cleancoolingcollaborative.org/report/global-cooling-watch-2023/',
@@ -305,7 +305,7 @@ export const getPartnersByCategory = (category: Partner['category']): Partner[] 
 export const globalCoolingPledge = {
   name: 'Global Cooling Pledge',
   launchedAt: 'COP28 Dubai, December 2023',
-  signatoryCountries: 71,
+  signatoryCountries: 74,
   nonStateActors: 60,
   targetEmissionReduction: '68% by 2050',
   targetEfficiencyIncrease: '50% average AC efficiency',
