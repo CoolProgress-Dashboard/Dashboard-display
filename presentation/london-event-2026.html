@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoolProgress — London Event · May 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  background: #0d3b4f;
+}
+
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, #3D6B6B, #8BC34A);
+  z-index: 1000;
+  transition: width 0.45s ease;
+}
+
+/* ============================================================
+   SLIDE CONTAINER
+   ============================================================ */
+#deck {
+  position: fixed;
+  inset: 0;
+  bottom: 56px;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateX(100%);
+  transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+  pointer-events: none;
+}
+
+.slide.prev   { transform: translateX(-100%); }
+.slide.active { transform: translateX(0);     pointer-events: all; }
+.slide.next   { transform: translateX(100%);  }
+
+.slide-content {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s ease 0.1s, transform 0.65s ease 0.1s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.slide.active .slide-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   DARK SLIDES
+   ============================================================ */
+.slide-dark {
+  background: linear-gradient(135deg, #0d3b4f 0%, #1a6b5a 50%, #0693e3 100%);
+  color: #fff;
+}
+
+.slide-dark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+.orb-1 {
+  width: 420px; height: 420px;
+  background: rgba(34, 211, 238, 0.18);
+  top: -80px; left: -100px;
+  animation: drift1 18s ease-in-out infinite alternate;
+}
+.orb-2 {
+  width: 340px; height: 340px;
+  background: rgba(139, 195, 74, 0.14);
+  bottom: -60px; right: 10%;
+  animation: drift2 22s ease-in-out infinite alternate;
+}
+.orb-3 {
+  width: 280px; height: 280px;
+  background: rgba(61, 107, 107, 0.22);
+  top: 40%; left: 55%;
+  animation: drift3 26s ease-in-out infinite alternate;
+}
+
+@keyframes drift1 {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(60px, 80px) scale(1.1); }
+}
+@keyframes drift2 {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(-80px, -60px) scale(1.08); }
+}
+@keyframes drift3 {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(40px, -50px) scale(0.92); }
+}
+
+.slide-dark .slide-content {
+  position: relative;
+  z-index: 1;
+}
+
+.dark-headline {
+  font-size: clamp(36px, 4.2vw, 64px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #fff 40%, #22d3ee 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark-sub {
+  font-size: clamp(16px, 1.7vw, 22px);
+  font-weight: 300;
+  color: rgba(255,255,255,0.72);
+  line-height: 1.65;
+  margin-top: 24px;
+}
+
+.dark-body {
+  font-size: 17px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.7;
+}
+
+/* ============================================================
+   LIGHT SLIDES
+   ============================================================ */
+.slide-light {
+  background: #f8fafc;
+}
+
+.section-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.tag-teal    { background: rgba(61,107,107,0.1);  color: #3D6B6B;  border: 1px solid rgba(61,107,107,0.3);  }
+.tag-red     { background: rgba(232,90,79,0.1);   color: #E85A4F;  border: 1px solid rgba(232,90,79,0.3);   }
+.tag-purple  { background: rgba(124,58,237,0.1);  color: #7c3aed;  border: 1px solid rgba(124,58,237,0.3);  }
+.tag-amber   { background: rgba(217,119,6,0.1);   color: #D97706;  border: 1px solid rgba(217,119,6,0.3);   }
+.tag-green   { background: rgba(5,150,105,0.1);   color: #059669;  border: 1px solid rgba(5,150,105,0.3);   }
+.tag-cyan    { background: rgba(34,211,238,0.12); color: #22d3ee;  border: 1px solid rgba(34,211,238,0.4);  }
+.tag-blue    { background: rgba(2,132,199,0.1);   color: #0284c7;  border: 1px solid rgba(2,132,199,0.3);   }
+
+.light-headline {
+  font-size: clamp(28px, 3vw, 48px);
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.pull-quote {
+  font-style: italic;
+  font-size: 17px;
+  color: #3D6B6B;
+  border-left: 3px solid rgba(61,107,107,0.25);
+  padding-left: 16px;
+  margin-bottom: 20px;
+  line-height: 1.65;
+}
+
+.body-text {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #475569;
+}
+
+.bridge-line {
+  font-size: 13px;
+  font-style: italic;
+  color: #94a3b8;
+  text-align: right;
+}
+
+/* ============================================================
+   TAG PILL (dark slide variant)
+   ============================================================ */
+.dark-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 20px;
+  background: rgba(34,211,238,0.1);
+  border: 1px solid rgba(34,211,238,0.35);
+  color: #22d3ee;
+  margin-bottom: 28px;
+}
+
+/* ============================================================
+   PARTNER CHIPS
+   ============================================================ */
+.partner-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 44px;
+}
+
+.partner-chip {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.65);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 5px 14px;
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   SHARED INNER PADDING
+   ============================================================ */
+.inner {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 60px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ============================================================
+   SLIDE 2 — UNDERSTANDING THE PROBLEM
+   ============================================================ */
+.problem-header {
+  background: #0f172a;
+  padding: 14px 60px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.problem-header h2 {
+  color: #fff;
+  font-size: clamp(17px, 1.8vw, 24px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.col-left {
+  padding: 44px 52px 44px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.col-right {
+  padding: 44px 60px 44px 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(0,0,0,0.04);
+}
+
+.stat-number {
+  font-size: 54px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #475569;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.stat-number.red    { color: #E85A4F; }
+.stat-number.purple { color: #7c3aed; }
+
+/* ============================================================
+   SLIDE 3 — THE OPPORTUNITY
+   ============================================================ */
+.opportunity-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 36px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.opp-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 16px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(15,23,42,0.06);
+}
+
+.opp-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #3D6B6B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.opp-check i { color: #fff; font-size: 10px; }
+
+.opp-main {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+.opp-source {
+  display: block;
+  font-size: 10px;
+  color: #94a3b8;
+  margin-top: 3px;
+  font-style: italic;
+}
+
+/* ============================================================
+   TOOL LAYOUT (slide 4)
+   ============================================================ */
+.tool-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+  padding: 52px 60px;
+  height: 100%;
+}
+
+.tool-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px;
+  box-shadow: 0 4px 24px rgba(15,23,42,0.08), 0 1px 4px rgba(15,23,42,0.04);
+}
+
+.tool-card-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 20px;
+}
+
+.user-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 13px 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.user-row:last-of-type { border-bottom: none; }
+
+.user-icon {
+  font-size: 18px;
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.tool-card-footer {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 2px solid #3D6B6B;
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.6;
+}
+
+.bullet-list {
+  list-style: none;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bullet-list li {
+  font-size: 15px;
+  color: #334155;
+  padding-left: 18px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.bullet-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.bullet-teal   li::before { background: #3D6B6B; }
+.bullet-red    li::before { background: #E85A4F; }
+.bullet-amber  li::before { background: #D97706; }
+.bullet-green  li::before { background: #059669; }
+.bullet-purple li::before { background: #7c3aed; }
+
+/* ============================================================
+   SLIDE 5 — FRAMEWORK
+   ============================================================ */
+#slide-5 .inner {
+  max-width: 1020px;
+  align-items: center;
+  text-align: center;
+}
+
+.pillar-list {
+  list-style: none;
+  width: 100%;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pillar-item {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 18px 32px;
+  border-radius: 12px;
+  transition: background 0.2s;
+  text-align: left;
+}
+
+.pillar-item:hover { background: rgba(255,255,255,0.7); }
+
+.pillar-num {
+  font-size: 30px;
+  font-weight: 800;
+  width: 58px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.pillar-question {
+  flex: 1;
+  font-size: clamp(16px, 1.6vw, 20px);
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+.pillar-tag-chip {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 5px 16px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   PILLAR SLIDES (6–10)
+   ============================================================ */
+.pillar-layout {
+  display: grid;
+  grid-template-columns: 37% 63%;
+  height: 100%;
+}
+
+.pillar-left {
+  padding: 36px 28px 36px 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 6px solid var(--accent-color, #3D6B6B);
+}
+
+.pillar-right {
+  padding: 52px 60px 52px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+}
+
+.chart-placeholder {
+  width: 100%;
+  height: 70%;
+  max-height: 440px;
+  background: #f1f5f9;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chart-placeholder span {
+  font-size: 13px;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.cta-link {
+  display: inline-block;
+  margin-top: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+  align-self: flex-start;
+}
+
+.cta-link:hover { opacity: 0.8; }
+
+.cta-red    { background: rgba(232,90,79,0.1);  color: #E85A4F; border: 1px solid rgba(232,90,79,0.25); }
+.cta-amber  { background: rgba(217,119,6,0.1);  color: #D97706; border: 1px solid rgba(217,119,6,0.25); }
+.cta-teal   { background: rgba(61,107,107,0.1); color: #3D6B6B; border: 1px solid rgba(61,107,107,0.25); }
+.cta-green  { background: rgba(5,150,105,0.1);  color: #059669; border: 1px solid rgba(5,150,105,0.25); }
+.cta-purple { background: rgba(124,58,237,0.1); color: #7c3aed; border: 1px solid rgba(124,58,237,0.25); }
+
+/* ============================================================
+   SLIDE 11 — THE PRIZE
+   ============================================================ */
+#slide-11 .inner {
+  max-width: 800px;
+  align-items: center;
+  text-align: center;
+}
+
+.prize-headline {
+  font-size: clamp(60px, 8vw, 110px);
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.prize-sub {
+  font-size: clamp(17px, 1.6vw, 22px);
+  color: #64748b;
+  font-weight: 300;
+  line-height: 1.5;
+  margin-bottom: 28px;
+}
+
+.teal-rule {
+  width: 80px;
+  height: 2px;
+  background: #3D6B6B;
+  margin: 28px auto;
+  border-radius: 1px;
+}
+
+.prize-actions {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  text-align: left;
+  margin-top: 8px;
+}
+
+.prize-action-item { flex: 1; max-width: 220px; }
+
+.prize-action-icon { font-size: 22px; margin-bottom: 8px; display: block; }
+
+.prize-action-title { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+
+.prize-action-text { font-size: 13px; color: #64748b; line-height: 1.6; }
+
+.closing-italic { font-style: italic; color: #3D6B6B; font-size: 16px; margin-top: 24px; }
+
+.source-tiny { font-size: 11px; color: #94a3b8; margin-top: 8px; letter-spacing: 0.03em; }
+
+
+.pulse-btn {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 2px solid #22d3ee;
+  background: rgba(34,211,238,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 36px auto;
+  animation: pulse 2.4s ease-in-out infinite;
+  cursor: pointer;
+}
+
+.pulse-btn i { font-size: 28px; color: #22d3ee; margin-left: 4px; }
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34,211,238,0.4); }
+  50%       { box-shadow: 0 0 0 20px rgba(34,211,238,0); }
+}
+
+@keyframes pulse-light {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(61,107,107,0.35); }
+  50%       { box-shadow: 0 0 0 20px rgba(61,107,107,0); }
+}
+
+.url-chip {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 15px;
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.2s;
+}
+
+.url-chip:hover { background: rgba(255,255,255,0.14); }
+
+.demo-sub {
+  font-size: 16px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.7;
+  margin-top: 16px;
+}
+
+
+.closing-sub {
+  font-size: 17px;
+  color: #64748b;
+  max-width: 680px;
+  text-align: center;
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+
+.action-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+  margin-bottom: 28px;
+}
+
+.action-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 2px 16px rgba(15,23,42,0.07);
+}
+
+.action-card-category {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.action-card-title { font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 12px; }
+
+.action-card-text { font-size: 14px; color: #475569; line-height: 1.7; }
+
+.action-card-link {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #3D6B6B;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(61,107,107,0.3);
+  padding-bottom: 1px;
+}
+
+.action-card-link:hover { border-color: #3D6B6B; }
+
+.closing-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.qr-caption { font-size: 13px; color: #94a3b8; }
+
+.closing-tagline { font-style: italic; color: #3D6B6B; font-size: 15px; margin-top: 4px; }
+
+.closing-footer {
+  font-size: 10px;
+  color: #cbd5e1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+/* ============================================================
+   NAV BAR
+   ============================================================ */
+#nav-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 56px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(61,107,107,0.15);
+  box-shadow: 0 -2px 16px rgba(15,23,42,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  z-index: 999;
+}
+
+.nav-arrow {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3D6B6B;
+  font-size: 16px;
+  transition: background 0.15s;
+}
+
+.nav-arrow:hover { background: rgba(61,107,107,0.08); }
+.nav-arrow:disabled { color: #cbd5e1; cursor: default; }
+.nav-arrow:disabled:hover { background: none; }
+
+.nav-dots { display: flex; align-items: center; gap: 6px; }
+
+.nav-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 4px;
+  background: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.65, 0, 0.35, 1);
+  border: none;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.nav-dot.active { background: #3D6B6B; width: 24px; }
+
+.nav-counter {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  min-width: 44px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   UTILITY
+   ============================================================ */
+.mt-4  { margin-top:  16px; }
+.mt-6  { margin-top:  24px; }
+.mt-8  { margin-top:  32px; }
+.mt-10 { margin-top:  40px; }
+.mb-4  { margin-bottom: 16px; }
+.mb-6  { margin-bottom: 24px; }
+
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<div id="deck">
+
+  <!-- ================================================================
+       SLIDE 1 — HOOK (dark)
+       ================================================================ -->
+  <div class="slide slide-dark active" id="slide-1">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="slide-content">
+      <div class="inner" style="max-width:1300px;padding:0 72px;">
+        <div class="dark-tag">London · May 2026</div>
+        <h1 class="dark-headline" style="font-size:clamp(46px,5.8vw,84px);">Cooling is one of the most significant yet overlooked drivers of climate change.</h1>
+        <p class="dark-sub" style="font-size:clamp(26px,2.8vw,40px);margin-top:44px;">~7% of global greenhouse gas emissions today.</p>
+        <p class="dark-sub" style="font-size:clamp(26px,2.8vw,40px);margin-top:16px;">7.2 billion tonnes CO₂e by 2050 under business-as-usual.</p>
+        <div class="partner-chips" style="margin-top:56px;">
+          <span class="partner-chip">HEAT GmbH</span>
+          <span class="partner-chip">CLASP</span>
+          <span class="partner-chip">GIZ Proklima</span>
+          <span class="partner-chip">SEforALL</span>
+          <span class="partner-chip">International Energy Agency</span>
+          <span class="partner-chip">Lawrence Berkeley National Laboratory</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 2 — UNDERSTANDING THE PROBLEM (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-2">
+    <div class="slide-content" style="justify-content:flex-start;">
+      <div style="text-align:center;padding:22px 60px 0;flex-shrink:0;">
+        <h2 style="font-size:clamp(22px,2.2vw,32px);font-weight:800;color:#0f172a;letter-spacing:-0.01em;">Understanding the Problem</h2>
+      </div>
+      <div class="two-col" style="flex:1;min-height:0;">
+
+        <div class="col-left" style="background:#fff8f7;">
+          <span class="section-tag tag-red">The Climate Crisis</span>
+          <h2 class="light-headline" style="font-size:clamp(20px,2vw,30px);margin-bottom:10px;">Cooling is driving the planet's temperature up.</h2>
+          <p class="body-text" style="font-size:15px;">A fast-growing, largely untracked emission source. A single refrigerant leak can release gases more than 2,000× more potent than CO₂.</p>
+          <div class="stat-block">
+            <div class="stat-item">
+              <span class="stat-number red">7%</span>
+              <span class="stat-label">of global GHG emissions from cooling today</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number red">×3</span>
+              <span class="stat-label">demand projected to triple by 2050</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number red">0.5°C</span>
+              <span class="stat-label">extra warming from HFCs alone if unchecked</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-right" style="background:#f9f7ff;">
+          <span class="section-tag tag-purple">The Human Crisis</span>
+          <h2 class="light-headline" style="font-size:clamp(20px,2vw,30px);margin-bottom:10px;">And it's leaving the most vulnerable behind.</h2>
+          <p class="body-text" style="font-size:15px;">For billions in low- and middle-income countries, cooling is not a luxury, it is health, food security, and survival infrastructure.</p>
+          <div class="stat-block">
+            <div class="stat-item">
+              <span class="stat-number purple">1.2B</span>
+              <span class="stat-label">people lack access to adequate cooling</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number purple">420,000</span>
+              <span class="stat-label">deaths per year linked to broken cold chains</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number purple">40%</span>
+              <span class="stat-label">post-harvest food loss in Sub-Saharan Africa</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 3 — THE OPPORTUNITY (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-3">
+    <div class="slide-content" style="height:100%;">
+      <div class="inner" style="max-width:1200px;padding:0 72px;justify-content:center;">
+
+        <span class="section-tag tag-teal">The Opportunity</span>
+        <h2 class="light-headline" style="font-size:clamp(28px,3.2vw,50px);margin-bottom:28px;">By achieving sustainable cooling we can:</h2>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 48px;width:100%;">
+
+          <!-- LEFT — 4 items -->
+          <div>
+            <div style="display:flex;align-items:flex-start;gap:16px;padding:14px 0;border-bottom:1px solid #e2e8f0;">
+              <i class="fa-solid fa-arrow-trend-down" style="color:#3D6B6B;font-size:20px;margin-top:3px;width:22px;text-align:center;flex-shrink:0;"></i>
+              <div>
+                <p style="font-size:clamp(15px,1.5vw,20px);font-weight:600;color:#0f172a;line-height:1.45;">Cut cooling emissions by <span style="color:#3D6B6B;">73%</span> by 2050 through efficiency, refrigerant transition, and clean grids</p>
+                <span style="font-size:11px;color:#94a3b8;font-style:italic;">UNEP Global Cooling Watch 2025</span>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:16px;padding:14px 0;border-bottom:1px solid #e2e8f0;">
+              <i class="fa-solid fa-bolt" style="color:#3D6B6B;font-size:20px;margin-top:3px;width:22px;text-align:center;flex-shrink:0;"></i>
+              <div>
+                <p style="font-size:clamp(15px,1.5vw,20px);font-weight:600;color:#0f172a;line-height:1.45;">Relieve grid stress and reduce the frequency of power outages</p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:16px;padding:14px 0;border-bottom:1px solid #e2e8f0;">
+              <i class="fa-solid fa-industry" style="color:#3D6B6B;font-size:20px;margin-top:3px;width:22px;text-align:center;flex-shrink:0;"></i>
+              <div>
+                <p style="font-size:clamp(15px,1.5vw,20px);font-weight:600;color:#0f172a;line-height:1.45;">Avoid the need for costly new power generation infrastructure</p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:16px;padding:14px 0;">
+              <i class="fa-solid fa-temperature-arrow-down" style="color:#3D6B6B;font-size:20px;margin-top:3px;width:22px;text-align:center;flex-shrink:0;"></i>
+              <div>
+                <p style="font-size:clamp(15px,1.5vw,20px);font-weight:600;color:#0f172a;line-height:1.45;">Prevent <span style="color:#3D6B6B;">0.5°C</span> of warming this century by phasing down high-GWP refrigerants</p>
+                <span style="font-size:11px;color:#94a3b8;font-style:italic;">UNEP, Kigali Amendment Overview</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT — 3 items -->
+          <div>
+            <div style="display:flex;align-items:flex-start;gap:16px;padding:14px 0;border-bottom:1px solid #e2e8f0;">
+              <i class="fa-solid fa-lightbulb" style="color:#3D6B6B;font-size:20px;margin-top:3px;width:22px;text-align:center;flex-shrink:0;"></i>
+              <div>
+                <p style="font-size:clamp(15px,1.5vw,20px);font-weight:600;color:#0f172a;line-height:1.45;">Save <span style="color:#3D6B6B;">1,300 TWh</span> of electricity per year through global MEPS harmonization</p>
+                <span style="font-size:11px;color:#94a3b8;font-style:italic;">UNSDSN CEET, Energy Rating Labels (2024)</span>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:16px;padding:14px 0;border-bottom:1px solid #e2e8f0;">
+              <i class="fa-solid fa-heart-pulse" style="color:#3D6B6B;font-size:20px;margin-top:3px;width:22px;text-align:center;flex-shrink:0;"></i>
+              <div>
+                <p style="font-size:clamp(15px,1.5vw,20px);font-weight:600;color:#0f172a;line-height:1.45;">Protect public health by drastically reducing heat-related illnesses and deaths</p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:16px;padding:14px 0;">
+              <i class="fa-solid fa-snowflake" style="color:#3D6B6B;font-size:20px;margin-top:3px;width:22px;text-align:center;flex-shrink:0;"></i>
+              <div>
+                <p style="font-size:clamp(15px,1.5vw,20px);font-weight:600;color:#0f172a;line-height:1.45;">Secure food and medicine cold chains for the world's most vulnerable communities</p>
+                <span style="font-size:11px;color:#94a3b8;font-style:italic;">SEforALL, Chilling Prospects 2025</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 4 — THE GAP & THE TOOL (light) [merged]
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-4">
+    <div class="slide-content" style="height:100%;">
+      <div class="tool-layout">
+
+        <div>
+          <span class="section-tag tag-teal">The Gap &amp; Our Response</span>
+          <h2 class="light-headline">The data to fix this exists.<br>Nobody can see it, yet.</h2>
+          <p class="body-text mt-4" style="color:#0f172a;font-weight:600;">We built CoolProgress, the first open-access platform connecting CLASP, SEforALL, UNEP, and IEA data into one live dashboard for policymakers, negotiators, and researchers worldwide.</p>
+          <ul class="bullet-list bullet-teal mt-6">
+            <li>Country-level data across 195 nations</li>
+            <li>Live data, updated as new information becomes available</li>
+            <li>Open access, built for the people who need it most</li>
+          </ul>
+        </div>
+
+        <div class="tool-card">
+          <p class="tool-card-title">Built for</p>
+          <div class="user-row">
+            <span class="user-icon">🏛️</span>
+            <span>Policy makers working on the Global Cooling Pledge, NDCs, NCAPs, and other national policies</span>
+          </div>
+          <div class="user-row">
+            <span class="user-icon">🤝</span>
+            <span>Negotiators preparing for COPs and MOPs</span>
+          </div>
+          <div class="user-row">
+            <span class="user-icon">🔬</span>
+            <span>Researchers tracking sector-level climate progress</span>
+          </div>
+          <div class="user-row">
+            <span class="user-icon">📢</span>
+            <span>Advocates making the case for stronger standards</span>
+          </div>
+          <div class="user-row">
+            <span class="user-icon">🌍</span>
+            <span>Any interested party</span>
+          </div>
+          <div class="tool-card-footer">
+            Funded by the Clean Cooling Collaborative<br>Built by HEAT GmbH
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 5 — THE FRAMEWORK (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-5">
+    <div class="slide-content">
+      <div class="inner" style="max-width:1020px;align-items:center;text-align:center;">
+        <span class="section-tag tag-teal">The Framework</span>
+        <h2 class="light-headline">Five questions. Five pillars. One dashboard.</h2>
+        <p class="body-text" style="color:#64748b;max-width:620px;text-align:center;">We organised CoolProgress around the questions policymakers actually ask, not the data we happened to have.</p>
+        <ul class="pillar-list">
+          <li class="pillar-item">
+            <span class="pillar-num" style="color:#E85A4F;">01</span>
+            <span class="pillar-question">How big is the cooling sector's emissions footprint?</span>
+            <span class="pillar-tag-chip" style="background:rgba(232,90,79,0.1);color:#E85A4F;border:1px solid rgba(232,90,79,0.25);">Emissions</span>
+          </li>
+          <li class="pillar-item">
+            <span class="pillar-num" style="color:#D97706;">02</span>
+            <span class="pillar-question">Are efficiency standards rising fast enough?</span>
+            <span class="pillar-tag-chip" style="background:rgba(217,119,6,0.1);color:#D97706;border:1px solid rgba(217,119,6,0.25);">Product Efficiency</span>
+          </li>
+          <li class="pillar-item">
+            <span class="pillar-num" style="color:#0284c7;">03</span>
+            <span class="pillar-question">Is the HFC phase-down enough?</span>
+            <span class="pillar-tag-chip" style="background:rgba(2,132,199,0.1);color:#0284c7;border:1px solid rgba(2,132,199,0.25);">Refrigerant Transition</span>
+          </li>
+          <li class="pillar-item">
+            <span class="pillar-num" style="color:#059669;">04</span>
+            <span class="pillar-question">Who is being left behind on cooling access?</span>
+            <span class="pillar-tag-chip" style="background:rgba(5,150,105,0.1);color:#059669;border:1px solid rgba(5,150,105,0.25);">Access &amp; Vulnerability</span>
+          </li>
+          <li class="pillar-item">
+            <span class="pillar-num" style="color:#7c3aed;">05</span>
+            <span class="pillar-question">What is the state of pledges and national commitments?</span>
+            <span class="pillar-tag-chip" style="background:rgba(124,58,237,0.1);color:#7c3aed;border:1px solid rgba(124,58,237,0.25);">National Plans &amp; Commitments</span>
+          </li>
+        </ul>
+        <p class="bridge-line mt-6" style="text-align:center;font-size:13px;"><em>Each of the next five slides is one of these questions.</em></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 6 — PILLAR 1: EMISSIONS (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-6">
+    <div class="slide-content" style="height:100%;">
+      <div class="pillar-layout">
+        <div class="pillar-left" style="--accent-color:#E85A4F;">
+          <span class="section-tag tag-red">01 · Emissions</span>
+          <h2 class="light-headline" style="font-size:clamp(20px,2vw,32px);">Country-level cooling emissions, direct and indirect, in one view.</h2>
+          <blockquote class="pull-quote" style="color:#E85A4F;border-left-color:rgba(232,90,79,0.25);margin-top:12px;">"You can't fix what you can't measure. This pillar makes the sector's footprint visible, by country, by appliance, and by year."</blockquote>
+          <ul class="bullet-list bullet-red" style="margin-top:12px;">
+            <li>Direct emissions: refrigerant leaks with GWPs up to 2,088× CO₂</li>
+            <li>Indirect emissions: approximately 70% of the sector's climate impact</li>
+            <li>Breakdown by appliance: air conditioners, refrigerators, fans</li>
+          </ul>
+          <a class="cta-link cta-red" href="https://dashboard-display.pages.dev/dashboard/emissions" target="_blank" rel="noopener">Explore emissions data →</a>
+        </div>
+        <div class="pillar-right" style="padding:24px 32px;">
+          <img src="../Pillar1.png" alt="Global Cooling Appliance Emissions chart" style="width:100%;height:auto;max-height:520px;object-fit:contain;border-radius:8px;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 7 — PILLAR 2: PRODUCT EFFICIENCY (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-7">
+    <div class="slide-content" style="height:100%;">
+      <div class="pillar-layout">
+        <div class="pillar-left" style="--accent-color:#D97706;">
+          <span class="section-tag tag-amber">02 · Product Efficiency</span>
+          <h2 class="light-headline" style="font-size:clamp(20px,2vw,32px);">Without binding standards, manufacturers dump their worst products in the fastest-growing markets.</h2>
+          <blockquote class="pull-quote" style="color:#D97706;border-left-color:rgba(217,119,6,0.25);margin-top:12px;">"The market will always sell the cheapest unit. Standards ensure the cheapest unit is still a good one."</blockquote>
+          <ul class="bullet-list bullet-amber" style="margin-top:12px;">
+            <li>MEPS and energy label status for 80+ countries</li>
+            <li>Appliance coverage: air conditioners, refrigerators, ceiling fans</li>
+            <li>Policy adoption timeline, when standards were introduced and updated</li>
+          </ul>
+          <a class="cta-link cta-amber" href="https://dashboard-display.pages.dev/dashboard/meps" target="_blank" rel="noopener">Explore efficiency data →</a>
+        </div>
+        <div class="pillar-right" style="background:#fff;padding:28px 48px;overflow-y:auto;">
+          <div style="width:100%;font-family:'IBM Plex Sans',sans-serif;">
+            <p style="font-size:10px;font-weight:700;letter-spacing:0.07em;color:#94a3b8;text-transform:uppercase;margin-bottom:8px;">Inverter RAC Market Share by Key Market</p>
+            <div style="display:flex;gap:20px;align-items:center;margin-bottom:14px;font-size:11px;color:#64748b;">
+              <div style="display:flex;align-items:center;gap:5px;"><div style="width:20px;height:8px;background:rgba(217,119,6,0.3);border-radius:3px;"></div>2017</div>
+              <div style="display:flex;align-items:center;gap:5px;"><div style="width:20px;height:8px;background:#D97706;border-radius:3px;"></div>2022</div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:7px;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">India</span>
+              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:31%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:82%;background:#D97706;border-radius:3px;"></div></div></div>
+              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">31%<br><b style="color:#D97706;">82%</b></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:7px;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">SE Asia</span>
+              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:33%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:64%;background:#D97706;border-radius:3px;"></div></div></div>
+              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">33%<br><b style="color:#D97706;">64%</b></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:7px;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">Japan</span>
+              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:100%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:100%;background:#D97706;border-radius:3px;"></div></div></div>
+              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">100%<br><b style="color:#D97706;">100%</b></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:7px;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">Europe</span>
+              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:74%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:91%;background:#D97706;border-radius:3px;"></div></div></div>
+              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">74%<br><b style="color:#D97706;">91%</b></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:7px;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">Brazil</span>
+              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:22%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:55%;background:#D97706;border-radius:3px;"></div></div></div>
+              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">22%<br><b style="color:#D97706;">55%</b></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:7px;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">Saudi Arabia</span>
+              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:7%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:37%;background:#D97706;border-radius:3px;"></div></div></div>
+              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">7%<br><b style="color:#D97706;">37%</b></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:7px;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">Nigeria</span>
+              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:10%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:20%;background:#D97706;border-radius:3px;"></div></div></div>
+              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">10%<br><b style="color:#D97706;">20%</b></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:7px;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">UAE</span>
+              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:12%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:20%;background:#D97706;border-radius:3px;"></div></div></div>
+              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">12%<br><b style="color:#D97706;">20%</b></div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:4px;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">USA</span>
+              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:0%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:9%;background:#D97706;border-radius:3px;"></div></div></div>
+              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">0%<br><b style="color:#D97706;">9%</b></div>
+            </div>
+
+            <p style="font-size:9px;color:#94a3b8;font-style:italic;margin-top:12px;line-height:1.5;">Source: BSRIA Split AC Reports (2021,2022,2023), Park et al for 2017</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 8 — PILLAR 3: KIGALI (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-8">
+    <div class="slide-content" style="height:100%;">
+      <div class="pillar-layout">
+        <div class="pillar-left" style="--accent-color:#3D6B6B;">
+          <span class="section-tag tag-teal">03 · Refrigerant Transition</span>
+          <h2 class="light-headline" style="font-size:clamp(20px,2vw,32px);">172 nations have ratified the Kigali Amendment. CoolProgress tracks whether they are following through.</h2>
+          <blockquote class="pull-quote" style="margin-top:12px;">"Ratification is a signature. Implementation is a supply chain, a workforce, and a decade of investment."</blockquote>
+          <ul class="bullet-list bullet-teal" style="margin-top:12px;">
+            <li>Ratification and implementation status for 195 countries</li>
+            <li>Article 5 Group 1, Group 2, and Non-Article 5 timelines tracked</li>
+            <li>Global refrigerant bank by compound, what's still circulating</li>
+          </ul>
+          <a class="cta-link cta-teal" href="https://dashboard-display.pages.dev/dashboard/kigali" target="_blank" rel="noopener">Explore Kigali data →</a>
+        </div>
+        <div class="pillar-right" style="padding:24px 32px;">
+          <img src="../Pillar3.png" alt="Refrigerant bank by compound" style="width:100%;height:auto;max-height:520px;object-fit:contain;border-radius:8px;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 9 — PILLAR 4: ACCESS (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-9">
+    <div class="slide-content" style="height:100%;">
+      <div class="pillar-layout">
+        <div class="pillar-left" style="--accent-color:#059669;">
+          <span class="section-tag tag-green">04 · Access &amp; Vulnerability</span>
+          <h2 class="light-headline" style="font-size:clamp(20px,2vw,32px);">1.2 billion people face dangerous heat without adequate cooling. CoolProgress shows exactly where they are.</h2>
+          <blockquote class="pull-quote" style="color:#059669;border-left-color:rgba(5,150,105,0.25);margin-top:12px;">"The cruelest irony of the climate crisis: those most exposed to rising heat are least able to afford protection."</blockquote>
+          <ul class="bullet-list bullet-green" style="margin-top:12px;">
+            <li>Population at risk by country, income group, urban and rural</li>
+            <li>Dimensions tracked: thermal safety, food security, cold chain access</li>
+            <li>Baseline for monitoring progress toward universal sustainable cooling</li>
+          </ul>
+          <a class="cta-link cta-green" href="https://dashboard-display.pages.dev/dashboard/access" target="_blank" rel="noopener">Explore access data →</a>
+        </div>
+        <div class="pillar-right" style="padding:24px 32px;">
+          <img src="../Pillar4.png" alt="Cooling Access Risk by Country" style="width:100%;height:auto;max-height:520px;object-fit:contain;border-radius:8px;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 10 — PILLAR 5: NATIONAL PLANS & COMMITMENTS (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-10">
+    <div class="slide-content" style="height:100%;">
+      <div class="pillar-layout">
+        <div class="pillar-left" style="--accent-color:#7c3aed;">
+          <span class="section-tag tag-purple">05 · National Plans &amp; Commitments</span>
+          <h2 class="light-headline" style="font-size:clamp(20px,2vw,32px);">71 countries pledged at COP28. CoolProgress follows the chain from pledge to law.</h2>
+          <blockquote class="pull-quote" style="color:#7c3aed;border-left-color:rgba(124,58,237,0.25);margin-top:12px;">"A pledge in Dubai does not cool a building in Delhi. The gap between commitment and implementation is where climate ambition goes to die."</blockquote>
+          <ul class="bullet-list bullet-purple" style="margin-top:12px;">
+            <li>Global Cooling Pledge signatory status for 195 countries</li>
+            <li>NDC cooling mentions analysed in partnership with Climate Policy Radar</li>
+            <li>National Cooling Action Plan status: completed, in progress, or absent</li>
+          </ul>
+          <a class="cta-link cta-purple" href="https://dashboard-display.pages.dev/dashboard/policy" target="_blank" rel="noopener">Explore policy data →</a>
+        </div>
+        <div class="pillar-right" style="padding:24px 32px;">
+          <img src="../Pillar5 V2.png" alt="Global Cooling Pledge signatory map" style="width:100%;height:auto;max-height:520px;object-fit:contain;border-radius:8px;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 11 — THE PRIZE (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-11">
+    <div class="slide-content">
+      <div class="inner" style="max-width:800px;align-items:center;text-align:center;">
+        <span class="section-tag tag-teal">The Opportunity</span>
+        <p class="prize-headline" style="font-size:clamp(52px,7.5vw,100px);">460 billion tonnes.</p>
+        <p class="prize-sub">That is how much CO₂-equivalent emissions the cooling sector could avoid over the next four decades, if the right policies are implemented.</p>
+        <p class="body-text" style="text-align:center;max-width:700px;">This number comes from the same research that shaped the Kigali Amendment and the Global Cooling Pledge. It is not a theoretical optimum. It is the result of combining three interventions that already exist: raising efficiency standards everywhere, implementing the Kigali Amendment on the factory floor, and making sustainable cooling a named priority in every NDC. None of these require new technology. All three require better information and political will. CoolProgress provides the first.</p>
+        <div class="teal-rule"></div>
+        <div class="prize-actions">
+          <div class="prize-action-item">
+            <span class="prize-action-icon">⚡</span>
+            <p class="prize-action-title">Raise the efficiency floor</p>
+            <p class="prize-action-text">Adopt MEPS equivalent to today's best available technology in every market</p>
+          </div>
+          <div class="prize-action-item">
+            <span class="prize-action-icon">❄️</span>
+            <p class="prize-action-title">Implement Kigali on the ground</p>
+            <p class="prize-action-text">Convert factory lines, train technicians, build recovery infrastructure</p>
+          </div>
+          <div class="prize-action-item">
+            <span class="prize-action-icon">🏛️</span>
+            <p class="prize-action-title">Embed cooling in climate commitments</p>
+            <p class="prize-action-text">Make cooling a named priority in every NDC and national action plan</p>
+          </div>
+        </div>
+        <p class="closing-italic mt-6"><em>CoolProgress gives policymakers the data to pull these levers.</em></p>
+        <p class="source-tiny">Source: UNEP / Clean Cooling Collaborative research</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 12 — CLOSING (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-12">
+    <div class="slide-content">
+      <div class="inner" style="max-width:1200px;align-items:center;text-align:center;padding:0 48px;">
+        <span class="section-tag tag-teal">Join the Journey</span>
+        <h2 class="light-headline">The data is here. The solutions are known.<br>What's missing is urgency.</h2>
+        <p class="closing-sub">CoolProgress is the accountability infrastructure for the global cooling transition. A dashboard only works if the people who need it use it and act on what they find.</p>
+        <div class="action-cards">
+          <div class="action-card">
+            <p class="action-card-category">For policymakers and researchers</p>
+            <p class="action-card-title">Explore</p>
+            <p class="action-card-text">Visit the dashboard. Find your country. See where your standards rank, whether your NDC mentions cooling, and how your access gap compares to your neighbours.</p>
+            <a class="action-card-link" href="https://dashboard-display.pages.dev/dashboard/overview" target="_blank" rel="noopener">Open the dashboard →</a>
+          </div>
+          <div class="action-card">
+            <p class="action-card-category">For data partners and governments</p>
+            <p class="action-card-title">Contribute</p>
+            <p class="action-card-text">CoolProgress is only as good as the data it holds. If you have national cooling data, efficiency surveys, or policy documents, contribute them to strengthen the platform for everyone.</p>
+          </div>
+          <div class="action-card">
+            <p class="action-card-category">For organisations and funders</p>
+            <p class="action-card-title">Connect</p>
+            <p class="action-card-text">Partner with HEAT GmbH, CLASP, and GIZ Proklima to turn this data into policy impact. We are actively seeking collaboration for the next phase of development.</p>
+          </div>
+        </div>
+        <div class="closing-bottom">
+          <div style="display:flex;align-items:center;gap:32px;justify-content:center;margin-bottom:8px;">
+            <a href="https://dashboard-display.pages.dev/dashboard/overview" target="_blank" rel="noopener">
+              <img src="../qr.png" alt="QR code to CoolProgress dashboard" style="width:90px;height:90px;border-radius:8px;display:block;">
+            </a>
+            <div style="text-align:left;">
+              <p style="font-size:13px;color:#475569;font-weight:600;margin-bottom:6px;">Explore the dashboard live</p>
+              <a href="https://dashboard-display.pages.dev/dashboard/overview" target="_blank" rel="noopener"
+                 style="background:rgba(61,107,107,0.08);border:1px solid rgba(61,107,107,0.25);border-radius:8px;padding:9px 22px;font-size:14px;font-weight:600;color:#3D6B6B;text-decoration:none;display:inline-block;">
+                🌐 dashboard-display.pages.dev
+              </a>
+            </div>
+          </div>
+          <p class="qr-caption">Scan to explore · dashboard-display.pages.dev</p>
+          <p class="closing-tagline"><em>Together we track the transition to sustainable cooling.</em></p>
+          <p class="closing-footer">HEAT GmbH · CLASP · GIZ Proklima · SEforALL · IEA · LBNL · Climate Policy Radar · Funded by Clean Cooling Collaborative</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<div id="nav-bar">
+  <button class="nav-arrow" id="btn-prev" aria-label="Previous slide">
+    <i class="fa-solid fa-chevron-left"></i>
+  </button>
+  <div class="nav-dots" id="nav-dots"></div>
+  <button class="nav-arrow" id="btn-next" aria-label="Next slide">
+    <i class="fa-solid fa-chevron-right"></i>
+  </button>
+  <span class="nav-counter" id="nav-counter">1 / 12</span>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var TOTAL   = 12;
+  var current = 0;
+
+  var slides     = Array.from(document.querySelectorAll('.slide'));
+  var dotsEl     = document.getElementById('nav-dots');
+  var counterEl  = document.getElementById('nav-counter');
+  var progressEl = document.getElementById('progress-bar');
+  var btnPrev    = document.getElementById('btn-prev');
+  var btnNext    = document.getElementById('btn-next');
+
+  for (var i = 0; i < TOTAL; i++) {
+    (function (idx) {
+      var btn = document.createElement('button');
+      btn.className = 'nav-dot' + (idx === 0 ? ' active' : '');
+      btn.setAttribute('aria-label', 'Go to slide ' + (idx + 1));
+      btn.addEventListener('click', function () { goTo(idx); });
+      dotsEl.appendChild(btn);
+    })(i);
+  }
+
+  var dots = Array.from(dotsEl.querySelectorAll('.nav-dot'));
+
+  function render() {
+    slides.forEach(function (s, i) {
+      s.classList.remove('active', 'prev', 'next');
+      if      (i < current)  s.classList.add('prev');
+      else if (i === current) s.classList.add('active');
+      else                   s.classList.add('next');
+    });
+
+    dots.forEach(function (d, i) {
+      d.classList.toggle('active', i === current);
+    });
+
+    counterEl.textContent  = (current + 1) + ' / ' + TOTAL;
+    progressEl.style.width = ((current + 1) / TOTAL * 100) + '%';
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === TOTAL - 1;
+  }
+
+  function goTo(index) {
+    if (index < 0 || index >= TOTAL) return;
+    current = index;
+    render();
+  }
+
+  function advance() { goTo(current + 1); }
+  function retreat() { goTo(current - 1); }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === ' ')  { e.preventDefault(); advance(); }
+    if (e.key === 'ArrowLeft')                    { e.preventDefault(); retreat(); }
+    if (e.key === 'Home')                         { e.preventDefault(); goTo(0); }
+    if (e.key === 'End')                          { e.preventDefault(); goTo(TOTAL - 1); }
+  });
+
+  document.getElementById('deck').addEventListener('click', function (e) {
+    var tag = e.target.tagName.toLowerCase();
+    if (['a', 'button', 'input', 'select', 'textarea'].indexOf(tag) !== -1) return;
+    if (e.target.closest('#nav-bar, .cta-link, .url-chip, .pulse-btn, .action-card-link')) return;
+    advance();
+  });
+
+  var touchStartX = 0;
+  document.addEventListener('touchstart', function (e) {
+    touchStartX = e.changedTouches[0].clientX;
+  }, { passive: true });
+
+  document.addEventListener('touchend', function (e) {
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 48) {
+      if (dx < 0) advance();
+      else        retreat();
+    }
+  });
+
+  btnPrev.addEventListener('click', retreat);
+  btnNext.addEventListener('click', advance);
+
+  render();
+
+}());
+</script>
+</body>
+</html>
