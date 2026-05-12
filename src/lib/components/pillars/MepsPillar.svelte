@@ -33,7 +33,7 @@
     {
       value: '3x',
       label: 'efficiency gap between best and worst',
-      context: 'The best split AC on the market today achieves a CSPF above 8.0, while many markets still allow units below 3.0. Source: CLASP.'
+      context: 'The best split AC on the market today achieves a CSPF above 8.0 Wh/Wh, while many markets still allow units below 3.0 Wh/Wh. Source: CLASP.'
     },
     {
       value: '1,300',

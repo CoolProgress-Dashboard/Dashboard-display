@@ -43,7 +43,7 @@ export const partnerNews: NewsItem[] = [
     source: 'UNEP',
     sourceUrl: 'https://www.unep.org/technical-highlight/cop30-leaders-prioritise-addressing-extreme-heat-through-sustainable-cooling',
     date: 'Nov 2025',
-    summary: 'Over 50 ministers reaffirmed commitments to cut cooling emissions 68% by 2050. 72 countries now signed the Pledge with interim milestones of 18% by 2030.',
+    summary: 'Over 50 ministers reaffirmed commitments to cut cooling emissions 68% by 2050. 72 countries had signed the Pledge as of Nov 2025, with interim milestones of 18% by 2030.',
     category: 'Policy',
     icon: 'fa-earth-americas',
     color: '#8BC34A'
@@ -127,7 +127,7 @@ export const partnerNews: NewsItem[] = [
   }
 ];
 
-export const NEWS_LAST_UPDATED = '2026-02-09';
+export const NEWS_LAST_UPDATED = '2026-05-12';
 
 export const CATEGORY_META: Record<NewsItem['category'], { icon: string; color: string; label: string }> = {
   Policy: { icon: 'fa-landmark', color: '#8BC34A', label: 'Policy Updates' },

@@ -941,7 +941,7 @@
               Climate Policy Radar's database covers NDCs, NCAPs, and national climate legislation across 200+ countries. Use it to go deeper on any country's cooling-related commitments.
             </p>
             <div style="display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center;">
-              <a href="https://app.climatepolicyradar.org/?_gl=1*1orjtq2*_ga*MTk2OTA4ODMwNy4xNzc2MzQ2MzY4*_ga_ZD1WWE49TL*czE3NzYzNDYzNjckbzEkZzAkdDE3NzYzNDYzNjckajYwJGwwJGgw" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.35rem;background:#0369a1;color:#fff;font-size:0.78rem;font-weight:700;padding:0.38rem 0.9rem;border-radius:3px;text-decoration:none;">
+              <a href="https://app.climatepolicyradar.org" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.35rem;background:#0369a1;color:#fff;font-size:0.78rem;font-weight:700;padding:0.38rem 0.9rem;border-radius:3px;text-decoration:none;">
                 <i class="fa-solid fa-magnifying-glass" style="font-size:0.68rem;"></i> Search the Database
               </a>
               <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.3rem;color:#0369a1;font-size:0.78rem;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(3,105,161,0.3);padding-bottom:1px;">
@@ -1065,7 +1065,7 @@
                 The National Cooling Action Plan data shown in the map and charts above is tracked with the help of Climate Policy Radar — a tool that indexes national climate legislation, NDCs, and sectoral action plans across 200+ countries.
               </p>
               <div style="display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center;">
-                <a href="https://app.climatepolicyradar.org/?_gl=1*1orjtq2*_ga*MTk2OTA4ODMwNy4xNzc2MzQ2MzY4*_ga_ZD1WWE49TL*czE3NzYzNDYzNjckbzEkZzAkdDE3NzYzNDYzNjckajYwJGwwJGgw" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.35rem;background:#0369a1;color:#fff;font-size:0.78rem;font-weight:700;padding:0.38rem 0.9rem;border-radius:3px;text-decoration:none;">
+                <a href="https://app.climatepolicyradar.org" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.35rem;background:#0369a1;color:#fff;font-size:0.78rem;font-weight:700;padding:0.38rem 0.9rem;border-radius:3px;text-decoration:none;">
                   <i class="fa-solid fa-magnifying-glass" style="font-size:0.68rem;"></i> Search NCAPs
                 </a>
                 <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.3rem;color:#0369a1;font-size:0.78rem;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(3,105,161,0.3);padding-bottom:1px;">

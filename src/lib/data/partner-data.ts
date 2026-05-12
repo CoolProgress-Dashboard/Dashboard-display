@@ -61,7 +61,7 @@ export const partners: Partner[] = [
     description:
       'UNEP-hosted platform uniting 100+ governments, cities, businesses, and civil society to accelerate the transition to clean, efficient, and accessible cooling.',
     keyContribution:
-      'Manages the Global Cooling Pledge (66 countries, COP28) aiming to reduce cooling-related emissions 68% by 2050 and increase average AC efficiency 50%.',
+      'Manages the Global Cooling Pledge (74 countries) aiming to reduce cooling-related emissions 68% by 2050 and increase average AC efficiency 50%.',
     keyReport: 'Global Cooling Pledge Progress Report 2024',
     keyReportUrl:
       'https://coolcoalition.org/wp-content/uploads/2024/11/2024-Global-Cooling-Pledge-Progress-Report.pdf',

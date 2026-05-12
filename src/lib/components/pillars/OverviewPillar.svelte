@@ -5,7 +5,6 @@
   export let onNavigate: (pillar: string) => void = (pillar) => goto(`/dashboard/${pillar}`);
 
   import FourPillarFramework from '$lib/components/overview/FourPillarFramework.svelte';
-  import CountrySpotlight from '$lib/components/charts/CountrySpotlight.svelte';
   import { partners } from '$lib/data/partner-data';
   import { partnerNews, NEWS_LAST_UPDATED, CATEGORY_META, type NewsItem } from '$lib/data/partner-news';
 
@@ -187,9 +186,6 @@
       </div>
 
     </div><!-- /overview-flow -->
-
-    <!-- CountrySpotlight removed temporarily, to be used later -->
-    <!-- <CountrySpotlight /> -->
 
     <!-- Compact Partner Bar -->
     <div class="partner-bar card-panel">
