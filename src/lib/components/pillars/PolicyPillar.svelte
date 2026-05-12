@@ -982,9 +982,9 @@
               <img src="/images/cpr-logo-dark.png" alt="Climate Policy Radar" style="height:32px;width:auto;object-fit:contain;" />
             </a>
             <div style="flex:1;min-width:0;">
-              <div style="font-size:0.9rem;font-weight:800;color:#0f172a;margin-bottom:0.3rem;letter-spacing:-0.01em;">Find NDCs &amp; NCAPs on Climate Policy Radar</div>
+              <div style="font-size:0.9rem;font-weight:800;color:#0f172a;margin-bottom:0.3rem;letter-spacing:-0.01em;">Explore national climate policies on Climate Policy Radar</div>
               <p style="font-size:0.81rem;color:#334155;line-height:1.65;margin:0 0 0.6rem;">
-                Climate Policy Radar's database contains a range of relevant documents on cooling (e.g. NDCs, national policies). Compare and analyse cooling-related policies across countries.
+                Climate Policy Radar's database covers NDCs, NCAPs, and national climate legislation across 200+ countries. Use it to go deeper on any country's cooling-related commitments.
               </p>
               <div style="display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center;">
                 <a href="https://app.climatepolicyradar.org/?_gl=1*1orjtq2*_ga*MTk2OTA4ODMwNy4xNzc2MzQ2MzY4*_ga_ZD1WWE49TL*czE3NzYzNDYzNjckbzEkZzAkdDE3NzYzNDYzNjckajYwJGwwJGgw" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.35rem;background:#0369a1;color:#fff;font-size:0.78rem;font-weight:700;padding:0.38rem 0.9rem;border-radius:3px;text-decoration:none;">
@@ -1102,7 +1102,28 @@
           });
 
         } else if (mapType === 'NCAP') {
-          container.innerHTML = `
+          const ncapCprBox = `
+            <div style="display:flex;align-items:flex-start;gap:1.25rem;padding:1.1rem 1.4rem;background:#f0f7ff;border-top:3px solid #0369a1;border-bottom:1px solid #bae0ff;margin-bottom:0.5rem;">
+              <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="flex-shrink:0;display:flex;align-items:center;padding-top:2px;">
+                <img src="/images/cpr-logo-dark.png" alt="Climate Policy Radar" style="height:28px;width:auto;object-fit:contain;" />
+              </a>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:0.9rem;font-weight:800;color:#0f172a;margin-bottom:0.3rem;letter-spacing:-0.01em;">NCAP data: Climate Policy Radar</div>
+                <p style="font-size:0.81rem;color:#334155;line-height:1.65;margin:0 0 0.6rem;">
+                  The National Cooling Action Plan data shown in the map and charts above is tracked with the help of Climate Policy Radar — a tool that indexes national climate legislation, NDCs, and sectoral action plans across 200+ countries.
+                </p>
+                <div style="display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center;">
+                  <a href="https://app.climatepolicyradar.org/?_gl=1*1orjtq2*_ga*MTk2OTA4ODMwNy4xNzc2MzQ2MzY4*_ga_ZD1WWE49TL*czE3NzYzNDYzNjckbzEkZzAkdDE3NzYzNDYzNjckajYwJGwwJGgw" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.35rem;background:#0369a1;color:#fff;font-size:0.78rem;font-weight:700;padding:0.38rem 0.9rem;border-radius:3px;text-decoration:none;">
+                    <i class="fa-solid fa-magnifying-glass" style="font-size:0.68rem;"></i> Search NCAPs
+                  </a>
+                  <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.3rem;color:#0369a1;font-size:0.78rem;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(3,105,161,0.3);padding-bottom:1px;">
+                    <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.62rem;"></i> More about Climate Policy Radar
+                  </a>
+                </div>
+              </div>
+            </div>
+          `;
+          container.innerHTML = ncapCprBox + `
             <div class="policy-charts-flat">
               <div class="policy-chart-item">
                 <p class="p-chart-eyebrow">Timeline</p>
@@ -1111,6 +1132,14 @@
                 <div id="chart-ncap-timeline" class="chart-surface" style="width:100%;height:300px;min-height:300px;"></div>
               </div>
               <div class="policy-chart-item">
+                <p class="p-chart-eyebrow">Countries with NCAPs</p>
+                <h3 class="p-chart-title">Countries with National Cooling Action Plans</h3>
+                <p class="p-chart-subtitle">Tracked via Climate Policy Radar · Brazil excluded — NCAP process only recently initiated</p>
+                <div id="ncap-countries-list" style="margin-top:0.5rem;max-height:320px;overflow-y:auto;scrollbar-width:thin;"></div>
+              </div>
+            </div>
+            <div class="policy-charts-flat" style="padding-top:0;">
+              <div class="policy-chart-item" style="grid-column: 1 / -1;">
                 <p class="p-chart-eyebrow">Global North</p>
                 <h3 class="p-chart-title">Equivalent Policies in High-Income Countries</h3>
                 <p class="p-chart-subtitle">High-income countries address cooling through sector-specific regulations rather than dedicated NCAPs</p>
@@ -1140,11 +1169,6 @@
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div class="policy-charts-flat" style="padding-top:0;">
-              <div class="policy-chart-item" style="grid-column: 1 / -1;">
-                ${cprBox}
               </div>
             </div>
           `;
@@ -1384,33 +1408,58 @@
     <div class="chapter-card" class:revealed>
       <span class="ns-eyebrow">Policy Instruments</span>
       <h2 class="ns-title">Understanding National Cooling Policy Instruments</h2>
+
+      <!-- ── Global Cooling Pledge — featured block ── -->
+      <div class="pledge-featured">
+        <div class="pledge-featured-header">
+          <div class="pledge-featured-icon"><i class="fa-solid fa-handshake-angle"></i></div>
+          <div class="pledge-featured-meta">
+            <strong>The Global Cooling Pledge</strong>
+            <div class="pledge-featured-stats">
+              <span><i class="fa-solid fa-flag" style="margin-right:0.35rem;opacity:0.7;"></i>74 countries</span>
+              <span class="pledge-stat-sep">·</span>
+              <span><i class="fa-solid fa-city" style="margin-right:0.35rem;opacity:0.7;"></i>235 subnational governments</span>
+              <span class="pledge-stat-sep">·</span>
+              <span>Launched COP28, December 2023</span>
+            </div>
+          </div>
+        </div>
+        <p class="pledge-featured-body">Launched at COP28 in Dubai, the Global Cooling Pledge is a voluntary commitment by national governments to collectively reduce cooling-related greenhouse gas emissions by at least 68% by 2050 relative to business-as-usual. Signatories commit to a package of 14 interconnected actions spanning five themes:</p>
+        <div class="pledge-themes">
+          <div class="pledge-theme"><i class="fa-solid fa-bolt" style="color:#d97706;"></i><span><strong>Efficiency</strong> — Double the average efficiency of new cooling appliances by 2030 and implement best-in-class MEPS and energy labels.</span></div>
+          <div class="pledge-theme"><i class="fa-solid fa-snowflake" style="color:#0891b2;"></i><span><strong>Refrigerant transition</strong> — Accelerate the shift to low-GWP refrigerants, moving ahead of Kigali Amendment schedules where possible.</span></div>
+          <div class="pledge-theme"><i class="fa-solid fa-leaf" style="color:#2D7D5A;"></i><span><strong>Passive cooling</strong> — Integrate nature-based solutions, building codes, and urban planning to reduce cooling demand at source.</span></div>
+          <div class="pledge-theme"><i class="fa-solid fa-file-contract" style="color:#7c3aed;"></i><span><strong>Policy integration</strong> — Embed cooling in NDCs, NCAPs, and national budgets; support regional harmonisation of standards.</span></div>
+          <div class="pledge-theme"><i class="fa-solid fa-coins" style="color:#b45309;"></i><span><strong>Finance & capacity</strong> — Mobilise public and private finance for sustainable cooling in developing economies; build technician and regulatory capacity.</span></div>
+        </div>
+        <a href="https://coolcoalition.org/global-cooling-pledge/commitments" target="_blank" rel="noopener noreferrer" class="pledge-commitments-link">
+          <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.75rem;"></i>
+          View the full list of 14 commitments on the Cool Coalition website
+        </a>
+      </div>
+
+      <!-- ── Key policy documents ── -->
+      <p class="ns-subhead-label">Key Policy Documents</p>
       <div class="policy-explainer-grid">
         <div class="policy-explainer-card">
           <div class="policy-explainer-icon"><i class="fa-solid fa-file-contract" style="color:#0369a1;"></i></div>
           <div>
             <strong>NDCs (Nationally Determined Contributions)</strong>
-            <p>Under the Paris Agreement, countries submit NDCs outlining their climate targets and actions. Cooling-specific mentions in NDCs signal government recognition of the sector's importance.</p>
-          </div>
-        </div>
-        <div class="policy-explainer-card">
-          <div class="policy-explainer-icon"><i class="fa-solid fa-clipboard-list" style="color:#0369a1;"></i></div>
-          <div>
-            <strong>KIPs (Kigali Implementation Plans)</strong>
-            <p>KIPs are national plans detailing how countries will implement their Kigali Amendment commitments to phase down HFC refrigerants.</p>
+            <p>Under the Paris Agreement, countries submit NDCs outlining their climate targets and actions. Cooling-specific mentions in NDCs signal government recognition of the sector's importance. NDC 3.0s — the current submission round — are a key moment to embed concrete cooling efficiency requirements.</p>
           </div>
         </div>
         <div class="policy-explainer-card">
           <div class="policy-explainer-icon"><i class="fa-solid fa-map" style="color:#0369a1;"></i></div>
           <div>
             <strong>NCAPs (National Cooling Action Plans)</strong>
-            <p>NCAPs are comprehensive national strategies addressing sustainable cooling across sectors — from energy efficiency standards to access for vulnerable populations.</p>
+            <p>NCAPs are comprehensive national strategies addressing sustainable cooling across sectors — from energy efficiency standards and refrigerant management to access for vulnerable populations. They are the primary bridge between high-level pledges and on-the-ground implementation.</p>
           </div>
         </div>
         <div class="policy-explainer-card">
-          <div class="policy-explainer-icon"><i class="fa-solid fa-handshake-angle" style="color:#0369a1;"></i></div>
+          <div class="policy-explainer-icon"><i class="fa-solid fa-clipboard-list" style="color:#0369a1;"></i></div>
           <div>
-            <strong>The Global Cooling Pledge</strong>
-            <p>Launched at COP28, the Global Cooling Pledge commits signatory governments to reduce cooling-related emissions 68% by 2050 and improve appliance efficiency. It currently has 74 signatories.</p>
+            <strong>KIPs (Kigali Implementation Plans)</strong>
+            <p>KIPs are national plans detailing how Article 5 countries will implement their Kigali Amendment commitments to phase down HFC refrigerants, including timelines, financing, and technology transition pathways. Tracked in detail under Pillar 3.</p>
           </div>
         </div>
       </div>
@@ -1433,13 +1482,10 @@
     <div class="chapter-card" class:revealed>
       <span class="ns-eyebrow">Where Things Stand</span>
       <h2 class="ns-title">Cooling Policy: From Pledges to Implementation</h2>
-      <p class="ns-body">The cooling policy landscape is defined by a multi-layered framework where Nationally Determined Contributions (NDCs) serve as the legally binding anchor under the Paris Agreement. The Global Cooling Watch 2025 reports that 134 countries now reference cooling in their national climate strategies, yet only 54 of those countries have enforceable regulations covering the three critical areas of passive cooling, high-efficiency standards (MEPS), and refrigerant transitions.</p>
-      <p class="ns-body">As of 2026, there is an increasing focus on National Cooling Action Plans (NCAPs), with ~25 countries having finalised or initiated these roadmaps to bridge the gap between high-level pledges and ground-level enforcement. Beyond national efforts, the pace of transition is increasingly dictated by regional harmonisation — such as the ASEAN and ECOWAS efficiency standards.</p>
+      <p class="ns-body">The Global Cooling Watch 2025 reports that 134 countries reference cooling in their national climate strategies — a broad signal of awareness. Of those, 74 have gone further by formally signing the Global Cooling Pledge, and 37 of those 74 signatories explicitly include cooling in their NDCs. Yet only 54 countries have enforceable regulations covering the three critical areas: passive cooling, high-efficiency standards (MEPS), and refrigerant transitions.</p>
+      <p class="ns-body">NDC 3.0s — the latest round of updated climate commitments — are currently being submitted. Very few contain specific AC efficiency requirements, exposing a significant gap between political intent and policy depth.</p>
+      <p class="ns-body">As of 2026, ~25 countries have finalised or are developing National Cooling Action Plans (NCAPs) — dedicated roadmaps that bridge high-level pledges and ground-level enforcement. Regional harmonisation efforts, such as ASEAN and ECOWAS efficiency standards, are also accelerating the transition beyond individual national efforts.</p>
       <p class="ns-body">Targeted climate finance from the Montreal Protocol's Multilateral Fund and the Green Climate Fund is helping close the gap between planning and implementation across developing economies.</p>
-      <p class="ns-body" style="font-size:0.88rem;padding:0.7rem 0 0.7rem 1rem;border-left:3px solid #D4A843;color:#334155;background:transparent;">
-        <i class="fa-solid fa-circle-info" style="color:#D4A843;margin-right:0.4rem;"></i>
-        Of the 74 Global Cooling Pledge signatories, 37 explicitly include cooling in their NDCs. NDC 3.0s — the latest round of updated climate commitments — are currently being submitted, but very few contain specific AC efficiency requirements.
-      </p>
       <div class="policy-layers">
         <div class="policy-layer">
           <div class="policy-layer-badge commitment">Commitment</div>
@@ -1570,11 +1616,12 @@
 
       <div class="policy-registry-note">
         <i class="fa-solid fa-circle-info" style="color: #0369a1; margin-right: 0.4rem;"></i>
-        To view a country's full NDC or NCAP document, visit the
-        <a href="https://unfccc.int/NDCREG" target="_blank" rel="noopener noreferrer"><strong>UNFCCC NDC Registry</strong></a>,
-        the <a href="https://www.coolcoalition.org/ncap/" target="_blank" rel="noopener noreferrer"><strong>Cool Coalition NCAP tracker</strong></a>,
-        or search across national climate policies on
+        To view a country's full NDC, visit the
+        <a href="https://unfccc.int/NDCREG" target="_blank" rel="noopener noreferrer"><strong>UNFCCC NDC Registry</strong></a>.
+        NCAPs are tracked with the help of
         <a href="https://app.climatepolicyradar.org" target="_blank" rel="noopener noreferrer"><strong>Climate Policy Radar</strong></a> ↗
+        and can also be found on the
+        <a href="https://www.coolcoalition.org/ncap/" target="_blank" rel="noopener noreferrer"><strong>Cool Coalition NCAP tracker</strong></a>.
       </div>
       <p class="ns-body" style="margin-top:1rem;">Ultimately, the effectiveness of the cooling transition depends on policy coherence — ensuring that NDCs, NCAPs, Kigali Amendment compliance, and the wider Global Cooling Pledge commitments function as a unified system rather than parallel tracks. For full signatory progress against all 14 Global Cooling Pledge commitments, refer to the <a href="https://www.coolcoalition.org/global-cooling-pledge/" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;border-bottom:1px solid rgba(3,105,161,0.3);text-decoration:none;">Global Cooling Pledge progress tracker</a>.</p>
     </div>
@@ -1588,7 +1635,7 @@
       <div class="ns-stat-divider"></div>
       <div class="ns-stat-item">
         <span class="ns-stat-num">134</span>
-        <span class="ns-stat-label">countries reference cooling in their NDCs</span>
+        <span class="ns-stat-label">countries reference cooling in national climate strategies (GCW 2025)</span>
       </div>
       <div class="ns-stat-divider"></div>
       <div class="ns-stat-item">
@@ -1625,7 +1672,7 @@
         </a>
         <a href={globalCoolingPledge.progressReportUrl} target="_blank" rel="noopener noreferrer" class="ns-resource-card">
           <strong>Global Cooling Pledge Progress Report 2025</strong>
-          <p>Accountability document providing overview of how 70+ signatory countries are translating promises into policy.</p>
+          <p>Accountability document providing overview of how 74 signatory countries are translating promises into policy.</p>
         </a>
         <a href="https://www.undp.org/publications/summary-national-cooling-action-plans" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
           <strong>UNDP: Summary of National Cooling Action Plans</strong>
@@ -1723,7 +1770,7 @@
     color: #1e293b;
     line-height: 1.78;
     margin: 0 0 16px;
-    max-width: 900px;
+    max-width: 100%;
   }
 
   /* Stat bar */
@@ -1851,6 +1898,110 @@
     color: #475569;
     line-height: 1.6;
     margin: 0;
+  }
+
+  /* ===========================
+     PLEDGE FEATURED BLOCK
+     =========================== */
+  .pledge-featured {
+    background: #f0f7ff;
+    border: 1px solid #bae0ff;
+    border-left: 4px solid #0369a1;
+    border-radius: 8px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .pledge-featured-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .pledge-featured-icon {
+    font-size: 1.6rem;
+    color: #0369a1;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .pledge-featured-meta strong {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0.3rem;
+  }
+
+  .pledge-featured-stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    color: #0369a1;
+    font-weight: 600;
+  }
+
+  .pledge-stat-sep {
+    color: #93c5fd;
+  }
+
+  .pledge-featured-body {
+    font-size: 0.9rem;
+    color: #1e293b;
+    line-height: 1.7;
+    margin: 0 0 1rem;
+  }
+
+  .pledge-themes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .pledge-theme {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.82rem;
+    color: #334155;
+    line-height: 1.5;
+  }
+
+  .pledge-theme i {
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+    width: 1rem;
+    text-align: center;
+  }
+
+  .pledge-commitments-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #0369a1;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(3,105,161,0.3);
+    padding-bottom: 1px;
+    transition: border-color 0.15s;
+  }
+
+  .pledge-commitments-link:hover {
+    border-color: #0369a1;
+  }
+
+  .ns-subhead-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #64748b;
+    margin: 0 0 0.5rem;
   }
 
   /* ===========================
@@ -2155,5 +2306,8 @@
     .ns-title { font-size: 1.6rem; }
     .ns-resource-grid { grid-template-columns: 1fr; }
     .ns-resource-card { padding: 20px; }
+    .pledge-themes { grid-template-columns: 1fr; }
+    .pledge-featured-stats { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
+    .pledge-stat-sep { display: none; }
   }
 </style>

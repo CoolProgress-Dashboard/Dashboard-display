@@ -182,7 +182,7 @@ export const viewMetaV2: ViewMetaMap = {
 			{
 				name: 'Find NCAPs at Climate Policy Radar',
 				url: 'https://www.climatepolicyradar.org/',
-				logo: '/images/climate-policy-radar-logo.jfif'
+				logo: '/images/cpr-logo-dark.png'
 			},
 			{
 				name: 'SEforALL Cooling for All',

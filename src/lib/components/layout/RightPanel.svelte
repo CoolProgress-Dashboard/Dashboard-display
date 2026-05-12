@@ -7,7 +7,7 @@
     { src: '/images/iea-logo.png', alt: 'IEA', url: 'https://www.iea.org' },
     { src: '/images/giz-logo.png', alt: 'GIZ Proklima', url: 'https://www.green-cooling-initiative.org' },
     { src: '/images/seforall-logo.jpg', alt: 'Sustainable Energy for All', url: 'https://www.seforall.org' },
-    { src: '/images/climate-policy-radar-logo.png', alt: 'Climate Policy Radar', url: 'https://www.climatepolicyradar.org' },
+    { src: '/images/cpr-logo-dark.png', alt: 'Climate Policy Radar', url: 'https://www.climatepolicyradar.org' },
   ];
 </script>
 

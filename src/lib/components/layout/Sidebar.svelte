@@ -90,10 +90,6 @@
       <span class="nav-icon"><i class="fa-solid fa-handshake"></i></span>
       <span>Partner Ecosystem</span>
     </a>
-  </div>
-
-  <!-- Feedback -->
-  <div class="nav-section nav-section-feedback">
     <a
       href="/dashboard/feedback"
       class="nav-btn nav-item nav-item-feedback"
@@ -204,11 +200,6 @@
   }
 
   /* Feedback nav item */
-  .nav-section-feedback {
-    margin-top: auto;
-    padding-top: 0.25rem;
-  }
-
   .nav-item-feedback {
     --nav-color: #1a6b5a;
     --nav-bg: #1a6b5a12;

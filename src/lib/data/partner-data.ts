@@ -215,7 +215,7 @@ export const partners: Partner[] = [
     tagline: 'Open data and AI to map the world\'s climate laws and policies',
     website: 'https://www.climatepolicyradar.org',
     coolingUrl: 'https://app.climatepolicyradar.org/search',
-    logoPath: '/images/climate-policy-radar-logo.png',
+    logoPath: '/images/cpr-logo-dark.png',
     logoPlaceholder: 'climate-policy-radar',
     description:
       'A nonprofit building open databases and AI-powered research tools covering 30,000+ national climate laws, policies, and UNFCCC submissions, enabling data-driven policy analysis.',

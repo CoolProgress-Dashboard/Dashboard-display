@@ -77,7 +77,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
     sources: [
       { name: 'Cool Coalition Pledge', url: 'https://coolcoalition.org/global-cooling-pledge/', logo: '/images/unep.png', logoLarge: true },
       { name: 'CLASP NDC Toolkit', url: 'https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/', logo: '/images/clasp-logo.png' },
-      { name: 'Climate Policy Radar', url: 'https://www.climatepolicyradar.org/', logo: '/images/climate-policy-radar-logo.jfif' }
+      { name: 'Climate Policy Radar', url: 'https://www.climatepolicyradar.org/', logo: '/images/cpr-logo-dark.png' }
     ]
   },
   partners: {
