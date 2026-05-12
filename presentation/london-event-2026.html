@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CoolProgress — London Event · May 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 
@@ -883,6 +884,36 @@ html, body {
 .mb-6  { margin-bottom: 24px; }
 
 /* ============================================================
+   CCC DESIGN LANGUAGE OVERLAY  (Figtree + coral/lime accents)
+   inspired by cleancoolingcollaborative.org
+   ============================================================ */
+:root {
+  --ccc-coral:      #F26949;
+  --ccc-coral-deep: #D52E0D;
+  --ccc-coral-soft: #F68F73;
+  --ccc-lime:       #A8D166;
+  --ccc-forest:     #47966E;
+  --ccc-warm-dark:  #302a2c;
+  --ccc-warm-bg:    #f9f9f9;
+}
+html, body { font-family: 'Figtree', 'IBM Plex Sans', system-ui, sans-serif !important; }
+h1, h2, h3, h4, .light-headline, .dark-headline, .action-card-title { letter-spacing: -1px !important; font-family: 'Figtree', sans-serif !important; }
+p, .body-text, .closing-sub, li, .stat-label, .user-row, .action-card-text { font-weight: 400 !important; font-family: 'Figtree', sans-serif !important; }
+.bullet-list li { font-weight: 500 !important; }
+.section-tag { font-family: 'Figtree', sans-serif !important; letter-spacing: 0.08em !important; }
+.dark-tag { font-family: 'Figtree', sans-serif !important; letter-spacing: 0.1em !important; }
+.slide-light, .col-left, .col-right, .body-text { color: var(--ccc-warm-dark) !important; }
+.slide-light { background: #fff !important; }
+.cta-link, .live-banner a { background: var(--ccc-coral) !important; color: #fff !important; border: none !important; border-radius: 10px !important; transition: transform .2s ease, box-shadow .2s ease, background .2s ease !important; }
+.cta-link:hover, .live-banner a:hover { background: var(--ccc-coral-deep) !important; box-shadow: 0 10px 24px rgba(242,105,73,0.35) !important; }
+.live-banner { background: linear-gradient(90deg, var(--ccc-warm-dark), var(--ccc-coral-deep)) !important; }
+.live-banner .live-dot { background: var(--ccc-lime) !important; box-shadow: 0 0 12px var(--ccc-lime) !important; }
+.partner-chip { background: var(--ccc-warm-bg) !important; color: var(--ccc-warm-dark) !important; border: 1px solid #ddd !important; }
+/* Interstitial part-divider numerals → CCC coral */
+#part-01 .dark-headline + *, #part-02 .dark-headline + *, #part-03 .dark-headline + * { color: rgba(255,255,255,0.85); }
+[id^="part-"] [style*="rgba(139,195,74"] { color: var(--ccc-coral-soft) !important; }
+
+/* ============================================================
    BILLBOARD SCALE OVERRIDES (next-level — bumps all type ~25-40%)
    ============================================================ */
 .dark-headline  { font-size: clamp(56px, 6vw, 92px) !important; line-height: 1.05 !important; font-weight: 800 !important; }
@@ -987,8 +1018,8 @@ html, body {
       <div class="inner" style="max-width:1300px;padding:0 72px;align-items:flex-start;">
         <div class="dark-tag" style="opacity:0.75;">London &middot; May 2026 &middot; Part 1 of 3</div>
         <div style="font-size:clamp(140px,18vw,260px);font-weight:800;color:rgba(139,195,74,0.92);line-height:0.95;letter-spacing:-0.04em;margin:18px 0 6px;">01</div>
-        <h1 class="dark-headline" style="font-size:clamp(40px,5vw,72px);margin-top:0;">Why CoolProgress exists.</h1>
-        <p class="dark-sub" style="font-size:clamp(20px,2vw,28px);margin-top:24px;opacity:0.82;max-width:900px;">The need, the data gap, and the collaboration that closed it &mdash; in five slides.</p>
+        <h1 class="dark-headline" style="font-size:clamp(40px,5vw,72px);margin-top:0;">Part 1. Why this exists.</h1>
+        <p class="dark-sub" style="font-size:clamp(20px,2vw,28px);margin-top:24px;opacity:0.82;max-width:900px;">In five slides: the decisions being made, the gap they hit, and how we closed it.</p>
       </div>
     </div>
   </div>
@@ -997,41 +1028,27 @@ html, body {
        SLIDE 0 — META INTRO · "Why we built it" (light)
        ================================================================ -->
   <div class="slide slide-light next" id="slide-0">
-    <div class="slide-content" style="justify-content:flex-start;">
-      <div style="text-align:center;padding:32px 60px 14px;flex-shrink:0;">
-        <span class="section-tag tag-teal" style="margin-bottom:14px;">Why we built it</span>
-        <h2 class="light-headline" style="font-size:clamp(28px,3vw,46px);max-width:1100px;margin:0 auto 18px;line-height:1.18;">The data that cooling decisions need exists.<br>It just hasn't been in one place.</h2>
-        <div style="display:flex;justify-content:center;gap:48px;flex-wrap:wrap;margin-top:18px;">
-          <div style="text-align:center;">
-            <div style="font-size:clamp(32px,3.6vw,52px);font-weight:800;color:#3D6B6B;line-height:1;">3 B</div>
-            <div style="font-size:12px;color:#64748b;margin-top:6px;letter-spacing:0.02em;">more air conditioners coming this decade</div>
-          </div>
-          <div style="text-align:center;">
-            <div style="font-size:clamp(32px,3.6vw,52px);font-weight:800;color:#3D6B6B;line-height:1;">1.2 B</div>
-            <div style="font-size:12px;color:#64748b;margin-top:6px;letter-spacing:0.02em;">people lack adequate cooling today</div>
-          </div>
-          <div style="text-align:center;">
-            <div style="font-size:clamp(32px,3.6vw,52px);font-weight:800;color:#3D6B6B;line-height:1;">~7 %</div>
-            <div style="font-size:12px;color:#64748b;margin-top:6px;letter-spacing:0.02em;">of global GHG emissions today</div>
-          </div>
+    <div class="slide-content" style="justify-content:center;padding:40px 80px;gap:36px;">
+      <div style="text-align:center;">
+        <span class="section-tag tag-teal" style="margin-bottom:20px;display:inline-block;">Why we built it</span>
+        <h2 class="light-headline" style="font-size:clamp(40px,4.2vw,68px);max-width:1300px;margin:18px auto 0;line-height:1.1;">The cooling decade is being decided <em>now</em> &mdash; without a shared evidence base.</h2>
+      </div>
+      <div style="display:flex;justify-content:center;gap:80px;flex-wrap:wrap;">
+        <div style="text-align:center;">
+          <div style="font-size:clamp(64px,7vw,112px);font-weight:800;color:#3D6B6B;line-height:1;">3 B</div>
+          <div style="font-size:19px;color:#475569;margin-top:10px;font-weight:600;">more ACs coming this decade</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:clamp(64px,7vw,112px);font-weight:800;color:#3D6B6B;line-height:1;">1.2 B</div>
+          <div style="font-size:19px;color:#475569;margin-top:10px;font-weight:600;">people lack adequate cooling</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:clamp(64px,7vw,112px);font-weight:800;color:#3D6B6B;line-height:1;">~7 %</div>
+          <div style="font-size:19px;color:#475569;margin-top:10px;font-weight:600;">of global GHG today</div>
         </div>
       </div>
-      <div class="two-col" style="flex:1;min-height:0;">
-        <div class="col-left" style="background:#fafaf7;">
-          <span class="section-tag tag-purple">The Need</span>
-          <h2 class="light-headline" style="font-size:clamp(19px,1.9vw,28px);margin-bottom:10px;">Decisions are being made now &mdash; without a shared view.</h2>
-          <p class="body-text" style="font-size:14px;line-height:1.6;">Efficiency standards, refrigerant rules, financing strategies for the next decade of cooling are being shaped today &mdash; in ministries, at COPs, in regulators' offices, and on the desks of multilateral financiers.</p>
-          <p class="body-text" style="font-size:14px;line-height:1.6;margin-top:10px;">The evidence those decisions need exists. Until today, it sat scattered across CLASP, SEforALL, UNEP, the IEA, the Ozone Secretariat, and Climate Policy Radar. Nobody could see it together.</p>
-          <p class="body-text" style="font-size:13px;color:#64748b;font-style:italic;margin-top:12px;">Built for ministers, negotiators, regulators, financiers, researchers, and advocates &mdash; anyone whose decisions shape the cooling transition.</p>
-        </div>
-        <div class="col-right" style="background:#f0f7f6;">
-          <span class="section-tag tag-teal">Our Response</span>
-          <h2 class="light-headline" style="font-size:clamp(19px,1.9vw,28px);margin-bottom:10px;">One open-access platform. Five questions. The whole picture.</h2>
-          <p class="body-text" style="font-size:14px;line-height:1.6;"><strong>CoolProgress</strong> brings the data together &mdash; organised around the five questions policymakers actually ask, updated as new evidence comes in, free for anyone to use.</p>
-          <p class="body-text" style="font-size:14px;line-height:1.6;margin-top:10px;"><strong style="color:#3D6B6B;">Orchestrated by HEAT GmbH</strong>, funded by the <strong>Clean Cooling Collaborative</strong>, built together with CLASP &middot; GIZ Proklima &middot; SEforALL &middot; IEA &middot; LBNL &middot; Climate Policy Radar &middot; Ozone Secretariat.</p>
-          <p class="body-text" style="font-size:14px;font-style:italic;color:#3D6B6B;font-weight:600;margin-top:14px;text-align:center;">It's not anyone's dashboard. It's everyone's.</p>
-        </div>
-      </div>
+      <p style="text-align:center;font-size:24px;font-weight:600;color:#3D6B6B;font-style:italic;max-width:1100px;margin:0 auto;line-height:1.4;">Orchestrated by <strong style="font-style:normal;">HEAT GmbH</strong>, funded by <strong style="font-style:normal;">Clean Cooling Collaborative</strong> &mdash; built with CLASP, GIZ Proklima, SEforALL, IEA, LBNL, Climate Policy Radar &amp; the Ozone Secretariat.</p>
+      <p style="text-align:center;font-size:22px;font-weight:700;color:#0d3b4f;margin-top:-12px;">It works because it's a coalition, not a vendor.</p>
     </div>
   </div>
 
@@ -1039,31 +1056,59 @@ html, body {
        SLIDE · WHAT IT ADDRESSES (light) — folds problem + opportunity
        ================================================================ -->
   <div class="slide slide-light next" id="slide-addresses">
-    <div class="slide-content" style="justify-content:flex-start;">
-      <div style="text-align:center;padding:30px 60px 8px;flex-shrink:0;">
-        <span class="section-tag tag-red" style="margin-bottom:12px;">What it addresses</span>
-        <h2 class="light-headline" style="font-size:clamp(26px,2.8vw,42px);max-width:1100px;margin:0 auto 10px;line-height:1.2;">Cooling decisions are being shaped now &mdash; mostly blind.</h2>
-        <p class="body-text" style="font-size:15px;color:#64748b;max-width:780px;margin:0 auto;">The same technology that will save lives and food chains is on track to triple emissions. The choices that decide which it becomes are being made today, in ministries and around negotiating tables &mdash; without a shared evidence base.</p>
+    <div class="slide-content" style="justify-content:center;padding:56px 80px;gap:36px;">
+      <div>
+        <span class="section-tag tag-red" style="margin-bottom:18px;display:inline-block;">How CoolProgress answers it</span>
+        <h2 class="light-headline" style="font-size:clamp(44px,4.4vw,68px);max-width:1500px;margin:14px 0 0;line-height:1.08;">Four data gaps blocked decision-makers.<br>CoolProgress closes each one.</h2>
       </div>
-      <div class="two-col" style="flex:1;min-height:0;">
-        <div class="col-left" style="background:#fff8f7;">
-          <span class="section-tag tag-red">The stakes</span>
-          <div class="stat-block" style="margin-top:14px;">
-            <div class="stat-item"><span class="stat-number red">7&thinsp;%</span><span class="stat-label">of global GHG emissions from cooling today</span></div>
-            <div class="stat-item"><span class="stat-number red">&times;3</span><span class="stat-label">demand projected to triple by 2050</span></div>
-            <div class="stat-item"><span class="stat-number red">0.5&deg;C</span><span class="stat-label">extra warming from HFCs alone if unchecked</span></div>
-            <div class="stat-item"><span class="stat-number red">1.2&thinsp;B</span><span class="stat-label">people lack adequate, safe cooling today</span></div>
+      <div style="display:flex;flex-direction:column;gap:18px;">
+        <!-- Row 1 -->
+        <div style="display:grid;grid-template-columns:1fr 56px 1.6fr;gap:24px;align-items:center;padding:18px 24px;background:#fafaf7;border-radius:12px;border-left:5px solid #F26949;">
+          <div>
+            <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;">The gap</div>
+            <p style="font-size:22px;font-weight:600;color:#302a2c;line-height:1.3;margin-top:4px;">Data scattered across seven institutions.</p>
+          </div>
+          <div style="font-size:36px;color:#F26949;text-align:center;font-weight:300;">&rarr;</div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.1em;text-transform:uppercase;">CoolProgress answer</div>
+            <p style="font-size:24px;font-weight:700;color:#302a2c;line-height:1.25;margin-top:4px;">One harmonised platform, <span style="color:#47966E;">live feeds from CLASP, SEforALL, UNEP, IEA, LBNL, Ozone Sec, Climate Policy Radar</span>.</p>
           </div>
         </div>
-        <div class="col-right" style="background:#f0f7f6;">
-          <span class="section-tag tag-teal">The upside, if done right</span>
-          <ul class="bullet-list bullet-teal" style="margin-top:14px;">
-            <li><strong>Cut cooling emissions by 73%</strong> by 2050 through efficiency, refrigerant transition, and clean grids <em style="font-size:11px;color:#94a3b8;">(UNEP Global Cooling Watch 2025)</em></li>
-            <li><strong>Save 1,300 TWh/year</strong> of electricity through global MEPS harmonisation <em style="font-size:11px;color:#94a3b8;">(CLASP)</em></li>
-            <li><strong>Prevent 0.5&deg;C</strong> of warming this century by phasing down high-GWP refrigerants <em style="font-size:11px;color:#94a3b8;">(UNEP, Kigali Amendment)</em></li>
-            <li><strong>Secure cold chains</strong> for food, medicine, vaccines &mdash; for the most vulnerable</li>
-            <li><strong>Relieve grid stress</strong> and avoid costly new power plants</li>
-          </ul>
+        <!-- Row 2 -->
+        <div style="display:grid;grid-template-columns:1fr 56px 1.6fr;gap:24px;align-items:center;padding:18px 24px;background:#fafaf7;border-radius:12px;border-left:5px solid #F26949;">
+          <div>
+            <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;">The gap</div>
+            <p style="font-size:22px;font-weight:600;color:#302a2c;line-height:1.3;margin-top:4px;">No single view of the questions that matter.</p>
+          </div>
+          <div style="font-size:36px;color:#F26949;text-align:center;font-weight:300;">&rarr;</div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.1em;text-transform:uppercase;">CoolProgress answer</div>
+            <p style="font-size:24px;font-weight:700;color:#302a2c;line-height:1.25;margin-top:4px;"><span style="color:#47966E;">Five pillars</span> &mdash; emissions, efficiency, refrigerants, access, commitments &mdash; for <span style="color:#47966E;">195 countries</span>.</p>
+          </div>
+        </div>
+        <!-- Row 3 -->
+        <div style="display:grid;grid-template-columns:1fr 56px 1.6fr;gap:24px;align-items:center;padding:18px 24px;background:#fafaf7;border-radius:12px;border-left:5px solid #F26949;">
+          <div>
+            <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;">The gap</div>
+            <p style="font-size:22px;font-weight:600;color:#302a2c;line-height:1.3;margin-top:4px;">Decisions outpace the evidence base.</p>
+          </div>
+          <div style="font-size:36px;color:#F26949;text-align:center;font-weight:300;">&rarr;</div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.1em;text-transform:uppercase;">CoolProgress answer</div>
+            <p style="font-size:24px;font-weight:700;color:#302a2c;line-height:1.25;margin-top:4px;"><span style="color:#47966E;">Live updates</span> as new data arrives &mdash; never a static snapshot.</p>
+          </div>
+        </div>
+        <!-- Row 4 -->
+        <div style="display:grid;grid-template-columns:1fr 56px 1.6fr;gap:24px;align-items:center;padding:18px 24px;background:#fafaf7;border-radius:12px;border-left:5px solid #F26949;">
+          <div>
+            <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;">The gap</div>
+            <p style="font-size:22px;font-weight:600;color:#302a2c;line-height:1.3;margin-top:4px;">Built for analysts, not decision-makers.</p>
+          </div>
+          <div style="font-size:36px;color:#F26949;text-align:center;font-weight:300;">&rarr;</div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.1em;text-transform:uppercase;">CoolProgress answer</div>
+            <p style="font-size:24px;font-weight:700;color:#302a2c;line-height:1.25;margin-top:4px;"><span style="color:#47966E;">Open access</span>, narrative-led, country-by-country &mdash; usable by a minister on a phone.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -1076,8 +1121,8 @@ html, body {
     <div class="slide-content">
       <div class="inner" style="max-width:1180px;padding:0 64px;justify-content:center;">
         <span class="section-tag tag-teal">How it does it</span>
-        <h2 class="light-headline" style="font-size:clamp(26px,2.8vw,42px);max-width:1000px;margin-bottom:18px;">Five questions policymakers actually ask. One live answer.</h2>
-        <p class="body-text" style="color:#64748b;max-width:820px;font-size:15px;margin-bottom:28px;">CoolProgress is not "all the data we could find." It is the smallest set of indicators that lets a minister, a negotiator, or a financier decide. Each pillar maps to a single decision question.</p>
+        <h2 class="light-headline" style="font-size:clamp(26px,2.8vw,42px);max-width:1000px;margin-bottom:18px;">We didn't add more data. We curated to five decision-grade questions.</h2>
+        <p class="body-text" style="color:#64748b;max-width:820px;font-size:15px;margin-bottom:28px;">Each pillar maps to one question a minister, negotiator, or financier actually has to answer.</p>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
           <div style="padding:14px 16px;border-left:4px solid #E85A4F;background:rgba(232,90,79,0.05);border-radius:6px;">
             <div style="font-size:11px;font-weight:800;color:#E85A4F;letter-spacing:0.08em;text-transform:uppercase;">01 &middot; Emissions</div>
@@ -1116,7 +1161,7 @@ html, body {
       <div class="inner" style="max-width:1200px;padding:0 56px;justify-content:center;">
         <span class="section-tag tag-teal">The collaboration</span>
         <h2 class="light-headline" style="font-size:clamp(26px,2.8vw,42px);max-width:1050px;margin-bottom:14px;">It's not anyone's dashboard. It's everyone's.</h2>
-        <p class="body-text" style="color:#64748b;max-width:850px;font-size:15px;margin-bottom:24px;">CoolProgress is a coalition product, not a vendor product. Each partner brings the data they own. HEAT GmbH orchestrates &mdash; meaning we hold the platform, harmonise the streams, and make sure the experience stays usable for a non-technical decision-maker.</p>
+        <p class="body-text" style="color:#64748b;max-width:850px;font-size:15px;margin-bottom:24px;">Each partner brings the data they own. HEAT orchestrates &mdash; one platform, one schema, one decision-maker-friendly experience.</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 28px;">
           <div style="display:flex;gap:14px;align-items:flex-start;">
             <span style="display:inline-block;min-width:96px;font-size:10px;font-weight:800;color:#fff;background:#3D6B6B;padding:5px 8px;border-radius:4px;letter-spacing:0.06em;text-align:center;">ORCHESTRATOR</span>
@@ -1162,7 +1207,7 @@ html, body {
     <div class="slide-content">
       <div class="inner" style="max-width:1180px;padding:0 56px;justify-content:center;">
         <span class="section-tag tag-teal">Whom it serves</span>
-        <h2 class="light-headline" style="font-size:clamp(26px,2.8vw,42px);max-width:1050px;margin-bottom:14px;">Built for the people whose decisions shape the cooling transition.</h2>
+        <h2 class="light-headline" style="font-size:clamp(26px,2.8vw,42px);max-width:1050px;margin-bottom:14px;">Built for the people who decide &mdash; not for the analysts who model.</h2>
         <p class="body-text" style="color:#64748b;max-width:820px;font-size:15px;margin-bottom:22px;">Six audiences. Open access. Each gets a different "what they use it for" &mdash; same dataset, different lens.</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;">
           <div style="display:flex;gap:14px;padding:12px 14px;background:#fafaf7;border-radius:8px;border-left:3px solid #7c3aed;">
@@ -1198,37 +1243,49 @@ html, body {
        SLIDE · PROCESS & JOURNEY (light) — 5 milestones
        ================================================================ -->
   <div class="slide slide-light next" id="slide-journey">
-    <div class="slide-content">
-      <div class="inner" style="max-width:1180px;padding:0 56px;justify-content:center;">
-        <span class="section-tag tag-teal">Process &amp; journey</span>
-        <h2 class="light-headline" style="font-size:clamp(26px,2.8vw,42px);max-width:1050px;margin-bottom:14px;">From scoping conversation to today &mdash; in five steps.</h2>
-        <p class="body-text" style="color:#64748b;max-width:820px;font-size:15px;margin-bottom:28px;">CoolProgress was built deliberately, with partners in the room from day one. The fifth milestone is the reason for today's meeting.</p>
-        <div style="display:flex;gap:0;align-items:stretch;position:relative;">
-          <div style="flex:1;padding:14px 14px;background:#fff8f7;border-radius:8px 0 0 8px;border-top:3px solid #E85A4F;">
-            <div style="font-size:10px;font-weight:800;color:#E85A4F;letter-spacing:0.1em;">2024 Q3</div>
-            <p style="font-size:13.5px;font-weight:700;color:#0f172a;margin-top:6px;">Scoping</p>
-            <p style="font-size:11.5px;color:#475569;line-height:1.5;margin-top:4px;">CCC, HEAT, and partner institutions agreed the five-question framework and the open-access principle.</p>
-          </div>
-          <div style="flex:1;padding:14px 14px;background:#fff5e6;border-top:3px solid #D97706;">
-            <div style="font-size:10px;font-weight:800;color:#D97706;letter-spacing:0.1em;">2024 Q4</div>
-            <p style="font-size:13.5px;font-weight:700;color:#0f172a;margin-top:6px;">Data integration</p>
-            <p style="font-size:11.5px;color:#475569;line-height:1.5;margin-top:4px;">Harmonised feeds from CLASP, SEforALL, UNEP, IEA, LBNL, Ozone Secretariat, Climate Policy Radar.</p>
-          </div>
-          <div style="flex:1;padding:14px 14px;background:#eef6fb;border-top:3px solid #0284c7;">
-            <div style="font-size:10px;font-weight:800;color:#0284c7;letter-spacing:0.1em;">2025 Q1</div>
-            <p style="font-size:13.5px;font-weight:700;color:#0f172a;margin-top:6px;">Closed pilot</p>
-            <p style="font-size:11.5px;color:#475569;line-height:1.5;margin-top:4px;">First five pillars released to partner reviewers. Methodology hardened, narrative rewritten.</p>
-          </div>
-          <div style="flex:1;padding:14px 14px;background:#eef9f3;border-top:3px solid #059669;">
-            <div style="font-size:10px;font-weight:800;color:#059669;letter-spacing:0.1em;">2025 Q2</div>
-            <p style="font-size:13.5px;font-weight:700;color:#0f172a;margin-top:6px;">Public launch</p>
-            <p style="font-size:11.5px;color:#475569;line-height:1.5;margin-top:4px;">Open-access release. Live updates as new data arrives. Methodology page published alongside.</p>
-          </div>
-          <div style="flex:1.15;padding:14px 14px;background:#3D6B6B;color:#fff;border-radius:0 8px 8px 0;border-top:3px solid #8BC34A;">
-            <div style="font-size:10px;font-weight:800;color:#8BC34A;letter-spacing:0.1em;">2026 &rarr;</div>
-            <p style="font-size:13.5px;font-weight:700;margin-top:6px;">Phase 2 &mdash; with you</p>
-            <p style="font-size:11.5px;color:#d9e7e2;line-height:1.5;margin-top:4px;"><em>NDC + NCAP refresh, sub-national layers, MEPS depth, ministry partnerships, co-funding. The London room is where phase 2 starts taking shape.</em></p>
-          </div>
+    <div class="slide-content" style="justify-content:center;padding:56px 80px;gap:36px;">
+      <div>
+        <span class="section-tag tag-teal" style="margin-bottom:18px;display:inline-block;">Process &amp; journey</span>
+        <h2 class="light-headline" style="font-size:clamp(46px,4.6vw,72px);max-width:1500px;margin:14px 0 0;line-height:1.08;">Built deliberately.<br>Phase&nbsp;2 starts here.</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1.6fr;gap:18px;align-items:stretch;position:relative;">
+        <!-- connecting line behind cards -->
+        <div style="position:absolute;left:6%;right:6%;top:42px;height:6px;background:linear-gradient(90deg,#F26949,#D97706,#0284c7,#A8D166,#47966E);border-radius:6px;z-index:0;opacity:0.25;"></div>
+
+        <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:16px 4px 0;">
+          <div style="width:84px;height:84px;border-radius:50%;background:#F26949;color:#fff;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;box-shadow:0 8px 18px rgba(242,105,73,0.35);">01</div>
+          <div style="font-size:15px;font-weight:700;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;">2024 Q3</div>
+          <div style="font-size:26px;font-weight:800;color:#302a2c;line-height:1.1;letter-spacing:-0.5px;">Scoping</div>
+          <div style="font-size:16px;color:#475569;font-weight:500;line-height:1.4;">Five-question framework agreed with CCC + partners.</div>
+        </div>
+
+        <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:16px 4px 0;">
+          <div style="width:84px;height:84px;border-radius:50%;background:#D97706;color:#fff;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;box-shadow:0 8px 18px rgba(217,119,6,0.35);">02</div>
+          <div style="font-size:15px;font-weight:700;color:#D97706;letter-spacing:0.1em;text-transform:uppercase;">2024 Q4</div>
+          <div style="font-size:26px;font-weight:800;color:#302a2c;line-height:1.1;letter-spacing:-0.5px;">Data integration</div>
+          <div style="font-size:16px;color:#475569;font-weight:500;line-height:1.4;">Seven institutional feeds harmonised into one schema.</div>
+        </div>
+
+        <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:16px 4px 0;">
+          <div style="width:84px;height:84px;border-radius:50%;background:#0284c7;color:#fff;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;box-shadow:0 8px 18px rgba(2,132,199,0.35);">03</div>
+          <div style="font-size:15px;font-weight:700;color:#0284c7;letter-spacing:0.1em;text-transform:uppercase;">2025 Q1</div>
+          <div style="font-size:26px;font-weight:800;color:#302a2c;line-height:1.1;letter-spacing:-0.5px;">Closed pilot</div>
+          <div style="font-size:16px;color:#475569;font-weight:500;line-height:1.4;">Partner reviewers stress-tested every pillar.</div>
+        </div>
+
+        <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:16px 4px 0;">
+          <div style="width:84px;height:84px;border-radius:50%;background:#47966E;color:#fff;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;box-shadow:0 8px 18px rgba(71,150,110,0.35);">04</div>
+          <div style="font-size:15px;font-weight:700;color:#47966E;letter-spacing:0.1em;text-transform:uppercase;">2025 Q2</div>
+          <div style="font-size:26px;font-weight:800;color:#302a2c;line-height:1.1;letter-spacing:-0.5px;">Public launch</div>
+          <div style="font-size:16px;color:#475569;font-weight:500;line-height:1.4;">Open-access release, live updates, methodology published.</div>
+        </div>
+
+        <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:24px 28px;background:linear-gradient(135deg,#302a2c,#1a6b5a);color:#fff;border-radius:18px;box-shadow:0 16px 36px rgba(48,42,44,0.25);">
+          <div style="width:84px;height:84px;border-radius:50%;background:#A8D166;color:#302a2c;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;box-shadow:0 8px 18px rgba(168,209,102,0.45);">05</div>
+          <div style="font-size:15px;font-weight:800;color:#A8D166;letter-spacing:0.1em;text-transform:uppercase;">2026 &rarr; with you</div>
+          <div style="font-size:30px;font-weight:800;color:#fff;line-height:1.05;letter-spacing:-0.5px;">Phase 2</div>
+          <div style="font-size:16px;color:#e6efe9;font-weight:500;line-height:1.45;">NDC + NCAP refresh &middot; sub-national layers &middot; MEPS depth &middot; ministry partnerships &middot; co-funding.</div>
+          <div style="font-size:14px;color:#A8D166;font-weight:700;font-style:italic;margin-top:auto;">The London room is where it starts.</div>
         </div>
       </div>
     </div>
@@ -1241,8 +1298,8 @@ html, body {
     <div class="slide-content">
       <div class="inner" style="max-width:1020px;align-items:center;text-align:center;">
         <span class="section-tag tag-teal">The Framework</span>
-        <h2 class="light-headline">Five questions. Five pillars. One dashboard.</h2>
-        <p class="body-text" style="color:#64748b;max-width:620px;text-align:center;">We organised CoolProgress around the questions policymakers actually ask, not the data we happened to have.</p>
+        <h2 class="light-headline">Five questions. Five pillars. <em>Now we'll show them live.</em></h2>
+        <p class="body-text" style="color:#64748b;max-width:620px;text-align:center;">We organised around the questions, not the data.</p>
         <ul class="pillar-list">
           <li class="pillar-item">
             <span class="pillar-num" style="color:#E85A4F;">01</span>
@@ -1288,8 +1345,8 @@ html, body {
       <div class="inner" style="max-width:1300px;padding:0 72px;align-items:flex-start;">
         <div class="dark-tag" style="opacity:0.75;">Part 2 of 3 &middot; Live demonstration</div>
         <div style="font-size:clamp(140px,18vw,260px);font-weight:800;color:rgba(139,195,74,0.92);line-height:0.95;letter-spacing:-0.04em;margin:18px 0 6px;">02</div>
-        <h1 class="dark-headline" style="font-size:clamp(40px,5vw,72px);margin-top:0;">A live walk-through of the dashboard.</h1>
-        <p class="dark-sub" style="font-size:clamp(20px,2vw,28px);margin-top:24px;opacity:0.82;max-width:1000px;">Five questions, five pillars, one live tool. We'll go through them on the platform itself &mdash; the next five slides are the speaker's map, the room sees the live site.</p>
+        <h1 class="dark-headline" style="font-size:clamp(40px,5vw,72px);margin-top:0;">Part 2. The five pillars, live.</h1>
+        <p class="dark-sub" style="font-size:clamp(20px,2vw,28px);margin-top:24px;opacity:0.82;max-width:1000px;">Each pillar opens the live tool. The slide is the map; the dashboard is the territory.</p>
         <p class="dark-sub" style="font-size:14px;margin-top:32px;opacity:0.6;letter-spacing:0.05em;">Press <strong>N</strong> on any walk-through slide to toggle speaker notes.</p>
       </div>
     </div>
@@ -1350,7 +1407,7 @@ html, body {
       <div class="pillar-layout">
         <div class="pillar-left" style="--accent-color:#3D6B6B;padding:42px 44px;display:flex;flex-direction:column;justify-content:center;gap:22px;">
           <span class="section-tag tag-teal">03 · Refrigerants</span>
-          <h2 class="light-headline" style="font-size:clamp(32px,3.4vw,52px);line-height:1.15;color:#0f172a;margin:0;">172 countries have ratified Kigali. Full compliance = 0.5 °C of warming avoided.</h2>
+          <h2 class="light-headline" style="font-size:clamp(32px,3.4vw,52px);line-height:1.15;color:#0f172a;margin:0;">172 countries ratified Kigali. Following through is the harder half.</h2>
           <p style="font-size:21px;line-height:1.5;color:#475569;font-weight:500;font-style:italic;border-left:4px solid #3D6B6B;padding-left:18px;margin:0;">The dashboard shows whether ratification turned into follow-through.</p>
           <a class="cta-link cta-teal" href="http://localhost:5173/dashboard/kigali" target="_blank" rel="noopener" style="align-self:flex-start;margin-top:8px;">▶ OPEN LIVE</a>
         </div>
@@ -1400,7 +1457,7 @@ html, body {
       <div class="pillar-layout">
         <div class="pillar-left" style="--accent-color:#7c3aed;padding:42px 44px;display:flex;flex-direction:column;justify-content:center;gap:22px;">
           <span class="section-tag tag-purple">05 · National Plans</span>
-          <h2 class="light-headline" style="font-size:clamp(32px,3.4vw,52px);line-height:1.15;color:#0f172a;margin:0;">74 countries and 235 cities signed the Global Cooling Pledge at COP28.</h2>
+          <h2 class="light-headline" style="font-size:clamp(32px,3.4vw,52px);line-height:1.15;color:#0f172a;margin:0;">74 countries and 235 cities signed the Cooling Pledge. NDC + NCAP coverage is the gap you can close.</h2>
           <p style="font-size:21px;line-height:1.5;color:#475569;font-weight:500;font-style:italic;border-left:4px solid #7c3aed;padding-left:18px;margin:0;">NDC + NCAP coverage is the gap where your contribution lands.</p>
           <a class="cta-link cta-purple" href="http://localhost:5173/dashboard/policy" target="_blank" rel="noopener" style="align-self:flex-start;margin-top:8px;">▶ OPEN LIVE</a>
         </div>
@@ -1430,8 +1487,8 @@ html, body {
       <div class="inner" style="max-width:1300px;padding:0 72px;align-items:flex-start;">
         <div class="dark-tag" style="opacity:0.75;">Part 3 of 3 &middot; Where we'd value your input</div>
         <div style="font-size:clamp(140px,18vw,260px);font-weight:800;color:rgba(139,195,74,0.92);line-height:0.95;letter-spacing:-0.04em;margin:18px 0 6px;">03</div>
-        <h1 class="dark-headline" style="font-size:clamp(40px,5vw,72px);margin-top:0;">Joint ambition. Honest asks.</h1>
-        <p class="dark-sub" style="font-size:clamp(20px,2vw,28px);margin-top:24px;opacity:0.82;max-width:1000px;">Three questions for the room: which pillar earns its keep for your work, what data layer is missing, who wants to co-shape phase 2?</p>
+        <h1 class="dark-headline" style="font-size:clamp(40px,5vw,72px);margin-top:0;">Part 3. What we need from you.</h1>
+        <p class="dark-sub" style="font-size:clamp(20px,2vw,28px);margin-top:24px;opacity:0.82;max-width:1000px;">Three questions decide Phase 2. Sharp answers beat a perfect close.</p>
       </div>
     </div>
   </div>
@@ -1443,8 +1500,8 @@ html, body {
     <div class="slide-content">
       <div class="inner" style="max-width:1180px;padding:0 64px;justify-content:center;">
         <span class="section-tag tag-purple">Where we'd value your input</span>
-        <h2 class="light-headline" style="font-size:clamp(28px,3.2vw,48px);max-width:1080px;margin-bottom:16px;">Three questions for the room.</h2>
-        <p class="body-text" style="color:#64748b;max-width:820px;font-size:15px;margin-bottom:32px;">We'd rather hear three sharp answers than give a perfect close. These are the questions that shape phase 2.</p>
+        <h2 class="light-headline" style="font-size:clamp(28px,3.2vw,48px);max-width:1080px;margin-bottom:16px;">Three questions decide Phase 2.</h2>
+        <p class="body-text" style="color:#64748b;max-width:820px;font-size:15px;margin-bottom:32px;">Sharp answers beat a perfect close. These three shape Phase 2.</p>
         <div style="display:flex;flex-direction:column;gap:18px;">
           <div style="display:flex;gap:22px;align-items:flex-start;padding:18px 22px;background:#faf5ff;border-left:5px solid #7c3aed;border-radius:8px;">
             <div style="font-size:42px;font-weight:800;color:#7c3aed;line-height:1;min-width:54px;">01</div>
@@ -1476,7 +1533,7 @@ html, body {
     <div class="slide-content">
       <div class="inner" style="max-width:1200px;align-items:center;text-align:center;padding:0 48px;">
         <span class="section-tag tag-teal">Join the Journey</span>
-        <h2 class="light-headline">The data is here. The solutions are known.<br>What's missing is urgency.</h2>
+        <h2 class="light-headline">The data is here. The solutions are known. What's missing is urgency &mdash; and you.</h2>
         <p class="closing-sub">CoolProgress is the accountability infrastructure for the global cooling transition. A dashboard only works if the people who need it use it and act on what they find.</p>
         <div class="action-cards">
           <div class="action-card">
@@ -1498,7 +1555,7 @@ html, body {
         <div class="closing-bottom">
           <div style="display:flex;align-items:center;gap:40px;justify-content:center;margin-bottom:10px;">
             <a href="https://dashboard-display.pages.dev/dashboard/overview" target="_blank" rel="noopener">
-              <img src="../qr.png" alt="QR code to CoolProgress dashboard" style="width:110px;height:110px;border-radius:10px;display:block;">
+              <img src="qr.png" alt="QR code to CoolProgress dashboard" style="width:110px;height:110px;border-radius:10px;display:block;">
             </a>
             <div style="text-align:left;">
               <p style="font-size:15px;color:#475569;font-weight:600;margin-bottom:8px;">Explore the dashboard live</p>
