@@ -12,10 +12,8 @@
   import MepsLevelChart from '$lib/components/charts/MepsLevelChart.svelte';
   import MepsByRegionChart from '$lib/components/charts/MepsByRegionChart.svelte';
   import MepsEquipmentChart from '$lib/components/charts/MepsEquipmentChart.svelte';
-  import InverterByRegionChart from '$lib/components/charts/InverterByRegionChart.svelte';
-  import InverterByCountryChart from '$lib/components/charts/InverterByCountryChart.svelte';
   import PeakLoadChart from '$lib/components/charts/PeakLoadChart.svelte';
-  import type { AcInverterRecord, Meps, Country } from '$lib/services/dashboard-types';
+  import type { Meps, Country } from '$lib/services/dashboard-types';
 
   export let active: boolean = false;
   export let onPillarInfoClick: (() => void) | null = null;
@@ -23,47 +21,9 @@
   export let mepsEquipmentData: Array<{ type: string; meps: number; labels: number }> = [];
   export let mepsShowRegionCard: boolean = true;
   export let mepsEquipmentCountryHtml: string = '';
-  export let acInverterShare: AcInverterRecord[] = [];
   // Props providing raw MEPS records and country list for the D3 choropleth maps
   export let mepsData: Meps[] = [];
   export let countries: Country[] = [];
-
-  // Compute inverter share by region (average per region, latest reading per country)
-  $: inverterRegionData = (() => {
-    const latestByCountry = new Map<string, { region: string; pct: number; yearEnd: number }>();
-    acInverterShare.forEach(r => {
-      if (!r.country_code || r.inverter_pct == null) return;
-      const existing = latestByCountry.get(r.country_code);
-      const ye = r.year_end ?? 0;
-      if (!existing || ye > existing.yearEnd) {
-        latestByCountry.set(r.country_code, { region: r.region || 'Unknown', pct: r.inverter_pct, yearEnd: ye });
-      }
-    });
-    const regionMap = new Map<string, { sum: number; count: number }>();
-    latestByCountry.forEach(({ region, pct }) => {
-      if (!regionMap.has(region)) regionMap.set(region, { sum: 0, count: 0 });
-      const e = regionMap.get(region)!;
-      e.sum += pct; e.count++;
-    });
-    return Array.from(regionMap.entries())
-      .map(([name, { sum, count }]) => ({ name, avg: Math.round(sum / count) }))
-      .filter(r => r.name !== 'Unknown')
-      .sort((a, b) => b.avg - a.avg);
-  })();
-
-  // Compute inverter share by country (top 15, latest reading per country)
-  $: inverterCountryData = (() => {
-    const latestByCountry = new Map<string, { name: string; pct: number; yearEnd: number }>();
-    acInverterShare.forEach(r => {
-      if (!r.country_code || r.inverter_pct == null) return;
-      const existing = latestByCountry.get(r.country_code);
-      const ye = r.year_end ?? 0;
-      if (!existing || ye > existing.yearEnd) {
-        latestByCountry.set(r.country_code, { name: r.country_name || r.country_code, pct: r.inverter_pct, yearEnd: ye });
-      }
-    });
-    return Array.from(latestByCountry.values()).sort((a, b) => b.pct - a.pct);
-  })();
 
   const meta = VIEW_META.meps;
   const mepsContent = pillarContent.meps;
@@ -121,18 +81,11 @@
     .filter((p): p is NonNullable<typeof p> => p != null);
 
   let revealed = false;
-  let activeMapView: 'coverage' | 'inverter' = 'coverage';
   let mepsHasCountry = false; // tracks whether a country is selected (for prompt visibility)
 
   // Country sync — exposed after D3 init
   let _applyMepsCountry: ((code: string | null) => void) | null = null;
-  let _initInverterMapLazy: (() => void) | null = null;
-  let _inverterMapReady = false;
   $: { const _c = $page?.url?.searchParams?.get('country') ?? null; if (_applyMepsCountry) _applyMepsCountry(_c); }
-  $: if (activeMapView === 'inverter' && _initInverterMapLazy && !_inverterMapReady) {
-    _inverterMapReady = true;
-    _initInverterMapLazy();
-  }
 
   onMount(() => {
     // Reveal animation timer
@@ -940,105 +893,6 @@
       }
     }
 
-    // ---- AC Inverter Share choropleth D3 map ----
-    async function initInverterMap(d3Lib: any, topojsonLib: any) {
-      const container = document.getElementById('inverter-map-container');
-      if (!container) return;
-
-      const width = container.clientWidth || 800;
-      const height = container.clientHeight || MAP_HEIGHT;
-
-      // Build latest-reading-per-country lookup from the acInverterShare prop
-      const latestByCountry = new Map<string, { pct: number; nonPct: number | null; year: string; confidence: string; name: string; _yearEnd: number }>();
-      acInverterShare.forEach((r: any) => {
-        if (!r.country_code || r.inverter_pct == null) return;
-        const existing = latestByCountry.get(r.country_code);
-        const yearEnd = r.year_end ?? 0;
-        if (!existing || yearEnd > existing._yearEnd) {
-          latestByCountry.set(r.country_code, {
-            pct: r.inverter_pct,
-            nonPct: r.non_inverter_pct ?? null,
-            year: r.year_label || String(r.year_end || ''),
-            confidence: r.confidence || '',
-            name: r.country_name || r.country_code,
-            _yearEnd: yearEnd
-          });
-        }
-      });
-
-      function getInverterColor(pct: number | null): string {
-        if (pct == null) return NO_DATA;
-        if (pct >= 75) return STATUS.ADVANCED;   // forest green
-        if (pct >= 50) return STATUS.GOOD;        // mint
-        if (pct >= 25) return STATUS.DEVELOPING;  // amber
-        return STATUS.NONE;                        // terracotta
-      }
-
-      const svg = d3Lib.select('#inverter-map-container')
-        .append('svg')
-        .attr('width', '100%').attr('height', '100%')
-        .attr('viewBox', `0 0 ${width} ${height}`)
-        .attr('preserveAspectRatio', 'xMidYMid meet');
-
-      const projection = d3Lib.geoNaturalEarth1()
-        .fitSize([width, height], { type: 'Sphere' });
-
-      const path = d3Lib.geoPath().projection(projection);
-
-      try {
-        const world = await d3Lib.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json');
-        const countriesGeo = topojsonLib.feature(world, world.objects.countries);
-        countriesGeo.features = countriesGeo.features.filter((d: any) => d.properties?.name !== 'Antarctica' && countryIdToCode[normalizeId(d.id)] !== 'ATA');
-
-        svg.selectAll('path')
-          .data(countriesGeo.features)
-          .enter()
-          .append('path')
-          .attr('d', path)
-          .attr('fill', (d: any) => {
-            const code = countryIdToCode[normalizeId(d.id)];
-            const info = code ? latestByCountry.get(code) : null;
-            return getInverterColor(info?.pct ?? null);
-          })
-          .attr('stroke', '#fff')
-          .attr('stroke-width', 0.4)
-          .on('mouseover', (event: MouseEvent, d: any) => {
-            const code = countryIdToCode[normalizeId(d.id)];
-            const country = countries.find(c => c.country_code === code);
-            const info = code ? latestByCountry.get(code) : null;
-            let html = `<strong>${country?.country_name || info?.name || code || 'Unknown'}</strong><br>`;
-            if (info) {
-              html += `<span style="color:${STATUS.ADVANCED};font-weight:600">Inverter: ${info.pct.toFixed(1)}%</span>`;
-              if (info.nonPct != null) html += `<br><span style="color:#ddd;font-size:0.85em">Non-inverter: ${info.nonPct.toFixed(1)}%</span>`;
-              if (info.year) html += `<br><span style="font-size:0.8em">Year: ${info.year}</span>`;
-              if (info.confidence) html += `<br><span style="font-size:0.8em">Confidence: ${info.confidence}</span>`;
-            } else {
-              html += `<span style="color:#aaa">No data available</span>`;
-            }
-            if (tooltip) {
-              tooltip.innerHTML = html;
-              (tooltip as any).style.opacity = 1;
-              (tooltip as any).style.left = (event.pageX + 10) + 'px';
-              (tooltip as any).style.top = (event.pageY + 10) + 'px';
-            }
-          })
-          .on('mouseout', () => { if (tooltip) (tooltip as any).style.opacity = 0; });
-
-        // Build inverter legend
-        const legend = document.getElementById('inverter-legend');
-        if (legend) {
-          legend.innerHTML = `
-            <div class="legend-item"><div class="legend-color" style="background:${getInverterColor(90)}"></div>&gt;75% Inverter</div>
-            <div class="legend-item"><div class="legend-color" style="background:${getInverterColor(50)}"></div>~50%</div>
-            <div class="legend-item"><div class="legend-color" style="background:${getInverterColor(15)}"></div>&lt;25% Inverter</div>
-            <div class="legend-item"><div class="legend-color" style="background:${NO_DATA}"></div>No Data</div>
-          `;
-        }
-      } catch (error) {
-        console.error('Inverter map error:', error);
-      }
-    }
-
     // =========================================================
     // ASYNC INIT — load D3, TopoJSON, ECharts then run setup
     // =========================================================
@@ -1066,20 +920,6 @@
           const _code = selectedMepsCountry;
           mepsMapSvg.selectAll('.country-path')
             .classed('country-selected', (pd: any) => countryIdToCode[normalizeId((pd as any).id)] === _code);
-        }
-
-        // Inverter map: lazy-init when user first switches to inverter tab
-        _initInverterMapLazy = async () => {
-          // Wait one animation frame so the container becomes visible before we read its dimensions
-          await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
-          const invContainer = document.getElementById('inverter-map-container');
-          if (invContainer) invContainer.innerHTML = '';
-          await initInverterMap(d3Lib, topojsonLib);
-        };
-        // If inverter tab is already active on mount, init immediately
-        if (activeMapView === 'inverter') {
-          _inverterMapReady = true;
-          await initInverterMap(d3Lib, topojsonLib);
         }
 
         // Initial chart render (global view)
@@ -1132,11 +972,9 @@
       Object.values(charts).forEach((chart: any) => {
         try { chart.dispose(); } catch (_) { /* ignore */ }
       });
-      // Remove map SVGs to avoid duplicate renders on remount
+      // Remove map SVG to avoid duplicate renders on remount
       const mepsContainer = document.getElementById('meps-map-container');
       if (mepsContainer) mepsContainer.innerHTML = '';
-      const inverterContainer = document.getElementById('inverter-map-container');
-      if (inverterContainer) inverterContainer.innerHTML = '';
     };
   });
 </script>
@@ -1340,44 +1178,29 @@
       <h2 class="meps-section-title">Explore the MEPS regulation of your country and region.</h2>
     </div>
 
-    <!-- DATA: MEPS & Inverter Map -->
+    <!-- DATA: MEPS Coverage Map -->
     <div class="card-panel map-card">
       <div class="card-header combined-map-header">
-        <!-- Description highlight box — always on top -->
+        <!-- Description highlight box -->
         <div class="map-view-description">
           <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
-          Choose to see MEPS and levels of Refrigerators, Split ACs and Fans — or the share between variable and fixed speed AC.
+          Choose to see MEPS and label coverage for Refrigerators, Split ACs and Fans.
         </div>
-        <!-- Title + toggle buttons -->
+        <!-- Title -->
         <div class="combined-map-header-top">
           <div class="card-title">
-            {#if activeMapView === 'coverage'}
-              <i class="fa-solid fa-bolt"></i> MEPS &amp; Labels Coverage
-            {:else}
-              <i class="fa-solid fa-snowflake"></i> AC Variable Speed Share
-            {/if}
-          </div>
-          <div class="map-controls-row">
-            <div class="map-view-toggle">
-              <button type="button" class="map-toggle-btn" class:active={activeMapView === 'coverage'} on:click={() => activeMapView = 'coverage'}>
-                <i class="fa-solid fa-bolt"></i> MEPS &amp; Labels
-              </button>
-              <button type="button" class="map-toggle-btn" class:active={activeMapView === 'inverter'} on:click={() => activeMapView = 'inverter'}>
-                <i class="fa-solid fa-snowflake"></i> Variable Speed
-              </button>
-            </div>
+            <i class="fa-solid fa-bolt"></i> MEPS &amp; Labels Coverage
           </div>
         </div>
-        <!-- Equipment toggles — kept in DOM so JS can populate; hidden when inverter view active -->
-        <div class="meps-map-toggles" style:display={activeMapView === 'coverage' ? '' : 'none'}>
+        <!-- Equipment toggles -->
+        <div class="meps-map-toggles">
           <div class="toggle-group" id="meps-equipment-toggles">
             <!-- Populated dynamically by initMepsFilters -->
           </div>
         </div>
       </div>
 
-      <!-- MEPS Coverage map panel -->
-      <div style:display={activeMapView === 'coverage' ? 'block' : 'none'}>
+      <div>
         <div id="meps-map-container" class="map-surface"></div>
         <div class="legend legend-row">
           <span class="legend-label">Policy Status:</span>
@@ -1390,15 +1213,6 @@
           <span class="progress-segment" id="meps-progress-critical" title="No Policies" style="background:#e5e7eb"></span>
         </div>
       </div>
-
-      <!-- Inverter map panel -->
-      <div style:display={activeMapView === 'inverter' ? 'block' : 'none'} style="padding-top: 1.5rem;">
-        <div id="inverter-map-container" class="map-surface"></div>
-        <div class="legend legend-row">
-          <span class="legend-label">Inverter Share:</span>
-          <div id="inverter-legend" class="legend-items"></div>
-        </div>
-      </div>
     </div>
 
     <!-- Country Detail (populated when clicking a country on the map) -->
@@ -1406,35 +1220,12 @@
       <div class="country-detail"></div>
     </div>
 
-    <!-- Charts Grid — switches with the map toggle -->
-    {#if activeMapView === 'coverage'}
-      <div class="meps-country-select-prompt" id="meps-select-prompt" style:display={mepsHasCountry ? 'none' : 'flex'}>
-        <i class="fa-solid fa-earth-americas meps-csp-icon"></i>
-        <strong class="meps-csp-heading">Select a country on the map above</strong>
-        <span class="meps-csp-sub">Explore its MEPS status and energy efficiency policy details</span>
-      </div>
-    {:else}
-      <div class="meps-charts-section charts-section">
-        <div class="inverter-chart-flat">
-          <div class="chart-card-header">
-            <h3><i class="fa-solid fa-snowflake" style="color: #0369a1; margin-right: 0.5rem;"></i>Inverter Share by Region</h3>
-            <p class="chart-subtitle">Average share of variable-speed (inverter) ACs per region</p>
-          </div>
-          <div class="chart-card-body">
-            <InverterByRegionChart data={inverterRegionData} />
-          </div>
-        </div>
-        <div class="inverter-chart-flat">
-          <div class="chart-card-header">
-            <h3><i class="fa-solid fa-ranking-star" style="color: #0369a1; margin-right: 0.5rem;"></i>Top Countries — Inverter Penetration</h3>
-            <p class="chart-subtitle">Countries with highest variable-speed AC market share (latest data)</p>
-          </div>
-          <div class="chart-card-body">
-            <InverterByCountryChart data={inverterCountryData} />
-          </div>
-        </div>
-      </div>
-    {/if}
+    <!-- Country select prompt -->
+    <div class="meps-country-select-prompt" id="meps-select-prompt" style:display={mepsHasCountry ? 'none' : 'flex'}>
+      <i class="fa-solid fa-earth-americas meps-csp-icon"></i>
+      <strong class="meps-csp-heading">Select a country on the map above</strong>
+      <span class="meps-csp-sub">Explore its MEPS status and energy efficiency policy details</span>
+    </div>
 
     <!-- DATA: MEPS Stringency Chart -->
     <div class="meps-level-wrapper">
@@ -2069,20 +1860,6 @@
     overflow: hidden;
   }
 
-  .meps-charts-section .inverter-chart-flat + .inverter-chart-flat {
-    margin-top: 1.25rem;
-    border-top: 1px solid #f1f5f9;
-    padding-top: 1.25rem;
-  }
-
-  /* Inside the white charts section, individual chart blocks are flat (no nested card) */
-  .meps-charts-section .inverter-chart-flat {
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-  }
-
   .card-subtitle-text {
     font-size: 0.75rem;
     color: #64748b;
@@ -2436,68 +2213,9 @@
     border-left: 3px solid #0369a1;
   }
 
-  /* Map view toggle buttons */
-  .map-view-toggle {
-    display: flex;
-    gap: 0.35rem;
-    flex-shrink: 0;
-  }
-
-  .map-toggle-btn {
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 0.3rem 0.75rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    background: #f8fafc;
-    color: #64748b;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s, border-color 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    white-space: nowrap;
-  }
-
-  .map-toggle-btn.active {
-    background: #0369a1;
-    color: #fff;
-    border-color: #0369a1;
-  }
-
-  .map-toggle-btn:hover:not(.active) {
-    background: #f1f5f9;
-    color: #0369a1;
-    border-color: #cbd5e1;
-  }
-
-  /* ===========================
-     MAP HEIGHTS — each map gets its own explicit height so they appear
-     visually balanced despite different amounts of surrounding content.
-     A taller SVG viewBox = smaller-appearing countries (more white space around them).
-     MEPS coverage (many colored countries → appears large) → taller container (520px) to reduce visual weight.
-     Inverter/Variable Speed (sparse data) → shorter container (380px) to increase visual weight.
-     Both heights must stay in sync with MEPS_MAP_HEIGHT / INVERTER_MAP_HEIGHT in JS.
-     =========================== */
+  /* MAP HEIGHT */
   #meps-map-container {
     height: 480px;
-  }
-
-  #inverter-map-container {
-    height: 450px;
-  }
-
-  /* ===========================
-     INVERTER / COVERAGE CHART FLAT WRAPPER
-     Replaces the card-panel wrapper for inverter AND coverage tab charts
-     so they sit directly on the section background without a box-in-box effect.
-     =========================== */
-  .inverter-chart-flat {
-    background: transparent;
-    border: none;
-    border-top: 1px solid rgba(0,0,0,0.06);
-    border-radius: 0;
-    overflow: hidden;
   }
 
   /* Peak Load chart wrapper — clean divider, no card-panel box */
