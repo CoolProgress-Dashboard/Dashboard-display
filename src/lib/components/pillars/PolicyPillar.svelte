@@ -156,7 +156,7 @@
       }
 
       // ── Filter state ─────────────────────────────────────────────────────
-      let ndcType = 'NDC 2.0';
+      let ndcType = 'Other';
       let ndcCategory = 'Energy Efficiency';
       let policyMapType = 'gcp';
       let selectedRegion = '';
@@ -661,7 +661,7 @@
           types.forEach((type: string) => {
             const option = document.createElement('option');
             option.value = type;
-            option.textContent = type === 'Other' ? 'Previous NDC' : type === 'NDC 2.0' ? 'Previous NDC (NDC 2.0)' : type;
+            option.textContent = type === 'Other' ? 'Previous NDC' : type;
             if (type === ndcType) option.selected = true;
             typeSelect.appendChild(option);
           });
@@ -1103,23 +1103,21 @@
 
         } else if (mapType === 'NCAP') {
           const ncapCprBox = `
-            <div style="display:flex;align-items:flex-start;gap:1.25rem;padding:1.1rem 1.4rem;background:#f0f7ff;border-top:3px solid #0369a1;border-bottom:1px solid #bae0ff;margin-bottom:0.5rem;">
-              <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="flex-shrink:0;display:flex;align-items:center;padding-top:2px;">
-                <img src="/images/cpr-logo-dark.png" alt="Climate Policy Radar" style="height:28px;width:auto;object-fit:contain;" />
+            <div style="padding:1.1rem 1.4rem;background:#f0f7ff;border-top:3px solid #0369a1;border-bottom:1px solid #bae0ff;margin-bottom:0.5rem;">
+              <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-bottom:0.65rem;">
+                <img src="/images/cpr-logo-dark.png" alt="Climate Policy Radar" style="height:22px;width:auto;object-fit:contain;" />
               </a>
-              <div style="flex:1;min-width:0;">
-                <div style="font-size:0.9rem;font-weight:800;color:#0f172a;margin-bottom:0.3rem;letter-spacing:-0.01em;">NCAP data: Climate Policy Radar</div>
-                <p style="font-size:0.81rem;color:#334155;line-height:1.65;margin:0 0 0.6rem;">
-                  The National Cooling Action Plan data shown in the map and charts above is tracked with the help of Climate Policy Radar — a tool that indexes national climate legislation, NDCs, and sectoral action plans across 200+ countries.
-                </p>
-                <div style="display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center;">
-                  <a href="https://app.climatepolicyradar.org/?_gl=1*1orjtq2*_ga*MTk2OTA4ODMwNy4xNzc2MzQ2MzY4*_ga_ZD1WWE49TL*czE3NzYzNDYzNjckbzEkZzAkdDE3NzYzNDYzNjckajYwJGwwJGgw" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.35rem;background:#0369a1;color:#fff;font-size:0.78rem;font-weight:700;padding:0.38rem 0.9rem;border-radius:3px;text-decoration:none;">
-                    <i class="fa-solid fa-magnifying-glass" style="font-size:0.68rem;"></i> Search NCAPs
-                  </a>
-                  <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.3rem;color:#0369a1;font-size:0.78rem;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(3,105,161,0.3);padding-bottom:1px;">
-                    <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.62rem;"></i> More about Climate Policy Radar
-                  </a>
-                </div>
+              <div style="font-size:0.9rem;font-weight:800;color:#0f172a;margin-bottom:0.3rem;letter-spacing:-0.01em;">NCAP data: Climate Policy Radar</div>
+              <p style="font-size:0.81rem;color:#334155;line-height:1.65;margin:0 0 0.6rem;">
+                The National Cooling Action Plan data shown in the map and charts above is tracked with the help of Climate Policy Radar — a tool that indexes national climate legislation, NDCs, and sectoral action plans across 200+ countries.
+              </p>
+              <div style="display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center;">
+                <a href="https://app.climatepolicyradar.org/?_gl=1*1orjtq2*_ga*MTk2OTA4ODMwNy4xNzc2MzQ2MzY4*_ga_ZD1WWE49TL*czE3NzYzNDYzNjckbzEkZzAkdDE3NzYzNDYzNjckajYwJGwwJGgw" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.35rem;background:#0369a1;color:#fff;font-size:0.78rem;font-weight:700;padding:0.38rem 0.9rem;border-radius:3px;text-decoration:none;">
+                  <i class="fa-solid fa-magnifying-glass" style="font-size:0.68rem;"></i> Search NCAPs
+                </a>
+                <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.3rem;color:#0369a1;font-size:0.78rem;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(3,105,161,0.3);padding-bottom:1px;">
+                  <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.62rem;"></i> More about Climate Policy Radar
+                </a>
               </div>
             </div>
           `;
