@@ -6,6 +6,7 @@
 <title>CoolProgress — London Event · May 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,18..36,400;1,18..36,500;1,18..36,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 
@@ -883,6 +884,25 @@ html, body {
 .mb-6  { margin-bottom: 24px; }
 
 /* ============================================================
+   EDITORIAL DESIGN SYSTEM  (claude.ai design — Pentagram-style)
+   Warm cream bg + Newsreader serif italic accents + slide header bar
+   ============================================================ */
+.slide.slide-light { background: #FAF7F2 !important; }
+.serif-accent { font-family: 'Newsreader', 'Times New Roman', serif !important; font-style: italic !important; font-weight: 500 !important; letter-spacing: -0.01em !important; }
+.slide-toprail {
+  position: absolute; top: 28px; left: 64px; right: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+  z-index: 5;
+}
+.slide-toprail .eyebrow-rail { display: flex; align-items: center; gap: 14px; color: #F26949; }
+.slide-toprail .eyebrow-rail::before { content: ''; display: inline-block; width: 38px; height: 2px; background: #F26949; }
+.slide-toprail .slide-counter-rail { color: #7C7370; font-weight: 600; }
+.editorial-grid hr,
+.editorial-grid .hr-rule { border: none; border-top: 1px solid rgba(48,42,44,0.15); margin: 0; }
+.editorial-numeral { font-family: 'Figtree', sans-serif; font-size: clamp(48px, 5vw, 76px); font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
+
+/* ============================================================
    CCC DESIGN LANGUAGE OVERLAY  (Figtree + coral/lime accents)
    inspired by cleancoolingcollaborative.org
    ============================================================ */
@@ -1027,27 +1047,33 @@ p, .body-text, .closing-sub, li, .stat-label, .user-row, .action-card-text { fon
        SLIDE 0 — META INTRO · "Why we built it" (light)
        ================================================================ -->
   <div class="slide slide-light next" id="slide-0">
-    <div class="slide-content" style="justify-content:center;padding:40px 80px;gap:36px;">
-      <div style="text-align:center;">
-        <span class="section-tag tag-teal" style="margin-bottom:20px;display:inline-block;">Why we built it</span>
-        <h2 class="light-headline" style="font-size:clamp(40px,4.2vw,68px);max-width:1300px;margin:18px auto 0;line-height:1.1;">The cooling decade is being decided <em>now</em> &mdash; without a shared evidence base.</h2>
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">Why we built it</span>
+      <span class="slide-counter-rail">Slide 02 / 14</span>
+    </div>
+    <div class="slide-content" style="justify-content:center;padding:96px 80px 60px;gap:48px;">
+      <h2 class="light-headline" style="font-size:clamp(56px,6vw,108px);max-width:1700px;margin:0;line-height:1.04;letter-spacing:-1.5px;color:#302a2c;">The cooling decade is being decided <span class="serif-accent">now</span> &mdash; without a shared evidence base.</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid rgba(48,42,44,0.15);border-bottom:1px solid rgba(48,42,44,0.15);padding:36px 0;">
+        <div style="padding:0 32px 0 0;border-right:1px solid rgba(48,42,44,0.15);">
+          <div style="font-family:'Figtree',sans-serif;font-size:clamp(80px,8vw,128px);font-weight:800;line-height:0.95;letter-spacing:-0.05em;color:#302a2c;"><span style="color:#F26949;">3</span>B</div>
+          <p style="font-size:21px;color:#302a2c;margin-top:20px;font-weight:500;line-height:1.3;max-width:380px;">More air conditioners coming this decade</p>
+          <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:#7C7370;margin-top:14px;">IEA &middot; Future of Cooling</div>
+        </div>
+        <div style="padding:0 32px;border-right:1px solid rgba(48,42,44,0.15);">
+          <div style="font-family:'Figtree',sans-serif;font-size:clamp(80px,8vw,128px);font-weight:800;line-height:0.95;letter-spacing:-0.05em;color:#302a2c;"><span style="color:#F26949;">1.2</span>B</div>
+          <p style="font-size:21px;color:#302a2c;margin-top:20px;font-weight:500;line-height:1.3;max-width:380px;">People still lack adequate cooling today</p>
+          <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:#7C7370;margin-top:14px;">SEforALL &middot; Chilling Prospects</div>
+        </div>
+        <div style="padding:0 0 0 32px;">
+          <div style="font-family:'Figtree',sans-serif;font-size:clamp(80px,8vw,128px);font-weight:800;line-height:0.95;letter-spacing:-0.05em;color:#302a2c;"><span style="color:#F26949;">~7</span>%</div>
+          <p style="font-size:21px;color:#302a2c;margin-top:20px;font-weight:500;line-height:1.3;max-width:380px;">Of global greenhouse-gas emissions today</p>
+          <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:#7C7370;margin-top:14px;">UNEP &middot; Cool Coalition</div>
+        </div>
       </div>
-      <div style="display:flex;justify-content:center;gap:80px;flex-wrap:wrap;">
-        <div style="text-align:center;">
-          <div style="font-size:clamp(64px,7vw,112px);font-weight:800;color:#3D6B6B;line-height:1;">3 B</div>
-          <div style="font-size:19px;color:#475569;margin-top:10px;font-weight:600;">more ACs coming this decade</div>
-        </div>
-        <div style="text-align:center;">
-          <div style="font-size:clamp(64px,7vw,112px);font-weight:800;color:#3D6B6B;line-height:1;">1.2 B</div>
-          <div style="font-size:19px;color:#475569;margin-top:10px;font-weight:600;">people lack adequate cooling</div>
-        </div>
-        <div style="text-align:center;">
-          <div style="font-size:clamp(64px,7vw,112px);font-weight:800;color:#3D6B6B;line-height:1;">~7 %</div>
-          <div style="font-size:19px;color:#475569;margin-top:10px;font-weight:600;">of global GHG today</div>
-        </div>
+      <div>
+        <p style="font-size:20px;color:#302a2c;line-height:1.5;max-width:1500px;margin:0;font-weight:400;">Orchestrated by <strong>HEAT GmbH</strong>, funded by <strong>Clean Cooling Collaborative</strong> &mdash; built with CLASP, GIZ Proklima, SEforALL, UNEP, IEA, LBNL, Climate Policy Radar &amp; the Ozone Secretariat.</p>
+        <p class="serif-accent" style="font-size:28px;color:#F26949;margin-top:12px;line-height:1.3;">It works because it's a coalition, not a vendor.</p>
       </div>
-      <p style="text-align:center;font-size:24px;font-weight:600;color:#3D6B6B;font-style:italic;max-width:1100px;margin:0 auto;line-height:1.4;">Orchestrated by <strong style="font-style:normal;">HEAT GmbH</strong>, funded by <strong style="font-style:normal;">Clean Cooling Collaborative</strong> &mdash; built with CLASP, GIZ Proklima, SEforALL, IEA, LBNL, Climate Policy Radar &amp; the Ozone Secretariat.</p>
-      <p style="text-align:center;font-size:22px;font-weight:700;color:#0d3b4f;margin-top:-12px;">It works because it's a coalition, not a vendor.</p>
     </div>
   </div>
 
@@ -1055,58 +1081,59 @@ p, .body-text, .closing-sub, li, .stat-label, .user-row, .action-card-text { fon
        SLIDE · WHAT IT ADDRESSES (light) — folds problem + opportunity
        ================================================================ -->
   <div class="slide slide-light next" id="slide-addresses">
-    <div class="slide-content" style="justify-content:center;padding:56px 80px;gap:36px;">
-      <div>
-        <span class="section-tag tag-red" style="margin-bottom:18px;display:inline-block;">How CoolProgress answers it</span>
-        <h2 class="light-headline" style="font-size:clamp(44px,4.4vw,68px);max-width:1500px;margin:14px 0 0;line-height:1.08;">Four data gaps blocked decision-makers.<br>CoolProgress closes each one.</h2>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:18px;">
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">How CoolProgress answers it</span>
+      <span class="slide-counter-rail">Slide 03 / 14</span>
+    </div>
+    <div class="slide-content" style="justify-content:center;padding:96px 80px 48px;gap:32px;">
+      <h2 class="light-headline" style="font-size:clamp(48px,5vw,84px);max-width:1700px;margin:0;line-height:1.05;letter-spacing:-1.2px;color:#302a2c;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:18px;text-decoration-color:rgba(48,42,44,0.6);">Four data gaps blocked decision-makers. CoolProgress closes each one.</h2>
+      <div class="editorial-grid" style="display:flex;flex-direction:column;gap:0;">
         <!-- Row 1 -->
-        <div style="display:grid;grid-template-columns:1fr 56px 1.6fr;gap:24px;align-items:center;padding:18px 24px;background:#fafaf7;border-radius:12px;border-left:5px solid #F26949;">
+        <div style="display:grid;grid-template-columns:64px 1fr 1.5fr;gap:36px;align-items:start;padding:24px 0;border-bottom:1px solid rgba(48,42,44,0.15);">
+          <div class="editorial-numeral" style="color:#F26949;">01</div>
           <div>
-            <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;">The gap</div>
-            <p style="font-size:22px;font-weight:600;color:#302a2c;line-height:1.3;margin-top:4px;">Data scattered across eight institutions.</p>
+            <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;">The gap</div>
+            <p style="font-size:26px;font-weight:500;color:#302a2c;line-height:1.25;margin:0;letter-spacing:-0.3px;">Data scattered across eight institutions.</p>
           </div>
-          <div style="font-size:36px;color:#F26949;text-align:center;font-weight:300;">&rarr;</div>
           <div>
-            <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.1em;text-transform:uppercase;">CoolProgress answer</div>
-            <p style="font-size:24px;font-weight:700;color:#302a2c;line-height:1.25;margin-top:4px;">One harmonised platform, <span style="color:#47966E;">live feeds from CLASP, GIZ Proklima, SEforALL, UNEP, IEA, LBNL, Ozone Sec, Climate Policy Radar</span>.</p>
+            <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;">CoolProgress answer</div>
+            <p style="font-size:26px;font-weight:500;color:#302a2c;line-height:1.25;margin:0;letter-spacing:-0.3px;">One harmonised platform &mdash; <strong style="color:#47966E;font-weight:700;">live feeds from CLASP, GIZ Proklima, SEforALL, UNEP, IEA, LBNL, Ozone Sec, Climate Policy Radar</strong>.</p>
           </div>
         </div>
         <!-- Row 2 -->
-        <div style="display:grid;grid-template-columns:1fr 56px 1.6fr;gap:24px;align-items:center;padding:18px 24px;background:#fafaf7;border-radius:12px;border-left:5px solid #F26949;">
+        <div style="display:grid;grid-template-columns:64px 1fr 1.5fr;gap:36px;align-items:start;padding:24px 0;border-bottom:1px solid rgba(48,42,44,0.15);">
+          <div class="editorial-numeral" style="color:#F26949;">02</div>
           <div>
-            <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;">The gap</div>
-            <p style="font-size:22px;font-weight:600;color:#302a2c;line-height:1.3;margin-top:4px;">No single view of the questions that matter.</p>
+            <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;">The gap</div>
+            <p style="font-size:26px;font-weight:500;color:#302a2c;line-height:1.25;margin:0;letter-spacing:-0.3px;">No single view of the questions that matter.</p>
           </div>
-          <div style="font-size:36px;color:#F26949;text-align:center;font-weight:300;">&rarr;</div>
           <div>
-            <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.1em;text-transform:uppercase;">CoolProgress answer</div>
-            <p style="font-size:24px;font-weight:700;color:#302a2c;line-height:1.25;margin-top:4px;"><span style="color:#47966E;">Five pillars</span> &mdash; emissions, efficiency, refrigerants, access, commitments &mdash; for <span style="color:#47966E;">195 countries</span>.</p>
+            <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;">CoolProgress answer</div>
+            <p style="font-size:26px;font-weight:500;color:#302a2c;line-height:1.25;margin:0;letter-spacing:-0.3px;"><strong style="color:#47966E;font-weight:700;">Five pillars</strong> &mdash; emissions, efficiency, refrigerants, access, commitments &mdash; for <strong style="color:#47966E;font-weight:700;">195 countries</strong>.</p>
           </div>
         </div>
         <!-- Row 3 -->
-        <div style="display:grid;grid-template-columns:1fr 56px 1.6fr;gap:24px;align-items:center;padding:18px 24px;background:#fafaf7;border-radius:12px;border-left:5px solid #F26949;">
+        <div style="display:grid;grid-template-columns:64px 1fr 1.5fr;gap:36px;align-items:start;padding:24px 0;border-bottom:1px solid rgba(48,42,44,0.15);">
+          <div class="editorial-numeral" style="color:#F26949;">03</div>
           <div>
-            <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;">The gap</div>
-            <p style="font-size:22px;font-weight:600;color:#302a2c;line-height:1.3;margin-top:4px;">Decisions outpace the evidence base.</p>
+            <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;">The gap</div>
+            <p style="font-size:26px;font-weight:500;color:#302a2c;line-height:1.25;margin:0;letter-spacing:-0.3px;">Decisions outpace the evidence base.</p>
           </div>
-          <div style="font-size:36px;color:#F26949;text-align:center;font-weight:300;">&rarr;</div>
           <div>
-            <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.1em;text-transform:uppercase;">CoolProgress answer</div>
-            <p style="font-size:24px;font-weight:700;color:#302a2c;line-height:1.25;margin-top:4px;"><span style="color:#47966E;">Live updates</span> as new data arrives &mdash; never a static snapshot.</p>
+            <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;">CoolProgress answer</div>
+            <p style="font-size:26px;font-weight:500;color:#302a2c;line-height:1.25;margin:0;letter-spacing:-0.3px;"><strong style="color:#47966E;font-weight:700;">Live updates</strong> as new data arrives &mdash; never a static snapshot.</p>
           </div>
         </div>
         <!-- Row 4 -->
-        <div style="display:grid;grid-template-columns:1fr 56px 1.6fr;gap:24px;align-items:center;padding:18px 24px;background:#fafaf7;border-radius:12px;border-left:5px solid #F26949;">
+        <div style="display:grid;grid-template-columns:64px 1fr 1.5fr;gap:36px;align-items:start;padding:24px 0;">
+          <div class="editorial-numeral" style="color:#F26949;">04</div>
           <div>
-            <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;">The gap</div>
-            <p style="font-size:22px;font-weight:600;color:#302a2c;line-height:1.3;margin-top:4px;">Built for analysts, not decision-makers.</p>
+            <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;">The gap</div>
+            <p style="font-size:26px;font-weight:500;color:#302a2c;line-height:1.25;margin:0;letter-spacing:-0.3px;">Built for analysts, not decision-makers.</p>
           </div>
-          <div style="font-size:36px;color:#F26949;text-align:center;font-weight:300;">&rarr;</div>
           <div>
-            <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.1em;text-transform:uppercase;">CoolProgress answer</div>
-            <p style="font-size:24px;font-weight:700;color:#302a2c;line-height:1.25;margin-top:4px;"><span style="color:#47966E;">Open access</span>, narrative-led, country-by-country &mdash; decision-maker-ready.</p>
+            <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;">CoolProgress answer</div>
+            <p style="font-size:26px;font-weight:500;color:#302a2c;line-height:1.25;margin:0;letter-spacing:-0.3px;"><strong style="color:#47966E;font-weight:700;">Open access</strong>, narrative-led, country-by-country &mdash; usable by a minister on a phone.</p>
           </div>
         </div>
       </div>
@@ -1156,54 +1183,65 @@ p, .body-text, .closing-sub, li, .stat-label, .user-row, .action-card-text { fon
        SLIDE · THE COLLABORATION (light) — partners + HEAT orchestration
        ================================================================ -->
   <div class="slide slide-light next" id="slide-collab">
-    <div class="slide-content" style="justify-content:center;padding:44px 80px;gap:24px;">
-      <div>
-        <span class="section-tag tag-teal" style="margin-bottom:14px;display:inline-block;">The collaboration</span>
-        <h2 class="light-headline" style="font-size:clamp(40px,4.2vw,64px);max-width:1500px;margin:8px 0 0;line-height:1.08;">It's not anyone's dashboard. It's everyone's.</h2>
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">The collaboration</span>
+      <span class="slide-counter-rail">Slide 05 / 14</span>
+    </div>
+    <div class="slide-content" style="justify-content:flex-start;padding:96px 80px 48px;gap:36px;">
+      <h2 class="light-headline" style="font-size:clamp(56px,5.6vw,96px);max-width:1700px;margin:0;line-height:1.05;letter-spacing:-1.3px;color:#302a2c;">It's not anyone's dashboard. <span class="serif-accent" style="font-weight:600;">It's everyone's.</span></h2>
+      <div style="border-top:1px solid rgba(48,42,44,0.2);display:grid;grid-template-columns:1fr 1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:0;flex:1;min-height:0;">
+        <!-- Row 1 -->
+        <div style="padding:28px 28px 28px 0;border-right:1px solid rgba(48,42,44,0.15);border-bottom:1px solid rgba(48,42,44,0.15);position:relative;">
+          <div style="position:absolute;top:0;left:0;width:36px;height:4px;background:#3D6B6B;"></div>
+          <div style="font-size:13px;font-weight:800;color:#3D6B6B;letter-spacing:0.14em;text-transform:uppercase;margin-top:18px;">Orchestrator</div>
+          <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.1;">HEAT GmbH</p>
+          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:14px;font-weight:400;">Platform, data integration, design, narrative architecture.</p>
+        </div>
+        <div style="padding:28px 28px 28px 28px;border-right:1px solid rgba(48,42,44,0.15);border-bottom:1px solid rgba(48,42,44,0.15);position:relative;">
+          <div style="position:absolute;top:0;left:28px;width:36px;height:4px;background:#F26949;"></div>
+          <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.14em;text-transform:uppercase;margin-top:18px;">Funder</div>
+          <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.1;">Clean Cooling Collaborative</p>
+          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:14px;font-weight:400;">ClimateWorks &middot; strategic framing &amp; funding for phases 1 and 2.</p>
+        </div>
+        <div style="padding:28px 28px 28px 28px;border-right:1px solid rgba(48,42,44,0.15);border-bottom:1px solid rgba(48,42,44,0.15);position:relative;">
+          <div style="position:absolute;top:0;left:28px;width:36px;height:4px;background:#D97706;"></div>
+          <div style="font-size:13px;font-weight:800;color:#D97706;letter-spacing:0.14em;text-transform:uppercase;margin-top:18px;">Efficiency</div>
+          <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.1;">CLASP</p>
+          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:14px;font-weight:400;">MEPS, energy labels, NDC Appliance Toolkit, inverter market intelligence.</p>
+        </div>
+        <div style="padding:28px 0 28px 28px;border-bottom:1px solid rgba(48,42,44,0.15);position:relative;">
+          <div style="position:absolute;top:0;left:28px;width:36px;height:4px;background:#0284c7;"></div>
+          <div style="font-size:13px;font-weight:800;color:#0284c7;letter-spacing:0.14em;text-transform:uppercase;margin-top:18px;">Refrigerants</div>
+          <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.1;">GIZ Proklima &middot; Ozone Secretariat</p>
+          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:14px;font-weight:400;">Kigali ratification, A5 timelines, refrigerant-bank data.</p>
+        </div>
+        <!-- Row 2 -->
+        <div style="padding:28px 28px 28px 0;border-right:1px solid rgba(48,42,44,0.15);position:relative;">
+          <div style="position:absolute;top:0;left:0;width:36px;height:4px;background:#47966E;"></div>
+          <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.14em;text-transform:uppercase;margin-top:18px;">Access</div>
+          <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.1;">SEforALL</p>
+          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:14px;font-weight:400;">Chilling Prospects access &amp; vulnerability data, country-level cooling-gap mapping.</p>
+        </div>
+        <div style="padding:28px 28px 28px 28px;border-right:1px solid rgba(48,42,44,0.15);position:relative;">
+          <div style="position:absolute;top:0;left:28px;width:36px;height:4px;background:#7C7370;"></div>
+          <div style="font-size:13px;font-weight:800;color:#7C7370;letter-spacing:0.14em;text-transform:uppercase;margin-top:18px;">Scenarios</div>
+          <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.1;">IEA &middot; LBNL</p>
+          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:14px;font-weight:400;">Cooling demand projections, efficiency scenarios, end-use disaggregation.</p>
+        </div>
+        <div style="padding:28px 28px 28px 28px;border-right:1px solid rgba(48,42,44,0.15);position:relative;">
+          <div style="position:absolute;top:0;left:28px;width:36px;height:4px;background:#7c3aed;"></div>
+          <div style="font-size:13px;font-weight:800;color:#7c3aed;letter-spacing:0.14em;text-transform:uppercase;margin-top:18px;">Policy</div>
+          <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.1;">Climate Policy Radar</p>
+          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:14px;font-weight:400;">National Cooling Action Plans, NDC excerpts, policy-text tracking.</p>
+        </div>
+        <div style="padding:28px;background:#302a2c;color:#fff;position:relative;margin:-1px -1px -1px 0;">
+          <div style="position:absolute;top:0;left:28px;width:36px;height:4px;background:#A8D166;"></div>
+          <div style="font-size:13px;font-weight:800;color:#A8D166;letter-spacing:0.14em;text-transform:uppercase;margin-top:18px;">+ You</div>
+          <p style="font-size:26px;font-weight:800;color:#fff;margin-top:14px;letter-spacing:-0.4px;line-height:1.1;">Phase 2 partners</p>
+          <p class="serif-accent" style="font-size:15px;color:#d9e7e2;line-height:1.45;margin-top:14px;font-weight:500;">Data contributors, ministry partners, additional funders. That's what today is about.</p>
+        </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;flex:1;min-height:0;">
-        <div style="display:flex;flex-direction:column;padding:20px 22px;background:#fafaf7;border-radius:12px;border-top:5px solid #3D6B6B;">
-          <div style="font-size:13px;font-weight:800;color:#3D6B6B;letter-spacing:0.1em;text-transform:uppercase;">Orchestrator</div>
-          <p style="font-size:21px;font-weight:800;color:#302a2c;margin-top:6px;letter-spacing:-0.3px;line-height:1.1;">HEAT GmbH</p>
-          <p style="font-size:14px;color:#475569;line-height:1.45;margin-top:8px;font-weight:500;">Platform, data integration, design, narrative architecture.</p>
-        </div>
-        <div style="display:flex;flex-direction:column;padding:20px 22px;background:#fafaf7;border-radius:12px;border-top:5px solid #F26949;">
-          <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;">Funder</div>
-          <p style="font-size:21px;font-weight:800;color:#302a2c;margin-top:6px;letter-spacing:-0.3px;line-height:1.1;">Clean Cooling Collaborative</p>
-          <p style="font-size:14px;color:#475569;line-height:1.45;margin-top:8px;font-weight:500;">ClimateWorks &middot; strategic framing + funding for phases 1 and 2.</p>
-        </div>
-        <div style="display:flex;flex-direction:column;padding:20px 22px;background:#fafaf7;border-radius:12px;border-top:5px solid #D97706;">
-          <div style="font-size:13px;font-weight:800;color:#D97706;letter-spacing:0.1em;text-transform:uppercase;">Efficiency</div>
-          <p style="font-size:21px;font-weight:800;color:#302a2c;margin-top:6px;letter-spacing:-0.3px;line-height:1.1;">CLASP</p>
-          <p style="font-size:14px;color:#475569;line-height:1.45;margin-top:8px;font-weight:500;">MEPS, energy labels, NDC Appliance Toolkit, inverter market intelligence.</p>
-        </div>
-        <div style="display:flex;flex-direction:column;padding:20px 22px;background:#fafaf7;border-radius:12px;border-top:5px solid #0284c7;">
-          <div style="font-size:13px;font-weight:800;color:#0284c7;letter-spacing:0.1em;text-transform:uppercase;">Refrigerants</div>
-          <p style="font-size:21px;font-weight:800;color:#302a2c;margin-top:6px;letter-spacing:-0.3px;line-height:1.1;">GIZ Proklima &middot; Ozone Secretariat</p>
-          <p style="font-size:14px;color:#475569;line-height:1.45;margin-top:8px;font-weight:500;">Kigali ratification, A5 timelines, refrigerant-bank data.</p>
-        </div>
-        <div style="display:flex;flex-direction:column;padding:20px 22px;background:#fafaf7;border-radius:12px;border-top:5px solid #47966E;">
-          <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.1em;text-transform:uppercase;">Access</div>
-          <p style="font-size:21px;font-weight:800;color:#302a2c;margin-top:6px;letter-spacing:-0.3px;line-height:1.1;">SEforALL</p>
-          <p style="font-size:14px;color:#475569;line-height:1.45;margin-top:8px;font-weight:500;">Chilling Prospects access and vulnerability data, country-level cooling-gap mapping.</p>
-        </div>
-        <div style="display:flex;flex-direction:column;padding:20px 22px;background:#fafaf7;border-radius:12px;border-top:5px solid #475569;">
-          <div style="font-size:13px;font-weight:800;color:#475569;letter-spacing:0.1em;text-transform:uppercase;">Scenarios</div>
-          <p style="font-size:21px;font-weight:800;color:#302a2c;margin-top:6px;letter-spacing:-0.3px;line-height:1.1;">IEA &middot; LBNL</p>
-          <p style="font-size:14px;color:#475569;line-height:1.45;margin-top:8px;font-weight:500;">Cooling demand projections, efficiency scenarios, end-use disaggregation.</p>
-        </div>
-        <div style="display:flex;flex-direction:column;padding:20px 22px;background:#fafaf7;border-radius:12px;border-top:5px solid #7c3aed;">
-          <div style="font-size:13px;font-weight:800;color:#7c3aed;letter-spacing:0.1em;text-transform:uppercase;">Policy</div>
-          <p style="font-size:21px;font-weight:800;color:#302a2c;margin-top:6px;letter-spacing:-0.3px;line-height:1.1;">Climate Policy Radar</p>
-          <p style="font-size:14px;color:#475569;line-height:1.45;margin-top:8px;font-weight:500;">National Cooling Action Plans, NDC excerpts, policy-text tracking.</p>
-        </div>
-        <div style="display:flex;flex-direction:column;padding:20px 22px;background:linear-gradient(135deg,#302a2c,#1a6b5a);color:#fff;border-radius:12px;border-top:5px solid #A8D166;">
-          <div style="font-size:13px;font-weight:800;color:#A8D166;letter-spacing:0.1em;text-transform:uppercase;">+ You</div>
-          <p style="font-size:21px;font-weight:800;color:#fff;margin-top:6px;letter-spacing:-0.3px;line-height:1.1;">Phase 2 partners</p>
-          <p style="font-size:14px;color:#e6efe9;line-height:1.45;margin-top:8px;font-weight:500;font-style:italic;">Data contributors, ministry partners, additional funders. That's what today is about.</p>
-        </div>
-      </div>
-      <p style="text-align:center;font-size:16px;color:#475569;font-style:italic;margin:0;">Each partner brings the data they own. HEAT orchestrates &mdash; one platform, one schema, one decision-maker-friendly experience.</p>
+      <p class="serif-accent" style="text-align:center;font-size:20px;color:#7C7370;margin:0;">Each partner brings the data they own. HEAT orchestrates &mdash; one platform, one schema, one decision-maker-friendly experience.</p>
     </div>
   </div>
 
@@ -1211,56 +1249,45 @@ p, .body-text, .closing-sub, li, .stat-label, .user-row, .action-card-text { fon
        SLIDE · WHOM IT SERVES (light) — personas
        ================================================================ -->
   <div class="slide slide-light next" id="slide-whom">
-    <div class="slide-content" style="justify-content:center;padding:48px 80px;gap:30px;">
-      <div>
-        <span class="section-tag tag-teal" style="margin-bottom:18px;display:inline-block;">Whom it serves</span>
-        <h2 class="light-headline" style="font-size:clamp(42px,4.2vw,68px);max-width:1500px;margin:14px 0 0;line-height:1.08;">Built for the people who decide &mdash;<br>not the analysts who model.</h2>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;flex:1;min-height:0;">
-        <div style="display:flex;flex-direction:column;justify-content:space-between;padding:26px 28px;background:#fafaf7;border-radius:14px;border-top:5px solid #7c3aed;">
-          <div>
-            <div style="font-size:15px;font-weight:800;color:#7c3aed;letter-spacing:0.1em;text-transform:uppercase;">01</div>
-            <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:8px;letter-spacing:-0.4px;line-height:1.15;">Ministers &amp; policy makers</p>
-          </div>
-          <p style="font-size:17px;color:#475569;line-height:1.45;margin:14px 0 0;font-weight:500;">Benchmark countries. Brief the Cabinet. Align NDCs and NCAPs.</p>
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">Whom it serves</span>
+      <span class="slide-counter-rail">Slide 06 / 14</span>
+    </div>
+    <div class="slide-content" style="justify-content:flex-start;padding:96px 80px 48px;gap:36px;">
+      <h2 class="light-headline" style="font-size:clamp(56px,5.6vw,96px);max-width:1700px;margin:0;line-height:1.05;letter-spacing:-1.3px;color:#302a2c;">Built for the people who <span class="serif-accent" style="font-weight:600;">decide</span> &mdash; not the analysts who model.</h2>
+      <div style="border-top:1px solid rgba(48,42,44,0.2);display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:0;flex:1;min-height:0;">
+        <div style="padding:28px 32px 28px 0;border-right:1px solid rgba(48,42,44,0.15);border-bottom:1px solid rgba(48,42,44,0.15);">
+          <div class="editorial-numeral" style="color:#7c3aed;">01</div>
+          <p style="font-size:30px;font-weight:800;color:#302a2c;margin-top:18px;letter-spacing:-0.5px;line-height:1.1;">Ministers &amp; policy makers</p>
+          <p style="font-size:17px;color:#302a2c;line-height:1.5;margin:18px 0 0;font-weight:400;">Benchmark countries. Brief the Cabinet. Align NDCs and NCAPs.</p>
         </div>
-        <div style="display:flex;flex-direction:column;justify-content:space-between;padding:26px 28px;background:#fafaf7;border-radius:14px;border-top:5px solid #0284c7;">
-          <div>
-            <div style="font-size:15px;font-weight:800;color:#0284c7;letter-spacing:0.1em;text-transform:uppercase;">02</div>
-            <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:8px;letter-spacing:-0.4px;line-height:1.15;">Negotiators</p>
-          </div>
-          <p style="font-size:17px;color:#475569;line-height:1.45;margin:14px 0 0;font-weight:500;">Prepare for COPs and MOPs. Source-cite Kigali, the Cooling Pledge, NDC status in real time.</p>
+        <div style="padding:28px 32px;border-right:1px solid rgba(48,42,44,0.15);border-bottom:1px solid rgba(48,42,44,0.15);">
+          <div class="editorial-numeral" style="color:#0284c7;">02</div>
+          <p style="font-size:30px;font-weight:800;color:#302a2c;margin-top:18px;letter-spacing:-0.5px;line-height:1.1;">Negotiators</p>
+          <p style="font-size:17px;color:#302a2c;line-height:1.5;margin:18px 0 0;font-weight:400;">Prepare for COPs and MOPs. Source-cite Kigali, the Cooling Pledge, NDC status in real time.</p>
         </div>
-        <div style="display:flex;flex-direction:column;justify-content:space-between;padding:26px 28px;background:#fafaf7;border-radius:14px;border-top:5px solid #D97706;">
-          <div>
-            <div style="font-size:15px;font-weight:800;color:#D97706;letter-spacing:0.1em;text-transform:uppercase;">03</div>
-            <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:8px;letter-spacing:-0.4px;line-height:1.15;">Regulators</p>
-          </div>
-          <p style="font-size:17px;color:#475569;line-height:1.45;margin:14px 0 0;font-weight:500;">Set or update MEPS and labels. See what comparable economies did, and when.</p>
+        <div style="padding:28px 0 28px 32px;border-bottom:1px solid rgba(48,42,44,0.15);">
+          <div class="editorial-numeral" style="color:#D97706;">03</div>
+          <p style="font-size:30px;font-weight:800;color:#302a2c;margin-top:18px;letter-spacing:-0.5px;line-height:1.1;">Regulators</p>
+          <p style="font-size:17px;color:#302a2c;line-height:1.5;margin:18px 0 0;font-weight:400;">Set or update MEPS and labels. See what comparable economies did, and when.</p>
         </div>
-        <div style="display:flex;flex-direction:column;justify-content:space-between;padding:26px 28px;background:#fafaf7;border-radius:14px;border-top:5px solid #47966E;">
-          <div>
-            <div style="font-size:15px;font-weight:800;color:#47966E;letter-spacing:0.1em;text-transform:uppercase;">04</div>
-            <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:8px;letter-spacing:-0.4px;line-height:1.15;">Financiers &amp; MDBs</p>
-          </div>
-          <p style="font-size:17px;color:#475569;line-height:1.45;margin:14px 0 0;font-weight:500;">Identify markets where standards + refrigerant transition open new finance windows.</p>
+        <div style="padding:28px 32px 28px 0;border-right:1px solid rgba(48,42,44,0.15);">
+          <div class="editorial-numeral" style="color:#47966E;">04</div>
+          <p style="font-size:30px;font-weight:800;color:#302a2c;margin-top:18px;letter-spacing:-0.5px;line-height:1.1;">Financiers &amp; MDBs</p>
+          <p style="font-size:17px;color:#302a2c;line-height:1.5;margin:18px 0 0;font-weight:400;">Identify markets where standards + refrigerant transition open new finance windows.</p>
         </div>
-        <div style="display:flex;flex-direction:column;justify-content:space-between;padding:26px 28px;background:#fafaf7;border-radius:14px;border-top:5px solid #F26949;">
-          <div>
-            <div style="font-size:15px;font-weight:800;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;">05</div>
-            <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:8px;letter-spacing:-0.4px;line-height:1.15;">Researchers</p>
-          </div>
-          <p style="font-size:17px;color:#475569;line-height:1.45;margin:14px 0 0;font-weight:500;">Track sector-level climate progress on one harmonised baseline.</p>
+        <div style="padding:28px 32px;border-right:1px solid rgba(48,42,44,0.15);">
+          <div class="editorial-numeral" style="color:#F26949;">05</div>
+          <p style="font-size:30px;font-weight:800;color:#302a2c;margin-top:18px;letter-spacing:-0.5px;line-height:1.1;">Researchers</p>
+          <p style="font-size:17px;color:#302a2c;line-height:1.5;margin:18px 0 0;font-weight:400;">Track sector-level climate progress on one harmonised baseline.</p>
         </div>
-        <div style="display:flex;flex-direction:column;justify-content:space-between;padding:26px 28px;background:#fafaf7;border-radius:14px;border-top:5px solid #475569;">
-          <div>
-            <div style="font-size:15px;font-weight:800;color:#475569;letter-spacing:0.1em;text-transform:uppercase;">06</div>
-            <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:8px;letter-spacing:-0.4px;line-height:1.15;">Advocates &amp; civil society</p>
-          </div>
-          <p style="font-size:17px;color:#475569;line-height:1.45;margin:14px 0 0;font-weight:500;">Make the case for stronger standards with numbers from authoritative sources.</p>
+        <div style="padding:28px 0 28px 32px;">
+          <div class="editorial-numeral" style="color:#7C7370;">06</div>
+          <p style="font-size:30px;font-weight:800;color:#302a2c;margin-top:18px;letter-spacing:-0.5px;line-height:1.1;">Advocates &amp; civil society</p>
+          <p style="font-size:17px;color:#302a2c;line-height:1.5;margin:18px 0 0;font-weight:400;">Make the case for stronger standards with numbers from authoritative sources.</p>
         </div>
       </div>
-      <p style="text-align:center;font-size:18px;color:#475569;font-style:italic;margin:0;">Same data. Six lenses. Open access &mdash; no role gatekeeps another.</p>
+      <p class="serif-accent" style="text-align:center;font-size:22px;color:#7C7370;margin:0;">Same data. Six lenses. Open access &mdash; no role gatekeeps another.</p>
     </div>
   </div>
 
