@@ -904,6 +904,91 @@ html, body {
 .mb-4  { margin-bottom: 16px; }
 .mb-6  { margin-bottom: 24px; }
 
+/* ============================================================
+   BILLBOARD SCALE OVERRIDES (next-level — bumps all type ~25-40%)
+   ============================================================ */
+.dark-headline  { font-size: clamp(48px, 5.4vw, 80px) !important; line-height: 1.08 !important; }
+.dark-sub       { font-size: clamp(22px, 2.1vw, 30px) !important; line-height: 1.4 !important; }
+.dark-tag       { font-size: 16px !important; letter-spacing: 0.14em !important; padding: 8px 18px !important; }
+.light-headline { font-size: clamp(32px, 3.4vw, 54px) !important; line-height: 1.18 !important; }
+.body-text      { font-size: 18px !important; line-height: 1.62 !important; }
+.section-tag    { font-size: 13px !important; padding: 7px 14px !important; letter-spacing: 0.1em !important; font-weight: 800 !important; }
+.bullet-list li { font-size: 17.5px !important; line-height: 1.55 !important; padding: 6px 0 6px 22px !important; }
+.bullet-list li::before { font-size: 18px !important; top: 7px !important; }
+.stat-number    { font-size: clamp(42px, 4.4vw, 62px) !important; line-height: 1 !important; font-weight: 800 !important; }
+.stat-label     { font-size: 15px !important; line-height: 1.4 !important; }
+.partner-chip   { font-size: 14px !important; padding: 8px 18px !important; }
+.pillar-num     { font-size: 28px !important; }
+.pillar-question { font-size: 19px !important; line-height: 1.4 !important; }
+.pillar-tag-chip { font-size: 12px !important; padding: 4px 11px !important; }
+.cta-link       { font-size: 18px !important; padding: 14px 26px !important; font-weight: 700 !important; border-radius: 12px !important; box-shadow: 0 6px 18px rgba(13,59,79,0.12) !important; }
+.cta-link:hover { transform: translateY(-2px); transition: transform 0.2s ease; }
+.action-card-title { font-size: 26px !important; }
+.action-card-text  { font-size: 15.5px !important; line-height: 1.55 !important; }
+.action-card-category { font-size: 12.5px !important; letter-spacing: 0.08em !important; }
+.action-card-link { font-size: 15px !important; }
+.closing-sub { font-size: 19px !important; line-height: 1.5 !important; }
+.closing-tagline { font-size: 17px !important; }
+.closing-footer { font-size: 13px !important; }
+.tool-card-title { font-size: 16px !important; letter-spacing: 0.08em !important; }
+.user-row { font-size: 15.5px !important; line-height: 1.5 !important; }
+.tool-card-footer { font-size: 13.5px !important; line-height: 1.5 !important; }
+
+/* Walk-through pillar slides — iframe embed + OPEN LIVE banner */
+.live-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, #0d3b4f, #1a6b5a);
+  color: #fff;
+  padding: 14px 24px;
+  margin: -28px -36px 18px;
+  border-radius: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.live-banner .live-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #62D32F;
+  margin-right: 10px;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+.live-banner a {
+  background: #62D32F;
+  color: #0d3b4f;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.live-banner a:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(98,211,47,0.4); }
+.dashboard-iframe-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #e2e8f0;
+  background: #fafbfc;
+  box-shadow: 0 12px 32px rgba(13,59,79,0.12);
+}
+.dashboard-iframe-wrap iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
 </style>
 </head>
 <body>
@@ -1248,29 +1333,14 @@ html, body {
           </ul>
           <a class="cta-link cta-red" href="http://localhost:5173/dashboard/emissions" target="_blank" rel="noopener">▶ OPEN LIVE · localhost:5173/dashboard/emissions</a>
         </div>
-        <div class="pillar-right" style="padding:28px 36px;">
-          <svg viewBox="0 0 480 316" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:'IBM Plex Sans',sans-serif;">
-            <text x="52" y="14" font-size="10.5" font-weight="700" fill="#334155">Global Cooling Appliance Emissions (Mt CO₂e) · 2025–2050</text>
-            <line x1="52" y1="24" x2="468" y2="24" stroke="#e2e8f0" stroke-width="0.8"/><line x1="52" y1="85" x2="468" y2="85" stroke="#e2e8f0" stroke-width="0.8"/><line x1="52" y1="146" x2="468" y2="146" stroke="#e2e8f0" stroke-width="0.8"/><line x1="52" y1="207" x2="468" y2="207" stroke="#e2e8f0" stroke-width="0.8"/><line x1="52" y1="268" x2="468" y2="268" stroke="#e2e8f0" stroke-width="0.8"/>
-            <text x="48" y="27" font-size="9" fill="#94a3b8" text-anchor="end">4k</text><text x="48" y="88" font-size="9" fill="#94a3b8" text-anchor="end">3k</text><text x="48" y="149" font-size="9" fill="#94a3b8" text-anchor="end">2k</text><text x="48" y="210" font-size="9" fill="#94a3b8" text-anchor="end">1k</text><text x="48" y="271" font-size="9" fill="#94a3b8" text-anchor="end">0</text>
-            <!-- 2025: AC h=85 Ref h=30 Fan h=9 -->
-            <rect x="62" y="183" width="50" height="85" fill="#1a6b5a" rx="0"/><rect x="62" y="153" width="50" height="30" fill="#4a90d9" rx="0"/><rect x="62" y="144" width="50" height="9" fill="#D97706" rx="2"/>
-            <!-- 2030: AC h=102 Ref h=33 Fan h=11 -->
-            <rect x="131" y="166" width="50" height="102" fill="#1a6b5a" rx="0"/><rect x="131" y="133" width="50" height="33" fill="#4a90d9" rx="0"/><rect x="131" y="122" width="50" height="11" fill="#D97706" rx="2"/>
-            <!-- 2035: AC h=117 Ref h=37 Fan h=12 -->
-            <rect x="200" y="151" width="50" height="117" fill="#1a6b5a" rx="0"/><rect x="200" y="114" width="50" height="37" fill="#4a90d9" rx="0"/><rect x="200" y="102" width="50" height="12" fill="#D97706" rx="2"/>
-            <!-- 2040: AC h=131 Ref h=39 Fan h=13 -->
-            <rect x="269" y="137" width="50" height="131" fill="#1a6b5a" rx="0"/><rect x="269" y="98" width="50" height="39" fill="#4a90d9" rx="0"/><rect x="269" y="85" width="50" height="13" fill="#D97706" rx="2"/>
-            <!-- 2045: AC h=153 Ref h=41 Fan h=13 -->
-            <rect x="338" y="115" width="50" height="153" fill="#1a6b5a" rx="0"/><rect x="338" y="74" width="50" height="41" fill="#4a90d9" rx="0"/><rect x="338" y="61" width="50" height="13" fill="#D97706" rx="2"/>
-            <!-- 2050: AC h=173 Ref h=43 Fan h=14 -->
-            <rect x="407" y="95" width="50" height="173" fill="#1a6b5a" rx="0"/><rect x="407" y="52" width="50" height="43" fill="#4a90d9" rx="0"/><rect x="407" y="38" width="50" height="14" fill="#D97706" rx="2"/>
-            <text x="87" y="282" font-size="9.5" fill="#64748b" text-anchor="middle">2025</text><text x="156" y="282" font-size="9.5" fill="#64748b" text-anchor="middle">2030</text><text x="225" y="282" font-size="9.5" fill="#64748b" text-anchor="middle">2035</text><text x="294" y="282" font-size="9.5" fill="#64748b" text-anchor="middle">2040</text><text x="363" y="282" font-size="9.5" fill="#64748b" text-anchor="middle">2045</text><text x="432" y="282" font-size="9.5" fill="#64748b" text-anchor="middle">2050</text>
-            <rect x="62" y="292" width="10" height="10" fill="#1a6b5a" rx="1"/><text x="76" y="301" font-size="9" fill="#64748b">Air Conditioners</text>
-            <rect x="178" y="292" width="10" height="10" fill="#4a90d9" rx="1"/><text x="192" y="301" font-size="9" fill="#64748b">Refrigerators</text>
-            <rect x="274" y="292" width="10" height="10" fill="#D97706" rx="1"/><text x="288" y="301" font-size="9" fill="#64748b">Fans</text>
-            <text x="62" y="313" font-size="8" fill="#94a3b8" font-style="italic">Source: CLASP MEPSy Tool · GCI/HEAT · Green Cooling Initiative</text>
-          </svg>
+        <div class="pillar-right" style="padding:0;display:flex;flex-direction:column;background:#0d3b4f;">
+          <div class="live-banner">
+            <span><span class="live-dot"></span>LIVE &middot; localhost:5173/dashboard/emissions</span>
+            <a href="http://localhost:5173/dashboard/emissions" target="_blank" rel="noopener">Open in tab &rarr;</a>
+          </div>
+          <div class="dashboard-iframe-wrap" style="margin:0 18px 18px;">
+            <iframe src="http://localhost:5173/dashboard/emissions" loading="lazy" title="CoolProgress &middot; Emissions"></iframe>
+          </div>
         </div>
       </div>
     </div>
@@ -1295,69 +1365,13 @@ html, body {
           </ul>
           <a class="cta-link cta-amber" href="http://localhost:5173/dashboard/meps" target="_blank" rel="noopener">▶ OPEN LIVE · localhost:5173/dashboard/meps</a>
         </div>
-        <div class="pillar-right" style="background:#fff;padding:28px 48px;overflow-y:auto;">
-          <div style="width:100%;font-family:'IBM Plex Sans',sans-serif;">
-            <p style="font-size:10px;font-weight:700;letter-spacing:0.07em;color:#94a3b8;text-transform:uppercase;margin-bottom:8px;">Inverter RAC Market Share by Key Market</p>
-            <div style="display:flex;gap:20px;align-items:center;margin-bottom:14px;font-size:11px;color:#64748b;">
-              <div style="display:flex;align-items:center;gap:5px;"><div style="width:20px;height:8px;background:rgba(217,119,6,0.3);border-radius:3px;"></div>2017</div>
-              <div style="display:flex;align-items:center;gap:5px;"><div style="width:20px;height:8px;background:#D97706;border-radius:3px;"></div>2022</div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:7px;align-items:center;">
-              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">India</span>
-              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:31%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:82%;background:#D97706;border-radius:3px;"></div></div></div>
-              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">31%<br><b style="color:#D97706;">82%</b></div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:7px;align-items:center;">
-              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">SE Asia</span>
-              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:33%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:64%;background:#D97706;border-radius:3px;"></div></div></div>
-              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">33%<br><b style="color:#D97706;">64%</b></div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:7px;align-items:center;">
-              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">Japan</span>
-              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:100%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:100%;background:#D97706;border-radius:3px;"></div></div></div>
-              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">100%<br><b style="color:#D97706;">100%</b></div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:7px;align-items:center;">
-              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">Europe</span>
-              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:74%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:91%;background:#D97706;border-radius:3px;"></div></div></div>
-              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">74%<br><b style="color:#D97706;">91%</b></div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:7px;align-items:center;">
-              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">Brazil</span>
-              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:22%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:55%;background:#D97706;border-radius:3px;"></div></div></div>
-              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">22%<br><b style="color:#D97706;">55%</b></div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:7px;align-items:center;">
-              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">Saudi Arabia</span>
-              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:7%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:37%;background:#D97706;border-radius:3px;"></div></div></div>
-              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">7%<br><b style="color:#D97706;">37%</b></div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:7px;align-items:center;">
-              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">Nigeria</span>
-              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:10%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:20%;background:#D97706;border-radius:3px;"></div></div></div>
-              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">10%<br><b style="color:#D97706;">20%</b></div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:7px;align-items:center;">
-              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">UAE</span>
-              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:12%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:20%;background:#D97706;border-radius:3px;"></div></div></div>
-              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">12%<br><b style="color:#D97706;">20%</b></div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:90px 1fr 36px;gap:8px;margin-bottom:4px;align-items:center;">
-              <span style="font-size:12px;font-weight:700;color:#0f172a;text-align:right;">USA</span>
-              <div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;margin-bottom:2px;"><div style="height:100%;width:0%;background:rgba(217,119,6,0.35);border-radius:3px;"></div></div><div style="height:8px;background:#f1f5f9;border-radius:3px;overflow:hidden;"><div style="height:100%;width:9%;background:#D97706;border-radius:3px;"></div></div></div>
-              <div style="font-size:10px;color:#64748b;line-height:1.7;text-align:right;">0%<br><b style="color:#D97706;">9%</b></div>
-            </div>
-
-            <p style="font-size:9px;color:#94a3b8;font-style:italic;margin-top:12px;line-height:1.5;">Source: BSRIA Split AC Reports (2021,2022,2023), Park et al for 2017</p>
+        <div class="pillar-right" style="padding:0;display:flex;flex-direction:column;background:#0d3b4f;">
+          <div class="live-banner">
+            <span><span class="live-dot"></span>LIVE &middot; localhost:5173/dashboard/meps</span>
+            <a href="http://localhost:5173/dashboard/meps" target="_blank" rel="noopener">Open in tab &rarr;</a>
+          </div>
+          <div class="dashboard-iframe-wrap" style="margin:0 18px 18px;">
+            <iframe src="http://localhost:5173/dashboard/meps" loading="lazy" title="CoolProgress &middot; Product Efficiency (MEPS)"></iframe>
           </div>
         </div>
       </div>
@@ -1383,28 +1397,14 @@ html, body {
           </ul>
           <a class="cta-link cta-teal" href="http://localhost:5173/dashboard/kigali" target="_blank" rel="noopener">▶ OPEN LIVE · localhost:5173/dashboard/kigali</a>
         </div>
-        <div class="pillar-right" style="padding:28px 36px;">
-          <svg viewBox="0 0 480 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:'IBM Plex Sans',sans-serif;">
-            <text x="69" y="14" font-size="10.5" font-weight="700" fill="#334155">Global Refrigerant Bank by Compound (Mt) · 2015–2030</text>
-            <line x1="52" y1="24" x2="450" y2="24" stroke="#e2e8f0" stroke-width="0.8"/><line x1="52" y1="59" x2="450" y2="59" stroke="#e2e8f0" stroke-width="0.8"/><line x1="52" y1="94" x2="450" y2="94" stroke="#e2e8f0" stroke-width="0.8"/><line x1="52" y1="130" x2="450" y2="130" stroke="#e2e8f0" stroke-width="0.8"/><line x1="52" y1="165" x2="450" y2="165" stroke="#e2e8f0" stroke-width="0.8"/><line x1="52" y1="200" x2="450" y2="200" stroke="#e2e8f0" stroke-width="0.8"/><line x1="52" y1="235" x2="450" y2="235" stroke="#e2e8f0" stroke-width="0.8"/><line x1="52" y1="270" x2="450" y2="270" stroke="#e2e8f0" stroke-width="0.8"/>
-            <text x="48" y="27" font-size="8.5" fill="#94a3b8" text-anchor="end">7Mt</text><text x="48" y="62" font-size="8.5" fill="#94a3b8" text-anchor="end">6Mt</text><text x="48" y="97" font-size="8.5" fill="#94a3b8" text-anchor="end">5Mt</text><text x="48" y="133" font-size="8.5" fill="#94a3b8" text-anchor="end">4Mt</text><text x="48" y="168" font-size="8.5" fill="#94a3b8" text-anchor="end">3Mt</text><text x="48" y="203" font-size="8.5" fill="#94a3b8" text-anchor="end">2Mt</text><text x="48" y="238" font-size="8.5" fill="#94a3b8" text-anchor="end">1Mt</text><text x="48" y="273" font-size="8.5" fill="#94a3b8" text-anchor="end">0</text>
-            <!-- 2015 (x=69 w=70): HCFC22=98 134a=32 HFC32=16 125=19 143a=9 152a=4 → total 178px≈5.1Mt -->
-            <rect x="69" y="172" width="70" height="98" fill="#2d6a4f"/><rect x="69" y="140" width="70" height="32" fill="#1d4e89"/><rect x="69" y="124" width="70" height="16" fill="#0693e3"/><rect x="69" y="105" width="70" height="19" fill="#48cae4"/><rect x="69" y="96" width="70" height="9" fill="#f4a261"/><rect x="69" y="92" width="70" height="4" fill="#e9c46a" rx="2"/>
-            <!-- 2020 (x=167 w=70): HCFC22=74 134a=46 HFC32=35 125=33 143a=12 152a=4 → 204px≈5.8Mt -->
-            <rect x="167" y="196" width="70" height="74" fill="#2d6a4f"/><rect x="167" y="150" width="70" height="46" fill="#1d4e89"/><rect x="167" y="115" width="70" height="35" fill="#0693e3"/><rect x="167" y="82" width="70" height="33" fill="#48cae4"/><rect x="167" y="70" width="70" height="12" fill="#f4a261"/><rect x="167" y="66" width="70" height="4" fill="#e9c46a" rx="2"/>
-            <!-- 2025 (x=265 w=70): HCFC22=55 134a=53 HFC32=53 125=44 143a=14 152a=4 → 223px≈6.4Mt -->
-            <rect x="265" y="215" width="70" height="55" fill="#2d6a4f"/><rect x="265" y="162" width="70" height="53" fill="#1d4e89"/><rect x="265" y="109" width="70" height="53" fill="#0693e3"/><rect x="265" y="65" width="70" height="44" fill="#48cae4"/><rect x="265" y="51" width="70" height="14" fill="#f4a261"/><rect x="265" y="47" width="70" height="4" fill="#e9c46a" rx="2"/>
-            <!-- 2030 (x=363 w=70): HCFC22=28 134a=56 HFC32=77 125=53 143a=18 152a=4 → 236px≈6.7Mt -->
-            <rect x="363" y="242" width="70" height="28" fill="#2d6a4f"/><rect x="363" y="186" width="70" height="56" fill="#1d4e89"/><rect x="363" y="109" width="70" height="77" fill="#0693e3"/><rect x="363" y="56" width="70" height="53" fill="#48cae4"/><rect x="363" y="38" width="70" height="18" fill="#f4a261"/><rect x="363" y="34" width="70" height="4" fill="#e9c46a" rx="2"/>
-            <text x="104" y="284" font-size="10" fill="#64748b" text-anchor="middle">2015</text><text x="202" y="284" font-size="10" fill="#64748b" text-anchor="middle">2020</text><text x="300" y="284" font-size="10" fill="#64748b" text-anchor="middle">2025</text><text x="398" y="284" font-size="10" fill="#64748b" text-anchor="middle">2030</text>
-            <rect x="52" y="294" width="9" height="9" fill="#2d6a4f" rx="1"/><text x="65" y="302" font-size="8" fill="#64748b">HCFC-22</text>
-            <rect x="116" y="294" width="9" height="9" fill="#1d4e89" rx="1"/><text x="129" y="302" font-size="8" fill="#64748b">HFC-134a</text>
-            <rect x="192" y="294" width="9" height="9" fill="#0693e3" rx="1"/><text x="205" y="302" font-size="8" fill="#64748b">HFC-32</text>
-            <rect x="252" y="294" width="9" height="9" fill="#48cae4" rx="1"/><text x="265" y="302" font-size="8" fill="#64748b">HFC-125</text>
-            <rect x="318" y="294" width="9" height="9" fill="#f4a261" rx="1"/><text x="331" y="302" font-size="8" fill="#64748b">HFC-143a</text>
-            <rect x="388" y="294" width="9" height="9" fill="#e9c46a" rx="1"/><text x="401" y="302" font-size="8" fill="#64748b">HFC-152a</text>
-            <text x="52" y="316" font-size="8" fill="#94a3b8" font-style="italic">Source: Ozone Secretariat consumption data · COPA GIZ</text>
-          </svg>
+        <div class="pillar-right" style="padding:0;display:flex;flex-direction:column;background:#0d3b4f;">
+          <div class="live-banner">
+            <span><span class="live-dot"></span>LIVE &middot; localhost:5173/dashboard/kigali</span>
+            <a href="http://localhost:5173/dashboard/kigali" target="_blank" rel="noopener">Open in tab &rarr;</a>
+          </div>
+          <div class="dashboard-iframe-wrap" style="margin:0 18px 18px;">
+            <iframe src="http://localhost:5173/dashboard/kigali" loading="lazy" title="CoolProgress &middot; Refrigerants & Kigali"></iframe>
+          </div>
         </div>
       </div>
     </div>
@@ -1429,38 +1429,14 @@ html, body {
           </ul>
           <a class="cta-link cta-green" href="http://localhost:5173/dashboard/access" target="_blank" rel="noopener">▶ OPEN LIVE · localhost:5173/dashboard/access</a>
         </div>
-        <div class="pillar-right" style="padding:28px 36px;">
-          <svg viewBox="0 0 480 290" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:'IBM Plex Sans',sans-serif;">
-            <text x="20" y="14" font-size="10.5" font-weight="700" fill="#334155">Population Lacking Sustainable Cooling Access (Millions · 2024)</text>
-            <!-- vertical guide lines (x=140 = 0, each 65px = 100M) -->
-            <line x1="140" y1="24" x2="140" y2="263" stroke="#e2e8f0" stroke-width="1"/><line x1="205" y1="24" x2="205" y2="263" stroke="#e2e8f0" stroke-width="0.6"/><line x1="270" y1="24" x2="270" y2="263" stroke="#e2e8f0" stroke-width="0.6"/><line x1="335" y1="24" x2="335" y2="263" stroke="#e2e8f0" stroke-width="0.6"/><line x1="400" y1="24" x2="400" y2="263" stroke="#e2e8f0" stroke-width="0.6"/><line x1="465" y1="24" x2="465" y2="263" stroke="#e2e8f0" stroke-width="0.6"/>
-            <text x="140" y="272" font-size="8" fill="#94a3b8" text-anchor="middle">0</text><text x="205" y="272" font-size="8" fill="#94a3b8" text-anchor="middle">100M</text><text x="270" y="272" font-size="8" fill="#94a3b8" text-anchor="middle">200M</text><text x="335" y="272" font-size="8" fill="#94a3b8" text-anchor="middle">300M</text><text x="400" y="272" font-size="8" fill="#94a3b8" text-anchor="middle">400M</text>
-            <!-- Sub-Saharan Africa 450M = 292.5→293px  -->
-            <text x="135" y="47" font-size="10" fill="#0f172a" font-weight="600" text-anchor="end">Sub-Saharan Africa</text>
-            <rect x="140" y="32" width="293" height="22" fill="#065f46" rx="3"/>
-            <text x="438" y="47" font-size="10" font-weight="700" fill="#065f46">450M</text>
-            <!-- South Asia 380M = 247px -->
-            <text x="135" y="89" font-size="10" fill="#0f172a" font-weight="600" text-anchor="end">South Asia</text>
-            <rect x="140" y="74" width="247" height="22" fill="#047857" rx="3"/>
-            <text x="392" y="89" font-size="10" font-weight="700" fill="#047857">380M</text>
-            <!-- SE Asia 170M = 110.5→111px -->
-            <text x="135" y="131" font-size="10" fill="#0f172a" font-weight="600" text-anchor="end">SE Asia</text>
-            <rect x="140" y="116" width="111" height="22" fill="#059669" rx="3"/>
-            <text x="256" y="131" font-size="10" font-weight="700" fill="#059669">170M</text>
-            <!-- East Asia 85M = 55px -->
-            <text x="135" y="173" font-size="10" fill="#0f172a" font-weight="600" text-anchor="end">East Asia</text>
-            <rect x="140" y="158" width="55" height="22" fill="#10b981" rx="3"/>
-            <text x="200" y="173" font-size="10" font-weight="700" fill="#10b981">85M</text>
-            <!-- MENA 65M = 42px -->
-            <text x="135" y="215" font-size="10" fill="#0f172a" font-weight="600" text-anchor="end">MENA</text>
-            <rect x="140" y="200" width="42" height="22" fill="#34d399" rx="3"/>
-            <text x="187" y="215" font-size="10" font-weight="700" fill="#059669">65M</text>
-            <!-- Latin America 50M = 32px -->
-            <text x="135" y="257" font-size="10" fill="#0f172a" font-weight="600" text-anchor="end">Latin America</text>
-            <rect x="140" y="242" width="32" height="22" fill="#6ee7b7" rx="3"/>
-            <text x="177" y="257" font-size="10" font-weight="700" fill="#059669">50M</text>
-            <text x="20" y="284" font-size="8" fill="#94a3b8" font-style="italic">Source: SEforALL Chilling Prospects 2025</text>
-          </svg>
+        <div class="pillar-right" style="padding:0;display:flex;flex-direction:column;background:#0d3b4f;">
+          <div class="live-banner">
+            <span><span class="live-dot"></span>LIVE &middot; localhost:5173/dashboard/access</span>
+            <a href="http://localhost:5173/dashboard/access" target="_blank" rel="noopener">Open in tab &rarr;</a>
+          </div>
+          <div class="dashboard-iframe-wrap" style="margin:0 18px 18px;">
+            <iframe src="http://localhost:5173/dashboard/access" loading="lazy" title="CoolProgress &middot; Access & Vulnerability"></iframe>
+          </div>
         </div>
       </div>
     </div>
@@ -1485,46 +1461,14 @@ html, body {
           </ul>
           <a class="cta-link cta-purple" href="http://localhost:5173/dashboard/policy" target="_blank" rel="noopener">▶ OPEN LIVE · localhost:5173/dashboard/policy</a>
         </div>
-        <div class="pillar-right" style="padding:28px 36px;">
-          <svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:'IBM Plex Sans',sans-serif;">
-            <!-- Title -->
-            <text x="20" y="16" font-size="10.5" font-weight="700" fill="#334155">Global Cooling Pledge · COP28 Dubai, December 2023</text>
-
-            <!-- Big stat: 74 countries -->
-            <rect x="20" y="28" width="200" height="84" fill="rgba(124,58,237,0.08)" rx="10" stroke="#7c3aed" stroke-width="1" stroke-opacity="0.3"/>
-            <text x="120" y="70" font-size="44" font-weight="800" fill="#7c3aed" text-anchor="middle">74</text>
-            <text x="120" y="86" font-size="9.5" fill="#475569" text-anchor="middle">countries signed</text>
-            <text x="120" y="100" font-size="9.5" fill="#475569" text-anchor="middle">the Global Cooling Pledge</text>
-
-            <!-- Big stat: 235 cities -->
-            <rect x="240" y="28" width="220" height="84" fill="rgba(124,58,237,0.08)" rx="10" stroke="#7c3aed" stroke-width="1" stroke-opacity="0.3"/>
-            <text x="350" y="70" font-size="44" font-weight="800" fill="#7c3aed" text-anchor="middle">235</text>
-            <text x="350" y="86" font-size="9.5" fill="#475569" text-anchor="middle">cities signed</text>
-            <text x="350" y="100" font-size="9.5" fill="#475569" text-anchor="middle">the Global Cooling Pledge</text>
-
-            <!-- Separator + context label -->
-            <line x1="20" y1="126" x2="460" y2="126" stroke="#e2e8f0" stroke-width="1"/>
-            <text x="20" y="140" font-size="8.5" fill="#94a3b8" font-weight="700" letter-spacing="0.06em">POLICY CONTEXT</text>
-
-            <!-- Kigali: 172/195 = 88% → 265/300px bar -->
-            <text x="116" y="168" font-size="9.5" fill="#475569" font-weight="600" text-anchor="end">Kigali</text>
-            <rect x="120" y="153" width="300" height="26" fill="#f1f5f9" rx="4"/>
-            <rect x="120" y="153" width="265" height="26" fill="#7c3aed" rx="4" opacity="0.35"/>
-            <text x="128" y="170" font-size="12" font-weight="800" fill="#7c3aed">172</text>
-            <text x="152" y="170" font-size="9" fill="#475569">countries ratified the Kigali Amendment</text>
-
-            <!-- NDC: tracked, updating -->
-            <text x="116" y="208" font-size="9.5" fill="#475569" font-weight="600" text-anchor="end">NDC</text>
-            <rect x="120" y="193" width="300" height="26" fill="#f8f9fa" rx="4" stroke="#e2e8f0" stroke-width="1"/>
-            <text x="128" y="209" font-size="9" fill="#94a3b8" font-style="italic">Cooling mentions tracked via CLASP NDC Appliance Toolkit · data update in progress</text>
-
-            <!-- NCAP: tracked, updating -->
-            <text x="116" y="248" font-size="9.5" fill="#475569" font-weight="600" text-anchor="end">NCAP</text>
-            <rect x="120" y="233" width="300" height="26" fill="#f8f9fa" rx="4" stroke="#e2e8f0" stroke-width="1"/>
-            <text x="128" y="249" font-size="9" fill="#94a3b8" font-style="italic">Tracked via Climate Policy Radar · status data being updated</text>
-
-            <text x="20" y="288" font-size="8" fill="#94a3b8" font-style="italic">Source: UNFCCC · UNEP Ozone Secretariat · CLASP · Climate Policy Radar · CoolProgress</text>
-          </svg>
+        <div class="pillar-right" style="padding:0;display:flex;flex-direction:column;background:#0d3b4f;">
+          <div class="live-banner">
+            <span><span class="live-dot"></span>LIVE &middot; localhost:5173/dashboard/policy</span>
+            <a href="http://localhost:5173/dashboard/policy" target="_blank" rel="noopener">Open in tab &rarr;</a>
+          </div>
+          <div class="dashboard-iframe-wrap" style="margin:0 18px 18px;">
+            <iframe src="http://localhost:5173/dashboard/policy" loading="lazy" title="CoolProgress &middot; National Plans & Commitments"></iframe>
+          </div>
         </div>
       </div>
     </div>
@@ -1651,7 +1595,7 @@ html, body {
 (function () {
   'use strict';
 
-  var TOTAL   = 16;
+  var TOTAL   = 17;
   var current = 0;
 
   var slides     = Array.from(document.querySelectorAll('.slide'));
