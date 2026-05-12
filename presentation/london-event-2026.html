@@ -884,6 +884,13 @@ html, body {
 .mb-6  { margin-bottom: 24px; }
 
 /* ============================================================
+   PART 01 DIVIDER — orange/coral background, hero CoolProgress
+   ============================================================ */
+#part-01 { background: linear-gradient(135deg, #D52E0D 0%, #F26949 55%, #F68F73 100%) !important; }
+#part-01::before { background-image: radial-gradient(circle, rgba(255,255,255,0.10) 1px, transparent 1px) !important; }
+#part-01 .orb { display: none !important; }
+
+/* ============================================================
    UNIFORM SLIDE FRAME  (locked geometry — fits 1024px viewport)
    ============================================================ */
 .slide.slide-light .slide-content {
@@ -1073,9 +1080,9 @@ p, .body-text, .closing-sub, li, .stat-label, .user-row, .action-card-text { fon
     <div class="orb orb-3"></div>
     <div class="slide-content">
       <div class="inner" style="max-width:1300px;padding:0 72px;align-items:flex-start;">
-        <div class="dark-tag" style="opacity:0.75;">London &middot; May 2026 &middot; Part 1 of 3</div>
-        <h1 style="font-size:clamp(72px,8vw,140px);margin:32px 0 0;color:#F26949;font-weight:900;letter-spacing:-2px;line-height:0.95;">CoolProgress Dashboard</h1>
-        <p class="dark-sub" style="font-size:clamp(24px,2.4vw,36px);margin-top:36px;opacity:0.95;max-width:1300px;line-height:1.4;font-weight:500;color:#fff;">An early walk-through of <strong style="color:#F26949;font-weight:800;">CoolProgress</strong> &mdash; the cooling-progress platform built with <strong style="color:#A8D166;font-weight:800;">CCC partners</strong>. Shaped today by your feedback before it goes live.</p>
+        <div class="dark-tag" style="opacity:1;background:rgba(13,59,79,0.85);border-color:#0d3b4f;color:#fff;">London &middot; May 2026 &middot; Part 1 of 3</div>
+        <h1 style="font-size:clamp(72px,8vw,140px);margin:32px 0 0;color:#fff;font-weight:900;letter-spacing:-2px;line-height:0.95;text-shadow:0 2px 12px rgba(48,42,44,0.25);">CoolProgress <span style="color:#0d3b4f;">Dashboard</span></h1>
+        <p class="dark-sub" style="font-size:clamp(24px,2.4vw,36px);margin-top:36px;opacity:1;max-width:1300px;line-height:1.4;font-weight:500;color:#fff;">An early walk-through of <strong style="color:#0d3b4f;font-weight:800;">CoolProgress</strong> &mdash; the cooling-progress platform built with <strong style="color:#0d3b4f;font-weight:800;">CCC partners</strong>. Shaped today by your feedback before it goes live.</p>
       </div>
     </div>
   </div>
