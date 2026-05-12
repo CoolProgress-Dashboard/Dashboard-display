@@ -150,7 +150,7 @@
               <div class="dp-item-num">02</div>
             </div>
             <h3 class="dp-item-label">Product Efficiency</h3>
-            <p class="dp-item-desc">Monitor MEPS adoption globally for room ACs, refrigerators, and fans — who has standards, when updated, and the inverter transition.</p>
+            <p class="dp-item-desc">Monitor MEPS adoption globally for room ACs, refrigerators, and fans — who has standards, how stringent, and where the biggest gaps remain.</p>
             <span class="dp-item-cta">Explore <i class="fa-solid fa-arrow-right"></i></span>
           </button>
           <div class="dp-divider"></div>

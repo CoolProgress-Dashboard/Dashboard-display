@@ -98,7 +98,7 @@
     // Extracted from _page_legacy.svelte onMount closure.
     // All functions are self-contained within this onMount so
     // they close over the reactive Svelte props (mepsData,
-    // countries, acInverterShare) and local state variables
+    // countries) and local state variables
     // declared below.
     // =========================================================
 
@@ -791,8 +791,6 @@
     // ---- Map height constants: MEPS coverage is shorter (has appliance toggles above),
     //      Inverter is taller (fewer controls, needs the extra space). ----
     const MEPS_MAP_HEIGHT = 480;
-    const INVERTER_MAP_HEIGHT = 450;
-    const MAP_HEIGHT = INVERTER_MAP_HEIGHT; // fallback used when container is hidden at init
 
     // ---- MEPS choropleth D3 map ----
     async function initMepsMap(d3Lib: any, topojsonLib: any) {
