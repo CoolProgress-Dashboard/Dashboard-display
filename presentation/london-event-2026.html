@@ -1352,6 +1352,57 @@ p, .body-text, .closing-sub, li, .stat-label, .user-row, .action-card-text { fon
     </div>
   </div>
 
+  <!-- ================================================================
+       SLIDE · WALKTHROUGH OVERVIEW (launchpad — click any card)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-walkthrough-overview">
+    <div class="slide-content" style="justify-content:center;padding:48px 64px;gap:28px;">
+      <div>
+        <span class="section-tag tag-teal" style="margin-bottom:14px;display:inline-block;">Walk-through &middot; the map</span>
+        <h2 class="light-headline" style="font-size:clamp(40px,4vw,62px);max-width:1500px;margin:10px 0 0;line-height:1.08;">Five pillars. One key message each.<br>Click any card &mdash; or advance for the full walk.</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:14px;flex:1;min-height:0;">
+
+        <a href="http://localhost:5173/dashboard/emissions" target="_blank" rel="noopener" style="text-decoration:none;display:flex;flex-direction:column;padding:22px 18px;background:#fff;border:2px solid #F26949;border-radius:14px;transition:transform .2s ease, box-shadow .2s ease;box-shadow:0 4px 12px rgba(242,105,73,0.08);">
+          <div style="width:54px;height:54px;border-radius:50%;background:#F26949;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;margin-bottom:14px;">01</div>
+          <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.08em;text-transform:uppercase;">Emissions</div>
+          <p style="font-size:17px;font-weight:700;color:#302a2c;margin-top:8px;line-height:1.3;flex:1;">70&thinsp;% of cooling emissions are electricity. 30&thinsp;% are leaks. Two policy levers.</p>
+          <div style="margin-top:12px;font-size:12px;font-weight:700;color:#F26949;letter-spacing:0.04em;">▶ /dashboard/emissions</div>
+        </a>
+
+        <a href="http://localhost:5173/dashboard/meps" target="_blank" rel="noopener" style="text-decoration:none;display:flex;flex-direction:column;padding:22px 18px;background:#fff;border:2px solid #D97706;border-radius:14px;transition:transform .2s ease, box-shadow .2s ease;box-shadow:0 4px 12px rgba(217,119,6,0.08);">
+          <div style="width:54px;height:54px;border-radius:50%;background:#D97706;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;margin-bottom:14px;">02</div>
+          <div style="font-size:13px;font-weight:800;color:#D97706;letter-spacing:0.08em;text-transform:uppercase;">Product Efficiency</div>
+          <p style="font-size:17px;font-weight:700;color:#302a2c;margin-top:8px;line-height:1.3;flex:1;">The best AC is 3&times; more efficient than the worst still legally sold.</p>
+          <div style="margin-top:12px;font-size:12px;font-weight:700;color:#D97706;letter-spacing:0.04em;">▶ /dashboard/meps</div>
+        </a>
+
+        <a href="http://localhost:5173/dashboard/kigali" target="_blank" rel="noopener" style="text-decoration:none;display:flex;flex-direction:column;padding:22px 18px;background:#fff;border:2px solid #0284c7;border-radius:14px;transition:transform .2s ease, box-shadow .2s ease;box-shadow:0 4px 12px rgba(2,132,199,0.08);">
+          <div style="width:54px;height:54px;border-radius:50%;background:#0284c7;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;margin-bottom:14px;">03</div>
+          <div style="font-size:13px;font-weight:800;color:#0284c7;letter-spacing:0.08em;text-transform:uppercase;">Refrigerants</div>
+          <p style="font-size:17px;font-weight:700;color:#302a2c;margin-top:8px;line-height:1.3;flex:1;">172 countries ratified Kigali. Following through is the harder half.</p>
+          <div style="margin-top:12px;font-size:12px;font-weight:700;color:#0284c7;letter-spacing:0.04em;">▶ /dashboard/kigali</div>
+        </a>
+
+        <a href="http://localhost:5173/dashboard/access" target="_blank" rel="noopener" style="text-decoration:none;display:flex;flex-direction:column;padding:22px 18px;background:#fff;border:2px solid #47966E;border-radius:14px;transition:transform .2s ease, box-shadow .2s ease;box-shadow:0 4px 12px rgba(71,150,110,0.08);">
+          <div style="width:54px;height:54px;border-radius:50%;background:#47966E;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;margin-bottom:14px;">04</div>
+          <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.08em;text-transform:uppercase;">Access</div>
+          <p style="font-size:17px;font-weight:700;color:#302a2c;margin-top:8px;line-height:1.3;flex:1;">1.2 billion people face dangerous heat without cooling &mdash; mapped country by country.</p>
+          <div style="margin-top:12px;font-size:12px;font-weight:700;color:#47966E;letter-spacing:0.04em;">▶ /dashboard/access</div>
+        </a>
+
+        <a href="http://localhost:5173/dashboard/policy" target="_blank" rel="noopener" style="text-decoration:none;display:flex;flex-direction:column;padding:22px 18px;background:#fff;border:2px solid #7c3aed;border-radius:14px;transition:transform .2s ease, box-shadow .2s ease;box-shadow:0 4px 12px rgba(124,58,237,0.08);">
+          <div style="width:54px;height:54px;border-radius:50%;background:#7c3aed;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;margin-bottom:14px;">05</div>
+          <div style="font-size:13px;font-weight:800;color:#7c3aed;letter-spacing:0.08em;text-transform:uppercase;">National Plans</div>
+          <p style="font-size:17px;font-weight:700;color:#302a2c;margin-top:8px;line-height:1.3;flex:1;">74 countries signed the Cooling Pledge. NDC + NCAP coverage is the gap you can close.</p>
+          <div style="margin-top:12px;font-size:12px;font-weight:700;color:#7c3aed;letter-spacing:0.04em;">▶ /dashboard/policy</div>
+        </a>
+
+      </div>
+      <p style="text-align:center;font-size:15px;color:#475569;font-style:italic;margin:0;">Tip &middot; click any card to jump to the live dashboard, or press &rarr; to walk through each pillar with the in-slide preview.</p>
+    </div>
+  </div>
+
   <div class="slide slide-light next" id="slide-6" data-notes="PILLAR 1 — EMISSIONS · /dashboard/emissions || Open the page. Land on a country relevant to the room (India / Nigeria / Brazil / Indonesia). || Anchor stat: cooling is ~7% of global GHG today; 70% of that is INDIRECT (electricity), 30% direct (refrigerant leaks). || Click into the country to show the direct vs indirect split. || Key message: 'These are two different problems with two different policy responses — efficiency standards on the indirect side, Kigali compliance on the direct side. Most ministries still treat them as one. The dashboard shows why they shouldn't.'">
     <div class="slide-content" style="height:100%;">
       <div class="pillar-layout">
@@ -1595,7 +1646,7 @@ p, .body-text, .closing-sub, li, .stat-label, .user-row, .action-card-text { fon
 (function () {
   'use strict';
 
-  var TOTAL   = 17;
+  var TOTAL   = 18;
   var current = 0;
 
   var slides     = Array.from(document.querySelectorAll('.slide'));
