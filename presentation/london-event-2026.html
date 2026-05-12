@@ -1277,36 +1277,47 @@ p, .body-text, .closing-sub, li, .stat-label, .user-row, .action-card-text { fon
     </div>
     <div class="slide-content">
       <h2 class="light-headline">From scoping conversation to <span class="serif-accent" style="font-weight:600;">public launch</span> in five steps.</h2>
-      <div style="border-top:1px solid rgba(48,42,44,0.2);display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:0;flex:1;min-height:0;">
-        <div style="padding:24px 24px 24px 0;border-right:1px solid rgba(48,42,44,0.15);">
-          <div class="editorial-numeral" style="color:#F26949;">01</div>
-          <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.14em;text-transform:uppercase;margin-top:16px;">2025 Q3</div>
-          <p style="font-size:22px;font-weight:800;color:#302a2c;margin-top:10px;letter-spacing:-0.4px;line-height:1.1;">Scoping</p>
-          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:12px;font-weight:400;">Five-question framework agreed with CCC + partners.</p>
+      <div style="position:relative;flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;padding:48px 0 24px;">
+        <!-- TIMELINE BAR + DOTS -->
+        <div style="position:relative;width:100%;height:18px;margin-bottom:36px;">
+          <!-- gradient connecting bar -->
+          <div style="position:absolute;left:5%;right:5%;top:50%;height:6px;transform:translateY(-50%);background:linear-gradient(90deg,#F26949 0%,#D97706 25%,#0284c7 50%,#47966E 75%,#A8D166 100%);border-radius:6px;opacity:0.85;"></div>
+          <!-- 5 milestone dots -->
+          <div style="position:relative;display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;height:100%;">
+            <div style="display:flex;justify-content:flex-start;padding-left:1%;"><div style="width:18px;height:18px;border-radius:50%;background:#F26949;border:3px solid #FAF7F2;box-shadow:0 0 0 2px #F26949;"></div></div>
+            <div style="display:flex;justify-content:center;"><div style="width:18px;height:18px;border-radius:50%;background:#D97706;border:3px solid #FAF7F2;box-shadow:0 0 0 2px #D97706;"></div></div>
+            <div style="display:flex;justify-content:center;"><div style="width:18px;height:18px;border-radius:50%;background:#0284c7;border:3px solid #FAF7F2;box-shadow:0 0 0 2px #0284c7;"></div></div>
+            <div style="display:flex;justify-content:center;"><div style="width:18px;height:18px;border-radius:50%;background:#47966E;border:3px solid #FAF7F2;box-shadow:0 0 0 2px #47966E;"></div></div>
+            <div style="display:flex;justify-content:flex-end;padding-right:1%;"><div style="width:26px;height:26px;border-radius:50%;background:#A8D166;border:3px solid #302a2c;box-shadow:0 0 0 3px #A8D166;margin-top:-4px;"></div></div>
+          </div>
         </div>
-        <div style="padding:24px;border-right:1px solid rgba(48,42,44,0.15);">
-          <div class="editorial-numeral" style="color:#D97706;">02</div>
-          <div style="font-size:13px;font-weight:800;color:#D97706;letter-spacing:0.14em;text-transform:uppercase;margin-top:16px;">2025 Q4</div>
-          <p style="font-size:22px;font-weight:800;color:#302a2c;margin-top:10px;letter-spacing:-0.4px;line-height:1.1;">Data integration</p>
-          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:12px;font-weight:400;">Institutional feeds harmonised into one schema.</p>
-        </div>
-        <div style="padding:24px;border-right:1px solid rgba(48,42,44,0.15);">
-          <div class="editorial-numeral" style="color:#0284c7;">03</div>
-          <div style="font-size:13px;font-weight:800;color:#0284c7;letter-spacing:0.14em;text-transform:uppercase;margin-top:16px;">2026 Q1</div>
-          <p style="font-size:22px;font-weight:800;color:#302a2c;margin-top:10px;letter-spacing:-0.4px;line-height:1.1;">Closed pilot</p>
-          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:12px;font-weight:400;">Partner reviewers stress-tested every pillar.</p>
-        </div>
-        <div style="padding:24px;border-right:1px solid rgba(48,42,44,0.15);">
-          <div class="editorial-numeral" style="color:#47966E;">04</div>
-          <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.14em;text-transform:uppercase;margin-top:16px;">2026 Q2</div>
-          <p style="font-size:22px;font-weight:800;color:#302a2c;margin-top:10px;letter-spacing:-0.4px;line-height:1.1;">Partner review</p>
-          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:12px;font-weight:400;">London room &mdash; feedback shapes the final cut.</p>
-        </div>
-        <div style="padding:24px;background:#302a2c;color:#fff;margin:-1px -1px -1px 0;">
-          <div class="editorial-numeral" style="color:#A8D166;">05</div>
-          <div style="font-size:13px;font-weight:800;color:#A8D166;letter-spacing:0.14em;text-transform:uppercase;margin-top:16px;">Mid 2026</div>
-          <p style="font-size:22px;font-weight:800;color:#fff;margin-top:10px;letter-spacing:-0.4px;line-height:1.1;">Public launch</p>
-          <p style="font-size:15px;color:#e6efe9;line-height:1.45;margin-top:12px;font-weight:400;">Open-access release, live updates, methodology published.</p>
+        <!-- MILESTONE CARDS -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:0;">
+          <div style="padding:0 24px 0 0;">
+            <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.14em;text-transform:uppercase;">Q1&ndash;Q3 2025</div>
+            <p style="font-size:24px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.15;">Concept &amp; scoping</p>
+            <p style="font-size:15px;color:#302a2c;line-height:1.5;margin-top:14px;font-weight:400;">Presented at the CCC convention in Singapore. Five-question framework agreed with partners.</p>
+          </div>
+          <div style="padding:0 24px;">
+            <div style="font-size:13px;font-weight:800;color:#D97706;letter-spacing:0.14em;text-transform:uppercase;">2025 Q4</div>
+            <p style="font-size:24px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.15;">Data integration</p>
+            <p style="font-size:15px;color:#302a2c;line-height:1.5;margin-top:14px;font-weight:400;">Institutional feeds harmonised into one schema.</p>
+          </div>
+          <div style="padding:0 24px;">
+            <div style="font-size:13px;font-weight:800;color:#0284c7;letter-spacing:0.14em;text-transform:uppercase;">2026 Q1</div>
+            <p style="font-size:24px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.15;">Closed pilot</p>
+            <p style="font-size:15px;color:#302a2c;line-height:1.5;margin-top:14px;font-weight:400;">Partner reviewers stress-tested every pillar.</p>
+          </div>
+          <div style="padding:0 24px;">
+            <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.14em;text-transform:uppercase;">2026 Q2</div>
+            <p style="font-size:24px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.15;">Partner review</p>
+            <p style="font-size:15px;color:#302a2c;line-height:1.5;margin-top:14px;font-weight:400;">London room &mdash; feedback shapes the final cut.</p>
+          </div>
+          <div style="padding:0 0 0 24px;">
+            <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.14em;text-transform:uppercase;">Mid 2026</div>
+            <p style="font-size:24px;font-weight:900;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.15;">Public launch</p>
+            <p style="font-size:15px;color:#302a2c;line-height:1.5;margin-top:14px;font-weight:400;">Open-access release, live updates, methodology published.</p>
+          </div>
         </div>
       </div>
     </div>
