@@ -503,8 +503,7 @@
         } else if (mapType === 'gcp') {
           legendEl.innerHTML = `
             <div class="legend-item"><div class="legend-color" style="background:#6BADA0"></div>Signatory</div>
-            <div class="legend-item"><div class="legend-color" style="background:#e5e7eb"></div>Non-Signatory</div>
-            <div class="legend-item"><div class="legend-color" style="background:#E5E1D8"></div>No Data</div>
+            <div class="legend-item"><div class="legend-color" style="background:#e5e7eb;border:1px solid #cbd5e1;"></div>Non-Signatory</div>
           `;
         } else if (mapType === 'ndc') {
           legendEl.innerHTML = `
@@ -563,7 +562,7 @@
               return kRec.kigali_party === 1 ? '#6BADA0' : '#e5e7eb';
             } else if (mapType === 'gcp') {
               const pledgeRec = pledge.find((p: any) => p.country_code === code);
-              if (!pledgeRec) return '#E5E1D8';
+              if (!pledgeRec) return '#e5e7eb';
               return pledgeRec.signatory === 1 ? '#6BADA0' : '#e5e7eb';
             } else if (mapType === 'ndc') {
               const countryStatus = getCountryNDCStatus();
@@ -1196,7 +1195,7 @@
               if (selectedRegion && country?.region !== selectedRegion) return '#E5E1D8';
               // Initialize with GCP view (first active tab)
               const pledgeRec = pledge.find((p: any) => p.country_code === code);
-              if (!pledgeRec) return '#E5E1D8';
+              if (!pledgeRec) return '#e5e7eb';
               return pledgeRec.signatory === 1 ? '#6BADA0' : '#e5e7eb';
               // Note: Brazil excluded from NCAP view — NCAP only recently initiated
             })
