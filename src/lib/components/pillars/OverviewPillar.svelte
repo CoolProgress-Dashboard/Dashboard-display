@@ -34,7 +34,7 @@
           <span class="flow-eyebrow">The Cooling Crisis</span>
           <h1 class="flow-hero-headline">Cooling is one of the most significant yet overlooked drivers of climate change.</h1>
           <p class="flow-hero-body">It currently accounts for approximately 7% of global greenhouse gas emissions. Under business-as-usual, cooling-related emissions reach <strong>7.2 billion tonnes CO₂e by 2050</strong> as heatwaves become more frequent and populations grow.</p>
-          <p class="flow-hero-body">This trajectory is fueled by a massive surge in demand: an additional 3 billion room air conditioners are expected to come online globally by mid-century. This creates a double-edged impact where indirect emissions from high energy consumption and direct emissions from high GWP refrigerant leaks fuel a vicious cycle of increased emissions and further warming that leaves 1.2 billion people vulnerable to life-threatening heat.</p>
+          <p class="flow-hero-body">This trajectory is fueled by a massive surge in demand: an additional 3 billion room air conditioners are expected to come online globally by mid-century. This creates a double-edged impact where indirect emissions from high energy consumption and direct emissions from high GWP refrigerant leaks fuel a vicious cycle of increased emissions and further warming that leaves more than 1 billion people vulnerable to life-threatening heat.</p>
           <div class="flow-stats">
             <div class="flow-stat">
               <span class="flow-stat-num">~7%</span>
@@ -49,7 +49,7 @@
             </div>
             <div class="flow-stat-rule"></div>
             <div class="flow-stat">
-              <span class="flow-stat-num">1.2 billion</span>
+              <span class="flow-stat-num">1 billion+</span>
               <span class="flow-stat-label">people vulnerable to life-threatening heat without adequate cooling</span>
               <span class="flow-stat-source"><a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer">SEforAll Chilling Prospects 2025</a></span>
             </div>
@@ -169,7 +169,7 @@
               <div class="dp-item-num">04</div>
             </div>
             <h3 class="dp-item-label">Access &amp; Vulnerability</h3>
-            <p class="dp-item-desc">Map the 1.2 billion people at risk from life-threatening heat, broken down by region, income group, and risk level.</p>
+            <p class="dp-item-desc">Map the more than 1 billion people at risk from life-threatening heat, broken down by region, income group, and risk level.</p>
             <span class="dp-item-cta">Explore <i class="fa-solid fa-arrow-right"></i></span>
           </button>
           <div class="dp-divider"></div>

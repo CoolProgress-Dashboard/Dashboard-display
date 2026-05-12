@@ -98,7 +98,7 @@ export const partnerNews: NewsItem[] = [
     source: 'UN Treaty Collection',
     sourceUrl: 'https://treaties.un.org/Pages/ViewDetails.aspx?src=IND&mtdsg_no=XXVII-2-f&chapter=27&clang=_en',
     date: 'Feb 2026',
-    summary: '172 states have ratified the Kigali Amendment, on track to avoid up to 0.4\u00B0C of warming by end of century through HFC phase-down.',
+    summary: '175+ states have ratified the Kigali Amendment, on track to avoid up to 0.4\u00B0C of warming by end of century through HFC phase-down.',
     category: 'Policy',
     icon: 'fa-flask',
     color: '#8BC34A'

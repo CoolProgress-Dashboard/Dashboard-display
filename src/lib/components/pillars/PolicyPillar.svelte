@@ -24,9 +24,9 @@
   // Animated stat cards
   const policyStats = [
     {
-      value: '172',
+      value: '175+',
       label: 'Countries that have ratified the Kigali Amendment (Montreal Protocol)',
-      context: '172 countries have ratified the Kigali Amendment to the Montreal Protocol, creating a legally binding framework to phase down HFCs by over 80%. Source: UN Treaty Collection (Feb 2026).'
+      context: '175+ countries have ratified the Kigali Amendment to the Montreal Protocol, creating a legally binding framework to phase down HFCs by over 80%. Source: UN Treaty Collection (May 2026).'
     },
     {
       value: '74',
@@ -1535,7 +1535,7 @@
     <div class="chapter-card" class:revealed>
       <span class="ns-eyebrow">The Way Forward</span>
       <h2 class="ns-title">Turning Signals into Action</h2>
-      <p class="ns-body">Effective cooling policy has transitioned from a secondary concern to a pillar of essential health and climate infrastructure, defined by three critical hallmarks: integrated governance that aligns Montreal Protocol refrigerant phase-downs with Paris Agreement NDCs, enforceable standards that mandate "passive-first" design and high-efficiency inverter technology, and a commitment to radical equity that prioritises affordable, nature-based cooling for the 1.2 billion people most vulnerable to extreme heat.</p>
+      <p class="ns-body">Effective cooling policy has transitioned from a secondary concern to a pillar of essential health and climate infrastructure, defined by three critical hallmarks: integrated governance that aligns Montreal Protocol refrigerant phase-downs with Paris Agreement NDCs, enforceable standards that mandate "passive-first" design and high-efficiency inverter technology, and a commitment to radical equity that prioritises affordable, nature-based cooling for the more than 1 billion people most vulnerable to extreme heat.</p>
       <p class="ns-body">Moving beyond voluntary pledges, the gold standard in 2026 is an enforceable National Cooling Action Plan (NCAP) that bridges the implementation gap by unifying building codes, energy standards, and refrigerant management into a single, funded roadmap. This dashboard tracks that structural integrity, mapping the journey from high-level political signals to the rigorous, multi-pillar regulations required to ensure global cooling is both sustainable and fast enough to matter.</p>
 
       <div class="policy-pledge-badge">
@@ -1614,10 +1614,10 @@
           <strong>National Cooling Action Plan Methodology</strong>
           <p>Framework for governments to move from pledges to implementation, adapted for High-Ambient-Temperature regions.</p>
         </a>
-        <a href={globalCoolingPledge.progressReportUrl} target="_blank" rel="noopener noreferrer" class="ns-resource-card">
-          <strong>Global Cooling Pledge Progress Report 2025</strong>
+        <div class="ns-resource-card" style="opacity:0.7;cursor:default;">
+          <strong>Global Cooling Pledge Progress Report 2025 <span style="font-size:0.72rem;font-weight:500;color:#64748b;">(coming soon)</span></strong>
           <p>Accountability document providing overview of how 74 signatory countries are translating promises into policy.</p>
-        </a>
+        </div>
         <a href="https://www.undp.org/publications/summary-national-cooling-action-plans" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
           <strong>UNDP: Summary of National Cooling Action Plans</strong>
           <p>Comparative analysis of how different nations structure cooling strategies and align NDCs into actionable roadmaps.</p>

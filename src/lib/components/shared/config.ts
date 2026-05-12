@@ -27,7 +27,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
     headline: 'Cooling emissions will triple by 2050 \u2014 unless we act now',
     subhead: 'AC alone will emit more than global aviation by 2035. Three interventions can cut 73% by mid-century.',
     insight:
-      'Today\u2019s cooling sector emits 2,401 Mt CO\u2082e annually \u2014 more than the entire EU. On the current trajectory, that triples to 6,009 Mt by 2050. But three proven interventions \u2014 efficient appliances, low-GWP refrigerants, and clean grids \u2014 can cut 4,455 Mt per year. That is like taking every car in Europe and North America off the road.',
+      'Today\u2019s cooling sector emits 2,401 Mt CO\u2082e annually \u2014 more than the entire EU. On the current trajectory, that triples to 6,009 Mt by 2050 (across the full cooling sector). But three proven interventions \u2014 efficient appliances, low-GWP refrigerants, and clean grids \u2014 can cut 4,455 Mt per year. That is like taking every car in Europe and North America off the road.',
     methodology: 'Three-layer DECARB: HEAT GmbH (direct emissions, Kigali phase-down) + CLASP (efficiency scenarios) + IEA STEPS (grid decarbonization). See /methodology for details.',
     sources: [
       { name: 'HEAT GmbH', url: 'https://www.heat-international.de/', logo: '/images/heat-logo.png' },
@@ -47,10 +47,10 @@ export const VIEW_META: Record<string, ViewMeta> = {
     ]
   },
   kigali: {
-    headline: '172 countries ratified Kigali. But ratification is not implementation.',
+    headline: '175+ countries ratified Kigali. But ratification is not implementation.',
     subhead: 'The Kigali Amendment can prevent 0.5\u00B0C of warming \u2014 if countries convert commitments into refrigerant transitions on the ground.',
     insight:
-      'HFCs are invisible, odorless \u2014 and thousands of times more potent than CO\u2082. A single service van leak can release the equivalent of driving a car for a year. 172 nations have signed the Kigali Amendment, but the real test is on the factory floor: converting production lines, training 15 million technicians, and building recovery infrastructure from scratch.',
+      'HFCs are invisible, odorless \u2014 and thousands of times more potent than CO\u2082. A single service van leak can release the equivalent of driving a car for a year. 175+ nations have signed the Kigali Amendment, but the real test is on the factory floor: converting production lines, training 15 million technicians, and building recovery infrastructure from scratch.',
     methodology: 'Kigali ratification and implementation data: UNEP Ozone Secretariat. HFC baselines and allowable emissions: KIP database. GWP values: IPCC AR6.',
     sources: [
       { name: 'UNEP Ozone Secretariat', url: 'https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment', logo: '/images/unep.png', logoLarge: true },
@@ -58,10 +58,10 @@ export const VIEW_META: Record<string, ViewMeta> = {
     ]
   },
   access: {
-    headline: '1.2 billion people face dangerous heat without cooling',
+    headline: 'More than 1 billion people face dangerous heat without cooling',
     subhead: 'Cooling is health infrastructure. 420,000 die annually from food spoiled by broken cold chains. The access gap is a matter of climate equity.',
     insight:
-      'A farmer in Senegal loses 40% of her harvest to heat spoilage. A hospital in Bihar stores vaccines in a room that hits 45\u00B0C. 1.2 billion people lack access to basic cooling \u2014 not luxury, but survival. The cruel irony: those most exposed to rising heat are the least able to afford protection. Closing this gap is the defining equity challenge of the climate crisis.',
+      'A farmer in Senegal loses 40% of her harvest to heat spoilage. A hospital in Bihar stores vaccines in a room that hits 45\u00B0C. more than 1 billion people lack access to basic cooling \u2014 not luxury, but survival. The cruel irony: those most exposed to rising heat are the least able to afford protection. Closing this gap is the defining equity challenge of the climate crisis.',
     methodology: 'Cooling access data: SEforALL Chilling Prospects 2025. Risk levels by income group, region, and infrastructure. Dashboard integration: HEAT GmbH.',
     sources: [
       { name: 'SEforALL Chilling Prospects 2025', url: 'https://www.seforall.org/data-stories/chilling-prospects-2025', logo: '/images/seforall-logo.jpg', logoLarge: true },
@@ -118,7 +118,7 @@ export const PILLAR_INFO: Record<string, { title: string; subtitle: string; body
     title: 'Pillar 4: Cooling Access & Vulnerability',
     subtitle: 'Ensuring cooling for all as a fundamental human right and a life-saving necessity',
     body: `<p>Pillar 4 provides a data-driven inventory of the \u201Ccooling gap\u201D based on the Sustainable Energy for All (SEforALL) Chilling Prospects publication. It tracks national and sub-national data for people globally at high risk due to a lack of basic cooling infrastructure for thermal safety, food security, and medical cold chains. By disaggregating populations into rural and urban poor and high/medium/low-risk groups, the dashboard identifies where heat exposure intersects with poverty and energy access gaps. This tracking serves as an evidence base for monitoring the scale of cooling vulnerability and assessing the progress of global efforts to provide life-saving cooling to the most exposed communities.</p>
-<p class="pillar-modal-insight"><strong>Strategic Insight:</strong> Cooling is a life-saving necessity, yet a over 1 billion-person \u2018access gap\u2019 persists, representing a critical threat to health and food security. Closing this gap is a matter of climate equity, requiring integrated solutions to protect the health and livelihoods of the most vulnerable.</p>`
+<p class="pillar-modal-insight"><strong>Strategic Insight:</strong> Cooling is a life-saving necessity, yet a more-than-1-billion-person \u2018access gap\u2019 persists, representing a critical threat to health and food security. Closing this gap is a matter of climate equity, requiring integrated solutions to protect the health and livelihoods of the most vulnerable.</p>`
   },
   policy: {
     title: 'Pillar 5: National Plans & Commitments',

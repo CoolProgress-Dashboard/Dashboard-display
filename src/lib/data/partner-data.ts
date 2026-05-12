@@ -153,13 +153,13 @@ export const partners: Partner[] = [
     description:
       'International organization working to achieve SDG7 (universal energy access) by 2030. Tracks global cooling access gaps through the Chilling Prospects series.',
     keyContribution:
-      'Publishes the annual Chilling Prospects report tracking 1.12 billion people at high risk from lack of cooling access, with granular data on rural and urban gaps.',
+      'Publishes the annual Chilling Prospects report tracking more than 1 billion people at high risk from lack of cooling access, with granular data on rural and urban gaps.',
     keyReport: 'Chilling Prospects 2025',
     keyReportUrl:
       'https://www.seforall.org/data-stories/chilling-prospects-2025',
     category: 'data',
     resources: [
-      { label: 'Chilling Prospects 2025', url: 'https://www.seforall.org/data-stories/chilling-prospects-2025', icon: 'fa-temperature-high', description: '1.2 billion people at risk from lack of cooling' },
+      { label: 'Chilling Prospects 2025', url: 'https://www.seforall.org/data-stories/chilling-prospects-2025', icon: 'fa-temperature-high', description: 'More than 1 billion people at risk from lack of cooling' },
       { label: 'Cooling for All', url: 'https://www.seforall.org/cooling-for-all', icon: 'fa-people-group', description: 'Solutions for sustainable cooling access' },
       { label: 'Data Portal', url: 'https://www.seforall.org/data-and-evidence', icon: 'fa-database', description: 'Energy access and cooling data downloads' },
     ],

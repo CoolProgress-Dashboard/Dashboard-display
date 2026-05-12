@@ -60,12 +60,12 @@
     {
       value: '2,401',
       label: 'Mt CO₂e from cooling today',
-      context: 'Total cooling emissions in 2025: indirect energy-related (CLASP Mepsy: AC 994 Mt, Refrigerators 435 Mt, Fans 173 Mt = 1,602 Mt) + direct refrigerant leaks (GCI: 422 Mt). Source: CLASP Mepsy + GCI/HEAT.'
+      context: 'Total cooling emissions in 2025 across the full cooling sector (CLASP Mepsy indirect: 1,602 Mt + GCI direct refrigerant: 422 Mt + commercial cooling and cold chain sub-sectors). The chart below shows explicitly modelled appliances only. Source: CLASP Mepsy + GCI/HEAT.'
     },
     {
       value: '6,009',
       label: 'Mt CO₂e by 2050 under BAU',
-      context: 'Business-as-usual trajectory: indirect energy emissions (CLASP: 3,236 Mt) + direct refrigerant emissions (GCI: 601 Mt) by 2050. Cooling demand surges in South Asia, Africa, and SE Asia without policy intervention.'
+      context: 'Business-as-usual trajectory across the full cooling sector: indirect energy emissions (CLASP: 3,236 Mt) + direct refrigerant emissions (GCI: 601 Mt) + commercial cooling and cold chain sub-sectors by 2050. The chart shows explicitly modelled appliances. Cooling demand surges in South Asia, Africa, and SE Asia without policy intervention. Source: CLASP Mepsy + GCI/HEAT.'
     },
     {
       value: '60%',

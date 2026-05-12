@@ -11,7 +11,7 @@
       label: 'Access to Cooling',
       description: 'Ensuring cooling for all as a fundamental human right and a life-saving necessity.',
       bullets: [
-        '1.2 billion people face life-threatening heat without adequate cooling',
+        'More than 1 billion people face life-threatening heat without adequate cooling',
         'Leapfrogging to efficient, affordable technology bridges the equity gap',
         'Cold chains for food and medicine are as critical as residential cooling'
       ],
@@ -40,7 +40,7 @@
       description: 'Moving to low-GWP refrigerants under the Kigali Amendment — a strategic shift that can avert 0.5°C of warming this century.',
       bullets: [
         'HFCs are up to 12,000× more warming than CO₂ per molecule',
-        '172 countries have ratified the Kigali Amendment',
+        '175+ countries have ratified the Kigali Amendment',
         'Full phase-down avoids ~105 billion tonnes CO₂e by 2100'
       ],
       route: 'kigali',

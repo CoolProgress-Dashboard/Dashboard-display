@@ -111,14 +111,14 @@ export const viewMetaV2: ViewMetaMap = {
 	},
 
 	kigali: {
-		headline: '172 countries ratified Kigali. But ratification is not implementation.',
+		headline: '175+ countries ratified Kigali. But ratification is not implementation.',
 		subhead:
 			'The Kigali Amendment can prevent 0.5\u00B0C of warming \u2014 if commitments become refrigerant transitions on the ground.',
 		insight:
-			'172 parties have ratified, covering 95% of global HFC consumption. Non-A5 countries must reach 15% of baseline by 2036. ' +
+			'175+ parties have ratified, covering 95% of global HFC consumption. Non-A5 countries must reach 15% of baseline by 2036. ' +
 			'The transition runs from high-GWP HFCs (R-410A: GWP 2,088) toward natural refrigerants (R-290 propane: GWP 3). ' +
 			'China and India already manufacture R-290 split ACs at scale. The real test: manufacturing conversion, technician training, and F-gas recovery.',
-		entryStat: '172 parties ratified -- 95% of global HFC consumption covered',
+		entryStat: '175+ parties ratified -- 95% of global HFC consumption covered',
 		sources: [
 			{
 				name: 'UNEP Ozone Secretariat',
@@ -140,14 +140,14 @@ export const viewMetaV2: ViewMetaMap = {
 	},
 
 	access: {
-		headline: '1.2 billion people face dangerous heat without cooling',
+		headline: 'More than 1 billion people face dangerous heat without cooling',
 		subhead:
 			'Cooling is health infrastructure. 420,000 die annually from food spoiled by broken cold chains.',
 		insight:
 			'Urban poor (695M) and rural poor (309M) are most at risk. In Africa, only 5% of households own an AC. ' +
 			'40% of food production in Africa is lost post-harvest. Heat stress could reduce global working hours by 2.2% by 2030, equivalent to 80 million jobs. ' +
 			'Passive cooling, solar cold chains, and community centers can close the gap sustainably.',
-		entryStat: '1.2 billion people at high risk -- 420,000 deaths/year from spoiled food',
+		entryStat: 'More than 1 billion people at high risk -- 420,000 deaths/year from spoiled food',
 		sources: [
 			{
 				name: 'SEforALL Chilling Prospects 2025',

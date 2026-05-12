@@ -59,9 +59,9 @@ export const pillarContent: PillarContentMap = {
 				context: 'Under business-as-usual, the global AC stock will grow from ~2 billion today to ~5 billion by 2050 — mostly in the hottest, fastest-growing markets. Source: IEA.'
 			},
 			{
-				value: '1.2B',
+				value: '1B+',
 				label: 'people lack adequate cooling',
-				context: 'More than 1.2 billion people in low- and middle-income countries face dangerous heat without access to cooling. Source: SEforALL Chilling Prospects 2025.'
+				context: 'More than 1 billion people in low- and middle-income countries face dangerous heat without access to cooling. Source: SEforALL Chilling Prospects 2025.'
 			},
 			{
 				value: '73%',
@@ -129,7 +129,7 @@ export const pillarContent: PillarContentMap = {
 	kigali: {
 		headline: 'The refrigerant revolution',
 		subhead: 'From HFCs to natural cooling -- the Kigali Amendment is rewriting the rules.',
-		entryStat: '172 parties ratified -- 95% of global HFC consumption covered',
+		entryStat: '175+ parties ratified -- 95% of global HFC consumption covered',
 		storyHook:
 			'The Montreal Protocol already eliminated the ozone-depleting CFCs and is phasing out HCFCs. ' +
 			'But the replacement gases -- hydrofluorocarbons (HFCs) -- turned out to be potent greenhouse gases. ' +
@@ -153,12 +153,12 @@ export const pillarContent: PillarContentMap = {
 
 	access: {
 		headline: 'Cooling is an equity issue',
-		subhead: 'More than 1.2 billion people face dangerous heat without adequate cooling.',
-		entryStat: '1.2 billion people at high risk -- 420,000 deaths/year from spoiled food',
+		subhead: 'More than 1 billion people face dangerous heat without adequate cooling.',
+		entryStat: 'More than 1 billion people at high risk -- 420,000 deaths/year from spoiled food',
 		storyHook:
 			'In 2023, heat waves killed tens of thousands of people across South Asia, the Sahel, and Southern Europe. ' +
 			'The vast majority of victims lacked access to even basic cooling. Sustainable Energy for All\'s Chilling Prospects report ' +
-			'identifies 1.2 billion people at high risk -- concentrated in low-income urban settlements and rural communities ' +
+			'identifies more than 1 billion people at high risk -- concentrated in low-income urban settlements and rural communities ' +
 			'across Africa, South Asia, and Southeast Asia. For these populations, cooling is not a luxury. It is health infrastructure.',
 		keyNarrative:
 			'The access gap has multiple dimensions. In rural areas, cooling preserves harvests, vaccines, and medicines -- without it, ' +

@@ -40,7 +40,7 @@ export const heroStats: HeroStat[] = [
     unit: 'billion',
     label: 'people at high risk from heat',
     description:
-      'More than 1.2 billion people worldwide face high risk from heat-related threats to their lives and well-being due to lack of cooling access.',
+      'More than 1 billion people worldwide face high risk from heat-related threats to their lives and well-being due to lack of cooling access.',
     source: 'SE4ALL Chilling Prospects, 2025',
     sourceUrl: 'https://www.seforall.org/data-stories/chilling-prospects-2025',
   },
