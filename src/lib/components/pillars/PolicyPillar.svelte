@@ -156,7 +156,7 @@
       }
 
       // ── Filter state ─────────────────────────────────────────────────────
-      let ndcType = 'NDC 3.0';
+      let ndcType = 'NDC 2.0';
       let ndcCategory = 'Energy Efficiency';
       let policyMapType = 'gcp';
       let selectedRegion = '';
@@ -655,11 +655,13 @@
         const typeSelect = document.getElementById('policy-ndc-type') as HTMLSelectElement | null;
         if (typeSelect) {
           typeSelect.innerHTML = '';
-          const types = [...new Set(ndcTracker.map((n: any) => n.ndc_type).filter(Boolean))].sort() as string[];
+          const types = [...new Set(ndcTracker.map((n: any) => n.ndc_type).filter(Boolean))]
+            .filter((t: string) => t !== 'NDC 3.0')
+            .sort() as string[];
           types.forEach((type: string) => {
             const option = document.createElement('option');
             option.value = type;
-            option.textContent = type === 'Other' ? 'Previous NDC' : type;
+            option.textContent = type === 'Other' ? 'Previous NDC' : type === 'NDC 2.0' ? 'Previous NDC (NDC 2.0)' : type;
             if (type === ndcType) option.selected = true;
             typeSelect.appendChild(option);
           });
@@ -977,23 +979,21 @@
         container.innerHTML = '';
 
         const cprBox = `
-          <div style="display:flex;align-items:flex-start;gap:1.25rem;padding:1.1rem 1.4rem;background:#f0f7ff;border-top:3px solid #0369a1;border-bottom:1px solid #bae0ff;margin-top:1rem;">
-            <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="flex-shrink:0;display:flex;align-items:center;padding-top:2px;">
-              <img src="/images/cpr-logo-dark.png" alt="Climate Policy Radar" style="height:32px;width:auto;object-fit:contain;" />
+          <div style="padding:1.1rem 1.4rem;background:#f0f7ff;border-top:3px solid #0369a1;border-bottom:1px solid #bae0ff;margin-top:1rem;">
+            <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-bottom:0.65rem;">
+              <img src="/images/cpr-logo-dark.png" alt="Climate Policy Radar" style="height:22px;width:auto;object-fit:contain;" />
             </a>
-            <div style="flex:1;min-width:0;">
-              <div style="font-size:0.9rem;font-weight:800;color:#0f172a;margin-bottom:0.3rem;letter-spacing:-0.01em;">Explore national climate policies on Climate Policy Radar</div>
-              <p style="font-size:0.81rem;color:#334155;line-height:1.65;margin:0 0 0.6rem;">
-                Climate Policy Radar's database covers NDCs, NCAPs, and national climate legislation across 200+ countries. Use it to go deeper on any country's cooling-related commitments.
-              </p>
-              <div style="display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center;">
-                <a href="https://app.climatepolicyradar.org/?_gl=1*1orjtq2*_ga*MTk2OTA4ODMwNy4xNzc2MzQ2MzY4*_ga_ZD1WWE49TL*czE3NzYzNDYzNjckbzEkZzAkdDE3NzYzNDYzNjckajYwJGwwJGgw" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.35rem;background:#0369a1;color:#fff;font-size:0.78rem;font-weight:700;padding:0.38rem 0.9rem;border-radius:3px;text-decoration:none;">
-                  <i class="fa-solid fa-magnifying-glass" style="font-size:0.68rem;"></i> Search the Database
-                </a>
-                <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.3rem;color:#0369a1;font-size:0.78rem;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(3,105,161,0.3);padding-bottom:1px;">
-                  <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.62rem;"></i> More about Climate Policy Radar
-                </a>
-              </div>
+            <div style="font-size:0.9rem;font-weight:800;color:#0f172a;margin-bottom:0.3rem;letter-spacing:-0.01em;">Explore national climate policies on Climate Policy Radar</div>
+            <p style="font-size:0.81rem;color:#334155;line-height:1.65;margin:0 0 0.6rem;">
+              Climate Policy Radar's database covers NDCs, NCAPs, and national climate legislation across 200+ countries. Use it to go deeper on any country's cooling-related commitments.
+            </p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center;">
+              <a href="https://app.climatepolicyradar.org/?_gl=1*1orjtq2*_ga*MTk2OTA4ODMwNy4xNzc2MzQ2MzY4*_ga_ZD1WWE49TL*czE3NzYzNDYzNjckbzEkZzAkdDE3NzYzNDYzNjckajYwJGwwJGgw" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.35rem;background:#0369a1;color:#fff;font-size:0.78rem;font-weight:700;padding:0.38rem 0.9rem;border-radius:3px;text-decoration:none;">
+                <i class="fa-solid fa-magnifying-glass" style="font-size:0.68rem;"></i> Search the Database
+              </a>
+              <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.3rem;color:#0369a1;font-size:0.78rem;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(3,105,161,0.3);padding-bottom:1px;">
+                <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.62rem;"></i> More about Climate Policy Radar
+              </a>
             </div>
           </div>
         `;
@@ -1074,19 +1074,19 @@
               <div class="policy-chart-item">
                 <p class="p-chart-eyebrow">By Category</p>
                 <h3 class="p-chart-title">NDC Cooling Mentions by Category</h3>
-                <p class="p-chart-subtitle">NDC 3.0 vs Previous NDC, excluding Kigali Amendment</p>
+                <p class="p-chart-subtitle">Previous NDC (NDC 2.0) — by cooling topic</p>
                 <div id="chart-ndc-categories" class="chart-surface" style="width:100%;height:300px;min-height:300px;"></div>
               </div>
               <div class="policy-chart-item">
                 <p class="p-chart-eyebrow">By Region</p>
                 <h3 class="p-chart-title">NDC Status by Region</h3>
-                <p class="p-chart-subtitle">Previous NDC vs NDC 3.0 — countries mentioning cooling</p>
+                <p class="p-chart-subtitle">Previous NDC (NDC 2.0) — countries mentioning cooling by region</p>
                 <div id="chart-ndc-regions" class="chart-surface" style="width:100%;height:300px;min-height:300px;"></div>
               </div>
               <div class="policy-chart-item" style="grid-column: 1 / -1;">
                 <p class="p-chart-eyebrow">Trend</p>
-                <h3 class="p-chart-title">NDC 3.0 vs Previous NDC — Full Comparison</h3>
-                <p class="p-chart-subtitle">Cooling mentions across all categories, previous round vs latest NDC submissions</p>
+                <h3 class="p-chart-title">NDC Cooling Mentions — All Categories</h3>
+                <p class="p-chart-subtitle">Previous NDC (NDC 2.0) — countries with cooling mentions across all tracked categories</p>
                 <div id="chart-ndc-comparison" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
             </div>
