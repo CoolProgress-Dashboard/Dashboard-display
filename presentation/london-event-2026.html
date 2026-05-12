@@ -884,6 +884,23 @@ html, body {
 .mb-6  { margin-bottom: 24px; }
 
 /* ============================================================
+   UNIFORM SLIDE GEOMETRY  (forces same border/whitespace on every light slide)
+   ============================================================ */
+.slide.slide-light .slide-content {
+  padding: 110px 96px 72px !important;
+  gap: 44px !important;
+  justify-content: flex-start !important;
+  box-sizing: border-box !important;
+}
+.slide.slide-light .light-headline {
+  margin: 0 !important;
+  text-decoration: none !important;
+}
+.slide.slide-light .editorial-grid,
+.slide.slide-light [class*="editorial-grid"] { gap: 0 !important; }
+.slide-toprail { top: 36px !important; left: 96px !important; right: 96px !important; }
+
+/* ============================================================
    EDITORIAL DESIGN SYSTEM  (claude.ai design — Pentagram-style)
    Warm cream bg + Newsreader serif italic accents + slide header bar
    ============================================================ */
