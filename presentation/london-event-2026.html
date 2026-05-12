@@ -186,16 +186,7 @@ html, body {
   z-index: 1;
 }
 
-.dark-headline {
-  font-size: clamp(36px, 4.2vw, 64px);
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #fff 40%, #22d3ee 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+.dark-headline  { font-size: clamp(56px, 6vw, 92px) !important; line-height: 1.05 !important; font-weight: 800 !important; }
 
 .dark-sub {
   font-size: clamp(16px, 1.7vw, 22px);
@@ -238,14 +229,7 @@ html, body {
 .tag-cyan    { background: rgba(34,211,238,0.12); color: #22d3ee;  border: 1px solid rgba(34,211,238,0.4);  }
 .tag-blue    { background: rgba(2,132,199,0.1);   color: #0284c7;  border: 1px solid rgba(2,132,199,0.3);   }
 
-.light-headline {
-  font-size: clamp(28px, 3vw, 48px);
-  font-weight: 800;
-  color: #0f172a;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-  margin-bottom: 20px;
-}
+.light-headline { font-size: clamp(38px, 4vw, 64px) !important; line-height: 1.12 !important; font-weight: 800 !important; }
 
 .pull-quote {
   font-style: italic;
@@ -376,13 +360,7 @@ html, body {
   border: 1px solid rgba(0,0,0,0.04);
 }
 
-.stat-number {
-  font-size: 54px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  flex-shrink: 0;
-}
+.stat-number    { font-size: clamp(52px, 5.4vw, 78px) !important; line-height: 1 !important; font-weight: 800 !important; }
 
 .stat-label {
   font-size: 14px;
@@ -907,16 +885,16 @@ html, body {
 /* ============================================================
    BILLBOARD SCALE OVERRIDES (next-level — bumps all type ~25-40%)
    ============================================================ */
-.dark-headline  { font-size: clamp(48px, 5.4vw, 80px) !important; line-height: 1.08 !important; }
+.dark-headline  { font-size: clamp(56px, 6vw, 92px) !important; line-height: 1.05 !important; font-weight: 800 !important; }
 .dark-sub       { font-size: clamp(22px, 2.1vw, 30px) !important; line-height: 1.4 !important; }
 .dark-tag       { font-size: 16px !important; letter-spacing: 0.14em !important; padding: 8px 18px !important; }
-.light-headline { font-size: clamp(32px, 3.4vw, 54px) !important; line-height: 1.18 !important; }
-.body-text      { font-size: 18px !important; line-height: 1.62 !important; }
-.section-tag    { font-size: 13px !important; padding: 7px 14px !important; letter-spacing: 0.1em !important; font-weight: 800 !important; }
-.bullet-list li { font-size: 17.5px !important; line-height: 1.55 !important; padding: 6px 0 6px 22px !important; }
+.light-headline { font-size: clamp(38px, 4vw, 64px) !important; line-height: 1.12 !important; font-weight: 800 !important; }
+.body-text      { font-size: 21px !important; line-height: 1.55 !important; }
+.section-tag    { font-size: 15px !important; padding: 9px 18px !important; letter-spacing: 0.1em !important; font-weight: 800 !important; }
+.bullet-list li { font-size: 20px !important; line-height: 1.5 !important; padding: 8px 0 8px 26px !important; font-weight: 500 !important; }
 .bullet-list li::before { font-size: 18px !important; top: 7px !important; }
-.stat-number    { font-size: clamp(42px, 4.4vw, 62px) !important; line-height: 1 !important; font-weight: 800 !important; }
-.stat-label     { font-size: 15px !important; line-height: 1.4 !important; }
+.stat-number    { font-size: clamp(52px, 5.4vw, 78px) !important; line-height: 1 !important; font-weight: 800 !important; }
+.stat-label     { font-size: 17px !important; line-height: 1.4 !important; font-weight: 500 !important; }
 .partner-chip   { font-size: 14px !important; padding: 8px 18px !important; }
 .pillar-num     { font-size: 28px !important; }
 .pillar-question { font-size: 19px !important; line-height: 1.4 !important; }
@@ -1320,18 +1298,11 @@ html, body {
   <div class="slide slide-light next" id="slide-6" data-notes="PILLAR 1 — EMISSIONS · /dashboard/emissions || Open the page. Land on a country relevant to the room (India / Nigeria / Brazil / Indonesia). || Anchor stat: cooling is ~7% of global GHG today; 70% of that is INDIRECT (electricity), 30% direct (refrigerant leaks). || Click into the country to show the direct vs indirect split. || Key message: 'These are two different problems with two different policy responses — efficiency standards on the indirect side, Kigali compliance on the direct side. Most ministries still treat them as one. The dashboard shows why they shouldn't.'">
     <div class="slide-content" style="height:100%;">
       <div class="pillar-layout">
-        <div class="pillar-left" style="--accent-color:#E85A4F;">
+        <div class="pillar-left" style="--accent-color:#E85A4F;padding:42px 44px;display:flex;flex-direction:column;justify-content:center;gap:22px;">
           <span class="section-tag tag-red">01 · Emissions</span>
-          <h2 class="light-headline" style="font-size:clamp(20px,2vw,32px);">Country-level cooling emissions, direct and indirect, in one view.</h2>
-          <div style="background:rgba(232,90,79,0.07);border-radius:8px;padding:11px 14px;margin-top:12px;">
-            <p style="font-size:13px;color:#475569;line-height:1.65;">Indirect emissions account for <strong style="color:#E85A4F;">~70%</strong> of the sector's footprint, driven by electricity use. Direct refrigerant leaks carry GWPs up to <strong style="color:#E85A4F;">2,088× CO₂</strong>. Both streams require distinct, concurrent policy responses.</p>
-          </div>
-          <ul class="bullet-list bullet-red" style="margin-top:12px;">
-            <li>Direct emissions: refrigerant leaks with GWPs up to 2,088× CO₂</li>
-            <li>Indirect emissions: approximately 70% of the sector's climate impact</li>
-            <li>Breakdown by appliance: air conditioners, refrigerators, fans</li>
-          </ul>
-          <a class="cta-link cta-red" href="http://localhost:5173/dashboard/emissions" target="_blank" rel="noopener">▶ OPEN LIVE · localhost:5173/dashboard/emissions</a>
+          <h2 class="light-headline" style="font-size:clamp(32px,3.4vw,52px);line-height:1.15;color:#0f172a;margin:0;">~70% of cooling emissions are INDIRECT — from the electricity used to run the equipment.</h2>
+          <p style="font-size:21px;line-height:1.5;color:#475569;font-weight:500;font-style:italic;border-left:4px solid #E85A4F;padding-left:18px;margin:0;">Two streams, two policy levers: efficiency vs Kigali.</p>
+          <a class="cta-link cta-red" href="http://localhost:5173/dashboard/emissions" target="_blank" rel="noopener" style="align-self:flex-start;margin-top:8px;">▶ OPEN LIVE</a>
         </div>
         <div class="pillar-right" style="padding:0;display:flex;flex-direction:column;background:#0d3b4f;">
           <div class="live-banner">
@@ -1352,18 +1323,11 @@ html, body {
   <div class="slide slide-light next" id="slide-7" data-notes="PILLAR 2 — PRODUCT EFFICIENCY (MEPS) · /dashboard/meps || Open the MEPS map. Pick an African country to show the data gap honestly. || Anchor stat: the best AC sold today is 3× more efficient than the worst still legally sold. Closing that gap globally saves ~1,300 TWh/year — hundreds of coal plants worth. || Scroll to the inverter penetration chart: India 31% → 82% in 5 years. USA still at 9%. The fastest-growing markets are getting the worst products dumped on them. || Key message: 'Without binding standards, manufacturers send the worst products to the markets growing fastest. This pillar is where MEPS harmonisation lives. CLASP-owned data, surfaced here.'">
     <div class="slide-content" style="height:100%;">
       <div class="pillar-layout">
-        <div class="pillar-left" style="--accent-color:#D97706;">
+        <div class="pillar-left" style="--accent-color:#D97706;padding:42px 44px;display:flex;flex-direction:column;justify-content:center;gap:22px;">
           <span class="section-tag tag-amber">02 · Product Efficiency</span>
-          <h2 class="light-headline" style="font-size:clamp(20px,2vw,32px);">Without binding standards, manufacturers dump their worst products in the fastest-growing markets.</h2>
-          <div style="background:rgba(217,119,6,0.07);border-radius:8px;padding:11px 14px;margin-top:12px;">
-            <p style="font-size:13px;color:#475569;line-height:1.65;">The best AC on the market is <strong style="color:#D97706;">3× more efficient</strong> than the worst one still legally sold. Closing that gap globally could save <strong style="color:#D97706;">1,300 TWh</strong> of electricity per year — equivalent to shutting down hundreds of coal plants.</p>
-          </div>
-          <ul class="bullet-list bullet-amber" style="margin-top:12px;">
-            <li>MEPS and energy label status for 80+ countries</li>
-            <li>Appliance coverage: air conditioners, refrigerators, ceiling fans</li>
-            <li>Policy adoption timeline, when standards were introduced and updated</li>
-          </ul>
-          <a class="cta-link cta-amber" href="http://localhost:5173/dashboard/meps" target="_blank" rel="noopener">▶ OPEN LIVE · localhost:5173/dashboard/meps</a>
+          <h2 class="light-headline" style="font-size:clamp(32px,3.4vw,52px);line-height:1.15;color:#0f172a;margin:0;">The best AC sold today is 3× more efficient than the worst still legally on the market.</h2>
+          <p style="font-size:21px;line-height:1.5;color:#475569;font-weight:500;font-style:italic;border-left:4px solid #D97706;padding-left:18px;margin:0;">Harmonised MEPS = 1,300 TWh saved per year.</p>
+          <a class="cta-link cta-amber" href="http://localhost:5173/dashboard/meps" target="_blank" rel="noopener" style="align-self:flex-start;margin-top:8px;">▶ OPEN LIVE</a>
         </div>
         <div class="pillar-right" style="padding:0;display:flex;flex-direction:column;background:#0d3b4f;">
           <div class="live-banner">
@@ -1384,18 +1348,11 @@ html, body {
   <div class="slide slide-light next" id="slide-8" data-notes="PILLAR 3 — REFRIGERANT TRANSITION / KIGALI · /dashboard/kigali || Open the Kigali ratification map. || Anchor stat: 172 countries have ratified the Kigali Amendment. Full compliance prevents ~0.5°C of warming this century. || Show the refrigerant bank chart: the global stock of high-GWP gases is still growing — 5–6 Mt circulating in active equipment today. || Key message: 'Ratification is the easy part. The dashboard tracks whether countries are actually following through — Article 5 Group 1, Group 2, and Non-A5 timelines side by side. Sourced from the Ozone Secretariat and COPA/GIZ.'">
     <div class="slide-content" style="height:100%;">
       <div class="pillar-layout">
-        <div class="pillar-left" style="--accent-color:#3D6B6B;">
-          <span class="section-tag tag-teal">03 · Refrigerant Transition</span>
-          <h2 class="light-headline" style="font-size:clamp(20px,2vw,32px);">172 nations have ratified the Kigali Amendment. CoolProgress tracks whether they are following through.</h2>
-          <div style="background:rgba(61,107,107,0.07);border-radius:8px;padding:11px 14px;margin-top:12px;">
-            <p style="font-size:13px;color:#475569;line-height:1.65;">Full Kigali compliance could prevent <strong style="color:#3D6B6B;">0.5°C</strong> of warming this century. Yet the global refrigerant bank still holds an estimated <strong style="color:#3D6B6B;">5–6 Mt</strong> of high-GWP gases circulating in active equipment today.</p>
-          </div>
-          <ul class="bullet-list bullet-teal" style="margin-top:12px;">
-            <li>Ratification and implementation status for 195 countries</li>
-            <li>Article 5 Group 1, Group 2, and Non-Article 5 timelines tracked</li>
-            <li>Global refrigerant bank by compound, what's still circulating</li>
-          </ul>
-          <a class="cta-link cta-teal" href="http://localhost:5173/dashboard/kigali" target="_blank" rel="noopener">▶ OPEN LIVE · localhost:5173/dashboard/kigali</a>
+        <div class="pillar-left" style="--accent-color:#3D6B6B;padding:42px 44px;display:flex;flex-direction:column;justify-content:center;gap:22px;">
+          <span class="section-tag tag-teal">03 · Refrigerants</span>
+          <h2 class="light-headline" style="font-size:clamp(32px,3.4vw,52px);line-height:1.15;color:#0f172a;margin:0;">172 countries have ratified Kigali. Full compliance = 0.5 °C of warming avoided.</h2>
+          <p style="font-size:21px;line-height:1.5;color:#475569;font-weight:500;font-style:italic;border-left:4px solid #3D6B6B;padding-left:18px;margin:0;">The dashboard shows whether ratification turned into follow-through.</p>
+          <a class="cta-link cta-teal" href="http://localhost:5173/dashboard/kigali" target="_blank" rel="noopener" style="align-self:flex-start;margin-top:8px;">▶ OPEN LIVE</a>
         </div>
         <div class="pillar-right" style="padding:0;display:flex;flex-direction:column;background:#0d3b4f;">
           <div class="live-banner">
@@ -1416,18 +1373,11 @@ html, body {
   <div class="slide slide-light next" id="slide-9" data-notes="PILLAR 4 — ACCESS & VULNERABILITY · /dashboard/access || Open the access map. || Anchor stat: 1.2 billion people face dangerous heat without adequate cooling. 420,000 deaths/year from broken cold chains. 40% post-harvest food loss in Sub-Saharan Africa. || Show the regional bar chart: SSA 450M, South Asia 380M, SE Asia 170M. || Key message: 'This is the pillar that reframes cooling as health and food security, not luxury. Built on SEforALL Chilling Prospects data, surfaced country-by-country so a minister can see exactly where their access gap sits.'">
     <div class="slide-content" style="height:100%;">
       <div class="pillar-layout">
-        <div class="pillar-left" style="--accent-color:#059669;">
-          <span class="section-tag tag-green">04 · Access &amp; Vulnerability</span>
-          <h2 class="light-headline" style="font-size:clamp(20px,2vw,32px);">1.2 billion people face dangerous heat without adequate cooling. CoolProgress shows exactly where they are.</h2>
-          <div style="background:rgba(5,150,105,0.07);border-radius:8px;padding:11px 14px;margin-top:12px;">
-            <p style="font-size:13px;color:#475569;line-height:1.65;"><strong style="color:#059669;">420,000 deaths per year</strong> are linked to broken cold chains. In Sub-Saharan Africa, <strong style="color:#059669;">40%</strong> of post-harvest food is lost without adequate cold storage, disproportionately affecting the world's lowest-income households.</p>
-          </div>
-          <ul class="bullet-list bullet-green" style="margin-top:12px;">
-            <li>Population at risk by country, income group, urban and rural</li>
-            <li>Dimensions tracked: thermal safety, food security, cold chain access</li>
-            <li>Baseline for monitoring progress toward universal sustainable cooling</li>
-          </ul>
-          <a class="cta-link cta-green" href="http://localhost:5173/dashboard/access" target="_blank" rel="noopener">▶ OPEN LIVE · localhost:5173/dashboard/access</a>
+        <div class="pillar-left" style="--accent-color:#059669;padding:42px 44px;display:flex;flex-direction:column;justify-content:center;gap:22px;">
+          <span class="section-tag tag-green">04 · Access & Vulnerability</span>
+          <h2 class="light-headline" style="font-size:clamp(32px,3.4vw,52px);line-height:1.15;color:#0f172a;margin:0;">1.2 billion people face dangerous heat without adequate cooling.</h2>
+          <p style="font-size:21px;line-height:1.5;color:#475569;font-weight:500;font-style:italic;border-left:4px solid #059669;padding-left:18px;margin:0;">This is health and food security, not luxury — country-by-country.</p>
+          <a class="cta-link cta-green" href="http://localhost:5173/dashboard/access" target="_blank" rel="noopener" style="align-self:flex-start;margin-top:8px;">▶ OPEN LIVE</a>
         </div>
         <div class="pillar-right" style="padding:0;display:flex;flex-direction:column;background:#0d3b4f;">
           <div class="live-banner">
@@ -1448,18 +1398,11 @@ html, body {
   <div class="slide slide-light next" id="slide-10" data-notes="PILLAR 5 — NATIONAL PLANS & COMMITMENTS · /dashboard/policy || Open the policy page. || Anchor stat: 74 countries and 235 cities signed the Global Cooling Pledge at COP28 — the largest political commitment ever made on cooling. || Show signatory map + NDC mentions. Be honest about the data gap: 'NDC cooling mentions are being updated via the CLASP NDC Appliance Toolkit; National Cooling Action Plans via Climate Policy Radar — both refreshes in progress.' || Key message: 'This is where your contribution helps most directly. If you have NCAP data or NDC excerpts we haven't ingested yet, this is the pillar that needs it. Honest gap → easy ask.'">
     <div class="slide-content" style="height:100%;">
       <div class="pillar-layout">
-        <div class="pillar-left" style="--accent-color:#7c3aed;">
-          <span class="section-tag tag-purple">05 · National Plans &amp; Commitments</span>
-          <h2 class="light-headline" style="font-size:clamp(20px,2vw,32px);">74 countries and 235 cities signed the Global Cooling Pledge at COP28.</h2>
-          <div style="background:rgba(124,58,237,0.07);border-radius:8px;padding:11px 14px;margin-top:12px;">
-            <p style="font-size:13px;color:#475569;line-height:1.65;">The Pledge represents the largest ever political commitment to sustainable cooling. NDC cooling mentions are tracked via the CLASP NDC Appliance Toolkit; National Cooling Action Plans via Climate Policy Radar. Both datasets are being updated.</p>
-          </div>
-          <ul class="bullet-list bullet-purple" style="margin-top:12px;">
-            <li>Global Cooling Pledge signatory status for 195 countries</li>
-            <li>NDC cooling mentions tracked via the CLASP NDC Appliance Toolkit</li>
-            <li>National Cooling Action Plans tracked via Climate Policy Radar</li>
-          </ul>
-          <a class="cta-link cta-purple" href="http://localhost:5173/dashboard/policy" target="_blank" rel="noopener">▶ OPEN LIVE · localhost:5173/dashboard/policy</a>
+        <div class="pillar-left" style="--accent-color:#7c3aed;padding:42px 44px;display:flex;flex-direction:column;justify-content:center;gap:22px;">
+          <span class="section-tag tag-purple">05 · National Plans</span>
+          <h2 class="light-headline" style="font-size:clamp(32px,3.4vw,52px);line-height:1.15;color:#0f172a;margin:0;">74 countries and 235 cities signed the Global Cooling Pledge at COP28.</h2>
+          <p style="font-size:21px;line-height:1.5;color:#475569;font-weight:500;font-style:italic;border-left:4px solid #7c3aed;padding-left:18px;margin:0;">NDC + NCAP coverage is the gap where your contribution lands.</p>
+          <a class="cta-link cta-purple" href="http://localhost:5173/dashboard/policy" target="_blank" rel="noopener" style="align-self:flex-start;margin-top:8px;">▶ OPEN LIVE</a>
         </div>
         <div class="pillar-right" style="padding:0;display:flex;flex-direction:column;background:#0d3b4f;">
           <div class="live-banner">
