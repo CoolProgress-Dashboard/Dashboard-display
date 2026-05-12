@@ -521,39 +521,6 @@
         }
       }
 
-      // ── NDC progress bar ──────────────────────────────────────────────────
-      function updateNDCProgress() {
-        const setWidth = (id: string, pct: number) => {
-          const el = document.getElementById(id);
-          if (el) el.style.width = `${pct}%`;
-        };
-
-        const countryStatus = getCountryNDCStatus();
-        const values = Object.values(countryStatus);
-        const total = values.length;
-        const counts = { mentioned: 0, not: 0, noNdc: 0, noData: 0 };
-
-        values.forEach((status: any) => {
-          if (!status?.status) counts.noData += 1;
-          else if (status.status === 'Mentioned') counts.mentioned += 1;
-          else if (status.status === 'Not mentioned') counts.not += 1;
-          else if (status.status === 'No NDC submitted') counts.noNdc += 1;
-          else counts.noData += 1;
-        });
-
-        if (!total) {
-          setWidth('ndc-progress-mentioned', 0);
-          setWidth('ndc-progress-not', 0);
-          setWidth('ndc-progress-no-ndc', 0);
-          setWidth('ndc-progress-no-data', 0);
-          return;
-        }
-
-        setWidth('ndc-progress-mentioned', (counts.mentioned / total) * 100);
-        setWidth('ndc-progress-not', (counts.not / total) * 100);
-        setWidth('ndc-progress-no-ndc', (counts.noNdc / total) * 100);
-        setWidth('ndc-progress-no-data', (counts.noData / total) * 100);
-      }
 
       // ── NDC KPIs ──────────────────────────────────────────────────────────
       function updateNDCKPIs() {
@@ -1239,7 +1206,6 @@
 
           // Initialize with GCP legend and progress
           updatePolicyLegend('gcp');
-          updateNDCProgress();
         } catch (error) {
           console.error('Policy map error:', error);
         }
@@ -1549,12 +1515,6 @@
       <div class="legend legend-row">
         <span class="legend-label">Status:</span>
         <div id="ndc-legend" class="legend-items"></div>
-      </div>
-      <div class="progress-bar ndc-progress">
-        <span class="progress-segment ndc-mentioned" id="ndc-progress-mentioned"></span>
-        <span class="progress-segment ndc-not" id="ndc-progress-not"></span>
-        <span class="progress-segment ndc-no-ndc" id="ndc-progress-no-ndc"></span>
-        <span class="progress-segment ndc-no-data" id="ndc-progress-no-data"></span>
       </div>
     </div>
 
