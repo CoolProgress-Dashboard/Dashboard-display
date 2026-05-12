@@ -455,7 +455,7 @@
   }
 
   .partner-logo img {
-    max-width: 100px;
+    max-width: 160px;
     max-height: 40px;
     object-fit: contain;
     opacity: 0.85;

@@ -808,28 +808,24 @@
           ]
         });
 
-        // NDC Evolution 2.0 vs 3.0
+        // NDC by category (previous NDCs only)
         const ndcEvolutionCategories = ['Energy Efficiency', 'Kigali Amendment', 'Doubling EE', 'Refrigerators & freezers', 'Air Conditioners', 'Appliance MEPS', 'Appliance Labels'];
         const categoryAbbrev: Record<string, string> = {
           'Energy Efficiency': 'Energy Eff.', 'Kigali Amendment': 'Kigali', 'Doubling EE': 'Doubling EE',
           'Refrigerators & freezers': 'Refrigerators', 'Air Conditioners': 'ACs', 'Appliance MEPS': 'MEPS', 'Appliance Labels': 'Labels'
         };
-        const ndc20Mentions = ndcEvolutionCategories.map(cat =>
-          new Set(ndcTracker.filter((n: any) => n.ndc_type === 'NDC 2.0' && n.category === cat && n.mention_value === 1).map((n: any) => n.country_code)).size
-        );
-        const ndc30Mentions = ndcEvolutionCategories.map(cat =>
-          new Set(ndcTracker.filter((n: any) => n.ndc_type === 'NDC 3.0' && n.category === cat && n.mention_value === 1).map((n: any) => n.country_code)).size
+        const ndcMentions = ndcEvolutionCategories.map(cat =>
+          new Set(ndcTracker.filter((n: any) => n.ndc_type === 'Other' && n.category === cat && n.mention_value === 1).map((n: any) => n.country_code)).size
         );
 
         setChart('chart-ndc-evolution', {
           tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-          legend: { bottom: 0, textStyle: { color: '#475569', fontSize: 10 } },
-          grid: { left: '3%', right: '4%', bottom: '15%', top: '10%', containLabel: true },
+          legend: { show: false },
+          grid: { left: '3%', right: '4%', bottom: '10%', top: '10%', containLabel: true },
           xAxis: { type: 'category', data: ndcEvolutionCategories.map(c => categoryAbbrev[c] || c), axisLabel: { color: '#475569', fontSize: 9, rotate: 25, interval: 0 } },
           yAxis: { type: 'value', name: 'Countries', nameTextStyle: { color: '#475569', fontSize: 11 }, axisLabel: { color: '#475569', fontSize: 10 } },
           series: [
-            { name: 'NDC 2.0', type: 'bar', data: ndc20Mentions, itemStyle: { color: CHROME.TEXT_MUTED, borderRadius: [3, 3, 0, 0] }, barGap: '10%' },
-            { name: 'NDC 3.0', type: 'bar', data: ndc30Mentions, itemStyle: { color: '#6BADA0', borderRadius: [3, 3, 0, 0] } }
+            { name: 'NDC', type: 'bar', data: ndcMentions, itemStyle: { color: '#6BADA0', borderRadius: [3, 3, 0, 0] } }
           ]
         });
 
@@ -866,7 +862,6 @@
         const mentionedCounts = ndcCategories.map(cat =>
           ndcTracker.filter((n: any) => n.ndc_type === ndcType && n.category === cat && n.mention_value === 1).length
         );
-        const ndcVersionLabel = ndcType === 'NDC 3.0' ? '(NDC 3.0)' : '(Previous NDC)';
         setChart('chart-ndc-categories', {
           tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
           legend: { show: false },
@@ -884,41 +879,34 @@
             axisTick: { show: false }
           },
           series: [
-            { name: `Mentioned ${ndcVersionLabel}`, type: 'bar', data: mentionedCounts, itemStyle: { color: '#6BADA0', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 11, fontWeight: 700, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } }
+            { name: 'NDC', type: 'bar', data: mentionedCounts, itemStyle: { color: '#6BADA0', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 11, fontWeight: 700, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } }
           ]
         });
 
         const ndcRegions = [...new Set(ndcTracker.map((n: any) => n.continent).filter(Boolean))] as string[];
-        const regionMentionedPrev = ndcRegions.map(region =>
+        const regionMentionedNDC = ndcRegions.map(region =>
           ndcTracker.filter((n: any) => n.ndc_type === 'Other' && n.category === ndcCategory && n.continent === region && n.mention_value === 1).length
-        );
-        const regionMentioned30 = ndcRegions.map(region =>
-          ndcTracker.filter((n: any) => n.ndc_type === 'NDC 3.0' && n.category === ndcCategory && n.continent === region && n.mention_value === 1).length
         );
 
         setChart('chart-ndc-regions', {
           tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-          legend: { bottom: 0, textStyle: { color: '#1e293b', fontWeight: 700, fontSize: 11 } },
-          grid: { left: '3%', right: '3%', bottom: '15%', top: '8%', containLabel: true },
+          legend: { show: false },
+          grid: { left: '3%', right: '3%', bottom: '10%', top: '8%', containLabel: true },
           xAxis: categoryAxis(ndcRegions),
           yAxis: valueAxis(),
           series: [
-            { name: 'Previous NDC', type: 'bar', data: regionMentionedPrev, itemStyle: { color: '#94a3b8', borderRadius: [3, 3, 0, 0] }, barGap: '10%' },
-            { name: 'NDC 3.0', type: 'bar', data: regionMentioned30, itemStyle: { color: '#6BADA0', borderRadius: [3, 3, 0, 0] } }
+            { name: 'NDC', type: 'bar', data: regionMentionedNDC, itemStyle: { color: '#6BADA0', borderRadius: [3, 3, 0, 0] } }
           ]
         });
 
-        const ndc30Mentioned = ndcCategories.map(cat =>
-          new Set(ndcTracker.filter((n: any) => n.ndc_type === 'NDC 3.0' && n.category === cat && n.mention_value === 1).map((n: any) => n.country_code)).size
-        );
-        const prevNdcMentioned = ndcCategories.map(cat =>
+        const ndcMentionedByCategory = ndcCategories.map(cat =>
           new Set(ndcTracker.filter((n: any) => n.ndc_type === 'Other' && n.category === cat && n.mention_value === 1).map((n: any) => n.country_code)).size
         );
 
         setChart('chart-ndc-comparison', {
           tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-          legend: { bottom: 0, textStyle: { color: '#475569', fontSize: 11 } },
-          grid: { left: '3%', right: '8%', bottom: '12%', top: '5%', containLabel: true },
+          legend: { show: false },
+          grid: { left: '3%', right: '8%', bottom: '5%', top: '5%', containLabel: true },
           xAxis: {
             type: 'value',
             axisLabel: { color: '#475569', fontSize: 10 },
@@ -932,8 +920,7 @@
             axisTick: { show: false }
           },
           series: [
-            { name: 'NDC 3.0', type: 'bar', data: ndc30Mentioned, itemStyle: { color: '#6BADA0', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } },
-            { name: 'Previous NDC (NDC 2.0)', type: 'bar', data: prevNdcMentioned, itemStyle: { color: CHROME.TEXT_MUTED, borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } }
+            { name: 'NDC', type: 'bar', data: ndcMentionedByCategory, itemStyle: { color: '#6BADA0', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } }
           ]
         });
 
@@ -981,7 +968,7 @@
         const cprBox = `
           <div style="padding:1.1rem 1.4rem;background:#f0f7ff;border-top:3px solid #0369a1;border-bottom:1px solid #bae0ff;margin-top:1rem;">
             <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-bottom:0.65rem;">
-              <img src="/images/cpr-logo-dark.png" alt="Climate Policy Radar" style="height:22px;width:auto;object-fit:contain;" />
+              <img src="/images/cpr-logo-dark.png" alt="Climate Policy Radar" style="height:16px;width:auto;object-fit:contain;" />
             </a>
             <div style="font-size:0.9rem;font-weight:800;color:#0f172a;margin-bottom:0.3rem;letter-spacing:-0.01em;">Explore national climate policies on Climate Policy Radar</div>
             <p style="font-size:0.81rem;color:#334155;line-height:1.65;margin:0 0 0.6rem;">
@@ -1105,7 +1092,7 @@
           const ncapCprBox = `
             <div style="padding:1.1rem 1.4rem;background:#f0f7ff;border-top:3px solid #0369a1;border-bottom:1px solid #bae0ff;margin-bottom:0.5rem;">
               <a href="https://www.climatepolicyradar.org/" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-bottom:0.65rem;">
-                <img src="/images/cpr-logo-dark.png" alt="Climate Policy Radar" style="height:22px;width:auto;object-fit:contain;" />
+                <img src="/images/cpr-logo-dark.png" alt="Climate Policy Radar" style="height:16px;width:auto;object-fit:contain;" />
               </a>
               <div style="font-size:0.9rem;font-weight:800;color:#0f172a;margin-bottom:0.3rem;letter-spacing:-0.01em;">NCAP data: Climate Policy Radar</div>
               <p style="font-size:0.81rem;color:#334155;line-height:1.65;margin:0 0 0.6rem;">
