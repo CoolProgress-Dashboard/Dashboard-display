@@ -47,3 +47,48 @@ coverage/
 # Misc
 *.tsbuildinfo
 .pnpm-debug.log
+
+# Data, analysis & presentation files (not dashboard source)
+*.xlsx
+*.xls
+*.pptx
+*.csv
+clasp_*_raw.json
+gci_*_raw.json
+AC_Inverter_*.py
+AC_SplitInverter_*.py
+AC_Inverter_Market_Data_add.py
+presentation/
+2026-*-*.md
+
+# Database setup scripts (contain credentials — use env vars instead)
+scripts/setup_new_tables.mjs
+scripts/populate_ac_*.mjs
+scripts/populate_access_*.mjs
+scripts/populate_appliance_*.mjs
+scripts/populate_cooling_*.mjs
+scripts/populate_country_*.mjs
+scripts/populate_peak_*.mjs
+scripts/populate_refrigerant_*.mjs
+scripts/build_dashboard_excel.py
+sql/create_ac_*.sql
+sql/create_access_*.sql
+sql/create_all_new_tables.sql
+sql/create_appliance_*.sql
+sql/create_cooling_*.sql
+sql/create_country_*.sql
+sql/create_peak_*.sql
+sql/create_refrigerant_*.sql
+
+# Root-level loose assets
+"LBNL Logo.jpg"
+berkeley-logo.svg
+cpr-logo-dark.png
+
+# Claude local config
+.claude/settings.local.json
+.claude/worktrees/
+
+# Excel temp/lock files
+~$*.xlsx
+~$*.xls
