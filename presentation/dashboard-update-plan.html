@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoolProgress Dashboard — Update Plan</title>
+<style>
+  :root {
+    --teal: #0d9488;
+    --teal-light: #ccfbf1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #060d1a;
+    color: white;
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ── SLIDESHOW ── */
+  .slideshow { width: 100vw; height: 100vh; position: relative; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    transform: translateX(50px);
+    overflow-y: auto;
+  }
+  .slide.active { opacity: 1; pointer-events: all; transform: translateX(0); }
+  .slide.exit   { opacity: 0; transform: translateX(-50px); }
+
+  /* ── NAV BAR ── */
+  .nav {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 200;
+    background: rgba(6,13,26,0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 40px;
+    padding: 9px 20px;
+  }
+  .nav-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.8);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.16); color: white; }
+  .nav-btn:disabled { opacity: 0.2; cursor: default; }
+  .dots { display: flex; gap: 6px; align-items: center; }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .dot.active { background: var(--teal); transform: scale(1.4); }
+  .slide-counter { font-size: 11px; color: rgba(255,255,255,0.3); min-width: 36px; text-align: center; }
+
+  /* ── SHARED SLIDE BASE ── */
+  .slide-inner {
+    min-height: 100vh;
+    padding: 52px 64px 110px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── SLIDE TOP LABEL ── */
+  .slide-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    opacity: 0.65;
+    margin-bottom: 10px;
+  }
+  .slide-headline {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 6px;
+  }
+  .slide-sub {
+    font-size: 14px;
+    opacity: 0.55;
+    margin-bottom: 32px;
+    font-weight: 400;
+  }
+
+  /* ── TAGS ── */
+  .tag {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .tag.bug     { background: rgba(220,38,38,0.35);  color: #fecaca; }
+  .tag.data    { background: rgba(124,58,237,0.35); color: #ddd6fe; }
+  .tag.ui      { background: rgba(37,99,235,0.35);  color: #bfdbfe; }
+  .tag.content { background: rgba(13,148,136,0.35); color: #99f6e4; }
+
+  /* ── PRIORITY BADGE ── */
+  .prio-badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    width: fit-content;
+    margin-bottom: 12px;
+  }
+  .prio-badge.high   { background: rgba(220,38,38,0.25);  color: #fecaca; border: 1px solid rgba(220,38,38,0.5); }
+  .prio-badge.medium { background: rgba(217,119,6,0.25);  color: #fde68a; border: 1px solid rgba(217,119,6,0.5); }
+  .prio-badge.low    { background: rgba(107,114,128,0.25);color: #d1d5db; border: 1px solid rgba(107,114,128,0.45); }
+
+  /* ── ITEM CARDS ── */
+  .item-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.13);
+    border-radius: 8px;
+    padding: 11px 15px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.92);
+    line-height: 1.5;
+    transition: background 0.15s;
+  }
+  .item-card:hover { background: rgba(255,255,255,0.12); }
+  .item-card .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    margin-top: 4px; flex-shrink: 0;
+  }
+  .item-card .dot.high   { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.6); }
+  .item-card .dot.medium { background: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,0.5); }
+  .item-card .dot.low    { background: #6b7280; }
+
+  .items-col { display: flex; flex-direction: column; gap: 7px; }
+  .group-block { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+  .group-block:last-child { margin-bottom: 0; }
+
+  /* two-column layout */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; flex: 1; }
+  .col { display: flex; flex-direction: column; }
+
+  /* count pills in header */
+  .count-pills { display: flex; gap: 8px; align-items: center; margin-bottom: 32px; flex-wrap: wrap; }
+  .pill {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 5px 16px;
+    border-radius: 20px;
+  }
+  .pill.high   { background: rgba(220,38,38,0.25);  color: #fecaca; border: 1px solid rgba(220,38,38,0.5); }
+  .pill.medium { background: rgba(217,119,6,0.25);  color: #fde68a; border: 1px solid rgba(217,119,6,0.5); }
+  .pill.low    { background: rgba(107,114,128,0.25);color: #d1d5db; border: 1px solid rgba(107,114,128,0.45); }
+
+  /* vertical accent line */
+  .accent-line {
+    width: 3px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    align-self: stretch;
+    margin-right: 4px;
+  }
+
+  /* ══════════════════════════════════
+     INDIVIDUAL SLIDE BACKGROUNDS
+  ══════════════════════════════════ */
+
+  /* 1 — Title */
+  #slide-1 { background: linear-gradient(135deg, #0f2a47 0%, #0d3b5e 55%, #083d4a 100%); }
+
+  /* 2 — Conflict */
+  #slide-2 { background: linear-gradient(135deg, #1c1300 0%, #2d1f00 60%, #3b2200 100%); }
+
+  /* 3 — Overview */
+  #slide-3 { background: linear-gradient(135deg, #0d1f35 0%, #0f2a47 60%, #0e2d50 100%); }
+
+  /* 4 — Emissions */
+  #slide-4 { background: linear-gradient(135deg, #1a0505 0%, #2d0808 55%, #3d0c0c 100%); }
+
+  /* 5 — MEPS */
+  #slide-5 { background: linear-gradient(135deg, #040e28 0%, #071a42 55%, #082050 100%); }
+
+  /* 6 — Kigali */
+  #slide-6 { background: linear-gradient(135deg, #1c1000 0%, #2e1a00 55%, #3d2200 100%); }
+
+  /* 7 — Access */
+  #slide-7 { background: linear-gradient(135deg, #021409 0%, #053018 55%, #063d1e 100%); }
+
+  /* 8 — Policy */
+  #slide-8 { background: linear-gradient(135deg, #100520 0%, #1c0835 55%, #200a3e 100%); }
+
+  /* 9 — General */
+  #slide-9 { background: linear-gradient(135deg, #0c0e14 0%, #141820 55%, #1a1f2b 100%); }
+
+  /* 10 — Blockers */
+  #slide-10 { background: linear-gradient(135deg, #150800 0%, #271200 55%, #2e1500 100%); }
+
+  /* ══════════════════════════════════
+     SLIDE 1 — TITLE
+  ══════════════════════════════════ */
+  .title-tag {
+    font-size: 10px; font-weight: 700; letter-spacing: 2.5px;
+    text-transform: uppercase; color: var(--teal); margin-bottom: 20px;
+  }
+  .title-h1 {
+    font-size: 56px; font-weight: 800; line-height: 1.08;
+    letter-spacing: -1.5px; max-width: 700px;
+  }
+  .title-h1 span { color: var(--teal); }
+  .title-sources {
+    margin-top: 20px; font-size: 12px; color: #475569;
+    max-width: 580px; line-height: 1.8;
+  }
+  .stats-row { display: flex; gap: 14px; margin-top: 48px; flex-wrap: wrap; }
+  .stat-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px; padding: 22px 28px; text-align: center; min-width: 120px;
+  }
+  .stat-box .n { font-size: 44px; font-weight: 800; line-height: 1; }
+  .stat-box .l { font-size: 10px; color: #475569; margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; }
+  .stat-box.t  .n { color: #7dd3fc; }
+  .stat-box.h  .n { color: #fca5a5; }
+  .stat-box.m  .n { color: #fcd34d; }
+  .stat-box.lo .n { color: #86efac; }
+  .stat-box.c  .n { color: #f0abfc; }
+
+  /* ══════════════════════════════════
+     SLIDE 2 — CONFLICT
+  ══════════════════════════════════ */
+  .conf-tag {
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: #f59e0b; margin-bottom: 16px;
+  }
+  .conf-h2 {
+    font-size: 40px; font-weight: 800; line-height: 1.15;
+    max-width: 680px; margin-bottom: 14px; letter-spacing: -1px;
+  }
+  .conf-desc {
+    font-size: 15px; color: #fbbf24; max-width: 660px;
+    line-height: 1.7; margin-bottom: 36px; opacity: 0.75;
+  }
+  .options { display: flex; flex-direction: column; gap: 12px; max-width: 680px; }
+  .opt {
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(245,158,11,0.3);
+    border-radius: 10px; padding: 16px 20px;
+    color: #fef9ee; font-size: 14px;
+    display: flex; align-items: center; gap: 14px; line-height: 1.5;
+  }
+  .opt.rec { background: rgba(217,119,6,0.15); border-color: #f59e0b; }
+  .opt-lbl {
+    font-size: 10px; font-weight: 700; padding: 3px 8px;
+    border-radius: 4px; background: rgba(245,158,11,0.2);
+    color: #f59e0b; white-space: nowrap; letter-spacing: 0.5px; flex-shrink: 0;
+  }
+  .opt.rec .opt-lbl { background: #f59e0b; color: #1c1300; }
+
+  /* ══════════════════════════════════
+     SLIDE 10 — BLOCKERS
+  ══════════════════════════════════ */
+  .blocker-item {
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(245,158,11,0.2);
+    border-radius: 10px; padding: 18px 22px;
+    display: flex; gap: 16px; align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .blocker-item:last-child { margin-bottom: 0; }
+  .blocker-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+  .blocker-item h4 { font-size: 15px; font-weight: 700; color: #fde68a; margin-bottom: 4px; }
+  .blocker-item p  { font-size: 13.5px; color: rgba(254,243,199,0.85); line-height: 1.55; }
+</style>
+</head>
+<body>
+<div class="slideshow" id="slideshow">
+
+  <!-- ══ SLIDE 1: TITLE ══ -->
+  <div class="slide active" id="slide-1">
+    <div class="slide-inner" style="justify-content:center">
+      <div class="title-tag">CoolProgress Dashboard · 2026</div>
+      <h1 class="title-h1">Update Plan &amp;<br><span>Change Roadmap</span></h1>
+      <p class="title-sources">
+        Noah/CCC · Jamie/CPR · Giorgia/SEforAll · Stefanie/HEAT · Ari/CLASP<br>
+        Cool Coalition 2026-04-29 · Patrick/HEAT + Ari/CLASP + Manuel + Dietram 2026-04-22
+      </p>
+      <div class="stats-row">
+        <div class="stat-box t"><div class="n">84</div><div class="l">Total items</div></div>
+        <div class="stat-box h"><div class="n">34</div><div class="l">High priority</div></div>
+        <div class="stat-box m"><div class="n">39</div><div class="l">Medium priority</div></div>
+        <div class="stat-box lo"><div class="n">11</div><div class="l">Low priority</div></div>
+        <div class="stat-box c"><div class="n">1</div><div class="l">Open conflict</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 2: OPEN CONFLICT ══ -->
+  <div class="slide" id="slide-2">
+    <div class="slide-inner" style="justify-content:center">
+      <div class="conf-tag">⚠ Open conflict — discuss today</div>
+      <h2 class="conf-h2">Where does the<br>Kigali map live?</h2>
+      <p class="conf-desc">
+        The Kigali Amendment map currently lives only in the Refrigerant Transition pillar.
+        But ratification is also a key commitment — it arguably belongs in National Plans &amp; Commitments too.
+      </p>
+      <div class="options">
+        <div class="opt"><span class="opt-lbl">A</span>Keep in Refrigerant Transition (Pillar 3) only — clean separation between pillars</div>
+        <div class="opt rec"><span class="opt-lbl">★ B — Recommended</span>Cross-reference from National Plans &amp; Commitments → link to Pillar 3 map. No duplication, no inconsistency.</div>
+        <div class="opt"><span class="opt-lbl">C</span>Duplicate map in both pillars — risk of data inconsistency over time</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3: OVERVIEW ══ -->
+  <div class="slide" id="slide-3">
+    <div class="slide-inner">
+      <div class="slide-label">Overview</div>
+      <div class="slide-headline">🏠 Front Page</div>
+      <div class="count-pills">
+        <span class="pill high">1 High</span>
+        <span class="pill medium">4 Medium</span>
+      </div>
+      <div class="group-block">
+        <div class="prio-badge high">● High</div>
+        <div class="items-col">
+          <div class="item-card"><div class="dot high"></div><span class="tag content">Content</span>Fix lead stat — cooling ≈ 7% of emissions today, reaches ≈ 10% under BAU by 2050. It does <em>not</em> triple.</div>
+        </div>
+      </div>
+      <div class="group-block">
+        <div class="prio-badge medium">● Medium</div>
+        <div class="items-col">
+          <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Remove comma — "By achieving sustainable cooling<strong>,</strong> we can prevent…" → no comma</div>
+          <div class="item-card"><div class="dot medium"></div><span class="tag ui">UI</span>Add <strong>Sustainable Cooling Hierarchy</strong> narrative block: Passive Cooling → Low-energy/hybrid → Best energy efficiency → Rapid HFC phase-down. Source: UNEP Global Cooling Watch 2025.</div>
+          <div class="item-card"><div class="dot medium"></div><span class="tag ui">UI</span>Remove numbers from the four priority areas on the landing page. Keep pillar numbers in the sidebar for verbal reference.</div>
+          <div class="item-card"><div class="dot medium"></div><span class="tag ui">UI</span>Add <strong>color coding</strong> to the navigation sidebar — one distinct color per pillar.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 4: EMISSIONS ══ -->
+  <div class="slide" id="slide-4">
+    <div class="slide-inner">
+      <div class="slide-label">Pillar 1</div>
+      <div class="slide-headline">🔴 Emissions</div>
+      <div class="count-pills">
+        <span class="pill high">8 High</span>
+        <span class="pill medium">5 Medium</span>
+        <span class="pill low">1 Low</span>
+      </div>
+      <div class="two-col">
+        <div class="col">
+          <div class="prio-badge high">● High</div>
+          <div class="items-col">
+            <div class="item-card"><div class="dot high"></div><span class="tag bug">Bug</span>Verify AC stock data — heading says 3.1B→6.1B, chart shows 1.5B→3B. Fix whichever is wrong.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag content">Content</span>Rename series: "Projected (2050)" → <strong>"Projected BAU 2050"</strong></div>
+            <div class="item-card"><div class="dot high"></div><span class="tag content">Content</span>Add scope note below chart: residential AC + domref + ceiling fans only; BAU only; commercial excluded.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag ui">UI</span>Split appliance selector: <strong>AC / Domestic Refrigerators / Ceiling Fans</strong></div>
+            <div class="item-card"><div class="dot high"></div><span class="tag data">Data</span><strong>Retire "Net Zero Appliances"</strong> scenario. Keep: BAU + Global Benchmarks + BAT.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag ui">UI</span>Switch stock chart line → <strong>vertical column chart</strong>. Current shading looks stacked but isn't — misleading.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag data">Data</span><strong>One source per chart</strong> — do not mix CLASP and GCI in the same visualization.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag ui">UI</span>Label data source <strong>directly on each chart</strong>, not only in methodology pages.</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="prio-badge medium">● Medium</div>
+          <div class="items-col" style="margin-bottom:16px">
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Add inline one-line scenario descriptions on chart (e.g. "BAU — no new policies").</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Replace "net zero homes / green buildings / best tech" → efficiency shift / refrigerant shift / grid decarbonization. <em>Pending mapping confirmation.</em></div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag data">Data</span>Reconcile GCI vs CLASP discrepancies + add methodology note.</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag data">Data</span>Update 2050 direct emissions trajectory to reflect HFC phasedown impact.</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Update "The Challenge" + "The Way Forward" body text (Textbausteine copy).</div>
+          </div>
+          <div class="prio-badge low">● Low</div>
+          <div class="items-col">
+            <div class="item-card"><div class="dot low"></div><span class="tag ui">UI</span>Add sector scope filter/flag to all visualizations.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 5: MEPS ══ -->
+  <div class="slide" id="slide-5">
+    <div class="slide-inner">
+      <div class="slide-label">Pillar 2</div>
+      <div class="slide-headline">⚡ Product Efficiency (MEPS)</div>
+      <div class="count-pills">
+        <span class="pill high">6 High</span>
+        <span class="pill medium">6 Medium</span>
+        <span class="pill low">3 Low</span>
+      </div>
+      <div class="two-col">
+        <div class="col">
+          <div class="prio-badge high">● High</div>
+          <div class="items-col">
+            <div class="item-card"><div class="dot high"></div><span class="tag data">Data</span>Replace outdated inverter share map data (Indonesia = 2019) with current <strong>LBNL dataset</strong>.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag ui">UI</span>Add <strong>LBNL inverter share table</strong> (% inverter vs fixed-speed) + SE Asia zoom-in.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag ui">UI</span>Add <strong>product scope badge</strong> to every section header — state which appliances are covered.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag bug">Bug</span>Fix <strong>CSPF unit</strong>: W/W (wrong — power) → <strong>Wh/Wh</strong> (correct — energy). Fix everywhere.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag ui">UI</span>Add <strong>MEPS enforcement indicator</strong> to stringency map — "has MEPS" vs "enforces MEPS".</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag data">Data</span>Update MEPS for <strong>5 ASEAN countries</strong>: Indonesia, Singapore, Thailand, Vietnam, Malaysia.</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="prio-badge medium">● Medium</div>
+          <div class="items-col" style="margin-bottom:16px">
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Update inverter savings: up to 60% achievable, 5x efficiency potential (Global Cooling Prize).</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Add <strong>Super-Efficient Fans</strong> highlight: ~2M sales India, 50% energy vs conventional.</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Add "Recent MEPS Updates" section: China refrigerators, Nigeria ACs, regional ASEAN work.</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Add CLASP info box: "Bridging the Cooling Gap — Energy Efficiency as a Driver for Appliance Access".</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Add high-temp/humidity section → 5x / Global Cooling Prize narrative.</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag ui">UI</span>Keep <strong>peak electricity load chart</strong> — do not replace with energy-only view.</div>
+          </div>
+          <div class="prio-badge low">● Low</div>
+          <div class="items-col">
+            <div class="item-card"><div class="dot low"></div><span class="tag ui">UI</span>Clarify or remove "number of MEPS/labels per country" metric on map.</div>
+            <div class="item-card"><div class="dot low"></div><span class="tag content">Content</span>Add one concrete U4E country assessment example.</div>
+            <div class="item-card"><div class="dot low"></div><span class="tag content">Content</span>Explore demand flexibility as future extension of peak story.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 6: KIGALI ══ -->
+  <div class="slide" id="slide-6">
+    <div class="slide-inner">
+      <div class="slide-label">Pillar 3</div>
+      <div class="slide-headline">🔺 Refrigerant Transition (Kigali)</div>
+      <div class="count-pills">
+        <span class="pill high">6 High</span>
+        <span class="pill medium">4 Medium</span>
+      </div>
+      <div class="two-col">
+        <div class="col">
+          <div class="prio-badge high">● High</div>
+          <div class="items-col">
+            <div class="item-card"><div class="dot high"></div><span class="tag content">Content</span><strong>Remove Kigali Plus trajectory line</strong> — keep only BAU and Kigali Implementation.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag bug">Bug</span>Fix <strong>historical line convergence bug</strong> — all scenario lines must be identical before ~2025. Only one observed history.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag data">Data</span>Add <strong>LBNL refrigerant market share data</strong> — R-410A → R-32 transition by key market.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag ui">UI</span>Redesign bank chart with <strong>3 toggle views</strong>: tonnes / MtCO2e / GWP-weighted %. Add methodology note.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag ui">UI</span>Add <strong>appliance scope label</strong> to refrigerant bank chart header.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag content">Content</span>Add <strong>workforce training &amp; certification</strong> under Technical Standards — certified technicians, training programs, certification schemes.</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="prio-badge medium">● Medium</div>
+          <div class="items-col">
+            <div class="item-card"><div class="dot medium"></div><span class="tag ui">UI</span>Replace 3-box layout with <strong>6-step lifecycle infographic</strong>: Policy &amp; Standards → Training → Deployment → Leak Prevention → End-of-Life → Reclamation. Add Technical Safeguards bar.</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag ui">UI</span>Add dedicated <strong>Kigali ratification &amp; phase-down schedules</strong> section (Article 5 vs non-Article 5).</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Add EIA fact sheets + EU F-Gas rule summary links.</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag data">Data</span>Automate Kigali ratification count via API — no hard-coded numbers.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 7: ACCESS ══ -->
+  <div class="slide" id="slide-7">
+    <div class="slide-inner">
+      <div class="slide-label">Pillar 4</div>
+      <div class="slide-headline">🏘 Access &amp; Vulnerability</div>
+      <div class="count-pills">
+        <span class="pill high">5 High</span>
+        <span class="pill medium">8 Medium</span>
+        <span class="pill low">2 Low</span>
+      </div>
+      <div class="two-col">
+        <div class="col">
+          <div class="prio-badge high">● High</div>
+          <div class="items-col">
+            <div class="item-card"><div class="dot high"></div><span class="tag bug">Bug</span>Fix population at risk chart — <strong>legend colors don't match graph colors</strong>.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag data">Data</span>Heatmap: use <strong>% of population</strong> for color coding. Move absolute numbers to tooltips only.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag content">Content</span>Rename map: "Cooling Access Gap" → <strong>"Cooling Access Risk by Country"</strong></div>
+            <div class="item-card"><div class="dot high"></div><span class="tag bug">Bug</span>Full audit and fix of all <strong>broken resource links</strong>.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag data">Data</span>Show <strong>totals + percentages</strong> (e.g. "India: 453M — 32% of pop.") aligned with SEforALL thresholds.</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="prio-badge medium">● Medium</div>
+          <div class="items-col" style="margin-bottom:16px">
+            <div class="item-card"><div class="dot medium"></div><span class="tag data">Data</span>Change data start year 2015 → <strong>2020</strong>.</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Add SEforAll methodology note (regional estimates, not national, for non-high-impact countries).</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Add <strong>gender dimension</strong> — women: less cooling access, more indoor heat exposure.</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag data">Data</span>Explore <strong>wet-bulb / WBGT integration</strong> — critical for humid tropics risk assessment.</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag ui">UI</span>Add <strong>cross-pillar synergy callouts</strong> — MEPS (affordability), Kigali (low-GWP), Policy (financing).</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Include broader policy types: subsidies, financing, building codes, urban planning.</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Add SEforAll "This Is Cool Solutions Platform" info box.</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Add World Bank "Sustainable Cooling in Off-Grid Rural Areas" to resources.</div>
+          </div>
+          <div class="prio-badge low">● Low</div>
+          <div class="items-col">
+            <div class="item-card"><div class="dot low"></div><span class="tag ui">UI</span>Apply traffic-light color scheme for risk levels.</div>
+            <div class="item-card"><div class="dot low"></div><span class="tag ui">UI</span>Explore vulnerability + MEPS/policy map overlays.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 8: POLICY ══ -->
+  <div class="slide" id="slide-8">
+    <div class="slide-inner">
+      <div class="slide-label">Pillar 5</div>
+      <div class="slide-headline">📋 National Plans &amp; Commitments</div>
+      <div class="count-pills">
+        <span class="pill high">7 High</span>
+        <span class="pill medium">7 Medium</span>
+        <span class="pill low">2 Low</span>
+      </div>
+      <div class="two-col">
+        <div class="col">
+          <div class="prio-badge high">● High</div>
+          <div class="items-col">
+            <div class="item-card"><div class="dot high"></div><span class="tag ui">UI</span>Rename pillar to <strong>"National Plans &amp; Commitments"</strong> in codebase: sidebar, config.ts, route title, header.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag content">Content</span>Clarify NDC narrative — reconcile 37 / 134 countries figures into one coherent message.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag bug">Bug</span>Full broken link audit: Cooling Watch, CPR database link, all "Resources on cooling policy".</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag ui">UI</span>Replace <strong>CPR logo</strong> with updated version on this page.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag content">Content</span>Change CPR attribution: "data partner" → <strong>"Data sources"</strong> / "data provided by".</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag bug">Bug</span>Fix Policy map <strong>color bar bug</strong> — bottom bar doesn't match legend above.</div>
+            <div class="item-card"><div class="dot high"></div><span class="tag content">Content</span>Update CPR callout text to the approved language from Jamie.</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="prio-badge medium">● Medium</div>
+          <div class="items-col" style="margin-bottom:16px">
+            <div class="item-card"><div class="dot medium"></div><span class="tag ui">UI</span>Add <strong>3-layer policy framework</strong>: Commitment | Planning | Implementation layers.</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Add policy coherence paragraph referencing 14 GCP commitments [link TBD].</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Update all body text (Textbausteine revised copy).</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Add source cards: NDCs Cooling Guide, Cooler Finance (IFC), World Bank Urban Heat Handbook, NCAP MENA Methodology.</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag data">Data</span>Automate <strong>Global Cooling Pledge signatory count</strong> via API.</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Archive NCAP PDFs locally + Wayback Machine backup links.</div>
+            <div class="item-card"><div class="dot medium"></div><span class="tag ui">UI</span>Break up dense text blocks into shorter paragraphs.</div>
+          </div>
+          <div class="prio-badge low">● Low</div>
+          <div class="items-col">
+            <div class="item-card"><div class="dot low"></div><span class="tag ui">UI</span>Consider embedding GCP commitment details directly on the page.</div>
+            <div class="item-card"><div class="dot low"></div><span class="tag content">Content</span>Note for Jamie/CPR: which NCAPs were sourced for the dashboard.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 9: GENERAL ══ -->
+  <div class="slide" id="slide-9">
+    <div class="slide-inner">
+      <div class="slide-label">Cross-cutting</div>
+      <div class="slide-headline">⚙ General</div>
+      <div class="count-pills">
+        <span class="pill high">1 High</span>
+        <span class="pill medium">6 Medium</span>
+        <span class="pill low">3 Low</span>
+      </div>
+      <div class="group-block">
+        <div class="prio-badge high">● High</div>
+        <div class="items-col">
+          <div class="item-card"><div class="dot high"></div><span class="tag ui">UI</span>Replace <strong>CPR logo sitewide</strong> with the updated version — check all pages and components.</div>
+        </div>
+      </div>
+      <div class="group-block">
+        <div class="prio-badge medium">● Medium</div>
+        <div class="items-col">
+          <div class="item-card"><div class="dot medium"></div><span class="tag ui">UI</span>Audit text colors sitewide — replace low-contrast light green and yellow text.</div>
+          <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Add <strong>UNEP Global Cooling Watch 2025</strong> as primary source card on all relevant pillars.</div>
+          <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Add partner videos per pillar: Cold Chains (Access), NDCs (Policy), GCW 2025 + 2023 (Emissions), Urban Heat (Access).</div>
+          <div class="item-card"><div class="dot medium"></div><span class="tag content">Content</span>Add explicit data scope notes to all visualizations (residential vs broader sector).</div>
+          <div class="item-card"><div class="dot medium"></div><span class="tag ui">UI</span>Add <strong>"See also" cross-pillar connections</strong> to every pillar page.</div>
+          <div class="item-card"><div class="dot medium"></div><span class="tag ui">UI</span>Add sidebar color coding per pillar — confirm color scheme with design.</div>
+        </div>
+      </div>
+      <div class="group-block">
+        <div class="prio-badge low">● Low</div>
+        <div class="items-col">
+          <div class="item-card"><div class="dot low"></div><span class="tag content">Content</span>Schedule CLASP data review with Ari (Jiayi returning — timeline TBD).</div>
+          <div class="item-card"><div class="dot low"></div><span class="tag content">Content</span>Add CLASP references under Access: "Net Zero Heroes" + "Bridging the Cooling Gap".</div>
+          <div class="item-card"><div class="dot low"></div><span class="tag content">Content</span>Establish named owner + update cadence for Global Cooling Pledge signatory count.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 10: BLOCKERS ══ -->
+  <div class="slide" id="slide-10">
+    <div class="slide-inner" style="justify-content:center">
+      <div class="conf-tag">Implementation notes</div>
+      <h2 class="conf-h2" style="font-size:36px;margin-bottom:12px">Blockers — Do Not Implement<br>Until Confirmed</h2>
+      <p class="conf-desc" style="margin-bottom:32px">The following items depend on external input or pending decisions. Hold implementation until each is resolved.</p>
+      <div style="max-width:720px;width:100%">
+        <div class="blocker-item"><div class="blocker-icon">⚠</div><div><h4>Kigali map cross-reference</h4><p>Await today's decision before adding any Kigali content to National Plans &amp; Commitments.</p></div></div>
+        <div class="blocker-item"><div class="blocker-icon">⚠</div><div><h4>Scenario label rename</h4><p>Confirm Green Buildings / Net Zero Homes → Global Benchmarks / BAT mapping with Ari/CLASP before renaming.</p></div></div>
+        <div class="blocker-item"><div class="blocker-icon">⚠</div><div><h4>CPR logo replacement</h4><p>Replacement file must be received from Jamie before implementing anywhere on the site.</p></div></div>
+        <div class="blocker-item"><div class="blocker-icon">⚠</div><div><h4>NCAP archiving</h4><p>Coordinate with Jamie/CPR on which NCAPs to include before archiving any documents locally.</p></div></div>
+        <div class="blocker-item"><div class="blocker-icon">⚠</div><div><h4>CLASP data review</h4><p>Await Jiayi's availability before finalizing any CLASP-sourced content changes.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /slideshow -->
+
+<!-- ══ NAV ══ -->
+<div class="nav">
+  <button class="nav-btn" id="btn-prev" onclick="go(-1)" disabled>← Prev</button>
+  <div class="dots" id="dots"></div>
+  <span class="slide-counter" id="counter">1 / 10</span>
+  <button class="nav-btn" id="btn-next" onclick="go(1)">Next →</button>
+</div>
+
+<script>
+  const total = 10;
+  let current = 1;
+
+  const dotsEl = document.getElementById('dots');
+  for (let i = 1; i <= total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 1 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function go(dir) { goTo(current + dir); }
+
+  function goTo(n) {
+    if (n < 1 || n > total) return;
+    const prev = document.getElementById('slide-' + current);
+    prev.classList.remove('active');
+    prev.classList.add('exit');
+    setTimeout(() => prev.classList.remove('exit'), 450);
+    current = n;
+    const next = document.getElementById('slide-' + current);
+    next.classList.add('active');
+    document.querySelectorAll('.dots .dot').forEach((d, i) => d.classList.toggle('active', i + 1 === current));
+    document.getElementById('counter').textContent = current + ' / ' + total;
+    document.getElementById('btn-prev').disabled = current === 1;
+    document.getElementById('btn-next').disabled = current === total;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(-1);
+  });
+</script>
+</body>
+</html>
