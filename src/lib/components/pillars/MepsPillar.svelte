@@ -283,7 +283,7 @@
       if (!legend) return;
       legend.innerHTML = `
         <div class="legend-item"><div class="legend-color" style="background:${STATUS.ADVANCED}"></div>MEPS &amp; Labels</div>
-        <div class="legend-item"><div class="legend-color" style="background:${STATUS.GOOD}"></div>MEPS Only</div>
+        <div class="legend-item"><div class="legend-color" style="background:#2563eb"></div>MEPS Only</div>
         <div class="legend-item"><div class="legend-color" style="background:${STATUS.DEVELOPING}"></div>Labels Only</div>
       `;
     }
@@ -1620,7 +1620,7 @@
     border-left: 4px solid #0369a1;
     border-radius: 8px;
     padding: 1.25rem 1.5rem;
-    margin: 0 0 1.5rem;
+    margin: 0 64px 1.5rem;
   }
 
   .meps-clasp-infobox-left {
@@ -1991,11 +1991,11 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    gap: 0.6rem;
-    padding: 2.5rem 2rem;
+    gap: 0.4rem;
+    padding: 1rem 2rem;
     background: linear-gradient(160deg, #f0f9ff 0%, #dbeafe 100%);
     border-top: 1px solid #bae6fd;
-    min-height: 140px;
+    min-height: 70px;
   }
 
   .meps-csp-icon {

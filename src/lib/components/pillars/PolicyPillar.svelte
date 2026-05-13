@@ -272,7 +272,7 @@
 
       // ── NDC data helpers ─────────────────────────────────────────────────
       const ndcCategories = [
-        'Energy Efficiency', 'Kigali Amendment', 'Doubling EE',
+        'Energy Efficiency', 'Kigali Amendment',
         'Refrigerators & freezers', 'Air Conditioners', 'MEPS & Labels'
       ];
 
@@ -615,7 +615,7 @@
       function populatePolicyNDCFilters() {
         const displayCategories = [
           'Energy Efficiency', 'Air Conditioners', 'Refrigerators & freezers',
-          'Appliance MEPS', 'Appliance Labels', 'Doubling EE'
+          'Appliance MEPS', 'Appliance Labels'
         ];
 
         const typeSelect = document.getElementById('policy-ndc-type') as HTMLSelectElement | null;
@@ -642,8 +642,7 @@
             'Refrigerators & freezers': 'Refrigerators & Freezers',
             'Appliance MEPS': 'MEPS',
             'Appliance Labels': 'Labels',
-            'Doubling EE': 'Doubling EE Target'
-          };
+            };
           displayCategories.forEach((cat: string) => {
             const option = document.createElement('option');
             option.value = cat;
@@ -775,9 +774,9 @@
         });
 
         // NDC by category (previous NDCs only)
-        const ndcEvolutionCategories = ['Energy Efficiency', 'Kigali Amendment', 'Doubling EE', 'Refrigerators & freezers', 'Air Conditioners', 'Appliance MEPS', 'Appliance Labels'];
+        const ndcEvolutionCategories = ['Energy Efficiency', 'Kigali Amendment', 'Refrigerators & freezers', 'Air Conditioners', 'Appliance MEPS', 'Appliance Labels'];
         const categoryAbbrev: Record<string, string> = {
-          'Energy Efficiency': 'Energy Eff.', 'Kigali Amendment': 'Kigali', 'Doubling EE': 'Doubling EE',
+          'Energy Efficiency': 'Energy Eff.', 'Kigali Amendment': 'Kigali',
           'Refrigerators & freezers': 'Refrigerators', 'Air Conditioners': 'ACs', 'Appliance MEPS': 'MEPS', 'Appliance Labels': 'Labels'
         };
         const ndcMentions = ndcEvolutionCategories.map(cat =>

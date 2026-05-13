@@ -463,7 +463,7 @@
         });
 
       const projection = d3.geoNaturalEarth1()
-        .scale(width / 6)
+        .scale(Math.min(width / 6.3, height / 3.15))
         .translate([width / 2, height / 2]);
 
       const path = d3.geoPath().projection(projection);
@@ -1318,10 +1318,10 @@
       <!-- Ratification Map -->
       <div class="chart-card map-card" style="margin-top:1.25rem;">
         <div class="chart-card-body" style="padding:0;">
-          <div id="kigali-map-container" style="width:100%;height:340px;cursor:pointer;"></div>
+          <div id="kigali-map-container" style="width:100%;height:520px;cursor:pointer;"></div>
         </div>
         <!-- Legend -->
-        <div id="kigali-legend" style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;font-size:0.75rem;padding:0.75rem 1rem;border-top:1px solid #e2e8f0;background:#f8fafb;"></div>
+        <div id="kigali-legend" style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;justify-content:center;font-size:0.75rem;padding:0.75rem 1rem;border-top:1px solid #e2e8f0;background:#f8fafb;"></div>
         <!-- Ratification progress bar -->
         <div style="padding:0.5rem 1rem 0.75rem;background:#f8fafb;border-top:1px solid #f1f5f9;">
           <div style="height:8px;border-radius:999px;overflow:hidden;background:#e5e7eb;display:flex;">
@@ -1350,7 +1350,7 @@
         <p class="k-body">The Kigali Amendment commits parties to reducing HFC consumption by 80–85% from baseline levels, but not to zero. HFCs will continue to be produced and used at reduced volumes indefinitely under current international law. Closing the climate gap fully requires a complete phase-<em>out</em> — eliminating HFC production and consumption entirely. The EU has already shown it is achievable: the F-Gas Regulation (2024/573) mandates a full HFC phase-out by 2050, going far beyond what Kigali demands. For the world to stay on a 1.5°C pathway, other major economies will need to follow.</p>
 
         <div style="margin-top:1rem;background:#f0f9ff;border-radius:10px;padding:0.85rem 1rem;border-left:3px solid #0369a1;display:flex;align-items:flex-start;gap:0.75rem;">
-          <i class="fa-solid fa-book-open" style="color:#0369a1;margin-top:0.1rem;flex-shrink:0;font-size:0.9rem;"></i>
+          <img src="/images/iea-logo.png" alt="IEA" style="height:28px;width:auto;object-fit:contain;flex-shrink:0;margin-top:0.1rem;opacity:0.9;" />
           <div>
             <div style="font-size:0.7rem;font-weight:700;color:#0369a1;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.25rem;">IEA — The Future of Cooling</div>
             <p style="font-size:0.82rem;color:#1e293b;margin:0 0 0.35rem;line-height:1.5;">Space cooling demand is projected to triple by 2050. The IEA identifies refrigerant transition alongside efficiency improvements as critical to limiting warming — underscoring that a phase-out of high-GWP refrigerants, not merely a phase-down, is essential.</p>
