@@ -31,36 +31,53 @@ const fetchTable = async <T>(
   filter = '',
   limit = 1000
 ): Promise<T[]> => {
-  const allRecords: T[] = [];
-  let offset = 0;
   const batchSize = 1000;
+  const endpoint = (offset: number) =>
+    `${url}/rest/v1/${table}?select=${columns}${filter}&limit=${batchSize}&offset=${offset}`;
 
-  while (true) {
-    const endpoint = `${url}/rest/v1/${table}?select=${columns}${filter}&limit=${batchSize}&offset=${offset}`;
-    const response = await fetch(endpoint, {
-      headers: {
-        apikey: key,
-        Authorization: `Bearer ${key}`
-      }
-    });
-
-    if (!response.ok) {
-      const body = await response.text().catch(() => '');
-      throw new Error(`Failed to fetch ${table}: ${response.status} ${body}`);
-    }
-
-    const batch: T[] = await response.json();
-    allRecords.push(...batch);
-
-    // Stop if we got fewer records than the batch size (no more pages)
-    // or if we've reached the requested limit
-    if (batch.length < batchSize || allRecords.length >= limit) {
-      break;
-    }
-    offset += batchSize;
+  // First request — include Prefer: count=exact so Supabase returns the total
+  // row count in the Content-Range header (e.g. "0-999/15432").
+  const firstRes = await fetch(endpoint(0), {
+    headers: { apikey: key, Authorization: `Bearer ${key}`, Prefer: 'count=exact' }
+  });
+  if (!firstRes.ok) {
+    const body = await firstRes.text().catch(() => '');
+    throw new Error(`Failed to fetch ${table}: ${firstRes.status} ${body}`);
   }
 
-  return allRecords;
+  const firstBatch: T[] = await firstRes.json();
+
+  // Parse total from Content-Range: "0-999/15432"
+  const contentRange = firstRes.headers.get('Content-Range') ?? '';
+  const totalMatch = contentRange.match(/\/(\d+)$/);
+  const totalRows = totalMatch ? parseInt(totalMatch[1], 10) : firstBatch.length;
+  const effectiveLimit = Math.min(limit, totalRows);
+
+  if (firstBatch.length >= effectiveLimit) {
+    return firstBatch.slice(0, effectiveLimit);
+  }
+
+  // Build the list of remaining page offsets and fetch them all in parallel
+  // instead of sequentially — turns N round-trips into 2 (first + all others).
+  const remainingOffsets: number[] = [];
+  for (let offset = batchSize; offset < effectiveLimit; offset += batchSize) {
+    remainingOffsets.push(offset);
+  }
+
+  const remainingBatches = await Promise.all(
+    remainingOffsets.map(async (offset) => {
+      const res = await fetch(endpoint(offset), {
+        headers: { apikey: key, Authorization: `Bearer ${key}` }
+      });
+      if (!res.ok) {
+        const body = await res.text().catch(() => '');
+        throw new Error(`Failed to fetch ${table} at offset ${offset}: ${res.status} ${body}`);
+      }
+      return res.json() as Promise<T[]>;
+    })
+  );
+
+  return ([firstBatch, ...remainingBatches] as T[][]).flat().slice(0, effectiveLimit);
 };
 
 export const createDefaultData = (): DashboardData => ({
@@ -156,9 +173,8 @@ export const loadApplianceChartData = async (
 };
 
 // Loads clasp_energy_consumption + global_model_subcool separately.
-// These tables have 27k and 34k rows respectively — at Supabase's 1000-row cap
-// that means 62 sequential HTTP requests (~7–30 s). Calling this lazily inside
-// EmissionsPillar keeps the layout load fast.
+// These tables have 27k and 34k rows respectively — parallel pagination +
+// column pruning + year filter keep this as lean as possible.
 export const loadEmissionsHeavyData = async (
   url: string,
   key: string
@@ -168,16 +184,19 @@ export const loadEmissionsHeavyData = async (
       url,
       key,
       'clasp_energy_consumption',
-      'id,country_code,country_name,year,appliance,bau_final_energy_twh,bau_co2_mt,gb_final_energy_twh,gb_co2_mt,gb_annual_co2_red_mt,gb_cumul_co2_red_mt,nzh_final_energy_twh,nzh_co2_mt,nzh_annual_co2_red_mt,nzh_cumul_co2_red_mt,bat_final_energy_twh,bat_co2_mt,bat_annual_co2_red_mt,bat_cumul_co2_red_mt,bat_co2_nzg_mt,bat_cumul_co2_red_nzg_mt,appliance_units_in_use,appliance_ownership_rate',
-      '',
+      // id and appliance_ownership_rate dropped — unused in EmissionsPillar
+      'country_code,country_name,year,appliance,bau_final_energy_twh,bau_co2_mt,gb_final_energy_twh,gb_co2_mt,gb_annual_co2_red_mt,gb_cumul_co2_red_mt,nzh_final_energy_twh,nzh_co2_mt,nzh_annual_co2_red_mt,nzh_cumul_co2_red_mt,bat_final_energy_twh,bat_co2_mt,bat_annual_co2_red_mt,bat_cumul_co2_red_mt,bat_co2_nzg_mt,bat_cumul_co2_red_nzg_mt,appliance_units_in_use',
+      '&year=gte.2020&year=lte.2050',
       50000
     ),
     safeFetch<SubcoolRecord>(
       url,
       key,
       'global_model_subcool',
-      'id,scenario_id,scenario_name,country_code,country_name,subsector_id,subsector,year,indirect_emission_mt,direct_emission_mt,stock,unit_sales,ec_gwh',
-      '',
+      // Pruned to only the 7 columns EmissionsPillar reads; id/scenario_id/
+      // subsector_id/stock/unit_sales/ec_gwh are never accessed (~46% less data)
+      'scenario_name,country_code,country_name,year,subsector,indirect_emission_mt,direct_emission_mt',
+      '&year=gte.2020&year=lte.2050',
       100000
     )
   ]);
@@ -190,16 +209,11 @@ export const loadDashboardData = async (
 ): Promise<DashboardData> => {
   // clasp_energy_consumption and global_model_subcool are intentionally excluded —
   // they require 60+ sequential requests. EmissionsPillar loads them lazily.
-  const [countries, pledge, kigali, meps, access, accessForecast, emissions, ndcTracker, ncap, regions, refrigerants, acInverterShare, acGrowthData, coolingMilestones, applianceTimeseries, peakLoadData, countrySpotlights, kigaliGroupSchedules, kigaliCountryOverrides, accessCountryPct] =
+  const [countries, pledge, kigali, meps, access, accessForecast, emissions, ndcTracker, ncap, regions, refrigerants, acInverterShare, acGrowthData, coolingMilestones, applianceTimeseries, peakLoadData, countrySpotlights, kigaliCountryOverrides, accessCountryPct] =
     await Promise.all([
       safeFetch(url, key, 'countries', 'country_code,country_name,region'),
       safeFetch(url, key, 'global_cooling_pledge', 'country_code,country_name,signatory'),
-      safeFetch(
-        url,
-        key,
-        'kip',
-        '*'  // TODO: narrow columns once we confirm kip table schema for schedule overrides
-      ),
+      safeFetch(url, key, 'kip', 'country_code,kigali_party,group_type'),
       safeFetch(
         url,
         key,
@@ -282,8 +296,7 @@ export const loadDashboardData = async (
         'country_spotlights',
         'id,spotlight_id,name,region,flag_emoji,narrative,meps_status,dominant_refrigerant,key_challenge,source,stats'
       ),
-      safeFetch(url, key, 'kigali_group_schedules', '*'),
-      safeFetch(url, key, 'kigali_country_schedule_overrides', '*'),
+      safeFetch(url, key, 'kigali_country_schedule_overrides', 'country_code,group_type'),
       safeFetch<AccessCountryPct>(url, key, 'access_country_pct', 'country_code,country_name,national_pop,total_at_risk,pct_at_risk,female_at_risk,male_at_risk,year')
     ]);
   // meps_level_timeline and meps_levels tables do not yet exist in Supabase.
@@ -296,7 +309,7 @@ export const loadDashboardData = async (
     countries,
     pledge,
     kigali,
-    kigaliGroupSchedules: kigaliGroupSchedules ?? [],
+    kigaliGroupSchedules: [],
     kigaliCountryOverrides: kigaliCountryOverrides ?? [],
     meps,
     access,

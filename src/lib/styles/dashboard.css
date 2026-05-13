@@ -357,7 +357,7 @@ select {
   background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
   display: flex;
   flex-direction: column;
-  min-width: 0; /* Prevent flex item from overflowing grid parent */
+  height: 100vh; /* Match sidebar — all scrolling happens inside this container, never on the body */
 }
 
 .main-content .view-section {
