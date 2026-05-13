@@ -1099,21 +1099,8 @@
             <p>Nigeria has introduced updated MEPS for room air conditioners, aligned with U4E Model Regulation Guidelines. The regulation targets inverter-class performance and sets a trajectory toward best-available efficiency by 2031 — a significant step for one of Africa's fastest-growing AC markets.</p>
           </div>
         </div>
-        <div class="meps-update-card">
-          <div class="meps-update-flag"><i class="fa-solid fa-earth-asia" style="color:#0369a1;"></i></div>
-          <div class="meps-update-body">
-            <strong class="meps-update-country">ASEAN Region — Ongoing Harmonization</strong>
-            <p>Singapore is advancing its second AC MEPS revision with updated test procedures. Malaysia is planning its first MEPS revision. The Philippines and Indonesia are both progressing MEPS development with CLASP and U4E support. A regional harmonization goal for ASEAN would allow manufacturers to produce to a single standard across 670 million consumers.</p>
-          </div>
-        </div>
-        <div class="meps-update-card">
-          <div class="meps-update-flag"><i class="fa-solid fa-earth-africa" style="color:#D4A843;"></i></div>
-          <div class="meps-update-body">
-            <strong class="meps-update-country">East &amp; Southern Africa — Regional MEPS</strong>
-            <p>EAC and SADC have gazetted and approved regional MEPS and labels for air conditioners and refrigerators, aligned with U4E best-practice guidance. Tiered requirements tighten over time, preventing lock-in of inefficient equipment as cooling demand accelerates across the region.</p>
-          </div>
-        </div>
       </div>
+      <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> Data currently under review by HEAT and partners.</p>
     </div>
 
     <!-- ═══ CLASP INFO BOX: BRIDGING THE COOLING GAP ═══ -->
@@ -1228,6 +1215,7 @@
     <!-- DATA: MEPS Stringency Chart -->
     <div class="meps-level-wrapper">
       <MepsLevelChart />
+      <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> Data currently under review by HEAT and partners.</p>
     </div>
 
     <!-- U4E Country Savings Assessments CTA -->
@@ -1265,6 +1253,7 @@
       <div class="chart-card-body">
         <p class="chart-hint">This chart shows cooling's current and projected share of peak electricity demand by country. Hover over bars to see absolute values and growth projections.</p>
         <PeakLoadChart />
+        <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> Data currently under review by HEAT and partners.</p>
       </div>
     </div>
 
@@ -2048,6 +2037,20 @@
     color: #1e293b;
     line-height: 1.78;
     margin: 0 0 16px;
+  }
+
+  .meps-data-disclaimer {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    color: #64748b;
+    font-style: italic;
+    margin: 0.75rem 0 0;
+    padding: 0.5rem 0.75rem;
+    background: #f8fafc;
+    border-left: 3px solid #cbd5e1;
+    border-radius: 0 4px 4px 0;
   }
 
   /* ===========================

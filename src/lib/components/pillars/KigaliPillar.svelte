@@ -464,7 +464,7 @@
 
       const projection = d3.geoNaturalEarth1()
         .scale(width / 6)
-        .translate([width / 2, height / 1.8]);
+        .translate([width / 2, height / 2]);
 
       const path = d3.geoPath().projection(projection);
 
@@ -1318,7 +1318,7 @@
       <!-- Ratification Map -->
       <div class="chart-card map-card" style="margin-top:1.25rem;">
         <div class="chart-card-body" style="padding:0;">
-          <div id="kigali-map-container" style="width:100%;height:420px;cursor:pointer;"></div>
+          <div id="kigali-map-container" style="width:100%;height:340px;cursor:pointer;"></div>
         </div>
         <!-- Legend -->
         <div id="kigali-legend" style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;font-size:0.75rem;padding:0.75rem 1rem;border-top:1px solid #e2e8f0;background:#f8fafb;"></div>
