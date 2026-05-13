@@ -58,7 +58,6 @@ gci_*_raw.json
 AC_Inverter_*.py
 AC_SplitInverter_*.py
 AC_Inverter_Market_Data_add.py
-presentation/
 2026-*-*.md
 
 # Database setup scripts (contain credentials — use env vars instead)

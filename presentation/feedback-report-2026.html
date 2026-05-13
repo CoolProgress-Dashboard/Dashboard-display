@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoolProgress — Feedback Report · 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,18..36,400;1,18..36,500;1,18..36,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ccc-coral:      #F26949;
+  --ccc-coral-deep: #D52E0D;
+  --ccc-coral-soft: #F68F73;
+  --ccc-lime:       #A8D166;
+  --ccc-forest:     #47966E;
+  --ccc-warm-dark:  #302a2c;
+  --ccc-warm-bg:    #FAF7F2;
+  --teal:           #3D6B6B;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: 'Figtree', 'IBM Plex Sans', system-ui, sans-serif;
+  background: #0d3b4f;
+}
+
+/* ============================================================
+   SPEAKER NOTES
+   ============================================================ */
+#notes-overlay {
+  position: fixed;
+  inset: auto 24px 80px auto;
+  width: min(440px, 38vw);
+  max-height: 70vh;
+  overflow-y: auto;
+  z-index: 1500;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+#notes-overlay.visible { pointer-events: all; opacity: 1; transform: translateY(0); }
+#notes-overlay .notes-card {
+  background: rgba(13,59,79,0.97); color: #f3f7f6;
+  border-radius: 14px; padding: 20px 22px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+  font-size: 14px; line-height: 1.55;
+  border-left: 4px solid #A8D166;
+}
+#notes-overlay .notes-head {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #A8D166; margin-bottom: 12px;
+}
+#notes-overlay .notes-card p { margin-bottom: 10px; }
+#notes-overlay .notes-card p:last-child { margin-bottom: 0; }
+#notes-overlay .notes-empty {
+  background: rgba(13,59,79,0.92); color: #cbd5e0;
+  border-radius: 12px; padding: 14px 16px;
+  font-size: 13px; text-align: center;
+}
+#notes-overlay .notes-empty span { color: #94a3b8; font-size: 11px; }
+
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+#progress-bar {
+  position: fixed; top: 0; left: 0;
+  height: 3px; width: 0%;
+  background: linear-gradient(90deg, var(--ccc-coral), var(--ccc-lime));
+  z-index: 1000; transition: width 0.45s ease;
+}
+
+/* ============================================================
+   SLIDE CONTAINER
+   ============================================================ */
+#deck { position: fixed; inset: 0; bottom: 56px; }
+
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; overflow: hidden;
+  transform: translateX(100%);
+  transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+  pointer-events: none;
+}
+.slide.prev   { transform: translateX(-100%); }
+.slide.active { transform: translateX(0); pointer-events: all; }
+.slide.next   { transform: translateX(100%); }
+
+.slide-content {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.65s ease 0.1s, transform 0.65s ease 0.1s;
+  height: 100%; display: flex; flex-direction: column; justify-content: center;
+}
+.slide.active .slide-content { opacity: 1; transform: translateY(0); }
+
+/* ============================================================
+   DARK SLIDES
+   ============================================================ */
+.slide-dark {
+  background: linear-gradient(135deg, #0d3b4f 0%, #1a3a2a 50%, #302a2c 100%);
+  color: #fff;
+}
+.slide-dark::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none; z-index: 0;
+}
+.orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); pointer-events: none; z-index: 0;
+}
+.orb-1 { width:420px;height:420px;background:rgba(242,105,73,0.15);top:-80px;left:-100px;animation:drift1 18s ease-in-out infinite alternate; }
+.orb-2 { width:340px;height:340px;background:rgba(168,209,102,0.12);bottom:-60px;right:10%;animation:drift2 22s ease-in-out infinite alternate; }
+.orb-3 { width:280px;height:280px;background:rgba(61,107,107,0.2);top:40%;left:55%;animation:drift3 26s ease-in-out infinite alternate; }
+@keyframes drift1 { from{transform:translate(0,0) scale(1)} to{transform:translate(60px,80px) scale(1.1)} }
+@keyframes drift2 { from{transform:translate(0,0) scale(1)} to{transform:translate(-80px,-60px) scale(1.08)} }
+@keyframes drift3 { from{transform:translate(0,0) scale(1)} to{transform:translate(40px,-50px) scale(0.92)} }
+.slide-dark .slide-content { position: relative; z-index: 1; }
+
+/* ============================================================
+   LIGHT SLIDES
+   ============================================================ */
+.slide-light { background: #fff; }
+
+.slide.slide-light .slide-content {
+  padding: 80px 72px 56px !important;
+  gap: 28px !important;
+  justify-content: flex-start !important;
+  box-sizing: border-box !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+/* ============================================================
+   TOP RAIL
+   ============================================================ */
+.slide-toprail {
+  position: absolute; top: 28px; left: 72px; right: 72px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+  z-index: 5;
+}
+.slide-toprail .eyebrow-rail { display: flex; align-items: center; gap: 14px; color: var(--ccc-coral); }
+.slide-toprail .eyebrow-rail::before { content:'';display:inline-block;width:38px;height:2px;background:var(--ccc-coral); }
+.slide-toprail .slide-counter-rail { color: #7C7370; font-weight: 600; }
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+h1, h2, h3, h4, .light-headline, .dark-headline {
+  letter-spacing: -1px !important;
+  font-family: 'Figtree', sans-serif !important;
+}
+.dark-headline {
+  font-size: clamp(56px, 6vw, 92px) !important;
+  line-height: 1.05 !important; font-weight: 800 !important;
+}
+.light-headline {
+  font-size: clamp(34px, 3.4vw, 56px) !important;
+  line-height: 1.08 !important; font-weight: 800 !important;
+  color: var(--ccc-warm-dark) !important;
+}
+.dark-sub {
+  font-size: clamp(18px, 1.8vw, 26px);
+  font-weight: 300; color: rgba(255,255,255,0.75);
+  line-height: 1.6; margin-top: 24px;
+}
+.serif-accent {
+  font-family: 'Newsreader', 'Times New Roman', serif !important;
+  font-style: italic !important; font-weight: 500 !important;
+  letter-spacing: -0.01em !important;
+}
+.body-text { font-size: 18px !important; line-height: 1.6 !important; color: var(--ccc-warm-dark) !important; }
+.section-tag {
+  display: inline-block; font-size: 13px; font-weight: 800;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 7px 16px; border-radius: 20px; margin-bottom: 20px;
+  font-family: 'Figtree', sans-serif !important;
+}
+.tag-coral  { background:rgba(242,105,73,0.10); color:var(--ccc-coral);  border:1px solid rgba(242,105,73,0.35); }
+.tag-teal   { background:rgba(61,107,107,0.10); color:var(--teal);       border:1px solid rgba(61,107,107,0.35); }
+.tag-green  { background:rgba(71,150,110,0.10); color:var(--ccc-forest); border:1px solid rgba(71,150,110,0.35); }
+.tag-amber  { background:rgba(217,119,6,0.10);  color:#D97706;           border:1px solid rgba(217,119,6,0.35);  }
+
+.cp-brand {
+  color: #0EA5E9 !important;
+  font-family: 'Figtree', sans-serif !important;
+  font-weight: 800 !important; font-style: normal !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* ============================================================
+   SHARED INNER
+   ============================================================ */
+.inner {
+  width: 100%; max-width: 1320px; margin: 0 auto;
+  padding: 0 72px; height: 100%;
+  display: flex; flex-direction: column; justify-content: center;
+}
+
+/* ============================================================
+   DATA PLACEHOLDER ZONES
+   ============================================================ */
+.data-placeholder {
+  border: 2px dashed rgba(242,105,73,0.45);
+  border-radius: 12px;
+  background: rgba(242,105,73,0.04);
+  padding: 20px 24px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 8px; text-align: center; min-height: 80px;
+}
+.data-placeholder .dp-label {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ccc-coral);
+}
+.data-placeholder .dp-hint {
+  font-size: 13px; color: #94a3b8; font-style: italic; line-height: 1.5;
+}
+.data-placeholder .dp-value {
+  font-size: 52px; font-weight: 800; letter-spacing: -0.04em;
+  color: #cbd5e1; line-height: 1; font-family: 'Figtree', sans-serif;
+}
+
+/* ============================================================
+   RATING BARS  (Q1 / Q2 visual)
+   ============================================================ */
+.rating-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 0; border-bottom: 1px solid rgba(48,42,44,0.10);
+}
+.rating-row:last-of-type { border-bottom: none; }
+.rating-label { font-size: 16px; font-weight: 700; min-width: 90px; color: var(--ccc-warm-dark); }
+.rating-bar-wrap { flex: 1; background: #f1f5f9; border-radius: 99px; height: 10px; overflow: hidden; }
+.rating-bar { height: 100%; border-radius: 99px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+.bar-yes     { background: #47966E; }
+.bar-partial { background: #D97706; }
+.bar-no      { background: #E85A4F; }
+.rating-count { font-size: 15px; font-weight: 700; min-width: 40px; text-align: right; color: #64748b; }
+.rating-pct   { font-size: 13px; color: #94a3b8; min-width: 46px; text-align: right; }
+
+/* ============================================================
+   QUOTE CARDS
+   ============================================================ */
+.quotes-col {
+  display: flex; flex-direction: column; gap: 14px;
+  overflow: hidden;
+}
+.quote-card {
+  background: var(--ccc-warm-bg);
+  border-left: 4px solid var(--ccc-coral);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 18px; font-size: 14px;
+  color: var(--ccc-warm-dark); line-height: 1.6;
+  font-style: italic;
+}
+.quote-card .q-meta {
+  display: block; margin-top: 8px;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: #94a3b8; font-style: normal;
+}
+.quote-card.q-green  { border-left-color: var(--ccc-forest); }
+.quote-card.q-teal   { border-left-color: var(--teal); }
+.quote-card.q-amber  { border-left-color: #D97706; }
+
+/* ============================================================
+   THEME TAGS  (Q3/Q4/Q5)
+   ============================================================ */
+.theme-tags {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px;
+}
+.theme-tag {
+  font-size: 14px; font-weight: 600;
+  padding: 7px 16px; border-radius: 99px;
+  background: rgba(61,107,107,0.09); color: var(--teal);
+  border: 1px solid rgba(61,107,107,0.25);
+}
+.theme-tag.strong { background: var(--teal); color: #fff; border-color: var(--teal); }
+.theme-tag.ph { background: rgba(242,105,73,0.07); color: #94a3b8; border: 1px dashed rgba(242,105,73,0.35); font-style: italic; }
+
+/* ============================================================
+   STAT BIG NUMBER
+   ============================================================ */
+.big-stat { font-size: clamp(64px,7vw,100px); font-weight:800; line-height:1; letter-spacing:-0.04em; font-family:'Figtree',sans-serif; }
+
+/* ============================================================
+   TWO-COL GRID
+   ============================================================ */
+.two-col-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+  flex: 1; min-height: 0;
+}
+.col-left-pad { padding-right: 24px; border-right: 1px solid rgba(48,42,44,0.12); display:flex;flex-direction:column;gap:16px; }
+.col-right-pad { padding-left: 8px; display:flex;flex-direction:column;gap:14px; }
+
+/* ============================================================
+   NAV BAR
+   ============================================================ */
+#nav-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 56px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(61,107,107,0.15);
+  box-shadow: 0 -2px 16px rgba(15,23,42,0.06);
+  display: flex; align-items: center; justify-content: center; gap: 20px; z-index: 999;
+}
+.nav-arrow {
+  background: none; border: none; cursor: pointer;
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--teal); font-size: 16px; transition: background 0.15s;
+}
+.nav-arrow:hover { background: rgba(61,107,107,0.08); }
+.nav-arrow:disabled { color: #cbd5e1; cursor: default; }
+.nav-arrow:disabled:hover { background: none; }
+.nav-dots { display: flex; align-items: center; gap: 6px; }
+.nav-dot {
+  width: 7px; height: 7px; border-radius: 4px;
+  background: #cbd5e1; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.65,0,0.35,1);
+  border: none; padding: 0; flex-shrink: 0;
+}
+.nav-dot.active { background: var(--teal); width: 24px; }
+.nav-counter {
+  font-size: 12px; font-weight: 600; color: #94a3b8;
+  min-width: 44px; text-align: center;
+  font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   DIVIDER SLIDE COVER — light warm cream
+   ============================================================ */
+#slide-cover {
+  background: #FAF7F2 !important;
+  color: var(--ccc-warm-dark) !important;
+}
+#slide-cover::before { display: none !important; }
+#slide-cover .orb { display: none !important; }
+
+/* ============================================================
+   PRIORITIES SLIDE
+   ============================================================ */
+.priority-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 14px; padding: 24px 28px;
+  display: flex; align-items: flex-start; gap: 20px;
+}
+.priority-num {
+  font-size: 42px; font-weight: 800; line-height: 1;
+  letter-spacing: -0.04em; opacity: 0.3; font-family: 'Figtree', sans-serif;
+  flex-shrink: 0; padding-top: 4px;
+}
+.priority-body { flex: 1; }
+.priority-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+.priority-text  { font-size: 15px; color: rgba(255,255,255,0.65); line-height: 1.6; }
+.priority-tag {
+  display: inline-block; margin-top: 12px;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 20px;
+}
+.ptag-quick  { background: rgba(168,209,102,0.15); color: var(--ccc-lime); border: 1px solid rgba(168,209,102,0.3); }
+.ptag-medium { background: rgba(242,105,73,0.15);  color: var(--ccc-coral-soft); border: 1px solid rgba(242,105,73,0.3); }
+.ptag-long   { background: rgba(61,107,107,0.2);   color: #7dd3d4; border: 1px solid rgba(61,107,107,0.4); }
+
+/* ============================================================
+   LEGEND
+   ============================================================ */
+.legend-row { display:flex;align-items:center;gap:8px;font-size:13px;color:#64748b;font-weight:500; }
+.legend-dot { width:10px;height:10px;border-radius:50%;flex-shrink:0; }
+
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<div id="notes-overlay"></div>
+
+<div id="deck">
+
+  <!-- ================================================================
+       SLIDE 1 — COVER (dark)
+       ================================================================ -->
+  <div class="slide slide-light active" id="slide-cover"
+       data-notes="Welcome slide. This is a summary of feedback collected from users who tested CoolProgress. Replace all placeholder zones with real data retrieved from the Supabase feedback table before presenting.">
+    <div class="slide-content">
+      <div class="inner" style="max-width:1300px;padding:0 80px;align-items:flex-start;">
+        <div style="display:inline-flex;align-items:center;gap:10px;background:rgba(242,105,73,0.10);border:1px solid rgba(242,105,73,0.3);border-radius:20px;padding:7px 18px;margin-bottom:36px;">
+          <span style="font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--ccc-coral);">User Feedback Report</span>
+        </div>
+        <h1 style="font-size:clamp(64px,7vw,112px);font-weight:900;letter-spacing:-2.5px;line-height:0.95;color:var(--ccc-warm-dark);margin:0;">
+          <span class="cp-brand">CoolProgress</span><br>
+          <span>Feedback</span>
+          <span class="serif-accent" style="color:var(--ccc-coral);font-weight:600;"> Results</span>
+        </h1>
+        <p style="margin-top:32px;max-width:800px;font-size:clamp(17px,1.7vw,22px);font-weight:400;color:#64748b;line-height:1.6;">
+          Responses collected via the built-in feedback form &mdash;
+          <strong style="color:var(--ccc-warm-dark);font-weight:700;">13–14 May 2026</strong>
+        </p>
+        <div style="display:flex;align-items:center;gap:40px;margin-top:52px;padding-top:32px;border-top:1px solid rgba(48,42,44,0.12);">
+          <div>
+            <div style="font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px;">Total responses</div>
+            <!-- FILL: replace 0 with actual count -->
+            <div style="font-size:clamp(52px,5.5vw,80px);font-weight:800;letter-spacing:-0.04em;color:var(--ccc-coral);line-height:1;">0</div>
+          </div>
+          <div style="width:1px;height:72px;background:rgba(48,42,44,0.12);"></div>
+          <div>
+            <div style="font-size:28px;font-weight:800;color:var(--ccc-warm-dark);line-height:1.2;letter-spacing:-0.5px;">London</div>
+          </div>
+          <div style="width:1px;height:72px;background:rgba(48,42,44,0.12);"></div>
+          <div>
+            <div style="font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px;">Collected via</div>
+            <div style="font-size:17px;font-weight:600;color:#64748b;line-height:1.4;">CoolProgress<br>in-dashboard form</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 2 — THE FIVE QUESTIONS (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-questions"
+       data-notes="Overview of the feedback form structure. Five scored/open questions. This slide needs no data — it's the methodology slide.">
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">How we collected feedback</span>
+      <span class="slide-counter-rail">Slide 02 / 10</span>
+    </div>
+    <div class="slide-content">
+      <div>
+        <span class="section-tag tag-coral">Methodology</span>
+        <h2 class="light-headline">Five questions, open text, <span class="serif-accent">built into the dashboard.</span></h2>
+      </div>
+      <div style="border-top:1px solid rgba(48,42,44,0.12);display:flex;flex-direction:column;flex:1;min-height:0;">
+
+        <div style="display:grid;grid-template-columns:40px 1fr;gap:0 24px;align-items:baseline;padding:16px 0;border-bottom:1px solid rgba(48,42,44,0.08);">
+          <div style="font-size:30px;font-weight:800;color:var(--ccc-coral);font-family:'Figtree',sans-serif;line-height:1;">1</div>
+          <div>
+            <p style="font-size:24px;font-weight:600;color:var(--ccc-warm-dark);line-height:1.3;margin:0;">Does the dashboard give you a useful overview of where the cooling transition stands globally?</p>
+            <span style="font-size:13px;color:#94a3b8;font-style:italic;">Yes / Partially / No &mdash; with open comment</span>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:40px 1fr;gap:0 24px;align-items:baseline;padding:16px 0;border-bottom:1px solid rgba(48,42,44,0.08);">
+          <div style="font-size:30px;font-weight:800;color:var(--ccc-coral);font-family:'Figtree',sans-serif;line-height:1;">2</div>
+          <div>
+            <p style="font-size:24px;font-weight:600;color:var(--ccc-warm-dark);line-height:1.3;margin:0;">Does it accurately represent and reference the work being done by partners in your area?</p>
+            <span style="font-size:13px;color:#94a3b8;font-style:italic;">Yes / Partially / No &mdash; with open comment</span>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:40px 1fr;gap:0 24px;align-items:baseline;padding:16px 0;border-bottom:1px solid rgba(48,42,44,0.08);">
+          <div style="font-size:30px;font-weight:800;color:var(--ccc-coral);font-family:'Figtree',sans-serif;line-height:1;">3</div>
+          <div>
+            <p style="font-size:24px;font-weight:600;color:var(--ccc-warm-dark);line-height:1.3;margin:0;">Is anything important missing from the picture &mdash; a theme, region, or data dimension?</p>
+            <span style="font-size:13px;color:#94a3b8;font-style:italic;">Open text</span>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:40px 1fr;gap:0 24px;align-items:baseline;padding:16px 0;border-bottom:1px solid rgba(48,42,44,0.08);">
+          <div style="font-size:30px;font-weight:800;color:var(--ccc-coral);font-family:'Figtree',sans-serif;line-height:1;">4</div>
+          <div>
+            <p style="font-size:24px;font-weight:600;color:var(--ccc-warm-dark);line-height:1.3;margin:0;">Do you spot any data points or framing that look incorrect or out of date?</p>
+            <span style="font-size:13px;color:#94a3b8;font-style:italic;">Open text</span>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:40px 1fr;gap:0 24px;align-items:baseline;padding:16px 0;">
+          <div style="font-size:30px;font-weight:800;color:var(--ccc-coral);font-family:'Figtree',sans-serif;line-height:1;">5</div>
+          <div>
+            <p style="font-size:24px;font-weight:600;color:var(--ccc-warm-dark);line-height:1.3;margin:0;">What would make this most useful for your work &mdash; or for communicating progress to decision-makers?</p>
+            <span style="font-size:13px;color:#94a3b8;font-style:italic;">Open text</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 3 — RESPONSE SNAPSHOT (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-snapshot"
+       data-notes="High-level numbers slide. Fill in total responses, breakdown by pillar, and the two rating distributions for Q1 and Q2.">
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">Response overview</span>
+      <span class="slide-counter-rail">Slide 03 / 10</span>
+    </div>
+    <div class="slide-content">
+      <div>
+        <span class="section-tag tag-teal">Snapshot</span>
+        <h2 class="light-headline">Who responded, and from <span class="serif-accent">where.</span></h2>
+      </div>
+      <div class="two-col-grid">
+
+        <!-- Left: headline numbers -->
+        <div class="col-left-pad" style="justify-content:center;">
+          <div>
+            <div style="font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ccc-coral);margin-bottom:10px;">Total responses</div>
+            <!-- FILL: replace with real count -->
+            <div class="big-stat" style="color:var(--ccc-warm-dark);">N</div>
+          </div>
+          <div style="margin-top:20px;">
+            <div style="font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:12px;">Responses by pillar accessed</div>
+            <!-- FILL: replace each count with real data from current_pillar field -->
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                <span style="font-size:15px;font-weight:600;color:var(--ccc-warm-dark);min-width:220px;">Pillar 1: Emissions</span>
+                <div style="flex:1;background:#f1f5f9;border-radius:99px;height:8px;overflow:hidden;"><div class="rating-bar bar-yes" style="width:0%"></div></div>
+                <span style="font-size:14px;font-weight:700;color:#64748b;min-width:24px;text-align:right;">0</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                <span style="font-size:15px;font-weight:600;color:var(--ccc-warm-dark);min-width:220px;">Pillar 2: Product Efficiency</span>
+                <div style="flex:1;background:#f1f5f9;border-radius:99px;height:8px;overflow:hidden;"><div class="rating-bar bar-yes" style="width:0%"></div></div>
+                <span style="font-size:14px;font-weight:700;color:#64748b;min-width:24px;text-align:right;">0</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                <span style="font-size:15px;font-weight:600;color:var(--ccc-warm-dark);min-width:220px;">Pillar 3: Refrigerant Transition</span>
+                <div style="flex:1;background:#f1f5f9;border-radius:99px;height:8px;overflow:hidden;"><div class="rating-bar bar-yes" style="width:0%"></div></div>
+                <span style="font-size:14px;font-weight:700;color:#64748b;min-width:24px;text-align:right;">0</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                <span style="font-size:15px;font-weight:600;color:var(--ccc-warm-dark);min-width:220px;">Pillar 4: Cooling Access &amp; Vulnerability</span>
+                <div style="flex:1;background:#f1f5f9;border-radius:99px;height:8px;overflow:hidden;"><div class="rating-bar bar-yes" style="width:0%"></div></div>
+                <span style="font-size:14px;font-weight:700;color:#64748b;min-width:24px;text-align:right;">0</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                <span style="font-size:15px;font-weight:600;color:var(--ccc-warm-dark);min-width:220px;">Pillar 5: National Plans &amp; Commitments</span>
+                <div style="flex:1;background:#f1f5f9;border-radius:99px;height:8px;overflow:hidden;"><div class="rating-bar bar-yes" style="width:0%"></div></div>
+                <span style="font-size:14px;font-weight:700;color:#64748b;min-width:24px;text-align:right;">0</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+                <span style="font-size:15px;font-weight:600;color:#94a3b8;min-width:220px;">Other / not specified</span>
+                <div style="flex:1;background:#f1f5f9;border-radius:99px;height:8px;overflow:hidden;"><div class="rating-bar" style="width:0%;background:#94a3b8;"></div></div>
+                <span style="font-size:14px;font-weight:700;color:#64748b;min-width:24px;text-align:right;">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: named respondents (if any gave name/org) -->
+        <div class="col-right-pad" style="justify-content:center;">
+          <div style="font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:14px;">Named respondents</div>
+          <!-- FILL: add a row per person who provided name/email, or show "all anonymous" -->
+          <div class="data-placeholder" style="min-height:200px;">
+            <span class="dp-label">Fill in</span>
+            <span class="dp-hint">Add a row per named respondent (name · organisation · pillar viewed).<br>If all anonymous, replace with a note saying so.</span>
+          </div>
+          <p style="font-size:13px;color:#94a3b8;margin-top:16px;font-style:italic;">Name and email fields are optional in the form — most responses may be anonymous.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 4 — Q1: GLOBAL OVERVIEW (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-q1"
+       data-notes="Q1 results: 'Does the dashboard give a useful overview?' Fill in Yes/Partially/No counts and percentages. Replace the quote placeholders with the most insightful comments from q1_comment field.">
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">Question 1</span>
+      <span class="slide-counter-rail">Slide 04 / 10</span>
+    </div>
+    <div class="slide-content">
+      <div>
+        <span class="section-tag tag-teal">Q1</span>
+        <h2 class="light-headline" style="font-size:clamp(24px,2.6vw,40px)!important;">Does the dashboard give you a useful overview of where the cooling transition stands globally?</h2>
+      </div>
+      <div class="two-col-grid">
+
+        <!-- Left: rating breakdown -->
+        <div class="col-left-pad" style="justify-content:center;">
+          <div style="font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:16px;">Rating breakdown</div>
+
+          <!-- FILL: update width (% of total) and count for each bar -->
+          <div class="rating-row">
+            <span class="rating-label" style="color:#47966E;">Yes</span>
+            <div class="rating-bar-wrap"><div class="rating-bar bar-yes" style="width:0%"></div></div>
+            <span class="rating-count">0</span>
+            <span class="rating-pct">0%</span>
+          </div>
+          <div class="rating-row">
+            <span class="rating-label" style="color:#D97706;">Partially</span>
+            <div class="rating-bar-wrap"><div class="rating-bar bar-partial" style="width:0%"></div></div>
+            <span class="rating-count">0</span>
+            <span class="rating-pct">0%</span>
+          </div>
+          <div class="rating-row">
+            <span class="rating-label" style="color:#E85A4F;">No</span>
+            <div class="rating-bar-wrap"><div class="rating-bar bar-no" style="width:0%"></div></div>
+            <span class="rating-count">0</span>
+            <span class="rating-pct">0%</span>
+          </div>
+
+          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:20px;">
+            <div class="legend-row"><span class="legend-dot" style="background:#47966E;"></span>Yes</div>
+            <div class="legend-row"><span class="legend-dot" style="background:#D97706;"></span>Partially</div>
+            <div class="legend-row"><span class="legend-dot" style="background:#E85A4F;"></span>No</div>
+          </div>
+
+          <!-- FILL: key takeaway sentence -->
+          <div style="margin-top:24px;padding:16px 20px;background:rgba(71,150,110,0.08);border-radius:10px;border-left:4px solid #47966E;">
+            <p style="font-size:15px;font-weight:600;color:var(--ccc-warm-dark);line-height:1.5;margin:0;font-style:italic;">
+              [Key takeaway from Q1 — e.g. "A majority found the overview useful, with concerns about…"]
+            </p>
+          </div>
+        </div>
+
+        <!-- Right: selected quotes -->
+        <div class="col-right-pad">
+          <div style="font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;">Selected comments</div>
+          <!-- FILL: replace these 3 placeholders with real q1_comment values -->
+          <div class="quote-card q-green">"[Quote from a Yes respondent — from q1_comment field]"<span class="q-meta">[Name or "Anonymous"] &middot; [Organisation if provided]</span></div>
+          <div class="quote-card q-amber">"[Quote from a Partially respondent — from q1_comment field]"<span class="q-meta">[Name or "Anonymous"] &middot; [Organisation if provided]</span></div>
+          <div class="quote-card">"[Additional comment if available]"<span class="q-meta">[Name or "Anonymous"]</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 5 — Q2: PARTNER REPRESENTATION (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-q2"
+       data-notes="Q2 results: 'Does it accurately represent partners' work?' Fill in Yes/Partially/No counts. The q2_comment field often mentions specific partners or regions feeling under-represented — surface those.">
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">Question 2</span>
+      <span class="slide-counter-rail">Slide 05 / 10</span>
+    </div>
+    <div class="slide-content">
+      <div>
+        <span class="section-tag tag-teal">Q2</span>
+        <h2 class="light-headline" style="font-size:clamp(24px,2.6vw,40px)!important;">Does it accurately represent and reference the work being done by partners in your area?</h2>
+      </div>
+      <div class="two-col-grid">
+
+        <div class="col-left-pad" style="justify-content:center;">
+          <div style="font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:16px;">Rating breakdown</div>
+
+          <!-- FILL: update width (% of total) and count -->
+          <div class="rating-row">
+            <span class="rating-label" style="color:#47966E;">Yes</span>
+            <div class="rating-bar-wrap"><div class="rating-bar bar-yes" style="width:0%"></div></div>
+            <span class="rating-count">0</span>
+            <span class="rating-pct">0%</span>
+          </div>
+          <div class="rating-row">
+            <span class="rating-label" style="color:#D97706;">Partially</span>
+            <div class="rating-bar-wrap"><div class="rating-bar bar-partial" style="width:0%"></div></div>
+            <span class="rating-count">0</span>
+            <span class="rating-pct">0%</span>
+          </div>
+          <div class="rating-row">
+            <span class="rating-label" style="color:#E85A4F;">No</span>
+            <div class="rating-bar-wrap"><div class="rating-bar bar-no" style="width:0%"></div></div>
+            <span class="rating-count">0</span>
+            <span class="rating-pct">0%</span>
+          </div>
+
+          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:20px;">
+            <div class="legend-row"><span class="legend-dot" style="background:#47966E;"></span>Yes</div>
+            <div class="legend-row"><span class="legend-dot" style="background:#D97706;"></span>Partially</div>
+            <div class="legend-row"><span class="legend-dot" style="background:#E85A4F;"></span>No</div>
+          </div>
+
+          <!-- FILL: partners / regions flagged as under-represented -->
+          <div style="margin-top:24px;">
+            <div style="font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:10px;">Partners / regions flagged as under-represented</div>
+            <div class="theme-tags">
+              <!-- FILL: add a .theme-tag per partner or region mentioned -->
+              <span class="theme-tag ph">[Partner or region]</span>
+              <span class="theme-tag ph">[Partner or region]</span>
+              <span class="theme-tag ph">[Partner or region]</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-right-pad">
+          <div style="font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;">Selected comments</div>
+          <!-- FILL: replace with real q2_comment values -->
+          <div class="quote-card q-green">"[Quote from a Yes respondent]"<span class="q-meta">[Name or "Anonymous"] &middot; [Organisation]</span></div>
+          <div class="quote-card q-amber">"[Quote from a Partially respondent — especially any naming specific partners or gaps]"<span class="q-meta">[Name or "Anonymous"]</span></div>
+          <div class="quote-card">"[Additional comment]"<span class="q-meta">[Name or "Anonymous"]</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 6 — Q3: WHAT'S MISSING (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-q3"
+       data-notes="Q3: 'Is anything important missing?' Read all q3_missing text answers. Group them into themes (e.g. 'district cooling', 'Africa data', 'passive cooling') and surface the most common ones as theme tags. Quote the most specific ones.">
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">Question 3</span>
+      <span class="slide-counter-rail">Slide 06 / 10</span>
+    </div>
+    <div class="slide-content">
+      <div>
+        <span class="section-tag tag-amber">Gaps identified</span>
+        <h2 class="light-headline">Is anything important missing from the picture?</h2>
+      </div>
+      <div class="two-col-grid">
+
+        <div class="col-left-pad">
+          <div style="font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:14px;">Themes mentioned</div>
+          <!-- FILL: replace placeholders with real theme tags. Use .theme-tag.strong for themes mentioned by 2+ people -->
+          <div class="theme-tags" style="gap:12px;">
+            <span class="theme-tag ph">[Theme 1 — most common]</span>
+            <span class="theme-tag ph">[Theme 2]</span>
+            <span class="theme-tag ph">[Theme 3]</span>
+            <span class="theme-tag ph">[Theme 4]</span>
+            <span class="theme-tag ph">[Theme 5]</span>
+            <span class="theme-tag ph">[Theme 6]</span>
+          </div>
+          <p style="font-size:13px;color:#94a3b8;margin-top:14px;font-style:italic;">Bold tags = mentioned by 2 or more respondents.</p>
+
+          <!-- FILL: count of respondents who left something here vs none -->
+          <div style="margin-top:20px;padding:14px 18px;background:var(--ccc-warm-bg);border-radius:10px;">
+            <span style="font-size:13px;font-weight:700;color:#64748b;">[N] of [Total] respondents identified a gap.</span>
+          </div>
+        </div>
+
+        <div class="col-right-pad">
+          <div style="font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;">Notable responses</div>
+          <!-- FILL: replace with real q3_missing values — pick 2-3 most actionable -->
+          <div class="quote-card q-teal">"[Most specific or actionable response]"<span class="q-meta">[Name or "Anonymous"]</span></div>
+          <div class="quote-card">"[Second most useful response]"<span class="q-meta">[Name or "Anonymous"]</span></div>
+          <div class="quote-card">"[Third response if available]"<span class="q-meta">[Name or "Anonymous"]</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 7 — Q4: DATA ACCURACY (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-q4"
+       data-notes="Q4: 'Do you spot any incorrect or outdated data?' Read all q4_incorrect fields. List each specific flag as a bullet. If none were raised, show 'No data errors flagged' prominently.">
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">Question 4</span>
+      <span class="slide-counter-rail">Slide 07 / 10</span>
+    </div>
+    <div class="slide-content">
+      <div>
+        <span class="section-tag tag-coral">Data accuracy</span>
+        <h2 class="light-headline">Do you spot any data points or framing that look <span class="serif-accent">incorrect or out of date?</span></h2>
+      </div>
+      <div class="two-col-grid">
+
+        <div class="col-left-pad" style="justify-content:center;">
+          <!-- FILL: if no errors were flagged, replace the placeholder with the green "None flagged" box -->
+          <div class="data-placeholder" style="min-height:160px;">
+            <span class="dp-label">Fill in</span>
+            <span class="dp-hint">
+              If no errors were flagged:<br>
+              Replace this box with a large green checkmark and "No data errors flagged by respondents."<br><br>
+              If errors were flagged:<br>
+              List each one as a bullet with section · chart · description.
+            </span>
+          </div>
+          <!-- FILL: count of respondents who left something here vs none -->
+          <div style="margin-top:20px;padding:14px 18px;background:var(--ccc-warm-bg);border-radius:10px;">
+            <span style="font-size:13px;font-weight:700;color:#64748b;">[N] of [Total] respondents flagged a potential issue.</span>
+          </div>
+        </div>
+
+        <div class="col-right-pad">
+          <div style="font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;">Flagged items</div>
+          <!-- FILL: add one quote-card per specific issue raised, or replace with "No specific items raised." -->
+          <div class="quote-card">"[Specific data point or framing flagged]"<span class="q-meta">[Section / Chart] &middot; [Name or "Anonymous"]</span></div>
+          <div class="quote-card">"[Second flag if any]"<span class="q-meta">[Section / Chart] &middot; [Name or "Anonymous"]</span></div>
+          <div class="quote-card">"[Third flag if any]"<span class="q-meta">[Name or "Anonymous"]</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 8 — Q5: WHAT WOULD MAKE IT MORE USEFUL (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-q5"
+       data-notes="Q5: 'What would make this most useful?' Read all q5_useful_for fields. This is often the richest question. Group into themes like 'export options', 'country drilldowns', 'policy tables'. Surface the most concrete asks.">
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">Question 5</span>
+      <span class="slide-counter-rail">Slide 08 / 10</span>
+    </div>
+    <div class="slide-content">
+      <div>
+        <span class="section-tag tag-teal">Feature requests</span>
+        <h2 class="light-headline">What would make this most useful for your work?</h2>
+      </div>
+      <div class="two-col-grid">
+
+        <div class="col-left-pad">
+          <div style="font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:14px;">Top requests — by theme</div>
+          <!-- FILL: replace placeholders. Use .theme-tag.strong for requests mentioned 2+ times -->
+          <div class="theme-tags" style="gap:12px;">
+            <span class="theme-tag ph">[Request theme 1]</span>
+            <span class="theme-tag ph">[Request theme 2]</span>
+            <span class="theme-tag ph">[Request theme 3]</span>
+            <span class="theme-tag ph">[Request theme 4]</span>
+            <span class="theme-tag ph">[Request theme 5]</span>
+          </div>
+
+          <!-- FILL: if there's a clear top ask, highlight it -->
+          <div style="margin-top:24px;padding:18px 20px;background:rgba(61,107,107,0.07);border-left:4px solid var(--teal);border-radius:0 10px 10px 0;">
+            <div style="font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);margin-bottom:8px;">Top ask</div>
+            <p style="font-size:16px;font-weight:600;color:var(--ccc-warm-dark);margin:0;line-height:1.5;">[Most frequently or most strongly requested feature/improvement]</p>
+          </div>
+        </div>
+
+        <div class="col-right-pad">
+          <div style="font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;">Notable responses</div>
+          <!-- FILL: pick 2-3 most concrete, actionable q5_useful_for values -->
+          <div class="quote-card q-teal">"[Most concrete feature request]"<span class="q-meta">[Name or "Anonymous"]</span></div>
+          <div class="quote-card">"[Second request]"<span class="q-meta">[Name or "Anonymous"]</span></div>
+          <div class="quote-card">"[Third if available]"<span class="q-meta">[Name or "Anonymous"]</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 9 — OTHER COMMENTS (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-other"
+       data-notes="Other comments: from the other_comments field. Also surface any standout comments not captured in Q1-Q5. If all are captured already, this slide can be merged with the summary.">
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">Other comments</span>
+      <span class="slide-counter-rail">Slide 09 / 10</span>
+    </div>
+    <div class="slide-content">
+      <div>
+        <span class="section-tag tag-coral">Open feedback</span>
+        <h2 class="light-headline">Other things people <span class="serif-accent">wanted to say.</span></h2>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;flex:1;min-height:0;align-content:start;padding-top:8px;">
+        <!-- FILL: one box per other_comments response. Remove boxes that are empty. If none, show "No additional comments received." -->
+        <div class="quote-card" style="font-size:15px;border-left-color:var(--ccc-forest);">
+          "[other_comments value 1]"
+          <span class="q-meta">[Name or "Anonymous"] &middot; [Pillar viewed]</span>
+        </div>
+        <div class="quote-card" style="font-size:15px;border-left-color:var(--teal);">
+          "[other_comments value 2]"
+          <span class="q-meta">[Name or "Anonymous"] &middot; [Pillar viewed]</span>
+        </div>
+        <div class="quote-card" style="font-size:15px;border-left-color:var(--ccc-coral);">
+          "[other_comments value 3]"
+          <span class="q-meta">[Name or "Anonymous"] &middot; [Pillar viewed]</span>
+        </div>
+        <div class="quote-card" style="font-size:15px;">
+          "[other_comments value 4 — if available]"
+          <span class="q-meta">[Name or "Anonymous"]</span>
+        </div>
+        <div class="quote-card" style="font-size:15px;">
+          "[other_comments value 5 — if available]"
+          <span class="q-meta">[Name or "Anonymous"]</span>
+        </div>
+        <div class="quote-card" style="font-size:15px;">
+          "[other_comments value 6 — if available]"
+          <span class="q-meta">[Name or "Anonymous"]</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 10 — PRIORITIES & NEXT STEPS (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-priorities"
+       data-notes="Summary slide. Based on all feedback read, pick the top 3 improvements to prioritise. Classify each as Quick Win (days), Medium (weeks), or Long-term (months). Add a closing tagline.">
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">What comes next</span>
+      <span class="slide-counter-rail">Slide 10 / 10</span>
+    </div>
+    <div class="slide-content">
+      <div>
+        <span class="section-tag tag-coral">Priorities</span>
+        <h2 class="light-headline">Top <span style="color:var(--ccc-coral);">3</span> improvements to act on.</h2>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;flex:1;min-height:0;">
+
+        <!-- FILL: replace title and text with the top 3 actionable improvements derived from the feedback -->
+        <div style="display:flex;align-items:flex-start;gap:24px;padding:20px 24px;background:#fff;border:1px solid rgba(48,42,44,0.08);border-radius:14px;box-shadow:0 2px 10px rgba(15,23,42,0.05);">
+          <div style="font-size:48px;font-weight:800;line-height:1;letter-spacing:-0.04em;color:var(--ccc-coral);opacity:0.25;font-family:'Figtree',sans-serif;flex-shrink:0;padding-top:2px;">1</div>
+          <div style="flex:1;">
+            <div style="font-size:19px;font-weight:700;color:var(--ccc-warm-dark);margin-bottom:7px;">[Priority 1 — most frequently requested or most critical]</div>
+            <div style="font-size:15px;color:#64748b;line-height:1.6;">[2-sentence description of what to fix / add and why the feedback signals this matters]</div>
+            <span style="display:inline-block;margin-top:10px;font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;background:rgba(71,150,110,0.1);color:#47966E;border:1px solid rgba(71,150,110,0.3);">Quick win</span>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:flex-start;gap:24px;padding:20px 24px;background:#fff;border:1px solid rgba(48,42,44,0.08);border-radius:14px;box-shadow:0 2px 10px rgba(15,23,42,0.05);">
+          <div style="font-size:48px;font-weight:800;line-height:1;letter-spacing:-0.04em;color:var(--ccc-coral);opacity:0.25;font-family:'Figtree',sans-serif;flex-shrink:0;padding-top:2px;">2</div>
+          <div style="flex:1;">
+            <div style="font-size:19px;font-weight:700;color:var(--ccc-warm-dark);margin-bottom:7px;">[Priority 2]</div>
+            <div style="font-size:15px;color:#64748b;line-height:1.6;">[2-sentence description]</div>
+            <span style="display:inline-block;margin-top:10px;font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;background:rgba(242,105,73,0.1);color:var(--ccc-coral);border:1px solid rgba(242,105,73,0.3);">Medium-term</span>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:flex-start;gap:24px;padding:20px 24px;background:#fff;border:1px solid rgba(48,42,44,0.08);border-radius:14px;box-shadow:0 2px 10px rgba(15,23,42,0.05);">
+          <div style="font-size:48px;font-weight:800;line-height:1;letter-spacing:-0.04em;color:var(--ccc-coral);opacity:0.25;font-family:'Figtree',sans-serif;flex-shrink:0;padding-top:2px;">3</div>
+          <div style="flex:1;">
+            <div style="font-size:19px;font-weight:700;color:var(--ccc-warm-dark);margin-bottom:7px;">[Priority 3]</div>
+            <div style="font-size:15px;color:#64748b;line-height:1.6;">[2-sentence description]</div>
+            <span style="display:inline-block;margin-top:10px;font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;background:rgba(61,107,107,0.1);color:var(--teal);border:1px solid rgba(61,107,107,0.3);">Long-term</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FILL: closing line -->
+      <p style="font-size:15px;font-style:italic;color:#94a3b8;margin-top:4px;">
+        "[Closing sentence — e.g. thank-you line, next review date, or call-to-action]"
+      </p>
+
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<div id="nav-bar">
+  <button class="nav-arrow" id="btn-prev" aria-label="Previous slide">
+    <i class="fa-solid fa-chevron-left"></i>
+  </button>
+  <div class="nav-dots" id="nav-dots"></div>
+  <button class="nav-arrow" id="btn-next" aria-label="Next slide">
+    <i class="fa-solid fa-chevron-right"></i>
+  </button>
+  <span class="nav-counter" id="nav-counter">1 / 10</span>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var TOTAL   = 10;
+  var current = 0;
+
+  var slides     = Array.from(document.querySelectorAll('.slide'));
+  var dotsEl     = document.getElementById('nav-dots');
+  var counterEl  = document.getElementById('nav-counter');
+  var progressEl = document.getElementById('progress-bar');
+  var btnPrev    = document.getElementById('btn-prev');
+  var btnNext    = document.getElementById('btn-next');
+
+  for (var i = 0; i < TOTAL; i++) {
+    (function (idx) {
+      var btn = document.createElement('button');
+      btn.className = 'nav-dot' + (idx === 0 ? ' active' : '');
+      btn.setAttribute('aria-label', 'Go to slide ' + (idx + 1));
+      btn.addEventListener('click', function () { goTo(idx); });
+      dotsEl.appendChild(btn);
+    })(i);
+  }
+
+  var dots = Array.from(dotsEl.querySelectorAll('.nav-dot'));
+
+  function render() {
+    slides.forEach(function (s, i) {
+      s.classList.remove('active', 'prev', 'next');
+      if      (i < current)   s.classList.add('prev');
+      else if (i === current) s.classList.add('active');
+      else                    s.classList.add('next');
+    });
+    dots.forEach(function (d, i) { d.classList.toggle('active', i === current); });
+    counterEl.textContent  = (current + 1) + ' / ' + TOTAL;
+    progressEl.style.width = ((current + 1) / TOTAL * 100) + '%';
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === TOTAL - 1;
+  }
+
+  function goTo(index) { if (index < 0 || index >= TOTAL) return; current = index; render(); }
+  function advance()   { goTo(current + 1); }
+  function retreat()   { goTo(current - 1); }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === ' ')  { e.preventDefault(); advance(); }
+    if (e.key === 'ArrowLeft')                    { e.preventDefault(); retreat(); }
+    if (e.key === 'Home')                         { e.preventDefault(); goTo(0); }
+    if (e.key === 'End')                          { e.preventDefault(); goTo(TOTAL - 1); }
+    if (e.key === 'n' || e.key === 'N')           { e.preventDefault(); toggleNotes(); }
+  });
+
+  function toggleNotes() {
+    var overlay = document.getElementById('notes-overlay');
+    var active  = slides[current];
+    var notes   = active && active.getAttribute('data-notes');
+    if (!notes) {
+      overlay.innerHTML = '<div class="notes-empty">No speaker notes on this slide.<br><span>(Press N again to close.)</span></div>';
+    } else {
+      var parts = notes.split('||').map(function (p) { return p.trim(); }).filter(Boolean);
+      overlay.innerHTML = '<div class="notes-card"><div class="notes-head">Fill-in guide &middot; press N to close</div>' +
+        parts.map(function (p) { return '<p>' + p + '</p>'; }).join('') + '</div>';
+    }
+    overlay.classList.toggle('visible');
+  }
+
+  document.getElementById('deck').addEventListener('click', function (e) {
+    var tag = e.target.tagName.toLowerCase();
+    if (['a', 'button', 'input'].indexOf(tag) !== -1) return;
+    if (e.target.closest('#nav-bar')) return;
+    advance();
+  });
+
+  var touchStartX = 0;
+  document.addEventListener('touchstart', function (e) { touchStartX = e.changedTouches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 48) { if (dx < 0) advance(); else retreat(); }
+  });
+
+  btnPrev.addEventListener('click', retreat);
+  btnNext.addEventListener('click', advance);
+
+  render();
+}());
+</script>
+</body>
+</html>
