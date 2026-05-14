@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoolProgress — London Event · May 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@1,18..36,400;1,18..36,500;1,18..36,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  background: #0d3b4f;
+}
+
+/* ============================================================
+   SPEAKER NOTES OVERLAY  (press N)
+   ============================================================ */
+#notes-overlay {
+  position: fixed;
+  inset: auto 24px 80px auto;
+  width: min(440px, 38vw);
+  max-height: 70vh;
+  overflow-y: auto;
+  z-index: 1500;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+#notes-overlay.visible {
+  pointer-events: all;
+  opacity: 1;
+  transform: translateY(0);
+}
+#notes-overlay .notes-card {
+  background: rgba(13, 59, 79, 0.97);
+  color: #f3f7f6;
+  border-radius: 14px;
+  padding: 20px 22px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+  font-size: 14px;
+  line-height: 1.55;
+  border-left: 4px solid #8BC34A;
+}
+#notes-overlay .notes-head {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8BC34A;
+  margin-bottom: 12px;
+}
+#notes-overlay .notes-card p {
+  margin-bottom: 10px;
+}
+#notes-overlay .notes-card p:last-child { margin-bottom: 0; }
+#notes-overlay .notes-empty {
+  background: rgba(13,59,79,0.92);
+  color: #cbd5e0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 13px;
+  text-align: center;
+}
+#notes-overlay .notes-empty span { color: #94a3b8; font-size: 11px; }
+
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, #3D6B6B, #8BC34A);
+  z-index: 1000;
+  transition: width 0.45s ease;
+}
+
+/* ============================================================
+   SLIDE CONTAINER
+   ============================================================ */
+#deck {
+  position: fixed;
+  inset: 0;
+  bottom: 56px;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateX(100%);
+  transition: transform 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+  pointer-events: none;
+}
+
+.slide.prev   { transform: translateX(-100%); }
+.slide.active { transform: translateX(0);     pointer-events: all; }
+.slide.next   { transform: translateX(100%);  }
+
+.slide-content {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s ease 0.1s, transform 0.65s ease 0.1s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.slide.active .slide-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   DARK SLIDES
+   ============================================================ */
+.slide-dark {
+  background: linear-gradient(135deg, #0d3b4f 0%, #1a6b5a 50%, #0693e3 100%);
+  color: #fff;
+}
+
+.slide-dark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+.orb-1 {
+  width: 420px; height: 420px;
+  background: rgba(34, 211, 238, 0.18);
+  top: -80px; left: -100px;
+  animation: drift1 18s ease-in-out infinite alternate;
+}
+.orb-2 {
+  width: 340px; height: 340px;
+  background: rgba(139, 195, 74, 0.14);
+  bottom: -60px; right: 10%;
+  animation: drift2 22s ease-in-out infinite alternate;
+}
+.orb-3 {
+  width: 280px; height: 280px;
+  background: rgba(61, 107, 107, 0.22);
+  top: 40%; left: 55%;
+  animation: drift3 26s ease-in-out infinite alternate;
+}
+
+@keyframes drift1 {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(60px, 80px) scale(1.1); }
+}
+@keyframes drift2 {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(-80px, -60px) scale(1.08); }
+}
+@keyframes drift3 {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(40px, -50px) scale(0.92); }
+}
+
+.slide-dark .slide-content {
+  position: relative;
+  z-index: 1;
+}
+
+.dark-headline  { font-size: clamp(56px, 6vw, 92px) !important; line-height: 1.05 !important; font-weight: 800 !important; }
+
+.dark-sub {
+  font-size: clamp(16px, 1.7vw, 22px);
+  font-weight: 300;
+  color: rgba(255,255,255,0.72);
+  line-height: 1.65;
+  margin-top: 24px;
+}
+
+.dark-body {
+  font-size: 17px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.7;
+}
+
+/* ============================================================
+   LIGHT SLIDES
+   ============================================================ */
+.slide-light {
+  background: #f8fafc;
+}
+
+.section-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.tag-teal    { background: rgba(61,107,107,0.1);  color: #3D6B6B;  border: 1px solid rgba(61,107,107,0.3);  }
+.tag-red     { background: rgba(232,90,79,0.1);   color: #E85A4F;  border: 1px solid rgba(232,90,79,0.3);   }
+.tag-purple  { background: rgba(124,58,237,0.1);  color: #7c3aed;  border: 1px solid rgba(124,58,237,0.3);  }
+.tag-amber   { background: rgba(217,119,6,0.1);   color: #D97706;  border: 1px solid rgba(217,119,6,0.3);   }
+.tag-green   { background: rgba(5,150,105,0.1);   color: #059669;  border: 1px solid rgba(5,150,105,0.3);   }
+.tag-cyan    { background: rgba(34,211,238,0.12); color: #22d3ee;  border: 1px solid rgba(34,211,238,0.4);  }
+.tag-blue    { background: rgba(2,132,199,0.1);   color: #0284c7;  border: 1px solid rgba(2,132,199,0.3);   }
+
+.light-headline { font-size: clamp(38px, 4vw, 64px) !important; line-height: 1.12 !important; font-weight: 800 !important; }
+
+.pull-quote {
+  font-style: italic;
+  font-size: 17px;
+  color: #3D6B6B;
+  border-left: 3px solid rgba(61,107,107,0.25);
+  padding-left: 16px;
+  margin-bottom: 20px;
+  line-height: 1.65;
+}
+
+.body-text {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #475569;
+}
+
+.bridge-line {
+  font-size: 13px;
+  font-style: italic;
+  color: #94a3b8;
+  text-align: right;
+}
+
+/* ============================================================
+   TAG PILL (dark slide variant)
+   ============================================================ */
+.dark-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 20px;
+  background: rgba(34,211,238,0.1);
+  border: 1px solid rgba(34,211,238,0.35);
+  color: #22d3ee;
+  margin-bottom: 28px;
+}
+
+/* ============================================================
+   PARTNER CHIPS
+   ============================================================ */
+.partner-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 44px;
+}
+
+.partner-chip {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.65);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 5px 14px;
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   SHARED INNER PADDING
+   ============================================================ */
+.inner {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 60px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ============================================================
+   SLIDE 2 — UNDERSTANDING THE PROBLEM
+   ============================================================ */
+.problem-header {
+  background: #0f172a;
+  padding: 14px 60px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.problem-header h2 {
+  color: #fff;
+  font-size: clamp(17px, 1.8vw, 24px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.col-left {
+  padding: 44px 52px 44px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.col-right {
+  padding: 44px 60px 44px 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(0,0,0,0.04);
+}
+
+.stat-number    { font-size: clamp(52px, 5.4vw, 78px) !important; line-height: 1 !important; font-weight: 800 !important; }
+
+.stat-label {
+  font-size: 14px;
+  color: #475569;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.stat-number.red    { color: #E85A4F; }
+.stat-number.purple { color: #7c3aed; }
+
+/* ============================================================
+   SLIDE 3 — THE OPPORTUNITY
+   ============================================================ */
+.opportunity-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 36px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.opp-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 16px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(15,23,42,0.06);
+}
+
+.opp-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #3D6B6B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.opp-check i { color: #fff; font-size: 10px; }
+
+.opp-main {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+.opp-source {
+  display: block;
+  font-size: 10px;
+  color: #94a3b8;
+  margin-top: 3px;
+  font-style: italic;
+}
+
+/* ============================================================
+   TOOL LAYOUT (slide 4)
+   ============================================================ */
+.tool-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+  padding: 52px 60px;
+  height: 100%;
+}
+
+.tool-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px;
+  box-shadow: 0 4px 24px rgba(15,23,42,0.08), 0 1px 4px rgba(15,23,42,0.04);
+}
+
+.tool-card-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 20px;
+}
+
+.user-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 13px 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.user-row:last-of-type { border-bottom: none; }
+
+.user-icon {
+  font-size: 18px;
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.tool-card-footer {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 2px solid #3D6B6B;
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.6;
+}
+
+.bullet-list {
+  list-style: none;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bullet-list li {
+  font-size: 15px;
+  color: #334155;
+  padding-left: 18px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.bullet-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.bullet-teal   li::before { background: #3D6B6B; }
+.bullet-red    li::before { background: #E85A4F; }
+.bullet-amber  li::before { background: #D97706; }
+.bullet-green  li::before { background: #059669; }
+.bullet-purple li::before { background: #7c3aed; }
+
+/* ============================================================
+   SLIDE 5 — FRAMEWORK
+   ============================================================ */
+#slide-5 .inner {
+  max-width: 1020px;
+  align-items: center;
+  text-align: center;
+}
+
+.pillar-list {
+  list-style: none;
+  width: 100%;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pillar-item {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 18px 32px;
+  border-radius: 12px;
+  transition: background 0.2s;
+  text-align: left;
+}
+
+.pillar-item:hover { background: rgba(255,255,255,0.7); }
+
+.pillar-num {
+  font-size: 30px;
+  font-weight: 800;
+  width: 58px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.pillar-question {
+  flex: 1;
+  font-size: clamp(16px, 1.6vw, 20px);
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.3;
+}
+
+.pillar-tag-chip {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 5px 16px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   PILLAR SLIDES (6–10)
+   ============================================================ */
+.pillar-layout {
+  display: grid;
+  grid-template-columns: 37% 63%;
+  height: 100%;
+}
+
+.pillar-left {
+  padding: 36px 28px 36px 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 6px solid var(--accent-color, #3D6B6B);
+}
+
+.pillar-right {
+  padding: 52px 60px 52px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+}
+
+.chart-placeholder {
+  width: 100%;
+  height: 70%;
+  max-height: 440px;
+  background: #f1f5f9;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chart-placeholder span {
+  font-size: 13px;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.cta-link {
+  display: inline-block;
+  margin-top: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+  align-self: flex-start;
+}
+
+.cta-link:hover { opacity: 0.8; }
+
+.cta-red    { background: rgba(232,90,79,0.1);  color: #E85A4F; border: 1px solid rgba(232,90,79,0.25); }
+.cta-amber  { background: rgba(217,119,6,0.1);  color: #D97706; border: 1px solid rgba(217,119,6,0.25); }
+.cta-teal   { background: rgba(61,107,107,0.1); color: #3D6B6B; border: 1px solid rgba(61,107,107,0.25); }
+.cta-green  { background: rgba(5,150,105,0.1);  color: #059669; border: 1px solid rgba(5,150,105,0.25); }
+.cta-purple { background: rgba(124,58,237,0.1); color: #7c3aed; border: 1px solid rgba(124,58,237,0.25); }
+
+/* ============================================================
+   SLIDE 11 — THE PRIZE
+   ============================================================ */
+#slide-11 .inner {
+  max-width: 800px;
+  align-items: center;
+  text-align: center;
+}
+
+.prize-headline {
+  font-size: clamp(60px, 8vw, 110px);
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.prize-sub {
+  font-size: clamp(17px, 1.6vw, 22px);
+  color: #64748b;
+  font-weight: 300;
+  line-height: 1.5;
+  margin-bottom: 28px;
+}
+
+.teal-rule {
+  width: 80px;
+  height: 2px;
+  background: #3D6B6B;
+  margin: 28px auto;
+  border-radius: 1px;
+}
+
+.prize-actions {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  text-align: left;
+  margin-top: 8px;
+}
+
+.prize-action-item { flex: 1; max-width: 220px; }
+
+.prize-action-icon { font-size: 22px; margin-bottom: 8px; display: block; }
+
+.prize-action-title { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+
+.prize-action-text { font-size: 13px; color: #64748b; line-height: 1.6; }
+
+.closing-italic { font-style: italic; color: #3D6B6B; font-size: 16px; margin-top: 24px; }
+
+.source-tiny { font-size: 11px; color: #94a3b8; margin-top: 8px; letter-spacing: 0.03em; }
+
+
+.pulse-btn {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 2px solid #22d3ee;
+  background: rgba(34,211,238,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 36px auto;
+  animation: pulse 2.4s ease-in-out infinite;
+  cursor: pointer;
+}
+
+.pulse-btn i { font-size: 28px; color: #22d3ee; margin-left: 4px; }
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34,211,238,0.4); }
+  50%       { box-shadow: 0 0 0 20px rgba(34,211,238,0); }
+}
+
+@keyframes pulse-light {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(61,107,107,0.35); }
+  50%       { box-shadow: 0 0 0 20px rgba(61,107,107,0); }
+}
+
+.url-chip {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 15px;
+  color: rgba(255,255,255,0.8);
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.2s;
+}
+
+.url-chip:hover { background: rgba(255,255,255,0.14); }
+
+.demo-sub {
+  font-size: 16px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.7;
+  margin-top: 16px;
+}
+
+
+.closing-sub {
+  font-size: 17px;
+  color: #64748b;
+  max-width: 680px;
+  text-align: center;
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+
+.action-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.action-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 12px rgba(15,23,42,0.06);
+}
+
+.action-card-category {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.action-card-title { font-size: 17px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+
+.action-card-text { font-size: 13px; color: #475569; line-height: 1.6; }
+
+.action-card-link {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #3D6B6B;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(61,107,107,0.3);
+  padding-bottom: 1px;
+}
+
+.action-card-link:hover { border-color: #3D6B6B; }
+
+.closing-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+
+.closing-tagline { font-style: italic; color: #3D6B6B; font-size: 16px; margin-top: 6px; }
+
+.closing-footer {
+  font-size: 10px;
+  color: #cbd5e1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+/* ============================================================
+   NAV BAR
+   ============================================================ */
+#nav-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 56px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(61,107,107,0.15);
+  box-shadow: 0 -2px 16px rgba(15,23,42,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  z-index: 999;
+}
+
+.nav-arrow {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3D6B6B;
+  font-size: 16px;
+  transition: background 0.15s;
+}
+
+.nav-arrow:hover { background: rgba(61,107,107,0.08); }
+.nav-arrow:disabled { color: #cbd5e1; cursor: default; }
+.nav-arrow:disabled:hover { background: none; }
+
+.nav-dots { display: flex; align-items: center; gap: 6px; }
+
+.nav-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 4px;
+  background: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.65, 0, 0.35, 1);
+  border: none;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.nav-dot.active { background: #3D6B6B; width: 24px; }
+
+.nav-counter {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  min-width: 44px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   UTILITY
+   ============================================================ */
+.mt-4  { margin-top:  16px; }
+.mt-6  { margin-top:  24px; }
+.mt-8  { margin-top:  32px; }
+.mt-10 { margin-top:  40px; }
+.mb-4  { margin-bottom: 16px; }
+.mb-6  { margin-bottom: 24px; }
+
+/* ============================================================
+   COOLPROGRESS BRAND WORDMARK  (consistent icy blue + Figtree weight)
+   ============================================================ */
+.cp-brand {
+  color: #0EA5E9 !important;
+  font-family: 'Figtree', sans-serif !important;
+  font-weight: 800 !important;
+  font-style: normal !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* ============================================================
+   PART 01 DIVIDER — orange/coral background, hero CoolProgress
+   ============================================================ */
+#part-01 { background: linear-gradient(135deg, #D52E0D 0%, #F26949 55%, #F68F73 100%) !important; }
+#part-01::before { background-image: radial-gradient(circle, rgba(255,255,255,0.10) 1px, transparent 1px) !important; }
+#part-01 .orb { display: none !important; }
+
+/* ============================================================
+   UNIFORM SLIDE FRAME  (locked geometry — fits 1024px viewport)
+   ============================================================ */
+.slide.slide-light .slide-content {
+  padding: 80px 72px 56px !important;
+  gap: 28px !important;
+  justify-content: flex-start !important;
+  box-sizing: border-box !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+.slide.slide-light .light-headline {
+  margin: 0 !important;
+  text-decoration: none !important;
+  font-size: clamp(34px, 3.2vw, 52px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.8px !important;
+  font-weight: 800 !important;
+  color: #302a2c !important;
+}
+.slide.slide-light [class*="editorial-grid"],
+.slide.slide-light .editorial-grid { gap: 0 !important; }
+.slide-toprail {
+  top: 28px !important;
+  left: 72px !important;
+  right: 72px !important;
+  font-size: 12px !important;
+}
+.editorial-numeral { font-size: clamp(40px, 3.4vw, 60px) !important; line-height: 1 !important; }
+.slide.slide-light p { line-height: 1.4 !important; }
+
+/* Per-slide tweaks to keep content inside the frame */
+#slide-walkthrough-overview p { font-size: 15px !important; line-height: 1.35 !important; }
+#slide-walkthrough-overview .editorial-numeral { font-size: 40px !important; }
+#slide-0 [style*="font-size:clamp(80px"],
+#slide-0 [style*="font-size:clamp(128px"] { font-size: clamp(56px, 5vw, 84px) !important; }
+
+/* ============================================================
+   EDITORIAL DESIGN SYSTEM  (claude.ai design — Pentagram-style)
+   Warm cream bg + Newsreader serif italic accents + slide header bar
+   ============================================================ */
+.slide.slide-light { background: #FAF7F2 !important; }
+.serif-accent { font-family: 'Newsreader', 'Times New Roman', serif !important; font-style: italic !important; font-weight: 500 !important; letter-spacing: -0.01em !important; }
+.slide-toprail {
+  position: absolute; top: 28px; left: 64px; right: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
+  z-index: 5;
+}
+.slide-toprail .eyebrow-rail { display: flex; align-items: center; gap: 14px; color: #F26949; }
+.slide-toprail .eyebrow-rail::before { content: ''; display: inline-block; width: 38px; height: 2px; background: #F26949; }
+.slide-toprail .slide-counter-rail { color: #7C7370; font-weight: 600; }
+.editorial-grid hr,
+.editorial-grid .hr-rule { border: none; border-top: 1px solid rgba(48,42,44,0.15); margin: 0; }
+.editorial-numeral { font-family: 'Figtree', sans-serif; font-size: clamp(48px, 5vw, 76px); font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
+
+/* ============================================================
+   CCC DESIGN LANGUAGE OVERLAY  (Figtree + coral/lime accents)
+   inspired by cleancoolingcollaborative.org
+   ============================================================ */
+:root {
+  --ccc-coral:      #F26949;
+  --ccc-coral-deep: #D52E0D;
+  --ccc-coral-soft: #F68F73;
+  --ccc-lime:       #A8D166;
+  --ccc-forest:     #47966E;
+  --ccc-warm-dark:  #302a2c;
+  --ccc-warm-bg:    #f9f9f9;
+}
+html, body { font-family: 'Figtree', 'IBM Plex Sans', system-ui, sans-serif !important; }
+h1, h2, h3, h4, .light-headline, .dark-headline, .action-card-title { letter-spacing: -1px !important; font-family: 'Figtree', sans-serif !important; }
+p, .body-text, .closing-sub, li, .stat-label, .user-row, .action-card-text { font-weight: 400 !important; font-family: 'Figtree', sans-serif !important; }
+.bullet-list li { font-weight: 500 !important; }
+.section-tag { font-family: 'Figtree', sans-serif !important; letter-spacing: 0.08em !important; }
+.dark-tag { font-family: 'Figtree', sans-serif !important; letter-spacing: 0.1em !important; }
+.slide-light, .col-left, .col-right, .body-text { color: var(--ccc-warm-dark) !important; }
+.slide-light { background: #fff !important; }
+.cta-link, .live-banner a { background: var(--ccc-coral) !important; color: #fff !important; border: none !important; border-radius: 10px !important; transition: transform .2s ease, box-shadow .2s ease, background .2s ease !important; }
+.cta-link:hover, .live-banner a:hover { background: var(--ccc-coral-deep) !important; box-shadow: 0 10px 24px rgba(242,105,73,0.35) !important; }
+.live-banner { background: linear-gradient(90deg, var(--ccc-warm-dark), var(--ccc-coral-deep)) !important; }
+.live-banner .live-dot { background: var(--ccc-lime) !important; box-shadow: 0 0 12px var(--ccc-lime) !important; }
+.partner-chip { background: var(--ccc-warm-bg) !important; color: var(--ccc-warm-dark) !important; border: 1px solid #ddd !important; }
+/* Interstitial part-divider numerals → CCC coral */
+#part-01 .dark-headline + *, #part-02 .dark-headline + *, #part-03 .dark-headline + * { color: rgba(255,255,255,0.85); }
+[id^="part-"] [style*="rgba(139,195,74"] { color: var(--ccc-coral-soft) !important; }
+
+/* ============================================================
+   BILLBOARD SCALE OVERRIDES (next-level — bumps all type ~25-40%)
+   ============================================================ */
+.dark-headline  { font-size: clamp(56px, 6vw, 92px) !important; line-height: 1.05 !important; font-weight: 800 !important; }
+.dark-sub       { font-size: clamp(22px, 2.1vw, 30px) !important; line-height: 1.4 !important; }
+.dark-tag       { font-size: 16px !important; letter-spacing: 0.14em !important; padding: 8px 18px !important; }
+.light-headline { font-size: clamp(38px, 4vw, 64px) !important; line-height: 1.12 !important; font-weight: 800 !important; }
+.body-text      { font-size: 21px !important; line-height: 1.55 !important; }
+.section-tag    { font-size: 15px !important; padding: 9px 18px !important; letter-spacing: 0.1em !important; font-weight: 800 !important; }
+.bullet-list li { font-size: 20px !important; line-height: 1.5 !important; padding: 8px 0 8px 26px !important; font-weight: 500 !important; }
+.bullet-list li::before { font-size: 18px !important; top: 7px !important; }
+.stat-number    { font-size: clamp(52px, 5.4vw, 78px) !important; line-height: 1 !important; font-weight: 800 !important; }
+.stat-label     { font-size: 17px !important; line-height: 1.4 !important; font-weight: 500 !important; }
+.partner-chip   { font-size: 14px !important; padding: 8px 18px !important; }
+.pillar-num     { font-size: 36px !important; }
+.pillar-question { font-size: 24px !important; line-height: 1.4 !important; }
+.pillar-tag-chip { font-size: 14px !important; padding: 6px 14px !important; }
+.pillar-desc    { font-size: 14px; color: #64748b; margin: 6px 0 0; line-height: 1.45; font-weight: 400; }
+.cta-link       { font-size: 18px !important; padding: 14px 26px !important; font-weight: 700 !important; border-radius: 12px !important; box-shadow: 0 6px 18px rgba(13,59,79,0.12) !important; }
+.cta-link:hover { transform: translateY(-2px); transition: transform 0.2s ease; }
+.action-card-title { font-size: 26px !important; }
+.action-card-text  { font-size: 15.5px !important; line-height: 1.55 !important; }
+.action-card-category { font-size: 12.5px !important; letter-spacing: 0.08em !important; }
+.action-card-link { font-size: 15px !important; }
+.closing-sub { font-size: 19px !important; line-height: 1.5 !important; }
+.closing-tagline { font-size: 17px !important; }
+.closing-footer { font-size: 13px !important; }
+.tool-card-title { font-size: 16px !important; letter-spacing: 0.08em !important; }
+.user-row { font-size: 15.5px !important; line-height: 1.5 !important; }
+.tool-card-footer { font-size: 13.5px !important; line-height: 1.5 !important; }
+
+/* Walk-through pillar slides — iframe embed + OPEN LIVE banner */
+.live-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, #0d3b4f, #1a6b5a);
+  color: #fff;
+  padding: 14px 24px;
+  margin: -28px -36px 18px;
+  border-radius: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.live-banner .live-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #62D32F;
+  margin-right: 10px;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+.live-banner a {
+  background: #62D32F;
+  color: #0d3b4f;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.live-banner a:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(98,211,47,0.4); }
+.dashboard-iframe-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #e2e8f0;
+  background: #fafbfc;
+  box-shadow: 0 12px 32px rgba(13,59,79,0.12);
+}
+.dashboard-iframe-wrap iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<div id="notes-overlay"></div>
+
+<div id="deck">
+
+  <!-- ================================================================
+       DIVIDER · PART 01 — Intro (dark)
+       ================================================================ -->
+  <div class="slide slide-dark active" id="part-01">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-3"></div>
+    <div class="slide-content">
+      <div class="inner" style="max-width:1300px;padding:0 72px;align-items:flex-start;">
+        <div class="dark-tag" style="opacity:1;background:rgba(13,59,79,0.85);border-color:#0d3b4f;color:#fff;">London &middot; May 2026 &middot; Part 1 of 3</div>
+        <h1 style="font-size:clamp(72px,8vw,140px);margin:32px 0 0;font-weight:900;letter-spacing:-2px;line-height:0.95;text-shadow:0 2px 12px rgba(48,42,44,0.25);"><span style="color:#0EA5E9;">CoolProgress</span> <span style="color:#0d3b4f;">Dashboard</span></h1>
+        <p class="dark-sub" style="font-size:clamp(24px,2.4vw,36px);margin-top:36px;opacity:1;max-width:1300px;line-height:1.4;font-weight:500;color:#fff;">A walk-through of <strong style="color:#0EA5E9;font-weight:800;">CoolProgress</strong> &mdash; the cooling-progress platform built with <strong style="color:#0d3b4f;font-weight:800;">Clean Cooling Collaborative (CCC) partners</strong>. Shaped today by your feedback before it goes live.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 0 — META INTRO · "Why we built it" (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-0">
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">Why we built it</span>
+      <span class="slide-counter-rail">Slide 02 / 13</span>
+    </div>
+    <div class="slide-content" style="justify-content:center;padding:96px 80px 60px;gap:48px;">
+      <h2 class="light-headline" style="font-size:clamp(56px,6vw,108px);max-width:1700px;margin:0;line-height:1.04;letter-spacing:-1.5px;color:#302a2c;">The future of cooling and its impact is being decided <span class="serif-accent">now</span>, but without a <span style="color:#0EA5E9;">shared evidence base</span>.</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid rgba(48,42,44,0.15);border-bottom:1px solid rgba(48,42,44,0.15);padding:36px 0;">
+        <div style="padding:0 32px 0 0;border-right:1px solid rgba(48,42,44,0.15);">
+          <div style="font-family:'Figtree',sans-serif;font-size:clamp(80px,8vw,128px);font-weight:800;line-height:0.95;letter-spacing:-0.05em;color:#302a2c;"><span style="color:#F26949;">3</span>B</div>
+          <p style="font-size:21px;color:#302a2c;margin-top:20px;font-weight:500;line-height:1.3;max-width:380px;">More air conditioners coming this decade</p>
+          <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:#7C7370;margin-top:14px;">IEA &middot; Future of Cooling</div>
+        </div>
+        <div style="padding:0 32px;border-right:1px solid rgba(48,42,44,0.15);">
+          <div style="font-family:'Figtree',sans-serif;font-size:clamp(80px,8vw,128px);font-weight:800;line-height:0.95;letter-spacing:-0.05em;color:#302a2c;"><span style="color:#F26949;">1.2</span>B</div>
+          <p style="font-size:21px;color:#302a2c;margin-top:20px;font-weight:500;line-height:1.3;max-width:380px;">People still lack adequate cooling today</p>
+          <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:#7C7370;margin-top:14px;">SEforALL &middot; Chilling Prospects</div>
+        </div>
+        <div style="padding:0 0 0 32px;">
+          <div style="font-family:'Figtree',sans-serif;font-size:clamp(80px,8vw,128px);font-weight:800;line-height:0.95;letter-spacing:-0.05em;color:#302a2c;"><span style="color:#F26949;">~7</span>%</div>
+          <p style="font-size:21px;color:#302a2c;margin-top:20px;font-weight:500;line-height:1.3;max-width:380px;">Of global greenhouse-gas emissions today</p>
+          <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:#7C7370;margin-top:14px;">UNEP &middot; Cool Coalition</div>
+        </div>
+      </div>
+      <div>
+        <p style="font-size:22px;color:#302a2c;line-height:1.55;max-width:1500px;margin:0;font-weight:400;">Every efficiency standard set or skipped this decade, every refrigerant phase-down met or delayed, every billion people left without cooling: these decisions are being locked in <strong>right now</strong>. The window to act at scale closes before 2030. <strong style="color:#0d1b1f;">What's been missing is a single place where the evidence is visible, comparable, and ready for the room where the decision is made.</strong></p>
+        <p style="font-size:clamp(40px,4vw,64px);color:#302a2c;margin-top:18px;line-height:1.05;font-weight:900;letter-spacing:-1px;font-family:'Figtree',sans-serif;"><span style="color:#0EA5E9;">CoolProgress</span> is that place.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE · WHAT IT ADDRESSES (light) — folds problem + opportunity
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-addresses">
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">How CoolProgress answers it</span>
+      <span class="slide-counter-rail">Slide 03 / 13</span>
+    </div>
+    <div class="slide-content">
+      <h2 class="light-headline">Four gaps. <span class="serif-accent" style="font-weight:600;">Four answers.</span></h2>
+      <div style="border-top:1px solid rgba(48,42,44,0.15);display:flex;flex-direction:column;flex:1;min-height:0;">
+        <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:48px;align-items:center;padding:24px 0;border-bottom:1px solid rgba(48,42,44,0.15);flex:1;">
+          <p style="font-size:28px;font-weight:500;color:#302a2c;line-height:1.25;margin:0;letter-spacing:-0.3px;"><strong style="color:#F26949;font-weight:800;">Data scattered</strong> across institutions.</p>
+          <p style="font-size:26px;font-weight:500;color:#302a2c;line-height:1.25;margin:0;letter-spacing:-0.3px;"><strong style="color:#47966E;font-weight:800;">One harmonised platform</strong> &mdash; (live) feeds from CLASP, GIZ Proklima, SEforALL, UNEP (U4E / Cool Coalition / Ozone Sec), IEA, LBNL, Climate Policy Radar.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:48px;align-items:center;padding:24px 0;border-bottom:1px solid rgba(48,42,44,0.15);flex:1;">
+          <p style="font-size:28px;font-weight:500;color:#302a2c;line-height:1.25;margin:0;letter-spacing:-0.3px;"><strong style="color:#F26949;font-weight:800;">No single view</strong> of the questions that matter.</p>
+          <p style="font-size:26px;font-weight:500;color:#302a2c;line-height:1.25;margin:0;letter-spacing:-0.3px;"><strong style="color:#47966E;font-weight:800;">Five pillars</strong> &mdash; emissions, efficiency, refrigerants, access, commitments &mdash; for 195 countries.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:48px;align-items:center;padding:24px 0;border-bottom:1px solid rgba(48,42,44,0.15);flex:1;">
+          <p style="font-size:28px;font-weight:500;color:#302a2c;line-height:1.25;margin:0;letter-spacing:-0.3px;"><strong style="color:#F26949;font-weight:800;">Decisions outpace</strong> the evidence base.</p>
+          <p style="font-size:26px;font-weight:500;color:#302a2c;line-height:1.25;margin:0;letter-spacing:-0.3px;"><strong style="color:#47966E;font-weight:800;">Live updates</strong> as new data arrives. Never a static snapshot.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:48px;align-items:center;padding:24px 0;flex:1;">
+          <p style="font-size:28px;font-weight:500;color:#302a2c;line-height:1.25;margin:0;letter-spacing:-0.3px;"><strong style="color:#F26949;font-weight:800;">Built for analysts</strong>.</p>
+          <p style="font-size:26px;font-weight:500;color:#302a2c;line-height:1.25;margin:0;letter-spacing:-0.3px;"><strong style="color:#47966E;font-weight:800;">Open access</strong>, narrative-led, country by country. Decision-maker ready.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE · HOW IT DOES IT (light) — method
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-how">
+    <div class="slide-content" style="justify-content:center;padding:48px 80px;gap:30px;">
+      <div>
+        <span class="section-tag tag-teal" style="margin-bottom:18px;display:inline-block;">How it does it</span>
+        <h2 class="light-headline">We didn't add more data. We <span class="serif-accent" style="font-weight:600;">curated</span> to five decision-grade questions.</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;flex:1;min-height:0;">
+        <div style="padding:24px 26px;border-left:6px solid #F26949;background:rgba(242,105,73,0.06);border-radius:10px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:14px;font-weight:800;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;">Emissions</div>
+          <p style="font-size:21px;color:#302a2c;font-weight:700;margin-top:10px;line-height:1.25;letter-spacing:-0.3px;">How big is the cooling sector's emissions footprint?</p>
+        </div>
+        <div style="padding:24px 26px;border-left:6px solid #D97706;background:rgba(217,119,6,0.06);border-radius:10px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:14px;font-weight:800;color:#D97706;letter-spacing:0.1em;text-transform:uppercase;">Product Efficiency</div>
+          <p style="font-size:21px;color:#302a2c;font-weight:700;margin-top:10px;line-height:1.25;letter-spacing:-0.3px;">Are efficiency standards rising fast enough?</p>
+        </div>
+        <div style="padding:24px 26px;border-left:6px solid #0284c7;background:rgba(2,132,199,0.06);border-radius:10px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:14px;font-weight:800;color:#0284c7;letter-spacing:0.1em;text-transform:uppercase;">Refrigerants</div>
+          <p style="font-size:21px;color:#302a2c;font-weight:700;margin-top:10px;line-height:1.25;letter-spacing:-0.3px;">Is the HFC phase-down on track?</p>
+        </div>
+        <div style="padding:24px 26px;border-left:6px solid #47966E;background:rgba(71,150,110,0.06);border-radius:10px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:14px;font-weight:800;color:#47966E;letter-spacing:0.1em;text-transform:uppercase;">Access</div>
+          <p style="font-size:21px;color:#302a2c;font-weight:700;margin-top:10px;line-height:1.25;letter-spacing:-0.3px;">Who is being left behind on cooling access?</p>
+        </div>
+        <div style="padding:24px 26px;border-left:6px solid #7c3aed;background:rgba(124,58,237,0.06);border-radius:10px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:14px;font-weight:800;color:#7c3aed;letter-spacing:0.1em;text-transform:uppercase;">National Plans</div>
+          <p style="font-size:21px;color:#302a2c;font-weight:700;margin-top:10px;line-height:1.25;letter-spacing:-0.3px;">What is the state of pledges and commitments?</p>
+        </div>
+        <div style="padding:24px 26px;background:#302a2c;color:#fff;border-radius:10px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:8px;">
+          <div style="font-size:13px;font-weight:800;color:#A8D166;letter-spacing:0.14em;text-transform:uppercase;">Appliance focus</div>
+          <p style="font-size:21px;font-weight:800;line-height:1.15;letter-spacing:-0.3px;color:#fff;margin:0;">Air conditioners &middot; Refrigerators &middot; Fans</p>
+          <p class="serif-accent" style="font-size:14px;color:#d9e7e2;margin:0;line-height:1.4;font-weight:500;">Five pillars &middot; 195 countries &middot; updated live</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE · THE COLLABORATION (light) — partners + HEAT orchestration
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-collab">
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">The collaboration</span>
+      <span class="slide-counter-rail">Slide 05 / 13</span>
+    </div>
+    <div class="slide-content" style="justify-content:flex-start;padding:96px 80px 48px;gap:36px;">
+      <h2 class="light-headline" style="font-size:clamp(56px,5.6vw,96px);max-width:1700px;margin:0;line-height:1.05;letter-spacing:-1.3px;color:#302a2c;">It's not anyone's dashboard. <span class="serif-accent" style="font-weight:600;">It's everyone's.</span></h2>
+      <div style="border-top:1px solid rgba(48,42,44,0.2);display:grid;grid-template-columns:1fr 1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:0;flex:1;min-height:0;">
+        <!-- Row 1 -->
+        <div style="padding:28px 28px 28px 0;border-right:1px solid rgba(48,42,44,0.15);border-bottom:1px solid rgba(48,42,44,0.15);position:relative;">
+          <div style="position:absolute;top:0;left:0;width:36px;height:4px;background:#3D6B6B;"></div>
+          <div style="font-size:13px;font-weight:800;color:#3D6B6B;letter-spacing:0.14em;text-transform:uppercase;margin-top:18px;">Orchestrator</div>
+          <img src="heat-logo.png" alt="HEAT GmbH" style="height:64px;width:auto;object-fit:contain;margin-top:14px;display:block;">
+          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:18px;font-weight:400;">Platform, data integration, design, narrative architecture.</p>
+        </div>
+        <div style="padding:28px 28px 28px 28px;border-right:1px solid rgba(48,42,44,0.15);border-bottom:1px solid rgba(48,42,44,0.15);position:relative;">
+          <div style="position:absolute;top:0;left:28px;width:36px;height:4px;background:#F26949;"></div>
+          <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.14em;text-transform:uppercase;margin-top:18px;">Funder</div>
+          <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.1;">Clean Cooling Collaborative</p>
+          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:14px;font-weight:400;">ClimateWorks &middot; strategic framing &amp; funding for phases 1 and 2.</p>
+        </div>
+        <div style="padding:28px 28px 28px 28px;border-right:1px solid rgba(48,42,44,0.15);border-bottom:1px solid rgba(48,42,44,0.15);position:relative;">
+          <div style="position:absolute;top:0;left:28px;width:36px;height:4px;background:#D97706;"></div>
+          <div style="font-size:13px;font-weight:800;color:#D97706;letter-spacing:0.14em;text-transform:uppercase;margin-top:18px;">Efficiency</div>
+          <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.1;">U4E &middot; CLASP</p>
+          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:14px;font-weight:400;">Model regulation, MEPS, energy labels, NDC Appliance Toolkit, inverter market intelligence.</p>
+        </div>
+        <div style="padding:28px 0 28px 28px;border-bottom:1px solid rgba(48,42,44,0.15);position:relative;">
+          <div style="position:absolute;top:0;left:28px;width:36px;height:4px;background:#0284c7;"></div>
+          <div style="font-size:13px;font-weight:800;color:#0284c7;letter-spacing:0.14em;text-transform:uppercase;margin-top:18px;">Refrigerants</div>
+          <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.1;">GIZ Proklima &middot; Ozone Secretariat</p>
+          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:14px;font-weight:400;">Kigali ratification, A5 timelines, refrigerant-bank data.</p>
+        </div>
+        <!-- Row 2 -->
+        <div style="padding:28px 28px 28px 0;border-right:1px solid rgba(48,42,44,0.15);position:relative;">
+          <div style="position:absolute;top:0;left:0;width:36px;height:4px;background:#47966E;"></div>
+          <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.14em;text-transform:uppercase;margin-top:18px;">Access to cooling</div>
+          <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.1;">SEforALL</p>
+          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:14px;font-weight:400;">Chilling Prospects access &amp; vulnerability data, country-level cooling-gap mapping.</p>
+        </div>
+        <div style="padding:28px 28px 28px 28px;border-right:1px solid rgba(48,42,44,0.15);position:relative;">
+          <div style="position:absolute;top:0;left:28px;width:36px;height:4px;background:#7C7370;"></div>
+          <div style="font-size:13px;font-weight:800;color:#7C7370;letter-spacing:0.14em;text-transform:uppercase;margin-top:18px;">Scenarios</div>
+          <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.1;">IEA</p>
+          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:14px;font-weight:400;">Cooling demand projections, efficiency scenarios, end-use disaggregation.</p>
+        </div>
+        <div style="padding:28px 28px 28px 28px;border-right:1px solid rgba(48,42,44,0.15);position:relative;">
+          <div style="position:absolute;top:0;left:28px;width:36px;height:4px;background:#7c3aed;"></div>
+          <div style="font-size:13px;font-weight:800;color:#7c3aed;letter-spacing:0.14em;text-transform:uppercase;margin-top:18px;">Policy</div>
+          <p style="font-size:26px;font-weight:800;color:#302a2c;margin-top:14px;letter-spacing:-0.4px;line-height:1.1;">UNEP Cool Coalition</p>
+          <p style="font-size:15px;color:#302a2c;line-height:1.45;margin-top:14px;font-weight:400;">Global Cooling Pledge, National Cooling Action Plans, policy-text tracking with Climate Policy Radar.</p>
+        </div>
+        <div style="padding:28px;background:#302a2c;color:#fff;position:relative;margin:-1px -1px -1px 0;">
+          <div style="position:absolute;top:0;left:28px;width:36px;height:4px;background:#A8D166;"></div>
+          <div style="font-size:13px;font-weight:800;color:#A8D166;letter-spacing:0.14em;text-transform:uppercase;margin-top:18px;">The room today</div>
+          <p style="font-size:clamp(56px,5.6vw,88px);font-weight:900;color:#fff;margin-top:14px;letter-spacing:-3px;line-height:1;">YOU</p>
+        </div>
+      </div>
+      <p class="serif-accent" style="text-align:center;font-size:20px;color:#7C7370;margin:0;">Each partner brings the data they own. HEAT orchestrates it all: one platform, one schema, one decision-maker-friendly experience.</p>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE · WHOM IT SERVES (light) — personas  [MOVED FORWARD TO 06]
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-whom">
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">Whom it serves</span>
+      <span class="slide-counter-rail">Slide 06 / 13</span>
+    </div>
+    <div class="slide-content" style="justify-content:flex-start;padding:96px 80px 48px;gap:36px;">
+      <h2 class="light-headline" style="font-size:clamp(56px,5.6vw,96px);max-width:1700px;margin:0;line-height:1.05;letter-spacing:-1.3px;color:#302a2c;">Built for the people who <span class="serif-accent" style="font-weight:600;">decide</span>, but also for everyone interested in cooling.</h2>
+      <div style="border-top:1px solid rgba(48,42,44,0.2);display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:0;flex:1;min-height:0;">
+        <div style="padding:32px 36px 32px 0;border-right:1px solid rgba(48,42,44,0.15);border-bottom:1px solid rgba(48,42,44,0.15);display:flex;flex-direction:column;justify-content:center;">
+          <p style="font-size:36px;font-weight:800;color:#7c3aed;margin:0;letter-spacing:-0.5px;line-height:1.1;">Ministers &amp; policy makers</p>
+          <p style="font-size:19px;color:#302a2c;line-height:1.5;margin:18px 0 0;font-weight:400;">Benchmark countries. Brief the Cabinet. Align NDCs and NCAPs.</p>
+        </div>
+        <div style="padding:32px 36px;border-right:1px solid rgba(48,42,44,0.15);border-bottom:1px solid rgba(48,42,44,0.15);display:flex;flex-direction:column;justify-content:center;">
+          <p style="font-size:36px;font-weight:800;color:#0284c7;margin:0;letter-spacing:-0.5px;line-height:1.1;">Negotiators</p>
+          <p style="font-size:19px;color:#302a2c;line-height:1.5;margin:18px 0 0;font-weight:400;">Prepare for COPs and MOPs. Source-cite Kigali, the Cooling Pledge, NDC status in real time.</p>
+        </div>
+        <div style="padding:32px 0 32px 36px;border-bottom:1px solid rgba(48,42,44,0.15);display:flex;flex-direction:column;justify-content:center;">
+          <p style="font-size:36px;font-weight:800;color:#D97706;margin:0;letter-spacing:-0.5px;line-height:1.1;">Regulators</p>
+          <p style="font-size:19px;color:#302a2c;line-height:1.5;margin:18px 0 0;font-weight:400;">Set or update MEPS and labels. See what comparable economies did, and when.</p>
+        </div>
+        <div style="padding:32px 36px 32px 0;border-right:1px solid rgba(48,42,44,0.15);display:flex;flex-direction:column;justify-content:center;">
+          <p style="font-size:36px;font-weight:800;color:#47966E;margin:0;letter-spacing:-0.5px;line-height:1.1;">Financiers &amp; MDBs</p>
+          <p style="font-size:19px;color:#302a2c;line-height:1.5;margin:18px 0 0;font-weight:400;">Identify markets where standards + refrigerant transition open new finance windows.</p>
+        </div>
+        <div style="padding:32px 36px;border-right:1px solid rgba(48,42,44,0.15);display:flex;flex-direction:column;justify-content:center;">
+          <p style="font-size:36px;font-weight:800;color:#F26949;margin:0;letter-spacing:-0.5px;line-height:1.1;">Researchers</p>
+          <p style="font-size:19px;color:#302a2c;line-height:1.5;margin:18px 0 0;font-weight:400;">Track sector-level climate progress on one harmonised baseline.</p>
+        </div>
+        <div style="padding:32px 0 32px 36px;display:flex;flex-direction:column;justify-content:center;">
+          <p style="font-size:36px;font-weight:800;color:#7C7370;margin:0;letter-spacing:-0.5px;line-height:1.1;">Advocates &amp; civil society</p>
+          <p style="font-size:19px;color:#302a2c;line-height:1.5;margin:18px 0 0;font-weight:400;">Make the case for stronger standards with numbers from authoritative sources.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE · PROCESS & JOURNEY (light) — 5 milestones
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-journey">
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">Process &amp; journey</span>
+      <span class="slide-counter-rail">Slide 07 / 13</span>
+    </div>
+    <div class="slide-content">
+      <h2 class="light-headline">From scoping conversation to <span class="serif-accent" style="font-weight:600;">public launch</span> in five steps.</h2>
+      <div style="position:relative;flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:56px;padding:24px 0;">
+        <!-- TIMELINE BAR + DOTS -->
+        <div style="position:relative;width:100%;height:32px;">
+          <div style="position:absolute;left:5%;right:5%;top:50%;height:10px;transform:translateY(-50%);background:linear-gradient(90deg,#F26949 0%,#D97706 25%,#0284c7 50%,#47966E 75%,#A8D166 100%);border-radius:8px;opacity:0.9;"></div>
+          <div style="position:relative;display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;height:100%;">
+            <div style="display:flex;justify-content:flex-start;padding-left:1%;align-items:center;"><div style="width:28px;height:28px;border-radius:50%;background:#F26949;border:4px solid #FAF7F2;box-shadow:0 0 0 3px #F26949;"></div></div>
+            <div style="display:flex;justify-content:center;align-items:center;"><div style="width:28px;height:28px;border-radius:50%;background:#D97706;border:4px solid #FAF7F2;box-shadow:0 0 0 3px #D97706;"></div></div>
+            <div style="display:flex;justify-content:center;align-items:center;"><div style="width:28px;height:28px;border-radius:50%;background:#0284c7;border:4px solid #FAF7F2;box-shadow:0 0 0 3px #0284c7;"></div></div>
+            <div style="display:flex;justify-content:center;align-items:center;"><div style="width:28px;height:28px;border-radius:50%;background:#47966E;border:4px solid #FAF7F2;box-shadow:0 0 0 3px #47966E;"></div></div>
+            <div style="display:flex;justify-content:flex-end;padding-right:1%;align-items:center;"><div style="width:40px;height:40px;border-radius:50%;background:#A8D166;border:5px solid #302a2c;box-shadow:0 0 0 4px #A8D166;"></div></div>
+          </div>
+        </div>
+        <!-- MILESTONE CARDS -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:0;">
+          <div style="padding:0 24px 0 0;">
+            <div style="font-size:16px;font-weight:800;color:#F26949;letter-spacing:0.14em;text-transform:uppercase;">Q1&ndash;Q3 2025</div>
+            <p style="font-size:32px;font-weight:800;color:#302a2c;margin-top:18px;letter-spacing:-0.5px;line-height:1.1;">Concept &amp; scoping</p>
+            <p style="font-size:18px;color:#302a2c;line-height:1.5;margin-top:18px;font-weight:400;">Presented at the CCC convention in Singapore. Five-question framework agreed with partners.</p>
+          </div>
+          <div style="padding:0 24px;">
+            <div style="font-size:16px;font-weight:800;color:#D97706;letter-spacing:0.14em;text-transform:uppercase;">2025 Q4</div>
+            <p style="font-size:32px;font-weight:800;color:#302a2c;margin-top:18px;letter-spacing:-0.5px;line-height:1.1;">Data integration</p>
+            <p style="font-size:18px;color:#302a2c;line-height:1.5;margin-top:18px;font-weight:400;">Institutional feeds harmonised into one schema.</p>
+          </div>
+          <div style="padding:0 24px;">
+            <div style="font-size:16px;font-weight:800;color:#0284c7;letter-spacing:0.14em;text-transform:uppercase;">2026 Q1</div>
+            <p style="font-size:32px;font-weight:800;color:#302a2c;margin-top:18px;letter-spacing:-0.5px;line-height:1.1;">Closed pilot</p>
+            <p style="font-size:18px;color:#302a2c;line-height:1.5;margin-top:18px;font-weight:400;">Partner reviewers stress-tested every pillar.</p>
+          </div>
+          <div style="padding:0 24px;">
+            <div style="font-size:16px;font-weight:800;color:#47966E;letter-spacing:0.14em;text-transform:uppercase;">2026 Q2</div>
+            <p style="font-size:32px;font-weight:800;color:#302a2c;margin-top:18px;letter-spacing:-0.5px;line-height:1.1;">Partner review</p>
+            <p style="font-size:18px;color:#302a2c;line-height:1.5;margin-top:18px;font-weight:400;">London room &mdash; feedback shapes the final cut.</p>
+          </div>
+          <div style="padding:0 0 0 24px;">
+            <div style="font-size:16px;font-weight:800;color:#47966E;letter-spacing:0.14em;text-transform:uppercase;">Mid 2026</div>
+            <p style="font-size:36px;font-weight:900;color:#302a2c;margin-top:18px;letter-spacing:-0.6px;line-height:1.05;">Public launch</p>
+            <p style="font-size:18px;color:#302a2c;line-height:1.5;margin-top:18px;font-weight:400;">Open-access release, live updates, methodology published.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       DIVIDER · PART 02 — Live walk-through (dark)
+       ================================================================ -->
+  <div class="slide slide-dark next" id="part-02">
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="slide-content">
+      <div class="inner" style="max-width:1300px;padding:0 72px;align-items:flex-start;">
+        <div class="dark-tag" style="opacity:0.75;">Part 2 of 3 &middot; Live demonstration</div>
+        <div style="font-size:clamp(140px,18vw,260px);font-weight:800;color:rgba(139,195,74,0.92);line-height:0.95;letter-spacing:-0.04em;margin:18px 0 6px;">02</div>
+        <h1 class="dark-headline" style="font-size:clamp(40px,5vw,72px);margin-top:0;">Part 2. The five pillars, live.</h1>
+        <p class="dark-sub" style="font-size:clamp(20px,2vw,28px);margin-top:24px;opacity:0.82;max-width:1000px;">Each pillar opens the live tool. The slide is the map; the dashboard is the territory.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE · WALKTHROUGH OVERVIEW (launchpad — click any card)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-walkthrough-overview"
+       data-notes="<strong style=&quot;color:#F26949&quot;>01 &middot; EMISSIONS &mdash; the size of the problem</strong> Open with the headline number: cooling &asymp; 7&thinsp;% of global GHGs and rising. The decisive insight is the 70/30 split: 70&thinsp;% indirect emissions from electricity, 30&thinsp;% direct from refrigerant leakage. Two streams &rarr; two policy levers (decarbonise the grid + tighten MEPS for indirect; Kigali + leak-tight servicing for direct). Methodology: bottom-up &mdash; IEA Future-of-Cooling stock model &times; country grid carbon intensity (Ember + IEA) for indirect; UNEP Ozone Secretariat refrigerant bank &times; IPCC leak factors for direct. Drill-down lets the audience filter by country, sub-sector (space cooling / commercial refrigeration / cold chain) and scenario (Reference vs Efficient).||<strong style=&quot;color:#D97706&quot;>02 &middot; PRODUCT EFFICIENCY &mdash; the cheapest win</strong> Anchor on the 3&times; efficiency gap: the best AC sold today is three times more efficient than the worst still legally on the market. If every country aligned MEPS to U4E model regulations we&rsquo;d save &asymp; 1,300&thinsp;TWh/yr by 2050 &mdash; bigger than Japan&rsquo;s annual electricity consumption. Use India as the case study: 31&thinsp;% &rarr; 82&thinsp;% inverter penetration in five years through BEE&rsquo;s star-label tightening. Methodology: CLASP Policy Database (live feed) + U4E benchmarks; CSPF/EER weighted by IEA market share. Tools to flag: MEPS gauge per country, time-slider showing tightening trajectory, side-by-side MEPS-vs-best-available comparison.||<strong style=&quot;color:#0284c7&quot;>03 &middot; REFRIGERANT TRANSITION &mdash; ratification vs follow-through</strong> 172 countries have ratified the Kigali Amendment. Full compliance avoids &asymp; 0.5&deg;C of warming by 2100 (UNEP). But ratification &ne; follow-through: the refrigerant bank is still growing &mdash; 5&ndash;6&thinsp;Mt currently in circulation, leaking 10&ndash;20&thinsp;%/yr. Dashboard tracks the implementation gap, low-GWP alternative uptake (R-290, R-32, R-744 / CO&#8322;) and licensing-system readiness. Methodology: UNEP Ozone Secretariat Article-7 reporting + GIZ Proklima country profiles + eurammon natural-refrigerant registry. Feature highlight: HFC consumption curve overlaid on the Kigali phase-down schedule per country group (A2, A5G1, A5G2).||<strong style=&quot;color:#059669&quot;>04 &middot; ACCESS &amp; VULNERABILITY &mdash; who gets left behind</strong> 1.2 billion people face dangerous heat without adequate cooling (SEforALL Chilling Prospects). 420,000 deaths per year tied to broken cold chains; 40&thinsp;% post-harvest food loss in sub-Saharan Africa. Cooling poverty is the equity story behind the climate story. Methodology: SEforALL 9-Access-Scenarios framework + Lancet Countdown heat-mortality + FAO cold-chain loss data. Features: country heat-map of access risk, cold-chain integrity scoring by commodity (vaccines, dairy, produce), heat-stress overlay for outdoor workers and informal housing. This pillar makes the &lsquo;just transition&rsquo; tangible.||<strong style=&quot;color:#7c3aed&quot;>05 &middot; NATIONAL PLANS &amp; COMMITMENTS &mdash; from pledge to plan to law</strong> 74 countries and 235 cities signed the Global Cooling Pledge at COP28 &mdash; the largest political commitment ever made on cooling. The dashboard tracks whether that pledge turns into NDC mentions, National Cooling Action Plans (NCAPs) and ultimately enforced regulation. Methodology: Climate Policy Radar NLP scan of every NDC + NCAP, then manual verification by HEAT. Features: cooling-mention tracker per NDC iteration, NCAP status map (drafted / adopted / under implementation), pledge follow-through ledger linking signatories to delivered policies. Closing line: this is the gap where the audience &mdash; policymakers, donors, implementers &mdash; can act fastest.||<em>Transition cue:</em> press &rarr; to enter each pillar live in the dashboard. Strategic Summary pill (top-right) is the executive overview if time is short.">
+    <div class="slide-content" style="justify-content:center;padding:48px 64px;gap:28px;">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+        <div>
+          <span class="section-tag tag-teal" style="margin-bottom:14px;display:inline-block;">Walk-through &middot; the map</span>
+          <h2 class="light-headline" style="font-size:clamp(40px,4vw,62px);max-width:1500px;margin:10px 0 0;line-height:1.08;">Five pillars. One key message each.</h2>
+        </div>
+        <a href="https://dashboard-display.pages.dev/dashboard/emissions" target="_blank" rel="noopener"
+           style="text-decoration:none;display:inline-flex;align-items:center;gap:10px;padding:14px 22px;background:#302a2c;color:#fff;border-radius:999px;font-size:15px;font-weight:700;letter-spacing:0.04em;box-shadow:0 4px 12px rgba(48,42,44,0.18);white-space:nowrap;">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#A8D166;"></span>
+          Strategic Summary
+          <span style="font-size:18px;line-height:1;">→</span>
+        </a>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:14px;flex:1;min-height:0;">
+
+        <a href="https://dashboard-display.pages.dev/dashboard/emissions" target="_blank" rel="noopener" style="text-decoration:none;display:flex;flex-direction:column;padding:26px 22px;background:#fff;border:2px solid #F26949;border-radius:14px;transition:transform .2s ease, box-shadow .2s ease;box-shadow:0 4px 12px rgba(242,105,73,0.08);">
+          <div style="width:60px;height:60px;border-radius:50%;background:#F26949;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;margin-bottom:16px;">01</div>
+          <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.08em;text-transform:uppercase;">Emissions</div>
+          <p style="font-size:20px;font-weight:700;color:#302a2c;margin-top:10px;line-height:1.35;flex:1;">70&thinsp;% of cooling emissions are electricity. 30&thinsp;% are refrigerant leaks. Two problems, two policy levers.</p>
+          <p style="font-size:14px;color:#64748b;margin-top:10px;line-height:1.4;font-weight:500;">Cooling = ~7% of global GHGs today, growing fast as AC ownership rises across the tropics.</p>
+          <div style="margin-top:14px;font-size:13px;font-weight:700;color:#F26949;letter-spacing:0.04em;">▶ /dashboard/emissions</div>
+        </a>
+
+        <a href="https://dashboard-display.pages.dev/dashboard/meps" target="_blank" rel="noopener" style="text-decoration:none;display:flex;flex-direction:column;padding:26px 22px;background:#fff;border:2px solid #D97706;border-radius:14px;transition:transform .2s ease, box-shadow .2s ease;box-shadow:0 4px 12px rgba(217,119,6,0.08);">
+          <div style="width:60px;height:60px;border-radius:50%;background:#D97706;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;margin-bottom:16px;">02</div>
+          <div style="font-size:13px;font-weight:800;color:#D97706;letter-spacing:0.08em;text-transform:uppercase;">Product Efficiency</div>
+          <p style="font-size:20px;font-weight:700;color:#302a2c;margin-top:10px;line-height:1.35;flex:1;">The best AC is 3&times; more efficient than the worst still legally sold.</p>
+          <p style="font-size:14px;color:#64748b;margin-top:10px;line-height:1.4;font-weight:500;">Global MEPS harmonisation = ~1,300 TWh/yr saved. India went 31% to 82% inverter penetration in 5 years.</p>
+          <div style="margin-top:14px;font-size:13px;font-weight:700;color:#D97706;letter-spacing:0.04em;">▶ /dashboard/meps</div>
+        </a>
+
+        <a href="https://dashboard-display.pages.dev/dashboard/kigali" target="_blank" rel="noopener" style="text-decoration:none;display:flex;flex-direction:column;padding:26px 22px;background:#fff;border:2px solid #0284c7;border-radius:14px;transition:transform .2s ease, box-shadow .2s ease;box-shadow:0 4px 12px rgba(2,132,199,0.08);">
+          <div style="width:60px;height:60px;border-radius:50%;background:#0284c7;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;margin-bottom:16px;">03</div>
+          <div style="font-size:13px;font-weight:800;color:#0284c7;letter-spacing:0.08em;text-transform:uppercase;">Refrigerant Transition</div>
+          <p style="font-size:20px;font-weight:700;color:#302a2c;margin-top:10px;line-height:1.35;flex:1;">172 countries ratified Kigali. Following through is the harder half.</p>
+          <p style="font-size:14px;color:#64748b;margin-top:10px;line-height:1.4;font-weight:500;">Full compliance prevents ~0.5°C of warming. The refrigerant bank is still growing: 5&ndash;6 Mt circulating today.</p>
+          <div style="margin-top:14px;font-size:13px;font-weight:700;color:#0284c7;letter-spacing:0.04em;">▶ /dashboard/kigali</div>
+        </a>
+
+        <a href="https://dashboard-display.pages.dev/dashboard/access" target="_blank" rel="noopener" style="text-decoration:none;display:flex;flex-direction:column;padding:26px 22px;background:#fff;border:2px solid #47966E;border-radius:14px;transition:transform .2s ease, box-shadow .2s ease;box-shadow:0 4px 12px rgba(71,150,110,0.08);">
+          <div style="width:60px;height:60px;border-radius:50%;background:#47966E;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;margin-bottom:16px;">04</div>
+          <div style="font-size:13px;font-weight:800;color:#47966E;letter-spacing:0.08em;text-transform:uppercase;">Access &amp; Vulnerability</div>
+          <p style="font-size:20px;font-weight:700;color:#302a2c;margin-top:10px;line-height:1.35;flex:1;">1.2 billion people face dangerous heat without adequate cooling, mapped country by country.</p>
+          <p style="font-size:14px;color:#64748b;margin-top:10px;line-height:1.4;font-weight:500;">420,000 deaths/yr from broken cold chains. 40% post-harvest food loss in Sub-Saharan Africa.</p>
+          <div style="margin-top:14px;font-size:13px;font-weight:700;color:#47966E;letter-spacing:0.04em;">▶ /dashboard/access</div>
+        </a>
+
+        <a href="https://dashboard-display.pages.dev/dashboard/policy" target="_blank" rel="noopener" style="text-decoration:none;display:flex;flex-direction:column;padding:26px 22px;background:#fff;border:2px solid #7c3aed;border-radius:14px;transition:transform .2s ease, box-shadow .2s ease;box-shadow:0 4px 12px rgba(124,58,237,0.08);">
+          <div style="width:60px;height:60px;border-radius:50%;background:#7c3aed;color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;margin-bottom:16px;">05</div>
+          <div style="font-size:13px;font-weight:800;color:#7c3aed;letter-spacing:0.08em;text-transform:uppercase;">National Plans &amp; Commitments</div>
+          <p style="font-size:20px;font-weight:700;color:#302a2c;margin-top:10px;line-height:1.35;flex:1;">74 countries + 235 cities signed the Global Cooling Pledge. NDC and NCAP coverage is the gap you can close.</p>
+          <p style="font-size:14px;color:#64748b;margin-top:10px;line-height:1.4;font-weight:500;">The largest political commitment ever made on cooling, signed at COP28. Phase 2 tracks follow-through.</p>
+          <div style="margin-top:14px;font-size:13px;font-weight:700;color:#7c3aed;letter-spacing:0.04em;">▶ /dashboard/policy</div>
+        </a>
+
+      </div>
+      <p style="text-align:center;font-size:15px;color:#475569;font-style:italic;margin:0;">Tip &middot; click any card to jump to the live dashboard, or press &rarr; to walk through each pillar with the in-slide preview.</p>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE 11 — CLOSING (light)
+       ================================================================ -->
+
+  <!-- ================================================================
+       DIVIDER · PART 03 — Call for action (dark)
+       ================================================================ -->
+  <div class="slide slide-dark next" id="part-03">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="slide-content">
+      <div class="inner" style="max-width:1300px;padding:0 72px;align-items:flex-start;">
+        <div class="dark-tag" style="opacity:0.75;">Part 3 of 3 &middot; Where we'd value your input</div>
+        <div style="font-size:clamp(140px,18vw,260px);font-weight:800;color:rgba(139,195,74,0.92);line-height:0.95;letter-spacing:-0.04em;margin:18px 0 6px;">03</div>
+        <h1 class="dark-headline" style="font-size:clamp(40px,5vw,72px);margin-top:0;">Part 3. What we need from you.</h1>
+        <p class="dark-sub" style="font-size:clamp(20px,2vw,28px);margin-top:24px;opacity:0.82;max-width:1000px;">Three questions decide Phase 2. Sharp answers beat a perfect close.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SLIDE · THREE QUESTIONS FOR THE ROOM (light)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-questions">
+    <div class="slide-toprail">
+      <span class="eyebrow-rail">Share your feedback</span>
+      <span class="slide-counter-rail">Slide 11 / 13</span>
+    </div>
+    <div class="slide-content">
+      <h2 class="light-headline">Five questions. <span class="serif-accent" style="font-weight:600;">Your input shapes what gets built next.</span></h2>
+      <div style="border-top:1px solid rgba(48,42,44,0.15);display:flex;flex-direction:column;flex:1;min-height:0;">
+        <div style="display:grid;grid-template-columns:90px 1fr;gap:32px;align-items:center;padding:18px 0;border-bottom:1px solid rgba(48,42,44,0.15);flex:1;">
+          <div style="font-size:56px;font-weight:800;color:#F26949;line-height:1;letter-spacing:-0.04em;">01</div>
+          <p style="font-size:28px;font-weight:700;color:#302a2c;margin:0;letter-spacing:-0.3px;line-height:1.25;">Does the dashboard give you a useful overview of where the cooling transition stands globally?</p>
+        </div>
+        <div style="display:grid;grid-template-columns:90px 1fr;gap:32px;align-items:center;padding:18px 0;border-bottom:1px solid rgba(48,42,44,0.15);flex:1;">
+          <div style="font-size:56px;font-weight:800;color:#D97706;line-height:1;letter-spacing:-0.04em;">02</div>
+          <p style="font-size:28px;font-weight:700;color:#302a2c;margin:0;letter-spacing:-0.3px;line-height:1.25;">Does it accurately represent and reference the work being done by partners in your area?</p>
+        </div>
+        <div style="display:grid;grid-template-columns:90px 1fr;gap:32px;align-items:center;padding:18px 0;border-bottom:1px solid rgba(48,42,44,0.15);flex:1;">
+          <div style="font-size:56px;font-weight:800;color:#0284c7;line-height:1;letter-spacing:-0.04em;">03</div>
+          <div>
+            <p style="font-size:28px;font-weight:700;color:#302a2c;margin:0;letter-spacing:-0.3px;line-height:1.25;">Is anything important missing &mdash; a theme, region, or data dimension?</p>
+            <p style="font-size:17px;color:#7C7370;margin-top:6px;font-style:italic;line-height:1.4;">e.g. district cooling, specific country data, passive cooling&hellip;</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:90px 1fr;gap:32px;align-items:center;padding:18px 0;border-bottom:1px solid rgba(48,42,44,0.15);flex:1;">
+          <div style="font-size:56px;font-weight:800;color:#47966E;line-height:1;letter-spacing:-0.04em;">04</div>
+          <div>
+            <p style="font-size:28px;font-weight:700;color:#302a2c;margin:0;letter-spacing:-0.3px;line-height:1.25;">Any data or framing that looks incorrect or out of date?</p>
+            <p style="font-size:17px;color:#7C7370;margin-top:6px;font-style:italic;line-height:1.4;">Section, chart, or number &mdash; as specific as possible.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:90px 1fr;gap:32px;align-items:center;padding:18px 0;flex:1;">
+          <div style="font-size:56px;font-weight:800;color:#7c3aed;line-height:1;letter-spacing:-0.04em;">05</div>
+          <p style="font-size:28px;font-weight:700;color:#302a2c;margin:0;letter-spacing:-0.3px;line-height:1.25;">What would make this most useful for your work &mdash; or for communicating progress to decision-makers?</p>
+        </div>
+      </div>
+      <p class="serif-accent" style="text-align:center;font-size:18px;color:#7C7370;margin:0;">Help us improve <span style="color:#0EA5E9;font-weight:700;font-style:normal;font-family:'Figtree',sans-serif;">CoolProgress</span> &mdash; submit your answers via the dashboard feedback form.</p>
+    </div>
+  </div>
+  <!-- ================================================================
+       SLIDE · TRY IT YOURSELF (audience hands-on access)
+       ================================================================ -->
+  <div class="slide slide-light next" id="slide-try-it">
+    <div class="slide-content" style="justify-content:center;padding:40px 80px;gap:24px;">
+      <div style="text-align:center;">
+        <span class="section-tag tag-teal" style="margin-bottom:14px;display:inline-block;">Try it &middot; right now</span>
+        <h2 class="light-headline" style="font-size:clamp(40px,4.2vw,66px);max-width:1500px;margin:8px auto 0;line-height:1.08;">Open the dashboard.<br>Tell us what's missing.</h2>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:20px;flex:1;min-height:0;max-width:900px;width:100%;margin:0 auto;">
+          <div style="padding:20px 26px;background:#fafaf7;border-left:6px solid #47966E;border-radius:12px;">
+            <div style="font-size:14px;font-weight:800;color:#47966E;letter-spacing:0.1em;text-transform:uppercase;">Or type it in</div>
+            <a href="https://dashboard-display.pages.dev/login" style="font-size:30px;font-weight:800;color:#302a2c;text-decoration:none;letter-spacing:-0.5px;display:block;margin-top:8px;">dashboard-display.pages.dev/login</a>
+          </div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:14px 22px;align-items:baseline;padding:24px 28px;background:#fff8f5;border:2px dashed #F26949;border-radius:14px;">
+            <div style="font-size:14px;font-weight:800;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;">Email</div>
+            <div style="font-size:32px;font-weight:800;color:#302a2c;font-family:'JetBrains Mono','Courier New',monospace;letter-spacing:-0.5px;">london@coolprogress.org</div>
+            <div style="font-size:14px;font-weight:800;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;">Password</div>
+            <div style="font-size:32px;font-weight:800;color:#302a2c;font-family:'JetBrains Mono','Courier New',monospace;letter-spacing:-0.5px;">London2026</div>
+          </div>
+          <div style="padding:18px 24px;background:linear-gradient(135deg,#302a2c,#1a6b5a);color:#fff;border-radius:14px;">
+            <div style="font-size:13px;font-weight:800;color:#A8D166;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Our promise</div>
+            <p style="font-size:20px;font-weight:600;line-height:1.4;margin:0;">All feedback received <span style="color:#A8D166;font-weight:800;">within 1 week</span> will be considered for the update we'll publish <span style="color:#A8D166;font-weight:800;">within 2 weeks</span>.</p>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide slide-light next" id="slide-12">
+    <div class="slide-content" style="justify-content:center;align-items:center;padding:40px 80px;gap:28px;">
+
+      <!-- Headline -->
+      <div style="text-align:center;">
+        <span class="section-tag tag-teal" style="margin-bottom:14px;display:inline-block;">Join the journey</span>
+        <h2 class="light-headline" style="font-size:clamp(40px,4.2vw,64px);max-width:1500px;margin:8px auto 0;line-height:1.08;">The data is here. The solutions are known.<br>What's missing is urgency, and you.</h2>
+      </div>
+
+      <!-- Single access block -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;max-width:900px;margin:0 auto;">
+        <a href="https://dashboard-display.pages.dev/login" target="_blank" rel="noopener"
+           style="background:rgba(61,107,107,0.08);border:1px solid rgba(61,107,107,0.3);border-radius:8px;padding:11px 32px;font-size:17px;font-weight:600;color:#3D6B6B;text-decoration:none;display:inline-block;">
+          🌐 dashboard-display.pages.dev/login
+        </a>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;padding:22px 28px;background:#fff8f5;border:2px dashed #F26949;border-radius:14px;width:100%;box-sizing:border-box;">
+          <div style="text-align:center;padding:0 14px;">
+            <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Overall</div>
+            <div style="font-size:17px;font-weight:800;color:#302a2c;font-family:'JetBrains Mono','Courier New',monospace;letter-spacing:-0.2px;word-break:break-all;">dietram.oppelt@heat-international.de</div>
+          </div>
+          <div style="text-align:center;padding:0 14px;border-left:1px solid #F2694940;border-right:1px solid #F2694940;">
+            <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Data &amp; Design</div>
+            <div style="font-size:17px;font-weight:800;color:#302a2c;font-family:'JetBrains Mono','Courier New',monospace;letter-spacing:-0.2px;word-break:break-all;">manuel.prieto@heat-international.de</div>
+          </div>
+          <div style="text-align:center;padding:0 14px;">
+            <div style="font-size:13px;font-weight:800;color:#F26949;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;">Policy</div>
+            <div style="font-size:17px;font-weight:800;color:#302a2c;font-family:'JetBrains Mono','Courier New',monospace;letter-spacing:-0.2px;word-break:break-all;">stefanie.heinemann@heat-international.de</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tagline + partner logos -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:16px;margin-top:12px;">
+        <p class="closing-tagline" style="margin:0;"><em>Together we track the transition to sustainable cooling.</em></p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;margin-top:8px;">
+          <img src="images/heat-logo.png" alt="HEAT GmbH" style="height:36px;object-fit:contain;">
+          <img src="images/clasp-logo.png" alt="CLASP" style="height:36px;object-fit:contain;">
+          <img src="images/giz-logo.png" alt="GIZ Proklima" style="height:36px;object-fit:contain;">
+          <img src="images/seforall-logo.jpg" alt="SEforALL" style="height:36px;object-fit:contain;">
+          <img src="images/iea-logo.png" alt="IEA" style="height:36px;object-fit:contain;">
+          <img src="images/lbnl-logo.svg" alt="LBNL" style="height:36px;object-fit:contain;">
+          <img src="images/cpr-logo-dark.png" alt="Climate Policy Radar" style="height:28px;max-width:140px;object-fit:contain;">
+          <img src="images/cool-coalition.png" alt="Cool Coalition" style="height:36px;object-fit:contain;">
+          <img src="images/u4e-logo.png" alt="U4E" style="height:36px;object-fit:contain;">
+          <img src="images/ccc-logo.png" alt="Clean Cooling Collaborative" style="height:72px;object-fit:contain;flex-basis:100%;margin-top:16px;">
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<div id="nav-bar">
+  <button class="nav-arrow" id="btn-prev" aria-label="Previous slide">
+    <i class="fa-solid fa-chevron-left"></i>
+  </button>
+  <div class="nav-dots" id="nav-dots"></div>
+  <button class="nav-arrow" id="btn-next" aria-label="Next slide">
+    <i class="fa-solid fa-chevron-right"></i>
+  </button>
+  <span class="nav-counter" id="nav-counter">1 / 11</span>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var TOTAL   = 13;
+  var current = 0;
+
+  var slides     = Array.from(document.querySelectorAll('.slide'));
+  var dotsEl     = document.getElementById('nav-dots');
+  var counterEl  = document.getElementById('nav-counter');
+  var progressEl = document.getElementById('progress-bar');
+  var btnPrev    = document.getElementById('btn-prev');
+  var btnNext    = document.getElementById('btn-next');
+
+  for (var i = 0; i < TOTAL; i++) {
+    (function (idx) {
+      var btn = document.createElement('button');
+      btn.className = 'nav-dot' + (idx === 0 ? ' active' : '');
+      btn.setAttribute('aria-label', 'Go to slide ' + (idx + 1));
+      btn.addEventListener('click', function () { goTo(idx); });
+      dotsEl.appendChild(btn);
+    })(i);
+  }
+
+  var dots = Array.from(dotsEl.querySelectorAll('.nav-dot'));
+
+  function render() {
+    slides.forEach(function (s, i) {
+      s.classList.remove('active', 'prev', 'next');
+      if      (i < current)  s.classList.add('prev');
+      else if (i === current) s.classList.add('active');
+      else                   s.classList.add('next');
+    });
+
+    dots.forEach(function (d, i) {
+      d.classList.toggle('active', i === current);
+    });
+
+    counterEl.textContent  = (current + 1) + ' / ' + TOTAL;
+    progressEl.style.width = ((current + 1) / TOTAL * 100) + '%';
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === TOTAL - 1;
+  }
+
+  function goTo(index) {
+    if (index < 0 || index >= TOTAL) return;
+    current = index;
+    render();
+  }
+
+  function advance() { goTo(current + 1); }
+  function retreat() { goTo(current - 1); }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === ' ')  { e.preventDefault(); advance(); }
+    if (e.key === 'ArrowLeft')                    { e.preventDefault(); retreat(); }
+    if (e.key === 'Home')                         { e.preventDefault(); goTo(0); }
+    if (e.key === 'End')                          { e.preventDefault(); goTo(TOTAL - 1); }
+    if (e.key === 'n' || e.key === 'N')           { e.preventDefault(); toggleNotes(); }
+  });
+
+  function toggleNotes() {
+    var overlay = document.getElementById('notes-overlay');
+    var active = slides[current];
+    var notes = active && active.getAttribute('data-notes');
+    if (!notes) {
+      overlay.innerHTML = '<div class="notes-empty">No speaker notes on this slide.<br><span>(Press N again to close.)</span></div>';
+    } else {
+      var parts = notes.split('||').map(function (p) { return p.trim(); }).filter(Boolean);
+      overlay.innerHTML = '<div class="notes-card"><div class="notes-head">Speaker notes &middot; press N to close</div>' +
+        parts.map(function (p) { return '<p>' + p + '</p>'; }).join('') + '</div>';
+    }
+    overlay.classList.toggle('visible');
+  }
+
+  document.getElementById('deck').addEventListener('click', function (e) {
+    var tag = e.target.tagName.toLowerCase();
+    if (['a', 'button', 'input', 'select', 'textarea'].indexOf(tag) !== -1) return;
+    if (e.target.closest('#nav-bar, .cta-link, .url-chip, .pulse-btn, .action-card-link')) return;
+    advance();
+  });
+
+  var touchStartX = 0;
+  document.addEventListener('touchstart', function (e) {
+    touchStartX = e.changedTouches[0].clientX;
+  }, { passive: true });
+
+  document.addEventListener('touchend', function (e) {
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 48) {
+      if (dx < 0) advance();
+      else        retreat();
+    }
+  });
+
+  btnPrev.addEventListener('click', retreat);
+  btnNext.addEventListener('click', advance);
+
+  render();
+
+}());
+</script>
+</body>
+</html>
