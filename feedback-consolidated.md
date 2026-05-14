@@ -284,3 +284,16 @@
 
 ### CLASP Data Review
 - **Source: Ari (CLASP)** — CLASP wants to review their data as incorporated into the dashboard. Jiayi is returning from leave and will coordinate — timeline TBD.
+
+---
+
+## London Event — Live Session Feedback (2026-05-13)
+
+### Emissions / Data Coverage
+- **Source: Satish (AEEE)** — Include BTR data (Biennial Transparency Reports) from BTR 1 and BTR 2 as additional emissions evidence layer. Country submissions under the Paris Agreement transparency framework provide the most authoritative sectoral inventory data; integrate into the Emissions pillar where available.
+
+### Scenarios / Methodology
+- **Source: Omar (July session)** — Align scenario assumptions across the dashboard with the Global Cooling Pledge targets, so each pillar's "on-track / off-track" benchmark uses GCP-consistent reference points rather than independent IEA/UNEP baselines. Avoid scenario drift between pillars.
+
+### Plans & Commitments — link to real regulations
+- **Source: CCC convention, 2026-05-14** — For every pledge/commitment shown in the Plans & Commitments pillar (Global Cooling Pledge signatory, NDC cooling mention, National Cooling Action Plan), link through to the actual binding national instrument behind it: HFC phase-down decree, MEPS gazette / SI, refrigerant licensing & quota system, import-ban schedule, building energy code. Make the pledge → law gap explicit per country.
