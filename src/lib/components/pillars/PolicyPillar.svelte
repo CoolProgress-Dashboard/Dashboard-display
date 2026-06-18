@@ -117,7 +117,7 @@
 
       // ── ISO numeric → alpha-3 mapping (same as legacy) ──────────────────
       const countryIdToCode: Record<string, string> = {
-        '4':'AFG','8':'ALB','12':'DZA','16':'ASM','20':'AND','24':'AGO','28':'ATG','31':'AZE',
+        '4':'AFG','8':'ALB','10':'ATA','12':'DZA','16':'ASM','20':'AND','24':'AGO','28':'ATG','31':'AZE',
         '32':'ARG','36':'AUS','40':'AUT','44':'BHS','48':'BHR','50':'BGD','51':'ARM','52':'BRB',
         '56':'BEL','60':'BMU','64':'BTN','68':'BOL','70':'BIH','72':'BWA','76':'BRA','84':'BLZ',
         '90':'SLB','96':'BRN','100':'BGR','104':'MMR','108':'BDI','112':'BLR','116':'KHM',
@@ -127,7 +127,7 @@
         '212':'DMA','214':'DOM','218':'ECU','222':'SLV','226':'GNQ','231':'ETH','232':'ERI',
         '233':'EST','238':'FLK','242':'FJI','246':'FIN','250':'FRA','260':'ATF','262':'DJI',
         '266':'GAB','268':'GEO','270':'GMB','275':'PSE','276':'DEU','288':'GHA','296':'KIR',
-        '300':'GRC','304':'DNK','308':'GRD','320':'GTM','324':'GIN','328':'GUY','332':'HTI',
+        '300':'GRC','304':'GRL','308':'GRD','320':'GTM','324':'GIN','328':'GUY','332':'HTI',
         '340':'HND','348':'HUN','352':'ISL','356':'IND','360':'IDN','364':'IRN','368':'IRQ',
         '372':'IRL','376':'ISR','380':'ITA','384':'CIV','388':'JAM','392':'JPN','398':'KAZ',
         '400':'JOR','404':'KEN','408':'PRK','410':'KOR','414':'KWT','417':'KGZ','418':'LAO',
@@ -154,6 +154,11 @@
         if (isNaN(num)) return String(id);
         return String(num);
       }
+
+      // Territories that are not independent UNFCCC parties.
+      // On GCP/NCAP/Kigali maps they inherit the parent country's data.
+      // On the NDC tracker they always render as No Data.
+      const territoryParentForGcpNcap: Record<string, string> = { 'GRL': 'DNK' };
 
       // ── Filter state ─────────────────────────────────────────────────────
       let ndcType = 'Other';
@@ -318,18 +323,34 @@
       }
 
       function handlePolicyHover(event: MouseEvent, d: any) {
-        const code = countryIdToCode[normalizeId(d.id)];
+        const rawCode = countryIdToCode[normalizeId(d.id)];
         if (!tooltip) return;
-        if (!code) {
-          tooltip.innerHTML = `<em>Unknown country</em>`;
+        if (!rawCode) { tooltip.style.opacity = '0'; return; }
+
+        // Antarctica: no data on all maps
+        if (rawCode === 'ATA') {
+          tooltip.innerHTML = `<strong>Antarctica</strong><br><em>No data</em>`;
           tooltip.style.opacity = '1';
           tooltip.style.left = (event.pageX + 10) + 'px';
           tooltip.style.top = (event.pageY + 10) + 'px';
           return;
         }
 
+        // Greenland: no data on NDC tracker; inherits Denmark on GCP/NCAP/Kigali
+        if (rawCode === 'GRL' && policyMapType === 'ndc') {
+          tooltip.innerHTML = `<strong>Greenland</strong><br><em>No data — not an independent UNFCCC party</em>`;
+          tooltip.style.opacity = '1';
+          tooltip.style.left = (event.pageX + 10) + 'px';
+          tooltip.style.top = (event.pageY + 10) + 'px';
+          return;
+        }
+
+        // Resolve territory to parent country for data lookups
+        const code = territoryParentForGcpNcap[rawCode] ?? rawCode;
+        const isTerritory = rawCode !== code;
+
         const country = countries.find((c: any) => c.country_code === code);
-        const countryName = country?.country_name || code;
+        const countryName = isTerritory ? `Greenland (Denmark)` : (country?.country_name || code);
         const region = country?.region || 'N/A';
 
         if (policyMapType === 'gcp') {
@@ -393,7 +414,12 @@
       }
 
       function handlePolicyClick(_event: MouseEvent, d: any) {
-        const code = countryIdToCode[normalizeId(d.id)];
+        const rawCode = countryIdToCode[normalizeId(d.id)];
+        // Antarctica and Greenland-on-NDC are not clickable
+        if (!rawCode || rawCode === 'ATA') return;
+        if (rawCode === 'GRL' && policyMapType === 'ndc') return;
+        // Resolve territory to parent (Greenland → Denmark on GCP/NCAP/Kigali)
+        const code = territoryParentForGcpNcap[rawCode] ?? rawCode;
         const country = countries.find((c: any) => c.country_code === code);
         if (!country) return;
         selectedPolicyCountry = code;
@@ -550,8 +576,11 @@
           .transition()
           .duration(300)
           .attr('fill', function(this: any) {
-            const code = d3.select(this).attr('data-code');
-            if (!code) return '#E5E1D8';
+            const rawCode = d3.select(this).attr('data-code');
+            if (!rawCode || rawCode === 'ATA') return '#E5E1D8';
+            // Greenland is No Data on NDC tracker; inherits Denmark on other maps
+            if (rawCode === 'GRL' && mapType === 'ndc') return '#E5E1D8';
+            const code = territoryParentForGcpNcap[rawCode] ?? rawCode;
 
             const country = countries.find((c: any) => c.country_code === code);
             if (selectedRegion && country?.region !== selectedRegion) return '#E5E1D8';
@@ -1188,15 +1217,15 @@
             .attr('stroke', '#cbd5e1')
             .attr('stroke-width', 0.5)
             .attr('fill', (d: any) => {
-              const code = countryIdToCode[normalizeId(d.id)];
-              if (!code) return '#E5E1D8';
+              const rawCode = countryIdToCode[normalizeId(d.id)];
+              if (!rawCode || rawCode === 'ATA') return '#E5E1D8';
+              const code = territoryParentForGcpNcap[rawCode] ?? rawCode;
               const country = countries.find((c: any) => c.country_code === code);
               if (selectedRegion && country?.region !== selectedRegion) return '#E5E1D8';
               // Initialize with GCP view (first active tab)
               const pledgeRec = pledge.find((p: any) => p.country_code === code);
               if (!pledgeRec) return '#e5e7eb';
               return pledgeRec.signatory === 1 ? '#6BADA0' : '#e5e7eb';
-              // Note: Brazil excluded from NCAP view — NCAP only recently initiated
             })
             .on('mouseover', handlePolicyHover)
             .on('mouseout', handleOut)

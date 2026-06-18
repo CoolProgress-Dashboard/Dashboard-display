@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { APPLIANCE, SCENARIO, EMISSION, CHROME, areaGradient, rgba } from '$lib/components/shared/colors';
+  import { CLASP_DATASET_VERSION, CLASP_LOADED_AT } from '$lib/components/shared/config';
   import {
     applianceMilestones as hardcodedMilestones,
     applianceSummaries,
@@ -424,6 +425,9 @@
         <span>Mepsy Tool</span>
         <i class="fa-solid fa-arrow-up-right-from-square source-credit-ext"></i>
       </a>
+      <span style="font-size: 0.65rem; color: #94a3b8; border-left: 1px solid #e2e8f0; padding-left: 0.5rem;">
+        v{CLASP_DATASET_VERSION} &middot; loaded {CLASP_LOADED_AT}
+      </span>
 
       <span class="source-credit-sep">·</span>
 

@@ -56,7 +56,7 @@ export const pillarContent: PillarContentMap = {
 			{
 				value: '~3 billion',
 				label: 'more ACs expected by 2050',
-				context: 'Under business-as-usual, the global AC stock will grow from ~2 billion today to ~5 billion by 2050 — mostly in the hottest, fastest-growing markets. Source: IEA.'
+				context: 'Under business-as-usual, the global AC stock will grow from ~3.1 billion today to ~6.5 billion by 2050 — mostly in the hottest, fastest-growing markets. Source: CLASP Mepsy / IEA.'
 			},
 			{
 				value: '1B+',
@@ -116,7 +116,7 @@ export const pillarContent: PillarContentMap = {
 			'today achieves a CSPF above 8.0. Many markets still allow units below 3.0. ' +
 			'CLASP data shows that if every country adopted MEPS equivalent to today\'s best available technology, ' +
 			'we could cut cooling energy consumption by 40-50% by 2050 without reducing comfort or access. ' +
-			'That translates to avoiding over 1,300 TWh of annual electricity consumption -- roughly the total electricity output of India today. ' +
+			'That translates to avoiding over 1,300 TWh of annual electricity consumption -- roughly the total electricity output of India today (UNSDSN CEET, Energy Rating Labels 2024, based on CLASP Mepsy modelling). ' +
 			'The challenge is harmonization. Over 80 countries have some form of cooling-related MEPS, but standards vary enormously in stringency, ' +
 			'scope, and enforcement. Fans, refrigerators, and commercial chillers face a patchwork of coverage.',
 		callToInsight:

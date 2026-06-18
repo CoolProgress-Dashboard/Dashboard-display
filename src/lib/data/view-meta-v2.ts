@@ -92,7 +92,7 @@ export const viewMetaV2: ViewMetaMap = {
 			'If every country adopted MEPS at today\u2019s best-available-technology level, cooling energy demand drops 40\u201350% by 2050. ' +
 			'That is roughly India\u2019s entire electricity output. Yet millions of inefficient units enter markets with weak or no standards every year, ' +
 			'locking in excess energy consumption for 10\u201315 years.',
-		entryStat: '1,300 TWh per year -- potential savings from global MEPS harmonization',
+		entryStat: '1,300 TWh per year -- potential savings from global MEPS harmonization (UNSDSN CEET, Energy Rating Labels 2024, based on CLASP Mepsy modelling)',
 		sources: [
 			{
 				name: 'CLASP Policy Resource Center (CPRC)',

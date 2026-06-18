@@ -5,7 +5,8 @@
   import { VIEW_META,
     CLASP_SCENARIOS, CLASP_SCENARIO_NAMES, CLASP_APPLIANCES, CLASP_APPLIANCE_SHORT,
     HEAT_SCENARIOS, HEAT_SCENARIO_NAMES, HEAT_SUBSECTOR_SHORT,
-    SUPABASE_URL, SUPABASE_KEY
+    SUPABASE_URL, SUPABASE_KEY,
+    CLASP_DATASET_VERSION, CLASP_LOADED_AT
   } from '$lib/components/shared/config';
   import { SEQ, APPLIANCE, EMISSION_APPLIANCE, ACCESS_RISK, SCENARIO, EMISSION, SAVINGS, STATUS, CHROME, NO_DATA, YES, NO, rgba } from '$lib/components/shared/colors';
   import { loadEmissionsHeavyData, loadApplianceChartData, buildApplianceTimeseries } from '$lib/services/dashboard-data';
@@ -53,24 +54,25 @@
   // Animated stat cards data
   // Stats 1–2: Combined CLASP indirect + GCI direct emissions (2025 baseline and BAU 2050)
   // Stat 3: CLASP Mepsy — Best Available Tech (BAT) scenario vs BAU 2050 indirect savings
-  //         DB: BAU 3,236 Mt → BAT 1,297 Mt = 1,939 Mt saved = 60% reduction
+  //         DB: BAU 3,177 Mt → BAT 1,274 Mt = 1,903 Mt saved = 60% reduction
+  //         (EUR regional aggregate excluded from CLASP totals to avoid double-counting EU member states)
   // Stat 4: GCI/HEAT — Kigali Implementation (KIP) vs BAU 2050 direct emission savings
   //         DB: BAU 601 Mt → KIP 117 Mt = 484 Mt saved = 80% reduction
   const emissionsStats = [
     {
-      value: '2,401',
+      value: '2,344',
       label: 'Mt CO₂e from cooling today',
-      context: 'Total cooling emissions in 2025 across the full cooling sector (CLASP Mepsy indirect: 1,602 Mt + GCI direct refrigerant: 422 Mt + commercial cooling and cold chain sub-sectors). The chart below shows explicitly modelled appliances only. Source: CLASP Mepsy + GCI/HEAT.'
+      context: 'Total cooling emissions in 2025 across the full cooling sector (CLASP Mepsy indirect: 1,545 Mt + GCI direct refrigerant: 422 Mt + commercial cooling and cold chain sub-sectors). The chart below shows explicitly modelled appliances only. Source: CLASP Mepsy + GCI/HEAT.'
     },
     {
-      value: '6,009',
+      value: '5,950',
       label: 'Mt CO₂e by 2050 under BAU',
-      context: 'Business-as-usual trajectory across the full cooling sector: indirect energy emissions (CLASP: 3,236 Mt) + direct refrigerant emissions (GCI: 601 Mt) + commercial cooling and cold chain sub-sectors by 2050. The chart shows explicitly modelled appliances. Cooling demand surges in South Asia, Africa, and SE Asia without policy intervention. Source: CLASP Mepsy + GCI/HEAT.'
+      context: 'Business-as-usual trajectory across the full cooling sector: indirect energy emissions (CLASP: 3,177 Mt) + direct refrigerant emissions (GCI: 601 Mt) + commercial cooling and cold chain sub-sectors by 2050. The chart shows explicitly modelled appliances. Cooling demand surges in South Asia, Africa, and SE Asia without policy intervention. Source: CLASP Mepsy + GCI/HEAT.'
     },
     {
       value: '60%',
       label: 'fewer indirect emissions with Best Available Tech',
-      context: 'CLASP Mepsy BAT scenario 2050: if all new appliances matched today\'s best available technology, indirect (energy-related) emissions fall from 3,236 Mt to 1,297 Mt — a saving of 1,939 Mt CO₂e. Source: CLASP Mepsy Tool.'
+      context: 'CLASP Mepsy BAT scenario 2050: if all new appliances matched today\'s best available technology, indirect (energy-related) emissions fall from 3,177 Mt to 1,274 Mt — a saving of 1,903 Mt CO₂e. Source: CLASP Mepsy Tool.'
     },
     {
       value: '80%',
@@ -1420,13 +1422,16 @@
       <!-- Map Source Citation -->
       <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0 0.25rem; border-top: 1px solid #f1f5f9; margin-top: 0.4rem;">
         <span style="font-size: 0.68rem; color: #94a3b8; font-weight: 500; white-space: nowrap;">Data source:</span>
-        <div id="emissions-source-credit-clasp" style="display: inline-flex;">
+        <div id="emissions-source-credit-clasp" style="display: inline-flex; align-items: center; gap: 0.5rem;">
           <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer"
             style="display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none; color: #0369a1; font-size: 0.68rem;">
             <img src="/images/clasp-logo.png" alt="CLASP" style="height: 16px; width: auto; object-fit: contain; opacity: 0.85;" />
             <span style="font-weight: 500;">Mepsy Tool</span>
             <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.55rem; opacity: 0.7;"></i>
           </a>
+          <span style="font-size: 0.65rem; color: #94a3b8; border-left: 1px solid #e2e8f0; padding-left: 0.5rem;">
+            v{CLASP_DATASET_VERSION} &middot; loaded {CLASP_LOADED_AT}
+          </span>
         </div>
         <div id="emissions-source-credit-gci" style="display: none;">
           <a href="https://www.green-cooling-initiative.org/country-data#!total-emissions/all-sectors/absolute" target="_blank" rel="noopener noreferrer"

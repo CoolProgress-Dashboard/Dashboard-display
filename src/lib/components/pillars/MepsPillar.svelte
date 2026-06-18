@@ -38,7 +38,7 @@
     {
       value: '1,300',
       label: 'TWh annual savings potential',
-      context: 'If every country adopted MEPS at best-available-technology level, we avoid 1,300 TWh of annual electricity consumption -- roughly India\'s entire output. Source: CLASP.'
+      context: 'If every country adopted MEPS at best-available-technology level, we avoid 1,300 TWh of annual electricity consumption -- roughly India\'s entire output. Source: UNSDSN CEET, Energy Rating Labels (2024), based on CLASP Mepsy modelling.'
     },
     {
       value: '40%',

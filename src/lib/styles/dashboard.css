@@ -1,3 +1,5 @@
+@import './animations.css';
+
 :root {
   /* Dashboard Color Palette */
   --ccc-teal: #3D6B6B;
@@ -4171,9 +4173,6 @@ input[type='range']::-moz-range-thumb {
    Added: Phase 2 - Design System Layer
    NOTE: All existing classes PRESERVED above. New classes below.
    ═══════════════════════════════════════════════════════════════════════════ */
-
-/* Import animations */
-@import './animations.css';
 
 /* ─── NEW: Purple/Cyan Design Tokens ─── */
 :root {

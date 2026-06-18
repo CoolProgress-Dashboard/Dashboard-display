@@ -1,6 +1,14 @@
 // Dashboard configuration and constants extracted from monolithic +page.svelte
 import type { DashboardData } from '$lib/services/dashboard-types';
 
+// ── Dataset version metadata ─────────────────────────────────────────────────
+// Update these two constants each time CLASP Mepsy data is refreshed in Supabase.
+// CLASP_DATASET_VERSION: version string from the Mepsy export (e.g. "2.3.1").
+// CLASP_LOADED_AT: ISO date the populate script was last run (YYYY-MM-DD).
+export const CLASP_DATASET_VERSION = 'unknown';
+export const CLASP_LOADED_AT = 'unknown';
+// ─────────────────────────────────────────────────────────────────────────────
+
 export type Indicator = 'pledge' | 'kigali' | 'meps';
 
 export type ViewMeta = {
@@ -27,7 +35,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
     headline: 'Cooling emissions will triple by 2050 \u2014 unless we act now',
     subhead: 'AC alone will emit more than global aviation by 2035. Three interventions can cut 73% by mid-century.',
     insight:
-      'Today\u2019s cooling sector emits 2,401 Mt CO\u2082e annually \u2014 more than the entire EU. On the current trajectory, that triples to 6,009 Mt by 2050 (across the full cooling sector). But three proven interventions \u2014 efficient appliances, low-GWP refrigerants, and clean grids \u2014 can cut 4,455 Mt per year. That is like taking every car in Europe and North America off the road.',
+      'Today\u2019s cooling sector emits 2,344 Mt CO\u2082e annually \u2014 more than the entire EU. On the current trajectory, that rises to 5,950 Mt by 2050 (across the full cooling sector). But three proven interventions \u2014 efficient appliances, low-GWP refrigerants, and clean grids \u2014 can cut the majority of that growth. That is like taking every car in Europe and North America off the road.',
     methodology: 'Three-layer DECARB: HEAT GmbH (direct emissions, Kigali phase-down) + CLASP (efficiency scenarios) + IEA STEPS (grid decarbonization). See /methodology for details.',
     sources: [
       { name: 'HEAT GmbH', url: 'https://www.heat-international.de/', logo: '/images/heat-logo.png' },
@@ -39,7 +47,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
     headline: 'The 3x efficiency gap is the cheapest climate solution we are ignoring',
     subhead: 'Best-in-class ACs are 3x more efficient than the worst on sale today. MEPS can close this gap \u2014 saving 1,300 TWh per year.',
     insight:
-      'The cheapest air conditioner in Lagos consumes three times the electricity of the best unit in Tokyo \u2014 for the same cooling. Without binding standards, manufacturers dump their least efficient models in the fastest-growing markets. Closing this gap saves 1,300 TWh annually: enough to power all of Africa. The tool already exists. It is called MEPS.',
+      'The cheapest air conditioner in Lagos consumes three times the electricity of the best unit in Tokyo \u2014 for the same cooling. Without binding standards, manufacturers dump their least efficient models in the fastest-growing markets. Closing this gap saves 1,300 TWh annually: enough to power all of Africa (UNSDSN CEET, Energy Rating Labels 2024, based on CLASP Mepsy modelling). The tool already exists. It is called MEPS.',
     methodology: 'MEPS & Labels data: CLASP Policy Resource Center (CPRC). Efficiency metrics: CSPF, EER, AEC. Coverage: AC, Refrigerators, Fans across 80+ countries.',
     sources: [
       { name: 'CLASP Policy Resource Center', url: 'https://cprc-clasp.ngo/', logo: '/images/clasp-logo.png' },
@@ -157,10 +165,10 @@ export const HEAT_SUBSECTOR_SHORT: Record<string, string> = {
 
 export const EMISSIONS_YEARS = Array.from({ length: 2050 - 2020 + 1 }, (_, i) => 2020 + i);
 
-export const ACCESS_HISTORICAL_YEARS = Array.from({ length: 2024 - 2013 + 1 }, (_, i) => 2013 + i);
+export const ACCESS_HISTORICAL_YEARS = Array.from({ length: 2024 - 2020 + 1 }, (_, i) => 2020 + i);
 export const ACCESS_FORECAST_YEARS = Array.from({ length: 2050 - 2025 + 1 }, (_, i) => 2025 + i);
-export const ACCESS_YEARS = Array.from({ length: 2024 - 2013 + 1 }, (_, i) => 2013 + i);
-export const ACCESS_ALL_YEARS = Array.from({ length: 2050 - 2013 + 1 }, (_, i) => 2013 + i);
+export const ACCESS_YEARS = Array.from({ length: 2024 - 2020 + 1 }, (_, i) => 2020 + i);
+export const ACCESS_ALL_YEARS = Array.from({ length: 2050 - 2020 + 1 }, (_, i) => 2020 + i);
 export const IMPACT_LEVELS = ['High', 'Medium', 'Low'];
 export const POPULATION_CATEGORIES = ['Rural Poor', 'Urban Poor', 'Lower-Middle Income', 'Middle-Income'];
 

@@ -79,8 +79,8 @@
     },
     {
       icon: 'fa-chart-area',
-      title: '2015\u20132030 Timeline',
-      description: 'Historical and projected view of population at risk, stacked by risk level from 2015\u20132030',
+      title: '2020\u20132030 Timeline',
+      description: 'Historical and projected view of population at risk, stacked by risk level from 2020\u20132030',
       color: '#D4A843'
     },
     {
@@ -497,8 +497,8 @@
           : r.region
       }));
 
-      // Range: 2022–2030 — SEforALL data only (no HEAT projections beyond 2030)
-      const allRecords = [...accessData, ...normalizedForecast].filter(r => r.year >= 2022 && r.year <= 2030);
+      // Range: 2020–2030 — SEforALL data only (no HEAT projections beyond 2030)
+      const allRecords = [...accessData, ...normalizedForecast].filter(r => r.year >= 2020 && r.year <= 2030);
 
       // Apply risk level filter only
       const filtered = allRecords.filter(r => {
@@ -643,7 +643,7 @@
       }).filter(cb => cb.value > 0);
 
       const currentYearTotal = currentYearData.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
-      const baselineYear = 2013;
+      const baselineYear = 2020;
       const baselineTotal = countryData
         .filter(r => r.year === baselineYear)
         .reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);

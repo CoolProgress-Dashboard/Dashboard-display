@@ -156,10 +156,12 @@ export const loadApplianceChartData = async (
 ): Promise<{ clasp: ClaspEnergyRecord[]; subcool: SubcoolRecord[] }> => {
   const [clasp, subcool] = await Promise.all([
     // CLASP: 7 columns instead of 22 — stock, BAU energy/CO2, GB energy/CO2
+    // EUR (European Union) is excluded: it is a regional aggregate that sits
+    // alongside individual EU member states, causing double-counting in global totals.
     safeFetch<ClaspEnergyRecord>(
       url, key, 'clasp_energy_consumption',
       'appliance,year,appliance_units_in_use,bau_final_energy_twh,bau_co2_mt,gb_final_energy_twh,gb_co2_mt',
-      '', 50000
+      '&country_code=neq.EUR', 50000
     ),
     // HEAT: 4 columns instead of 11, filtered to the only 2 subsectors and
     // 2 scenarios used by buildApplianceTimeseries — dramatically smaller payload
@@ -185,8 +187,10 @@ export const loadEmissionsHeavyData = async (
       key,
       'clasp_energy_consumption',
       // id and appliance_ownership_rate dropped — unused in EmissionsPillar
+      // EUR (European Union) excluded — regional aggregate; individual EU member
+      // states are already in the table so including EUR causes double-counting.
       'country_code,country_name,year,appliance,bau_final_energy_twh,bau_co2_mt,gb_final_energy_twh,gb_co2_mt,gb_annual_co2_red_mt,gb_cumul_co2_red_mt,nzh_final_energy_twh,nzh_co2_mt,nzh_annual_co2_red_mt,nzh_cumul_co2_red_mt,bat_final_energy_twh,bat_co2_mt,bat_annual_co2_red_mt,bat_cumul_co2_red_mt,bat_co2_nzg_mt,bat_cumul_co2_red_nzg_mt,appliance_units_in_use',
-      '&year=gte.2020&year=lte.2050',
+      '&year=gte.2020&year=lte.2050&country_code=neq.EUR',
       50000
     ),
     safeFetch<SubcoolRecord>(
