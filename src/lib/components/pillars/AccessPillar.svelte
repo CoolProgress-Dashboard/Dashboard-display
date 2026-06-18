@@ -199,7 +199,7 @@
       '#DC2626', // 30-50% — High (red)
       '#7F1D1D', // >50%   — Critical (dark red)
     ] as const;
-    const PCT_LABELS = ['Low (<5%)', 'Moderate (5–30%)', 'High (30–50%)', 'Critical (>50%)'];
+    const PCT_LABELS = ['Under 5%', '5–30%', '30–50%', 'Over 50%'];
 
     const SEFORALL_RISK_COLORS: Record<string, string> = {
       'High':   '#C5443A',  // SEforALL red
@@ -255,12 +255,19 @@
     function updateAccessLegend() {
       const legend = document.getElementById('access-legend');
       if (!legend) return;
-      legend.innerHTML = PCT_COLORS.map((color, i) => `
+      const swatches = PCT_COLORS.map((color, i) => `
         <div class="legend-item">
           <div class="legend-color" style="background:${color}"></div>
           ${PCT_LABELS[i]}
         </div>
       `).join('');
+      const noData = `
+        <div class="legend-item">
+          <div class="legend-color" style="background:#E5E1D8;border:1px solid #cbd5e1;"></div>
+          No data
+        </div>
+      `;
+      legend.innerHTML = swatches + noData;
     }
 
     function updateAccessProgress() {
@@ -1097,7 +1104,7 @@
       <p class="chart-hint">Hover over a country to see the population at risk and risk level breakdown. Click a country to explore income group and time-series detail.</p>
       <div id="access-map-container" class="map-surface"></div>
       <div class="legend legend-row">
-        <span class="legend-label">Population at Risk:</span>
+        <span class="legend-label">Map — % of population at risk:</span>
         <div id="access-legend" class="legend-items"></div>
       </div>
       <div class="progress-bar access-progress">

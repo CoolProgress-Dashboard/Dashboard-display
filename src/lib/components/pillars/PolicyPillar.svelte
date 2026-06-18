@@ -530,6 +530,7 @@
           legendEl.innerHTML = `
             <div class="legend-item"><div class="legend-color" style="background:#6BADA0"></div>Signatory</div>
             <div class="legend-item"><div class="legend-color" style="background:#e5e7eb;border:1px solid #cbd5e1;"></div>Non-Signatory</div>
+            <div class="legend-item"><div class="legend-color" style="background:#E5E1D8"></div>No Data</div>
           `;
         } else if (mapType === 'ndc') {
           legendEl.innerHTML = `
@@ -542,6 +543,7 @@
           legendEl.innerHTML = `
             <div class="legend-item"><div class="legend-color" style="background:#6BADA0"></div>Has NCAP</div>
             <div class="legend-item"><div class="legend-color" style="background:#e5e7eb;border:1px solid #cbd5e1;"></div>No NCAP yet</div>
+            <div class="legend-item"><div class="legend-color" style="background:#E5E1D8"></div>No Data</div>
           `;
         }
       }
