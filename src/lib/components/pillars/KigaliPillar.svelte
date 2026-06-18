@@ -1542,8 +1542,9 @@
         <div class="k-card k-resource-card">
           <strong class="k-card-title">EU F-Gas Regulation (2024/573)</strong>
           <p class="k-card-body">World's most ambitious HFC phase-out. Mandates full phase-out of virgin HFCs by 2050, with GWP limits &lt;150 for most small split ACs by 2027/2029. Entered into force March 2024.</p>
-          <a href="https://eur-lex.europa.eu/eli/reg/2024/573/oj/eng" target="_blank" rel="noopener noreferrer" class="k-resource-link">Full legal text (EUR-Lex) <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-          <a href="https://eur-lex.europa.eu/EN/legal-content/summary/fluorinated-greenhouse-gases.html" target="_blank" rel="noopener noreferrer" class="k-resource-link" style="margin-left:0.75rem;">Readable summary <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a href="https://eia-international.org/report/a-concise-guide-to-eu-phase-out-of-hydrofluorocarbon-super-pollutants/" target="_blank" rel="noopener noreferrer" class="k-resource-link">EIA plain-language guide <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a href="https://eia-international.org/wp-content/uploads/2026-EIA-A-Concise-Guide-to-the-EU-F-Gas-Regulation-SINGLE-PAGES.pdf" target="_blank" rel="noopener noreferrer" class="k-resource-link" style="margin-left:0.75rem;">Download PDF <i class="fa-solid fa-file-pdf"></i></a>
+          <a href="https://eur-lex.europa.eu/eli/reg/2024/573/oj/eng" target="_blank" rel="noopener noreferrer" class="k-resource-link" style="margin-left:0.75rem;">Full legal text <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
         </div>
         <div class="k-card k-resource-card">
           <strong class="k-card-title">EIA International — F-Gas &amp; HFC Campaign</strong>

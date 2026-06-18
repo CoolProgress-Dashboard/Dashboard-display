@@ -43,7 +43,7 @@
     {
       value: '40%',
       label: 'demand reduction achievable',
-      context: 'CLASP modelling shows cooling energy consumption drops 40-50% by 2050 with universal adoption of best-available MEPS, without reducing comfort or access.'
+      context: 'CLASP Mepsy modelling: universal adoption of best-available MEPS could cut sector-wide cooling energy consumption by 40–50% by 2050 across all appliance types and geographies, without reducing comfort or access. This is a whole-sector projection — individual technology gains can be higher.'
     },
     {
       value: '80+',
@@ -1042,7 +1042,7 @@
       <div class="meps-inverter-stat-highlight">
         <div class="meps-inverter-stat-value">25–60%</div>
         <div class="meps-inverter-stat-label">energy savings over standard fixed-speed models</div>
-        <div class="meps-inverter-stat-note">In optimised high-temperature units, savings can reach 60% — and a 5× efficiency potential exists for best-in-class designs (Global Cooling Prize)</div>
+        <div class="meps-inverter-stat-note">In optimised high-temperature units, savings can reach 60% (CLASP inverter benchmarking). A 5× efficiency potential exists for next-generation designs — demonstrated by the Global Cooling Prize.</div>
       </div>
 
       <p class="meps-body-text">By eliminating the wasteful start-stop cycles, inverter ACs typically achieve <strong>25–44% energy savings</strong> over standard fixed-speed models. Recent testing of optimised units for high-temperature, high-humidity climates shows savings as high as <strong>60%</strong>. The Global Cooling Prize demonstrated that a five-fold improvement in efficiency is achievable for next-generation designs — underscoring the enormous headroom that still exists above today's best-available standards. For a typical household in a hot climate, this transition already slashes electricity bills and reduces the "peak load" on national power grids.</p>
@@ -1101,6 +1101,18 @@
         </div>
       </div>
       <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> Data currently under review by HEAT and partners.</p>
+    </div>
+
+    <!-- ═══ ASEAN HARMONIZATION ═══ -->
+    <div class="chapter-card" class:revealed>
+      <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.5rem;">
+        <span class="meps-eyebrow meps-eyebrow-xl" style="margin-bottom:0;">Regional Focus</span>
+        <span class="appliance-scope-badge"><i class="fa-solid fa-earth-asia"></i> Southeast Asia</span>
+      </div>
+      <h2 class="meps-section-title">ASEAN Harmonization: A Region Converging on Shared Standards</h2>
+      <p class="meps-body-text">Southeast Asian economies are converging on shared MEPS frameworks through the ASEAN Economic Community. Thailand and Vietnam lead with mandatory inverter-class standards for room ACs. Singapore is advancing its second MEPS revision with updated test procedures, raising the efficiency floor toward best-available performance. Malaysia has its first MEPS for room ACs in place and is planning its initial revision. The Philippines is developing updated MEPS with support from CLASP and the Department of Energy. Indonesia is advancing tiered efficiency labels linked to a future mandatory MEPS floor, with ongoing technical support from U4E and CLASP.</p>
+      <p class="meps-body-text">CLASP and U4E are supporting the region toward common test protocols — a prerequisite for cross-border market harmonization that would allow manufacturers to produce to a single regional standard.</p>
+      <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> Source: CLASP / U4E regional programme.</p>
     </div>
 
     <!-- ═══ CLASP INFO BOX: BRIDGING THE COOLING GAP ═══ -->
