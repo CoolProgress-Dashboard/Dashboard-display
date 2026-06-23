@@ -54,6 +54,7 @@
               <span class="flow-stat-source"><a href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer">SEforAll Chilling Prospects 2025</a></span>
             </div>
           </div>
+
         </div>
       </div>
 
@@ -183,6 +184,52 @@
             <span class="dp-item-cta">Explore <i class="fa-solid fa-arrow-right"></i></span>
           </button>
         </div>
+
+        <!-- OV-05: Cross-pillar synergies bar -->
+        <div class="flow-synergies">
+          <div class="flow-syn-header">
+            <i class="fa-solid fa-arrows-turn-to-dots"></i>
+            <span>Pillars work together — progress on one accelerates the others</span>
+          </div>
+          <div class="flow-syn-items">
+            <div class="flow-syn-item">
+              <div class="flow-syn-pills">
+                <span class="flow-syn-pill" style="--sc:#dc2626">01</span>
+                <span class="flow-syn-plus">+</span>
+                <span class="flow-syn-pill" style="--sc:#d97706">02</span>
+              </div>
+              <p class="flow-syn-text">Higher efficiency standards cut electricity demand, directly reducing indirect emissions from the grid</p>
+            </div>
+            <div class="flow-syn-divider"></div>
+            <div class="flow-syn-item">
+              <div class="flow-syn-pills">
+                <span class="flow-syn-pill" style="--sc:#dc2626">01</span>
+                <span class="flow-syn-plus">+</span>
+                <span class="flow-syn-pill" style="--sc:#0891b2">03</span>
+              </div>
+              <p class="flow-syn-text">Kigali HFC phasedown tackles direct refrigerant emissions — the half that efficiency standards alone cannot address</p>
+            </div>
+            <div class="flow-syn-divider"></div>
+            <div class="flow-syn-item">
+              <div class="flow-syn-pills">
+                <span class="flow-syn-pill" style="--sc:#d97706">02</span>
+                <span class="flow-syn-plus">+</span>
+                <span class="flow-syn-pill" style="--sc:#0891b2">03</span>
+              </div>
+              <p class="flow-syn-text">Combining high-efficiency appliances with low-GWP refrigerants is the fastest route to a 73% emissions cut by 2050</p>
+            </div>
+            <div class="flow-syn-divider"></div>
+            <div class="flow-syn-item">
+              <div class="flow-syn-pills">
+                <span class="flow-syn-pill" style="--sc:#2D7D5A">04</span>
+                <span class="flow-syn-plus">+</span>
+                <span class="flow-syn-pill" style="--sc:#7c3aed">05</span>
+              </div>
+              <p class="flow-syn-text">Countries with cooling in their NDCs are more likely to invest in access for the most heat-vulnerable populations</p>
+            </div>
+          </div>
+        </div>
+
       </div>
 
     </div><!-- /overview-flow -->
@@ -397,6 +444,77 @@
   }
   .flow-stat-source a:hover {
     border-color: #0369a1;
+  }
+
+  /* ─── OV-05: synergies bar ───────────────── */
+  .flow-synergies {
+    margin-top: 20px;
+    padding: 20px 24px;
+    background: rgba(255,255,255,0.4);
+    border: 1px solid rgba(0,0,0,0.07);
+    border-radius: 10px;
+  }
+  .flow-syn-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .flow-syn-header i { color: #0369a1; font-size: 0.8rem; }
+  .flow-syn-items {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+  }
+  .flow-syn-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 20px;
+  }
+  .flow-syn-item:first-child { padding-left: 0; }
+  .flow-syn-item:last-child  { padding-right: 0; }
+  .flow-syn-divider {
+    width: 1px;
+    align-self: stretch;
+    background: rgba(0,0,0,0.08);
+    flex-shrink: 0;
+  }
+  .flow-syn-pills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .flow-syn-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--sc) 12%, #fff);
+    color: var(--sc);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+  .flow-syn-plus {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #94a3b8;
+  }
+  .flow-syn-text {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #334155;
+    line-height: 1.55;
+    margin: 0;
   }
 
   /* ─── 2 · EMISSION SOURCES ──────────────── */

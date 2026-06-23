@@ -55,5 +55,24 @@ export const actions: Actions = {
     }
 
     return { success: 'Check your email for the sign-in link.' };
+  },
+
+  'forgot-password': async ({ request, locals, url }) => {
+    const form = await request.formData();
+    const email = String(form.get('email') ?? '');
+
+    if (!email) {
+      return fail(400, { error: 'Email is required.' });
+    }
+
+    const { error } = await locals.supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${url.origin}/auth/callback?type=recovery`
+    });
+
+    if (error) {
+      return fail(400, { error: error.message });
+    }
+
+    return { success: 'Check your email for a password reset link.' };
   }
 };

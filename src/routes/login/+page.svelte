@@ -5,6 +5,7 @@
 
   let email = '';
   let password = '';
+  let showForgot = false;
 </script>
 
 <section class="auth">
@@ -16,26 +17,43 @@
       <input name="email" type="email" bind:value={email} placeholder="you@company.com" />
     </label>
     <label>
-      Password
+      <span class="label-row">
+        Password
+        <button type="button" class="link-btn" on:click={() => showForgot = !showForgot}>
+          Forgot password?
+        </button>
+      </span>
       <input name="password" type="password" bind:value={password} placeholder="••••••••" />
     </label>
     <button type="submit" disabled={!email || !password}>Sign in</button>
   </form>
 
-  <form method="POST" action="?/magic-link" use:enhance>
-    <label>
-      Email
-      <input name="email" type="email" bind:value={email} placeholder="you@company.com" />
-    </label>
-    <button class="ghost" type="submit" disabled={!email}>Send magic link</button>
-  </form>
+  {#if showForgot}
+    <form method="POST" action="?/forgot-password" use:enhance>
+      <p class="forgot-hint">Enter your email and we will send you a reset link.</p>
+      <label>
+        Email
+        <input name="email" type="email" bind:value={email} placeholder="you@company.com" />
+      </label>
+      <button class="ghost" type="submit" disabled={!email}>Send reset link</button>
+    </form>
+  {:else}
+    <form method="POST" action="?/magic-link" use:enhance>
+      <label>
+        Email
+        <input name="email" type="email" bind:value={email} placeholder="you@company.com" />
+      </label>
+      <button class="ghost" type="submit" disabled={!email}>Send magic link</button>
+    </form>
+  {/if}
+
   <p class="hint">
     Need an account? <a href="/register">Create one</a>
   </p>
   {#if form?.error}
-    <p class="message">{form.error}</p>
+    <p class="message error">{form.error}</p>
   {:else if form?.success}
-    <p class="message">{form.success}</p>
+    <p class="message success">{form.success}</p>
   {/if}
 </section>
 
@@ -93,8 +111,33 @@
     text-decoration: none;
     font-weight: 600;
   }
-  .message {
-    margin-top: 1rem;
+  .label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .link-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    width: auto;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #6b6254;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .link-btn:hover { color: #1b1c1f; }
+  .forgot-hint {
+    margin: 0.5rem 0 0;
+    font-size: 0.88rem;
     color: #6b6254;
   }
+  .message {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+  .message.error { color: #b91c1c; }
+  .message.success { color: #15803d; }
 </style>
