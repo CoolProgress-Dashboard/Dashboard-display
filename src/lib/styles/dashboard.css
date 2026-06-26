@@ -1354,15 +1354,15 @@ select {
 }
 
 .progress-segment.access-low {
-  background: #F59E0B;
+  background: #2D7D32;
 }
 
 .progress-segment.access-medium {
-  background: #F97316;
+  background: #C9921A;
 }
 
 .progress-segment.access-high {
-  background: #DC2626;
+  background: #C5443A;
 }
 
 .progress-segment.access-critical {

@@ -729,26 +729,22 @@
           });
         });
 
-        // Before 2025: only BAU is observed — null out scenario lines
+        // Before and including 2025: mirror BAU values so all lines share the same historical path
+        const idx2025 = years.indexOf(2025);
         years.forEach((y: number, i: number) => {
-          if (y < 2025) {
-            rawData['KIP'][i] = null;
-            rawData['KIP_PLUS'][i] = null;
+          if (y <= 2025) {
+            rawData['KIP'][i] = rawData['BAU'][i];
+            rawData['KIP_PLUS'][i] = rawData['BAU'][i];
           }
         });
 
-        // Normalise 2025: all scenarios share the BAU value at 2025 as the common start
-        const idx2025 = years.indexOf(2025);
-        if (idx2025 !== -1) {
-          const bau2025 = rawData['BAU'][idx2025];
-          if (bau2025 != null) {
-            scenarios.forEach((s: string) => {
-              if (rawData[s][idx2025] != null) rawData[s][idx2025] = bau2025;
-            });
-          }
-        }
-
-        const activeScenarios = scenarios.filter((s: string) => rawData[s].some((v: any) => v != null && v > 0));
+        // Only show scenario lines that have real projected data after 2025
+        const postIdx = idx2025 >= 0 ? idx2025 + 1 : years.findIndex((y: number) => y > 2025);
+        const activeScenarios = scenarios.filter((s: string) => {
+          if (s === 'BAU') return rawData['BAU'].some((v: any) => v != null && v > 0);
+          if (postIdx < 0 || postIdx >= rawData[s].length) return false;
+          return rawData[s].slice(postIdx).some((v: any) => v != null && v > 0);
+        });
         if (activeScenarios.length === 0) {
           years = STATIC_SCENARIO_DATA.years;
           seriesData = STATIC_SCENARIO_DATA.series;

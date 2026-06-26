@@ -1040,12 +1040,12 @@
       <p class="meps-body-text">The Inverter Revolution changed the game. Instead of a switch, an inverter acts like a dimmer. It uses a variable-speed drive to slow down or speed up the compressor based on the actual cooling need. Once the room is cool, the inverter keeps the compressor running at a low, ultra-efficient hum.</p>
 
       <div class="meps-inverter-stat-highlight">
-        <div class="meps-inverter-stat-value">25–60%</div>
+        <div class="meps-inverter-stat-value">up to 60%</div>
         <div class="meps-inverter-stat-label">energy savings over standard fixed-speed models</div>
-        <div class="meps-inverter-stat-note">In optimised high-temperature units, savings can reach 60% (CLASP inverter benchmarking). A 5× efficiency potential exists for next-generation designs — demonstrated by the Global Cooling Prize.</div>
+        <div class="meps-inverter-stat-note">In optimised high-temperature and high-humidity units, savings reach up to 60% (CLASP inverter benchmarking). A 5x efficiency potential exists for next-generation designs, demonstrated by the Global Cooling Prize.</div>
       </div>
 
-      <p class="meps-body-text">By eliminating the wasteful start-stop cycles, inverter ACs typically achieve <strong>25–44% energy savings</strong> over standard fixed-speed models. Recent testing of optimised units for high-temperature, high-humidity climates shows savings as high as <strong>60%</strong>. The Global Cooling Prize demonstrated that a five-fold improvement in efficiency is achievable for next-generation designs — underscoring the enormous headroom that still exists above today's best-available standards. For a typical household in a hot climate, this transition already slashes electricity bills and reduces the "peak load" on national power grids.</p>
+      <p class="meps-body-text">By eliminating the wasteful start-stop cycles, inverter ACs typically achieve <strong>up to 60% energy savings</strong> over standard fixed-speed models, with optimised units for high-temperature, high-humidity climates consistently reaching that ceiling (CLASP inverter benchmarking). The Global Cooling Prize demonstrated that a five-fold improvement in efficiency is achievable for next-generation designs, underscoring the enormous headroom that still exists above today's best-available standards. For a typical household in a hot climate, this transition already slashes electricity bills and reduces the peak load on national power grids.</p>
     </div>
 
     <!-- ═══ SUPER-EFFICIENT FANS ═══ -->

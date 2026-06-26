@@ -480,10 +480,10 @@
         const ndcStatus = ndcRec?.mention_status ?? 'No data';
         const ncapYear = ncapRec?.year ? ` (${ncapRec.year})` : '';
 
-        const ndcBorder = ndcStatus === 'Mentioned' ? '#D4A843' : '#e2e8f0';
-        const ndcBg     = ndcStatus === 'Mentioned' ? '#fef9ec' : '#f8fafc';
-        const ndcIcon   = ndcStatus === 'Mentioned' ? '#D4A843' : '#94a3b8';
-        const ndcTitle  = ndcStatus === 'Mentioned' ? '#8B6B00' : '#64748b';
+        const ndcBorder = ndcStatus === 'Mentioned' ? '#6BADA0' : ndcStatus === 'Not mentioned' ? '#D4A843' : '#e2e8f0';
+        const ndcBg     = ndcStatus === 'Mentioned' ? '#f0fdf4' : '#f8fafc';
+        const ndcIcon   = ndcStatus === 'Mentioned' ? '#6BADA0' : ndcStatus === 'Not mentioned' ? '#D4A843' : '#94a3b8';
+        const ndcTitle  = ndcStatus === 'Mentioned' ? '#2D7D5A' : '#64748b';
         const ndcLabel  = ndcStatus === 'Mentioned' ? 'Cooling Mentioned' : ndcStatus === 'Not mentioned' ? 'Not yet mentioned' : (ndcStatus || 'No Data');
 
         container.innerHTML = `
@@ -1477,8 +1477,8 @@
     <div class="chapter-card" class:revealed>
       <span class="ns-eyebrow">Where Things Stand</span>
       <h2 class="ns-title">Cooling Policy: From Pledges to Implementation</h2>
-      <p class="ns-body">The Global Cooling Watch 2025 reports that 134 countries reference cooling in their national climate strategies — a broad signal of awareness. Of those, 74 have gone further by formally signing the Global Cooling Pledge, and 37 of those 74 signatories explicitly include cooling in their NDCs. Yet only 54 countries have enforceable regulations covering the three critical areas: passive cooling, high-efficiency standards (MEPS), and refrigerant transitions.</p>
-      <p class="ns-body">NDC 3.0s — the latest round of updated climate commitments — are currently being submitted. Very few contain specific AC efficiency requirements, exposing a significant gap between political intent and policy depth.</p>
+      <p class="ns-body">As of 2026, 74 governments have signed the Global Cooling Pledge, committing to a 68% cut in cooling-related emissions by 2050. Separately, the Global Cooling Watch 2025 finds that 134 countries reference cooling in their national climate strategies, a broad signal of awareness that extends well beyond the Pledge signatories. Of the 74 GCP signatories, 37 have also included cooling in their NDCs, showing that political endorsement does not automatically translate into binding climate commitments. Only 54 countries have enforceable regulations covering the three critical areas: passive cooling, high-efficiency standards (MEPS), and refrigerant transitions.</p>
+      <p class="ns-body">NDC 3.0s are the latest round of updated national climate commitments submitted under the Paris Agreement. While 134 countries submitted them, very few contain specific air conditioning efficiency requirements, exposing a significant gap between political awareness and binding policy depth.</p>
       <p class="ns-body">As of 2026, ~25 countries have finalised or are developing National Cooling Action Plans (NCAPs) — dedicated roadmaps that bridge high-level pledges and ground-level enforcement. Regional harmonisation efforts, such as ASEAN and ECOWAS efficiency standards, are also accelerating the transition beyond individual national efforts.</p>
       <p class="ns-body">Targeted climate finance from the Montreal Protocol's Multilateral Fund and the Green Climate Fund is helping close the gap between planning and implementation across developing economies.</p>
       <div class="policy-layers">

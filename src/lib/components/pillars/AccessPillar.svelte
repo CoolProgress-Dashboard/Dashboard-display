@@ -194,9 +194,9 @@
     // -------------------------------------------------------
     const PCT_THRESHOLDS = [0.05, 0.30, 0.50]; // Low | Moderate | High | Critical
     const PCT_COLORS = [
-      '#F59E0B', // <5%   — Low (amber)
-      '#F97316', // 5-30% — Moderate (orange)
-      '#DC2626', // 30-50% — High (red)
+      '#2D7D32', // <5%   — Low (green, matches SEFORALL Low)
+      '#C9921A', // 5-30% — Moderate (amber, matches SEFORALL Medium)
+      '#C5443A', // 30-50% — High (red, matches SEFORALL High)
       '#7F1D1D', // >50%   — Critical (dark red)
     ] as const;
     const PCT_LABELS = ['Under 5%', '5–30%', '30–50%', 'Over 50%'];

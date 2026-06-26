@@ -116,13 +116,22 @@
   });
 
   let showTooltip = false;
+  let tooltipBelow = false;
+
+  function handleEnter() {
+    if (containerEl) {
+      const rect = containerEl.getBoundingClientRect();
+      tooltipBelow = rect.top < 320;
+    }
+    showTooltip = true;
+  }
 </script>
 
 <div
   class="counter-card"
   class:visible
   bind:this={containerEl}
-  on:mouseenter={() => (showTooltip = true)}
+  on:mouseenter={handleEnter}
   on:mouseleave={() => (showTooltip = false)}
   role="group"
   aria-label="{label}: {value}"
@@ -131,7 +140,7 @@
   <div class="counter-label">{label}</div>
 
   {#if showTooltip && tooltipText}
-    <div class="counter-tooltip" role="tooltip">
+    <div class="counter-tooltip" class:tooltip-below={tooltipBelow} role="tooltip">
       <p>{tooltipText}</p>
       {#if source}
         <p class="tooltip-source">Source: {#if sourceUrl}<a href={sourceUrl} target="_blank" rel="noreferrer">{source}</a>{:else}{source}{/if}</p>
@@ -227,6 +236,18 @@
     transform: translateX(-50%);
     border: 6px solid transparent;
     border-top-color: #0f172a;
+  }
+
+  /* flip to below when near top of viewport */
+  .counter-tooltip.tooltip-below {
+    bottom: auto;
+    top: calc(100% + 10px);
+  }
+  .counter-tooltip.tooltip-below::before {
+    top: auto;
+    bottom: 100%;
+    border-top-color: transparent;
+    border-bottom-color: #0f172a;
   }
 
   @keyframes tooltip-fade-in {

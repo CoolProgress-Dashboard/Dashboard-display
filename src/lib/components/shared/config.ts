@@ -184,6 +184,7 @@ export const APPLIANCE_TO_SCOPE: Record<string, string> = {
   all: 'fan'
 };
 
-// Supabase configuration
-export const SUPABASE_URL = 'https://hcpmdkkavtadgugrqohl.supabase.co';
-export const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjcG1ka2thdnRhZGd1Z3Jxb2hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIyODcwMzAsImV4cCI6MjA3Nzg2MzAzMH0.hjYqzGqAQ_C7vVsAo-UcSICFEpzsKP5R5xGi8sh-etA';
+// Supabase configuration — values come from .env (PUBLIC_SUPABASE_URL / PUBLIC_SUPABASE_ANON_KEY)
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+export const SUPABASE_URL = PUBLIC_SUPABASE_URL;
+export const SUPABASE_KEY = PUBLIC_SUPABASE_ANON_KEY;
