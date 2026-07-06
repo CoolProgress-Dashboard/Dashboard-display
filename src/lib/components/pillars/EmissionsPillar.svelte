@@ -1546,7 +1546,7 @@
       <h2 class="ep-section-title">Resources on Cooling &amp; Climate</h2>
 
       <div class="ep-resources-grid">
-        <a href="https://www.unep.org/resources/report/global-cooling-watch-2025" target="_blank" rel="noopener noreferrer" class="ep-resource-card">
+        <a href="https://www.unep.org/resources/global-cooling-watch-2025" target="_blank" rel="noopener noreferrer" class="ep-resource-card">
           <i class="fa-solid fa-arrow-up-right-from-square ep-resource-icon"></i>
           <div class="ep-resource-content">
             <strong class="ep-resource-title">UNEP Global Cooling Watch 2025</strong>

@@ -1,6 +1,6 @@
 # CoolProgress Dashboard — Master Feedback Register
 **Last updated:** 2026-07-06  
-**Total items:** 80 (60 completed, 4 dropped, 16 open: 6 High / 7 Medium / 2 Blocked / 1 Low; updated 6 Jul 2026)  
+**Total items:** 80 (62 completed, 4 dropped, 14 open: 5 High / 6 Medium / 2 Blocked / 1 Low; updated 6 Jul 2026)  
 **Sources:** Noah/CCC, Ari/CLASP, Patrick/HEAT, Jamie/CPR, Giorgia/SEforAll, Stefanie/HEAT, Dietram/UNEP, London event (12 May 2026), CCC orchestration board
 
 ---
@@ -122,10 +122,10 @@
 | PO-07 | NDC narrative contradiction: "37 signatories" vs "134 countries" vs "NDC 3.0 bleak" — one coherent message | Narrative | Noah/CCC | ✅ Done — rewritten to present 74 GCP signatories, 37 with cooling in NDCs, and 134 strategy mentions as three separate facts; NDC 3.0 gap clearly stated |
 | PO-08 | GCP commitments not shown on dashboard — users click through twice to Cool Coalition | UI/Content | Noah/CCC | ✅ Done 6 Jul 2026 — GCP emissions waterfall (2022→2050 scenarios, direct/indirect split, Gt CO2e) reproduced on the Policy pillar from the Cool Coalition GCP Progress Dashboard (values extracted from origin page, dated in gcp_waterfall.json); complements the existing 5-theme commitments block + 14-commitments link |
 | PO-09 | Regulation behind pledges: surface binding national instrument per GCP/NDC/NCAP commitment | Content | CCC convention | 🔴 High |
-| PO-10 | Policy pillar: full broken link audit (Cool Coalition Cooling Watch, CPR, Resources) | Links | Jamie/CPR | 🔴 High |
-| PO-11 | CPR logo update — new version awaited from Jamie | Links | Jamie/CPR | 🔵 Blocked |
+| PO-10 | Policy pillar: full broken link audit (Cool Coalition Cooling Watch, CPR, Resources) | Links | Jamie/CPR | ✅ Done 6 Jul 2026 — 22 links tested, 8 broken links fixed with verified replacements (Cooling Watch → UNEP GCW 2025, NCAP tracker → GCP Progress Dashboard, CCAC guidance PDF, UNEP NCAP methodology, GCI NDC Helpdesk, IFC Cooler Finance landing page, MENA NCAP methodology → CCAC, Ozone Secretariat Kigali page); unep/wedocs/undp 403s verified as bot-blocks, pages live |
+| PO-11 | CPR logo update — new version awaited from Jamie | Links | Jamie/CPR | 🔵 Blocked — verified 6 Jul 2026 that all logos (incl. CPR) are served locally from /images, none hotlinked; swap the file when Jamie delivers |
 | PO-12 | Regulation linkage: connect pledges to national law via CPR index | Content | CIFF (London) | 🟡 Medium |
-| PO-13 | Automate GCP signatory count via API (currently hardcoded) | Automation | Internal | 🟡 Medium |
+| PO-13 | Automate GCP signatory count via API (currently hardcoded) | Automation | Internal | ✅ Done 6 Jul 2026 — all displayed counts (stats, pledge block, alignment badge) now derive live from the Supabase global_cooling_pledge table (never from the website at runtime); Kigali stat on Policy pillar likewise from kip table (was hardcoded stale 175+); scripts/check_gcp_signatories.mjs syncs against coolcoalition.org (found + fixed: Philippines missing). OPEN QUESTION for CCC: South Sudan flagged in our table but absent from the Cool Coalition members directory; site banner says 75, directory lists 74 |
 | PO-14 | NCAP PDFs: archive and add Wayback Machine backup links | Links | Internal | ⚪ Low |
 
 ---
@@ -151,7 +151,7 @@
 | MEPS | 3 | 2 | 0 | 0 | 15 |
 | Kigali | 1 | 0 | 0 | 0 | 9 (1 discarded) |
 | Access | 0 | 0 | 0 | 0 | 7 (1 discarded) |
-| Policy | 2 | 2 | 1 | 1 | 8 |
+| Policy | 1 | 1 | 1 | 1 | 10 |
 | Cross-cutting | 0 | 3 | 0 | 0 | 2 |
 | **Total** | **13** | **24** | **2** | **1** | **38** |
 

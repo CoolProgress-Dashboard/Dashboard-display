@@ -12,5 +12,7 @@
   ndcTracker={data.ndcTracker ?? []}
   ncap={data.ncap ?? []}
   countries={data.countries ?? []}
+  kigali={data.kigali ?? []}
+  meps={data.meps ?? []}
   onPillarInfoClick={() => pillarModalOpen.set(true)}
 />

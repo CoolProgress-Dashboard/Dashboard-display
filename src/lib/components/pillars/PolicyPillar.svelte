@@ -22,17 +22,23 @@
   export let kigali: any[] = [];
   export let meps: any[] = [];
 
+  // Counts derived live from the Supabase tables (PO-13); the fallbacks are
+  // only shown before data loads. To re-verify against the source websites,
+  // run scripts/check_gcp_signatories.mjs and scripts/check_kigali_ratifications.mjs.
+  $: gcpCount = pledge.filter((p: any) => p.signatory === 1).length || 74;
+  $: kigaliCount = kigali.filter((k: any) => k.kigali_party === 1).length || 173;
+
   // Animated stat cards
-  const policyStats = [
+  $: policyStats = [
     {
-      value: '175+',
-      label: 'Countries that have ratified the Kigali Amendment (Montreal Protocol)',
-      context: '175+ countries have ratified the Kigali Amendment to the Montreal Protocol, creating a legally binding framework to phase down HFCs by over 80%. Source: UN Treaty Collection (May 2026).'
+      value: String(kigaliCount),
+      label: 'Parties that have ratified the Kigali Amendment (Montreal Protocol)',
+      context: `${kigaliCount} parties (countries plus the EU) have ratified the Kigali Amendment to the Montreal Protocol, creating a legally binding framework to phase down HFCs by over 80%. Source: UNEP Ozone Secretariat.`
     },
     {
-      value: '74',
+      value: String(gcpCount),
       label: 'Global Cooling Pledge countries',
-      context: '74 countries signed the Global Cooling Pledge at COP28 in Dubai, December 2023. 49 have MEPS, 37 include cooling in their NDCs.'
+      context: `${gcpCount} countries have signed the Global Cooling Pledge, launched at COP28 in Dubai, December 2023. 49 have MEPS, 37 include cooling in their NDCs. Source: Cool Coalition.`
     },
     {
       value: '<30%',
@@ -1412,7 +1418,7 @@
           <div class="pledge-featured-meta">
             <strong>The Global Cooling Pledge</strong>
             <div class="pledge-featured-stats">
-              <span><i class="fa-solid fa-flag" style="margin-right:0.35rem;opacity:0.7;"></i>74 countries</span>
+              <span><i class="fa-solid fa-flag" style="margin-right:0.35rem;opacity:0.7;"></i>{gcpCount} countries</span>
               <span class="pledge-stat-sep">·</span>
               <span><i class="fa-solid fa-city" style="margin-right:0.35rem;opacity:0.7;"></i>235 subnational governments</span>
               <span class="pledge-stat-sep">·</span>
@@ -1481,7 +1487,7 @@
     <div class="chapter-card" class:revealed>
       <span class="ns-eyebrow">Where Things Stand</span>
       <h2 class="ns-title">Cooling Policy: From Pledges to Implementation</h2>
-      <p class="ns-body">As of 2026, 74 governments have signed the Global Cooling Pledge, committing to a 68% cut in cooling-related emissions by 2050. Separately, the Global Cooling Watch 2025 finds that 134 countries reference cooling in their national climate strategies, a broad signal of awareness that extends well beyond the Pledge signatories. Of the 74 GCP signatories, 37 have also included cooling in their NDCs, showing that political endorsement does not automatically translate into binding climate commitments. Only 54 countries have enforceable regulations covering the three critical areas: passive cooling, high-efficiency standards (MEPS), and refrigerant transitions.</p>
+      <p class="ns-body">As of 2026, {gcpCount} governments have signed the Global Cooling Pledge, committing to a 68% cut in cooling-related emissions by 2050. Separately, the Global Cooling Watch 2025 finds that 134 countries reference cooling in their national climate strategies, a broad signal of awareness that extends well beyond the Pledge signatories. Of the {gcpCount} GCP signatories, 37 have also included cooling in their NDCs, showing that political endorsement does not automatically translate into binding climate commitments. Only 54 countries have enforceable regulations covering the three critical areas: passive cooling, high-efficiency standards (MEPS), and refrigerant transitions.</p>
       <p class="ns-body">NDC 3.0s are the latest round of updated national climate commitments submitted under the Paris Agreement. While 134 countries submitted them, very few contain specific air conditioning efficiency requirements, exposing a significant gap between political awareness and binding policy depth.</p>
       <p class="ns-body">As of 2026, ~25 countries have finalised or are developing National Cooling Action Plans (NCAPs) — dedicated roadmaps that bridge high-level pledges and ground-level enforcement. Regional harmonisation efforts, such as ASEAN and ECOWAS efficiency standards, are also accelerating the transition beyond individual national efforts.</p>
       <p class="ns-body">Targeted climate finance from the Montreal Protocol's Multilateral Fund and the Green Climate Fund is helping close the gap between planning and implementation across developing economies.</p>
@@ -1592,7 +1598,7 @@
         <div class="pledge-content">
           <strong>Global Cooling Pledge Alignment</strong>
           <span>
-            {globalCoolingPledge.signatoryCountries} nations &middot;
+            {gcpCount} nations &middot;
             {globalCoolingPledge.countriesIncludingCoolingInNDCs} include cooling in NDCs &middot;
             {globalCoolingPledge.countriesWithMEPS} have MEPS &middot;
             {globalCoolingPledge.countriesWithBuildingCodes} have building codes
@@ -1604,7 +1610,7 @@
       <div class="policy-cooling-watch-link">
         <i class="fa-solid fa-arrow-up-right-from-square" style="color: #0369a1; margin-right: 0.4rem;"></i>
         For the latest analysis of cooling policy commitments and implementation, see the Cool Coalition's
-        <a href="https://www.coolcoalition.org/global-cooling-watch/" target="_blank" rel="noopener noreferrer"><strong>Cooling Watch Report</strong></a> ↗
+        <a href="https://www.unep.org/resources/global-cooling-watch-2025" target="_blank" rel="noopener noreferrer"><strong>Global Cooling Watch 2025</strong></a> ↗
       </div>
 
       <div class="policy-registry-note">
@@ -1614,7 +1620,7 @@
         NCAPs are tracked with the help of
         <a href="https://app.climatepolicyradar.org" target="_blank" rel="noopener noreferrer"><strong>Climate Policy Radar</strong></a> ↗
         and can also be found on the
-        <a href="https://www.coolcoalition.org/ncap/" target="_blank" rel="noopener noreferrer"><strong>Cool Coalition NCAP tracker</strong></a>.
+        <a href="https://coolcoalition.org/knowledge-hub/gcp-progress-dashboard" target="_blank" rel="noopener noreferrer"><strong>Cool Coalition GCP Progress Dashboard</strong></a>.
       </div>
       <p class="ns-body" style="margin-top:1rem;">Ultimately, the effectiveness of the cooling transition depends on policy coherence — ensuring that NDCs, NCAPs, Kigali Amendment compliance, and the wider Global Cooling Pledge commitments function as a unified system rather than parallel tracks. For full signatory progress against all 14 Global Cooling Pledge commitments, refer to the <a href="https://www.coolcoalition.org/global-cooling-pledge/" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;border-bottom:1px solid rgba(3,105,161,0.3);text-decoration:none;">Global Cooling Pledge progress tracker</a>.</p>
     </div>
@@ -1643,7 +1649,7 @@
       <h2 class="ns-title">Resources on Cooling Policy</h2>
 
       <div class="ns-resource-grid">
-        <a href="https://www.unep.org/resources/report/global-cooling-watch-2025" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+        <a href="https://www.unep.org/resources/global-cooling-watch-2025" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
           <strong>UNEP Global Cooling Watch 2025</strong>
           <p>Outlines the "Sustainable Cooling Pathway" delivering 64% reduction in sector emissions by 2050. Advocates for treating cooling as essential infrastructure.</p>
         </a>
@@ -1655,35 +1661,35 @@
           <strong>IEA Energy Efficiency Policy Toolkit 2025</strong>
           <p>How-to for implementing MEPS and labelling schemes, including quality infrastructure requirements.</p>
         </a>
-        <a href="https://www.ccacoalition.org/resources/guidance-sustainable-cooling-enhanced-ndcs" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+        <a href="https://www.ccacoalition.org/sites/default/files/resources/files/Guidance%20on%20Sustainable%20Cooling%20Approaches%20for%20Enhanced%20NDCs_1_0.pdf" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
           <strong>CCAC: Guidance on Sustainable Cooling for Enhanced NDCs</strong>
           <p>Roadmap for integrating Lifecycle Refrigerant Management into economy-wide climate targets for NDC 3.0.</p>
         </a>
-        <a href="https://www.unep.org/resources/report/national-cooling-action-plan-methodology" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+        <a href="https://www.unep.org/resources/toolkits-manuals-and-guides/national-cooling-action-plan-methodology" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
           <strong>National Cooling Action Plan Methodology</strong>
           <p>Framework for governments to move from pledges to implementation, adapted for High-Ambient-Temperature regions.</p>
         </a>
         <div class="ns-resource-card" style="opacity:0.7;cursor:default;">
           <strong>Global Cooling Pledge Progress Report 2025 <span style="font-size:0.72rem;font-weight:500;color:#64748b;">(coming soon)</span></strong>
-          <p>Accountability document providing overview of how 74 signatory countries are translating promises into policy.</p>
+          <p>Accountability document providing overview of how signatory countries are translating promises into policy.</p>
         </div>
         <a href="https://www.undp.org/publications/summary-national-cooling-action-plans" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
           <strong>UNDP: Summary of National Cooling Action Plans</strong>
           <p>Comparative analysis of how different nations structure cooling strategies and align NDCs into actionable roadmaps.</p>
         </a>
-        <a href="https://www.green-cooling-initiative.org/ndcs" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
-          <strong>Green Cooling Initiative: NDC Publications</strong>
+        <a href="https://www.green-cooling-initiative.org/green-cooling/ndc-helpdesk" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+          <strong>Green Cooling Initiative: NDC Helpdesk</strong>
           <p>Modular toolkits and sectoral guides to help countries quantify the mitigation potential of their cooling sectors.</p>
         </a>
         <a href="https://wedocs.unep.org/handle/20.500.11822/42705" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
           <strong>NDCs &amp; Cooling: A Guide for Practitioners</strong>
           <p>UNEP guide on integrating cooling into Nationally Determined Contributions, covering methodology and best practices.</p>
         </a>
-        <a href="https://www.ifc.org/content/dam/ifc/doc/mgrt/cooler-finance.pdf" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+        <a href="https://www.ifc.org/en/insights-reports/2024/mobilizing-investment-for-the-developing-world-s-sustainable-cooling-needs" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
           <strong>Cooler Finance</strong>
           <p>IFC report on financing sustainable cooling — tools, mechanisms, and investment opportunities for the cooling sector.</p>
         </a>
-        <a href="https://www.seforall.org/publications/national-cooling-action-plan-methodology" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
+        <a href="https://www.ccacoalition.org/resources/national-cooling-action-plan-methodology-mena-region-technical-report" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
           <strong>NCAP Methodology for MENA</strong>
           <p>Methodological guidance for developing National Cooling Action Plans, with a focus on the MENA region.</p>
         </a>
@@ -1711,7 +1717,7 @@
         Sources:
         <a href="https://coolcoalition.org/global-cooling-pledge/" target="_blank" rel="noopener noreferrer">Cool Coalition</a>
         &middot;
-        <a href="https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment-2016" target="_blank" rel="noopener noreferrer">UNEP Ozone Secretariat</a>
+        <a href="https://ozone.unep.org/treaties/montreal-protocol/amendments/kigali-amendment-2016-amendment-montreal-protocol-agreed" target="_blank" rel="noopener noreferrer">UNEP Ozone Secretariat</a>
         &middot;
         <a href="https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/" target="_blank" rel="noopener noreferrer">CLASP NDC Toolkit</a>
         &middot;
