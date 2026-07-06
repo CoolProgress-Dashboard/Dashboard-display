@@ -137,7 +137,7 @@
     let emissionsScenario = 'BAU';
     let localEmissionsYear = emissionsYear;
     let localEmissionsAppliances: string[] = [...emissionsAppliances];
-    let emissionsDataSource: 'clasp' | 'subcool' = 'clasp';
+    let emissionsDataSource: 'clasp' | 'subcool' = 'subcool';
     let emissionsRegion = '';
     let emissionsType: 'total' | 'direct' | 'indirect' = 'total';
     let selectedCountry: string | null = null;
@@ -1394,7 +1394,7 @@
       <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.25rem; padding: 0;">
         Cooling sector emissions in Mt CO2. Click a country for detailed breakdown.
       </div>
-      <div id="emissions-clasp-note" style="font-size: 0.72rem; color: #64748b; margin-bottom: 0.5rem; padding: 0.35rem 0.5rem; background: rgba(3,105,161,0.04); border-left: 2px solid #0369a1; border-radius: 0 4px 4px 0;">
+      <div id="emissions-clasp-note" style="display: none; font-size: 0.72rem; color: #64748b; margin-bottom: 0.5rem; padding: 0.35rem 0.5rem; background: rgba(3,105,161,0.04); border-left: 2px solid #0369a1; border-radius: 0 4px 4px 0;">
         <i class="fa-solid fa-circle-info" style="color: #0369a1; margin-right: 0.3rem; font-size: 0.65rem;"></i>
         <strong>CLASP view:</strong> Only indirect emissions from energy consumption are shown. Switch to GCI for direct + indirect emissions.
       </div>
@@ -1408,7 +1408,7 @@
         {/if}
       </div>
       <div class="legend legend-row">
-        <span class="legend-label" id="emissions-legend-label">Indirect Emissions (Mt CO₂):</span>
+        <span class="legend-label" id="emissions-legend-label">Total Emissions (Mt CO₂):</span>
         <div id="emissions-legend" class="legend-items"></div>
       </div>
       <div class="progress-bar" id="emissions-progress">
@@ -1422,7 +1422,7 @@
       <!-- Map Source Citation -->
       <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0 0.25rem; border-top: 1px solid #f1f5f9; margin-top: 0.4rem;">
         <span style="font-size: 0.68rem; color: #94a3b8; font-weight: 500; white-space: nowrap;">Data source:</span>
-        <div id="emissions-source-credit-clasp" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+        <div id="emissions-source-credit-clasp" style="display: none;">
           <a href="https://www.clasp.ngo/tools/mepsy/" target="_blank" rel="noopener noreferrer"
             style="display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none; color: #0369a1; font-size: 0.68rem;">
             <img src="/images/clasp-logo.png" alt="CLASP" style="height: 16px; width: auto; object-fit: contain; opacity: 0.85;" />
@@ -1433,7 +1433,7 @@
             v{CLASP_DATASET_VERSION} &middot; loaded {CLASP_LOADED_AT}
           </span>
         </div>
-        <div id="emissions-source-credit-gci" style="display: none;">
+        <div id="emissions-source-credit-gci" style="display: inline-flex; align-items: center; gap: 0.5rem;">
           <a href="https://www.green-cooling-initiative.org/country-data#!total-emissions/all-sectors/absolute" target="_blank" rel="noopener noreferrer"
             style="display: inline-flex; align-items: center; gap: 0.35rem; text-decoration: none; color: #0369a1; font-size: 0.68rem;">
             <img src="/images/giz-logo.png" alt="GIZ" style="height: 16px; width: auto; object-fit: contain; opacity: 0.85;" />
@@ -1455,8 +1455,8 @@
           <div class="filter-group">
             <label class="filter-label">Source</label>
             <div class="toggle-group" id="emissions-source-toggles">
-              <button class="toggle-btn active" data-source="clasp" type="button" title="Indirect emissions only (energy-related CO2) by appliance">CLASP</button>
-              <button class="toggle-btn" data-source="subcool" type="button" title="Direct and indirect emissions with Kigali scenarios (GCI/GIZ data)">GCI</button>
+              <button class="toggle-btn" data-source="clasp" type="button" title="Indirect emissions only (energy-related CO2) by appliance">CLASP</button>
+              <button class="toggle-btn active" data-source="subcool" type="button" title="Direct and indirect emissions with Kigali scenarios (GCI/GIZ data)">GCI</button>
             </div>
           </div>
 
@@ -1478,29 +1478,29 @@
             <label class="filter-label" for="emissions-scenario-select">Scenario</label>
             <select id="emissions-scenario-select" class="filter-select" style="min-width: 120px;">
               <option value="BAU">Business as Usual</option>
-              <option value="GB">Global Benchmark</option>
-              <option value="BAT">Best Available Tech</option>
+              <option value="KIP">Kigali Implementation</option>
+              <option value="KIP_PLUS">Kigali+</option>
             </select>
             <div id="emissions-scenario-hint" class="ep-scenario-hint">No new policies beyond today's baseline</div>
           </div>
 
-          <!-- Appliance Toggles (for CLASP) -->
-          <div class="filter-group" id="emissions-appliance-row">
-            <label class="filter-label">Appliances</label>
-            <div class="toggle-group" id="emissions-appliance-toggles">
-              <button class="toggle-btn active" data-appliance="Air Conditioning" type="button">Residential AC</button>
-              <button class="toggle-btn active" data-appliance="Refrigerator-Freezers" type="button">Domestic Refrigerators</button>
-              <button class="toggle-btn active" data-appliance="Ceiling and Portable Fans" type="button">Ceiling Fans</button>
-            </div>
-          </div>
-
-          <!-- Emission Type Toggles (for Subcool) - shown when HEAT selected -->
-          <div class="filter-group" id="emissions-type-row" style="display: none;">
+          <!-- Emission Type Toggles (for Subcool/GCI) -->
+          <div class="filter-group" id="emissions-type-row">
             <label class="filter-label">Type</label>
             <div class="toggle-group" id="emissions-type-toggles">
               <button class="toggle-btn active" data-type="total" type="button">Total</button>
               <button class="toggle-btn" data-type="direct" type="button">Direct</button>
               <button class="toggle-btn" data-type="indirect" type="button">Indirect</button>
+            </div>
+          </div>
+
+          <!-- Appliance Toggles (for CLASP) - shown when CLASP selected -->
+          <div class="filter-group" id="emissions-appliance-row" style="display: none;">
+            <label class="filter-label">Appliances</label>
+            <div class="toggle-group" id="emissions-appliance-toggles">
+              <button class="toggle-btn active" data-appliance="Air Conditioning" type="button">Residential AC</button>
+              <button class="toggle-btn active" data-appliance="Refrigerator-Freezers" type="button">Domestic Refrigerators</button>
+              <button class="toggle-btn active" data-appliance="Ceiling and Portable Fans" type="button">Ceiling Fans</button>
             </div>
           </div>
         </div>
