@@ -1354,7 +1354,8 @@ select {
 }
 
 .progress-segment.access-low {
-  background: #2D7D32;
+  /* light yellow, matches the map's under-5% bucket (green read as "solved") */
+  background: #F0D878;
 }
 
 .progress-segment.access-medium {

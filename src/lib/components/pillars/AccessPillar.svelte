@@ -79,8 +79,8 @@
     },
     {
       icon: 'fa-chart-area',
-      title: '2020\u20132030 Timeline',
-      description: 'Historical and projected view of population at risk, stacked by risk level from 2020\u20132030',
+      title: '2022\u20132030 Timeline',
+      description: 'Historical and projected view of population at risk, stacked by risk level from 2022\u20132030',
       color: '#D4A843'
     },
     {
@@ -194,7 +194,7 @@
     // -------------------------------------------------------
     const PCT_THRESHOLDS = [0.05, 0.30, 0.50]; // Low | Moderate | High | Critical
     const PCT_COLORS = [
-      '#2D7D32', // <5%   — Low (green, matches SEFORALL Low)
+      '#F0D878', // <5%   — light yellow: low share, but not "no problem" (green would signal solved)
       '#C9921A', // 5-30% — Moderate (amber, matches SEFORALL Medium)
       '#C5443A', // 30-50% — High (red, matches SEFORALL High)
       '#7F1D1D', // >50%   — Critical (dark red)
@@ -504,8 +504,8 @@
           : r.region
       }));
 
-      // Range: 2020–2030 — SEforALL data only (no HEAT projections beyond 2030)
-      const allRecords = [...accessData, ...normalizedForecast].filter(r => r.year >= 2020 && r.year <= 2030);
+      // Range: 2022–2030 — SEforALL data only (AC-04: start 2022; no HEAT projections beyond 2030)
+      const allRecords = [...accessData, ...normalizedForecast].filter(r => r.year >= 2022 && r.year <= 2030);
 
       // Apply risk level filter only
       const filtered = allRecords.filter(r => {
@@ -650,7 +650,7 @@
       }).filter(cb => cb.value > 0);
 
       const currentYearTotal = currentYearData.reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
-      const baselineYear = 2020;
+      const baselineYear = 2022;
       const baselineTotal = countryData
         .filter(r => r.year === baselineYear)
         .reduce((sum, r) => sum + (r.population_without_cooling || 0), 0);
@@ -680,7 +680,10 @@
           <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
             <span style="font-size: 0.8rem; color: #C25B33; font-weight: 600;">
               <i class="fa-solid fa-users" style="margin-right: 0.25rem;"></i>
-              ${(currentYearTotal / 1e6).toFixed(1)}M at risk
+              ${(currentYearTotal / 1e6).toFixed(1)}M at risk${(() => {
+                const s = accessCountryPct.find(r => r.country_code === code);
+                return s?.pct_at_risk ? ` (${(s.pct_at_risk * 100).toFixed(1)}% of population)` : '';
+              })()}
             </span>
             <span style="font-size: 0.8rem; color: ${changeColor}; font-weight: 500;">
               <i class="fa-solid ${changeIcon}" style="margin-right: 0.25rem;"></i>
@@ -1574,7 +1577,9 @@
   }
 
   .access-counters :global(.counter-display) { font-size: 1.8rem; color: #8B5E3C; }
-  .access-counters :global(.counter-label) { font-size: 0.72rem; color: #D4A843; }
+  /* AC-08: was #D4A843 (light amber, ~2.5:1 on white, fails WCAG AA);
+     dark amber keeps the accent hue at >=4.5:1 for small text */
+  .access-counters :global(.counter-label) { font-size: 0.72rem; color: #8A6D1C; }
   .access-counters :global(.counter-tooltip) { background: #0f172a !important; color: #ffffff !important; z-index: 99999; box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,0,0,0.3); opacity: 1 !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 
   /* Narrative */

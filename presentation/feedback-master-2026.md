@@ -1,6 +1,6 @@
 # CoolProgress Dashboard — Master Feedback Register
-**Last updated:** 2026-07-03  
-**Total items:** 80 (54 completed, 3 dropped, 23 open: 7 High / 13 Medium / 2 Blocked / 1 Low; recounted 3 Jul 2026, earlier "95" was stale)  
+**Last updated:** 2026-07-06  
+**Total items:** 80 (59 completed, 4 dropped, 17 open: 7 High / 7 Medium / 2 Blocked / 1 Low; updated 6 Jul 2026)  
 **Sources:** Noah/CCC, Ari/CLASP, Patrick/HEAT, Jamie/CPR, Giorgia/SEforAll, Stefanie/HEAT, Dietram/UNEP, London event (12 May 2026), CCC orchestration board
 
 ---
@@ -100,12 +100,12 @@
 |----|------|------|--------|--------|
 | AC-01 | Access data range changed to 2015–2030 | Data | Internal | ✅ Done |
 | AC-02 | Access map legend colors do not match chart colors | UI bug | Internal | ✅ Done — PCT_COLORS aligned to SEFORALL scheme (green/amber/red/dark-red); progress bar CSS updated to match |
-| AC-03 | Access pillar broken link audit | Links | Internal | 🟡 Medium |
-| AC-04 | Access data start year: showing from 2015, consider starting 2020 | Data accuracy | Noah/CCC | 🟡 Medium |
-| AC-05 | Gender dimension missing from Access pillar entirely | Content | Stefanie/HEAT | 🟡 Medium |
-| AC-06 | Wet-bulb / WBGT integration for humidity-adjusted heat risk | Content | Stefanie/HEAT | 🟡 Medium |
-| AC-07 | Show both totals AND percentages for at-risk population | UI | Internal | 🟡 Medium |
-| AC-08 | Text contrast: light green/yellow text fails accessibility | UI | Internal | 🟡 Medium |
+| AC-03 | Access pillar broken link audit | Links | Internal | ✅ Done 6 Jul 2026 — all 11 external links tested and valid; the two unep.org links return 403 to bots but are live pages (verified via search index) |
+| AC-04 | Access data start year: showing from 2015, consider starting 2020 | Data accuracy | Noah/CCC | ✅ Done 6 Jul 2026 — decision Manuel: charts now start 2022 (timeline 2022–2030, country baseline year 2022) |
+| AC-05 | Gender dimension missing from Access pillar entirely | Content | Stefanie/HEAT | ✅ Done (pre-existing, register was stale) — 512M women stat card + per-country 2024 gender breakdown chart already live; confirmed by Manuel 6 Jul 2026 |
+| AC-06 | Wet-bulb / WBGT integration for humidity-adjusted heat risk | Content | Stefanie/HEAT | — Discarded 6 Jul 2026 (decision Manuel); humidity disclaimer note under the map remains |
+| AC-07 | Show both totals AND percentages for at-risk population | UI | Internal | ✅ Done 6 Jul 2026 — country detail panel now shows "X.XM at risk (Y.Y% of population)"; map tooltip already had both |
+| AC-08 | Text contrast: light green/yellow text fails accessibility | UI | Internal | ✅ Done 6 Jul 2026 — counter labels #D4A843 → #8A6D1C (≥4.5:1); green text audited, all remaining greens pass AA. Related (same session): map under-5% bucket recolored green → light yellow #F0D878 per Manuel (green implied "solved"), legend + progress bar aligned |
 
 ---
 
@@ -150,7 +150,7 @@
 | Emissions | 0 | 1 | 1 | 0 | 13 |
 | MEPS | 3 | 2 | 0 | 0 | 15 |
 | Kigali | 1 | 0 | 0 | 0 | 9 (1 discarded) |
-| Access | 0 | 7 | 0 | 0 | 2 |
+| Access | 0 | 0 | 0 | 0 | 7 (1 discarded) |
 | Policy | 3 | 2 | 1 | 1 | 7 |
 | Cross-cutting | 0 | 3 | 0 | 0 | 2 |
 | **Total** | **13** | **24** | **2** | **1** | **38** |
