@@ -25,10 +25,10 @@ export const partnerLinks: PartnerLink[] = [
 	{
 		mention: 'Sustainable Energy for All',
 		url: 'https://www.seforall.org',
-		label: 'Sustainable Energy for All (SE4ALL)'
+		label: 'Sustainable Energy for All (SEforALL)'
 	},
 	{
-		mention: 'SE4ALL',
+		mention: 'SEforALL',
 		url: 'https://www.seforall.org',
 		label: 'Sustainable Energy for All'
 	},
@@ -52,7 +52,7 @@ export const partnerLinks: PartnerLink[] = [
 	{
 		mention: 'Chilling Prospects',
 		url: 'https://www.seforall.org/chilling-prospects',
-		label: 'SE4ALL Chilling Prospects Report'
+		label: 'SEforALL Chilling Prospects Series'
 	},
 	{
 		mention: 'IEA Future of Cooling',
@@ -100,7 +100,7 @@ export const partnerLinks: PartnerLink[] = [
 	// Standards and Metrics
 	{
 		mention: 'CSPF',
-		url: 'https://www.clasp.ngo/research/all/cspf-the-metric-for-a-sustainable-cooling-future/',
+		url: 'https://escholarship.org/uc/item/5jh2g8v5',
 		label: 'Cooling Seasonal Performance Factor'
 	},
 

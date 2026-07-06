@@ -48,7 +48,7 @@
     {
       value: '40%',
       label: 'demand reduction achievable',
-      context: 'CLASP Mepsy modelling: universal adoption of best-available MEPS could cut sector-wide cooling energy consumption by 40–50% by 2050 across all appliance types and geographies, without reducing comfort or access. This is a whole-sector projection — individual technology gains can be higher.'
+      context: 'CLASP Mepsy modelling: universal adoption of best-available MEPS could cut sector-wide cooling energy consumption by 40Ã¢â‚¬â€œ50% by 2050 across all appliance types and geographies, without reducing comfort or access. This is a whole-sector projection Ã¢â‚¬â€ individual technology gains can be higher.'
     },
     {
       value: '80+',
@@ -88,7 +88,7 @@
   let revealed = false;
   let mepsHasCountry = false; // tracks whether a country is selected (for prompt visibility)
 
-  // Country sync — exposed after D3 init
+  // Country sync Ã¢â‚¬â€ exposed after D3 init
   let _applyMepsCountry: ((code: string | null) => void) | null = null;
   $: { const _c = $page?.url?.searchParams?.get('country') ?? null; if (_applyMepsCountry) _applyMepsCountry(_c); }
 
@@ -99,7 +99,7 @@
     }, 150);
 
     // =========================================================
-    // MEPS PILLAR — D3 MAP & ECHARTS INITIALIZATION
+    // MEPS PILLAR Ã¢â‚¬â€ D3 MAP & ECHARTS INITIALIZATION
     // Extracted from _page_legacy.svelte onMount closure.
     // All functions are self-contained within this onMount so
     // they close over the reactive Svelte props (mepsData,
@@ -133,7 +133,7 @@
         if (!existing) document.head.appendChild(script);
       });
 
-    // ---- ISO numeric → alpha-3 mapping (same as legacy page) ----
+    // ---- ISO numeric Ã¢â€ â€™ alpha-3 mapping (same as legacy page) ----
     const countryIdToCode: Record<string, string> = {
       '4': 'AFG', '8': 'ALB', '12': 'DZA', '16': 'ASM', '20': 'AND',
       '24': 'AGO', '28': 'ATG', '31': 'AZE', '32': 'ARG', '36': 'AUS',
@@ -817,7 +817,7 @@
 
       const path = d3Lib.geoPath().projection(projection);
 
-      // Ocean click — deselect country and return to global view
+      // Ocean click Ã¢â‚¬â€ deselect country and return to global view
       mepsMapSvg.append('rect')
         .attr('width', width).attr('height', height)
         .attr('fill', 'transparent')
@@ -898,7 +898,7 @@
     }
 
     // =========================================================
-    // ASYNC INIT — load D3, TopoJSON, ECharts then run setup
+    // ASYNC INIT Ã¢â‚¬â€ load D3, TopoJSON, ECharts then run setup
     // =========================================================
     (async () => {
       try {
@@ -937,7 +937,7 @@
       }
     })();
 
-      // ── Country sync (URL ↔ map) ──────────────────────────────────────────
+      // Ã¢â€â‚¬Ã¢â€â‚¬ Country sync (URL Ã¢â€ â€ map) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
       function applyMepsCountry(code: string | null) {
         if (!code) {
           selectedMepsCountry = '';
@@ -967,7 +967,7 @@
       if (_initMepsCountry) applyMepsCountry(_initMepsCountry);
 
     // =========================================================
-    // CLEANUP — dispose ECharts instances and observers
+    // CLEANUP Ã¢â‚¬â€ dispose ECharts instances and observers
     // =========================================================
     return () => {
       clearTimeout(revealTimer);
@@ -985,7 +985,7 @@
 
 <section id="view-meps" class="view-section" class:active>
   <div class="pillar-stack">
-    <!-- ═══ Ch01 THE CHALLENGE ═══ -->
+    <!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â Ch01 THE CHALLENGE Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
     <div class="chapter-card" class:revealed style="border-top: none;">
       <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.5rem;">
         <span class="meps-eyebrow meps-eyebrow-xl" style="margin-bottom:0;">The Challenge</span>
@@ -1031,18 +1031,18 @@
       </div>
     </div>
 
-    <!-- ═══ THE COST OF INACTION ═══ -->
+    <!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â THE COST OF INACTION Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
     <div class="chapter-card" class:revealed>
       <span class="meps-eyebrow">The Cost of Inaction</span>
       <h2 class="meps-section-title">Environmental Dumping</h2>
       <p class="meps-body-text">When standards are weak or nonexistent, it results in environmental dumping: manufacturers offload their least efficient models in unregulated markets. Every year, millions of these units are installed, locking in 10 to 15 years of excess energy consumption that no retrofit can resolve. With the efficiency gap between the best and worst products currently exceeding a factor of three, implementing robust MEPS and labels is the most effective way to prevent decades of energy waste and unnecessary grid stress.</p>
     </div>
 
-    <!-- ═══ THE INVERTER REVOLUTION ═══ -->
+    <!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â THE INVERTER REVOLUTION Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
     <div class="chapter-card meps-inverter-chapter" class:revealed>
       <span class="meps-eyebrow">The Story of Two Compressors</span>
       <h2 class="meps-section-title">The Inverter Revolution</h2>
-      <p class="meps-body-text">For decades, the standard room air conditioner operated like a simple light switch: either 100% ON or OFF. When your room got too warm, the compressor would kick in with a massive surge of power, blast cold air until the target was reached, and then abruptly shut down. This "fixed-speed" cycle is notoriously inefficient — much like driving a car by flooring it and then slamming on the brakes repeatedly.</p>
+      <p class="meps-body-text">For decades, the standard room air conditioner operated like a simple light switch: either 100% ON or OFF. When your room got too warm, the compressor would kick in with a massive surge of power, blast cold air until the target was reached, and then abruptly shut down. This "fixed-speed" cycle is notoriously inefficient Ã¢â‚¬â€ much like driving a car by flooring it and then slamming on the brakes repeatedly.</p>
       <p class="meps-body-text">The Inverter Revolution changed the game. Instead of a switch, an inverter acts like a dimmer. It uses a variable-speed drive to slow down or speed up the compressor based on the actual cooling need. Once the room is cool, the inverter keeps the compressor running at a low, ultra-efficient hum.</p>
 
       <div class="meps-inverter-stat-highlight">
@@ -1054,14 +1054,14 @@
       <p class="meps-body-text">By eliminating the wasteful start-stop cycles, inverter ACs typically achieve <strong>up to 60% energy savings</strong> over standard fixed-speed models, with optimised units for high-temperature, high-humidity climates consistently reaching that ceiling (CLASP inverter benchmarking). The Global Cooling Prize demonstrated that a five-fold improvement in efficiency is achievable for next-generation designs, underscoring the enormous headroom that still exists above today's best-available standards. For a typical household in a hot climate, this transition already slashes electricity bills and reduces the peak load on national power grids.</p>
     </div>
 
-    <!-- ═══ SUPER-EFFICIENT FANS ═══ -->
+    <!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â SUPER-EFFICIENT FANS Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
     <div class="chapter-card" class:revealed>
       <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.5rem;">
         <span class="meps-eyebrow meps-eyebrow-xl" style="margin-bottom:0;">Beyond ACs</span>
         <span class="appliance-scope-badge"><i class="fa-solid fa-fan"></i> Fans</span>
       </div>
       <h2 class="meps-section-title">Super-Efficient Fans: A Quiet Revolution in Affordable Cooling</h2>
-      <p class="meps-body-text">For the billions of people who cannot afford or access air conditioning, electric fans represent the primary cooling technology — and a critical target for efficiency standards. Super-efficient fans (SEFs) now use approximately <strong>50% less electricity</strong> than conventional models while delivering equivalent or better airflow, thanks to brushless DC motor technology.</p>
+      <p class="meps-body-text">For the billions of people who cannot afford or access air conditioning, electric fans represent the primary cooling technology Ã¢â‚¬â€ and a critical target for efficiency standards. Super-efficient fans (SEFs) now use approximately <strong>50% less electricity</strong> than conventional models while delivering equivalent or better airflow, thanks to brushless DC motor technology.</p>
 
       <div class="meps-highlight-row">
         <div class="meps-highlight-pill" style="border-color:#0369a1;">
@@ -1081,10 +1081,10 @@
         </div>
       </div>
 
-      <p class="meps-body-text">India's BEE 5-star label programme has been instrumental in scaling the SEF market, achieving significant price reductions as volumes grow. A similar market transformation potential exists across South and Southeast Asia and Sub-Saharan Africa — regions where fan ownership is high but grid-connected air conditioning remains unaffordable. Extending fan MEPS to cover brushless DC technology, combined with energy labels, can leapfrog decades of gradual improvement.</p>
+      <p class="meps-body-text">India's BEE 5-star label programme has been instrumental in scaling the SEF market, achieving significant price reductions as volumes grow. A similar market transformation potential exists across South and Southeast Asia and Sub-Saharan Africa Ã¢â‚¬â€ regions where fan ownership is high but grid-connected air conditioning remains unaffordable. Extending fan MEPS to cover brushless DC technology, combined with energy labels, can leapfrog decades of gradual improvement.</p>
     </div>
 
-    <!-- ═══ RECENT MEPS UPDATES ═══ -->
+    <!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â RECENT MEPS UPDATES Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
     <div class="chapter-card" class:revealed>
       <span class="meps-eyebrow">Standards in Motion</span>
       <h2 class="meps-section-title">Recent MEPS Updates Across Key Markets</h2>
@@ -1094,28 +1094,28 @@
         <div class="meps-update-card">
           <div class="meps-update-flag"><i class="fa-solid fa-bolt" style="color:#c51b00;"></i></div>
           <div class="meps-update-body">
-            <strong class="meps-update-country">China — Domestic Refrigerators</strong>
+            <strong class="meps-update-country">China Ã¢â‚¬â€ Domestic Refrigerators</strong>
             <p>China issued GB 12021.2-2025 in May 2025, mandatory from 1 June 2026. The revised standard redefines the national efficiency baseline roughly 40% tighter than the 2015 edition, so even the entry grade demands substantially better performance. As the world's largest refrigerator producer and market, the revision will ripple through export markets globally. Source: SAMR / CLASP.</p>
           </div>
         </div>
         <div class="meps-update-card">
           <div class="meps-update-flag"><i class="fa-solid fa-bolt" style="color:#008751;"></i></div>
           <div class="meps-update-body">
-            <strong class="meps-update-country">Nigeria — Room Air Conditioners</strong>
+            <strong class="meps-update-country">Nigeria Ã¢â‚¬â€ Room Air Conditioners</strong>
             <p>Nigeria's Energy Commission and SON approved new AC MEPS on 25 February 2025, developed with U4E support. Measured in NSEER (Nigeria-specific seasonal bins), efficiency must improve 6% by 2026, 36% by 2029, and 48% by 2031, with a refrigerant GWP cap from 2029, a decisive step for one of Africa's fastest-growing AC markets. Source: U4E / ECN.</p>
           </div>
         </div>
         <div class="meps-update-card">
           <div class="meps-update-flag"><i class="fa-solid fa-bolt" style="color:#0369a1;"></i></div>
           <div class="meps-update-body">
-            <strong class="meps-update-country">ASEAN — Regional Harmonization</strong>
+            <strong class="meps-update-country">ASEAN Ã¢â‚¬â€ Regional Harmonization</strong>
             <p>The updated ASEAN roadmap (endorsed by energy ministers in 2021) targets ISO CSPF 3.7 as Step 1 and CSPF 6.09 as Step 2, matching China's current MEPS. Singapore got there first: since April 2025 its single-split MEPS equals CSPF 6.10, the first ASEAN market to reach the U4E Group 1 recommendation. Most member states still sit near CSPF 3.1 to 3.4, so the regional target remains the benchmark to legislate. Source: ACE / U4E / NEA.</p>
           </div>
         </div>
         <div class="meps-update-card">
           <div class="meps-update-flag"><i class="fa-solid fa-bolt" style="color:#7B5269;"></i></div>
           <div class="meps-update-body">
-            <strong class="meps-update-country">East &amp; Southern Africa — Harmonized Regional MEPS</strong>
+            <strong class="meps-update-country">East &amp; Southern Africa Ã¢â‚¬â€ Harmonized Regional MEPS</strong>
             <p>SADC approved harmonized AC and refrigerator MEPS in November 2023 (CSPF 4.5 now, 6.1 from 2027, matching the U4E recommendation), and the EAC gazetted identical standards in July 2025. Mauritius became the first country to enforce them nationally in September 2025; transposition elsewhere is under way. Source: SADCSTAN / EAC / U4E.</p>
           </div>
         </div>
@@ -1123,7 +1123,7 @@
       <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> All facts source-verified July 2026 (legal instruments and U4E/CLASP publications); details and links in the MEPS Stringency chart tooltips and methodology.</p>
     </div>
 
-    <!-- ═══ ASEAN HARMONIZATION ═══ -->
+    <!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â ASEAN HARMONIZATION Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
     <div class="chapter-card" class:revealed>
       <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.5rem;">
         <span class="meps-eyebrow meps-eyebrow-xl" style="margin-bottom:0;">Regional Focus</span>
@@ -1131,27 +1131,27 @@
       </div>
       <h2 class="meps-section-title">ASEAN Harmonization: A Region Converging on Shared Standards</h2>
       <p class="meps-body-text">Southeast Asian economies are converging on shared MEPS frameworks through the ASEAN Economic Community. Thailand and Vietnam lead with mandatory inverter-class standards for room ACs. Singapore is advancing its second MEPS revision with updated test procedures, raising the efficiency floor toward best-available performance. Malaysia has its first MEPS for room ACs in place and is planning its initial revision. The Philippines is developing updated MEPS with support from CLASP and the Department of Energy. Indonesia is advancing tiered efficiency labels linked to a future mandatory MEPS floor, with ongoing technical support from U4E and CLASP.</p>
-      <p class="meps-body-text">CLASP and U4E are supporting the region toward common test protocols — a prerequisite for cross-border market harmonization that would allow manufacturers to produce to a single regional standard.</p>
+      <p class="meps-body-text">CLASP and U4E are supporting the region toward common test protocols Ã¢â‚¬â€ a prerequisite for cross-border market harmonization that would allow manufacturers to produce to a single regional standard.</p>
       <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> Source: CLASP / U4E regional programme.</p>
     </div>
 
-    <!-- ═══ CLASP INFO BOX: BRIDGING THE COOLING GAP ═══ -->
+    <!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â CLASP INFO BOX: BRIDGING THE COOLING GAP Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
     <div class="meps-clasp-infobox" class:revealed>
       <div class="meps-clasp-infobox-left">
         <img src="/images/clasp-logo.png" alt="CLASP" class="meps-clasp-logo" />
       </div>
       <div class="meps-clasp-infobox-body">
         <strong class="meps-clasp-infobox-title">Bridging the Cooling Gap: Efficiency as a Driver for Appliance Access</strong>
-        <p>Doubling the efficiency of air conditioners in India, Indonesia, and Nigeria does not just cut emissions — it makes cooling <em>affordable</em>. Lower running costs expand access for low-income households who can bear the purchase price but not the monthly electricity bill. CLASP research shows that ambitious MEPS, combined with targeted financing and subsidy schemes, can expand the addressable market for cooling by tens of millions of households in high-growth, climate-vulnerable economies.</p>
+        <p>Doubling the efficiency of air conditioners in India, Indonesia, and Nigeria does not just cut emissions Ã¢â‚¬â€ it makes cooling <em>affordable</em>. Lower running costs expand access for low-income households who can bear the purchase price but not the monthly electricity bill. CLASP research shows that ambitious MEPS, combined with targeted financing and subsidy schemes, can expand the addressable market for cooling by tens of millions of households in high-growth, climate-vulnerable economies.</p>
         <a href="https://www.clasp.ngo/" target="_blank" rel="noopener noreferrer" class="meps-clasp-infobox-link">Read the CLASP analysis <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
       </div>
     </div>
 
-    <!-- ═══ Ch02 GLOBAL COVERAGE ═══ -->
+    <!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â Ch02 GLOBAL COVERAGE Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
     <div class="chapter-card" class:revealed>
       <span class="meps-eyebrow">Global Coverage</span>
       <h2 class="meps-section-title">Progress is real but deeply uneven across regions.</h2>
-      <p class="meps-body-text">Over 80 countries now have some form of cooling-related efficiency standard, yet the gap between leaders and laggards is wider than ever. East Asia and the EU mandate inverter-class performance; large parts of South Asia, Africa, and Latin America still permit fixed-speed units that consume two to three times more energy. The map and charts below capture this patchwork — progress measured not in headlines, but in kilowatt-hours avoided and markets transformed.</p>
+      <p class="meps-body-text">Over 80 countries now have some form of cooling-related efficiency standard, yet the gap between leaders and laggards is wider than ever. East Asia and the EU mandate inverter-class performance; large parts of South Asia, Africa, and Latin America still permit fixed-speed units that consume two to three times more energy. The map and charts below capture this patchwork Ã¢â‚¬â€ progress measured not in headlines, but in kilowatt-hours avoided and markets transformed.</p>
 
       <div class="meps-highlights-grid">
         {#each chartHighlights as highlight}
@@ -1174,7 +1174,7 @@
           </div>
           <div class="meps-regional-body">
             <strong class="meps-regional-title">ASEAN Harmonization</strong>
-            <p>Southeast Asian economies are converging on shared MEPS frameworks through the ASEAN Economic Community. Thailand and Vietnam lead with mandatory inverter-class standards for room ACs. <strong>Singapore</strong> is advancing its second MEPS revision with updated test procedures, raising the efficiency floor toward best-available performance. <strong>Malaysia</strong> has its first MEPS for room ACs in place and is planning its initial revision. <strong>The Philippines</strong> is developing updated MEPS with support from CLASP and the Department of Energy. <strong>Indonesia</strong> is advancing tiered efficiency labels linked to a future mandatory MEPS floor, with ongoing technical support from U4E and CLASP. CLASP and U4E are supporting the region toward common test protocols — a prerequisite for cross-border market harmonization that would allow manufacturers to produce to a single regional standard.</p>
+            <p>Southeast Asian economies are converging on shared MEPS frameworks through the ASEAN Economic Community. Thailand and Vietnam lead with mandatory inverter-class standards for room ACs. <strong>Singapore</strong> is advancing its second MEPS revision with updated test procedures, raising the efficiency floor toward best-available performance. <strong>Malaysia</strong> has its first MEPS for room ACs in place and is planning its initial revision. <strong>The Philippines</strong> is developing updated MEPS with support from CLASP and the Department of Energy. <strong>Indonesia</strong> is advancing tiered efficiency labels linked to a future mandatory MEPS floor, with ongoing technical support from U4E and CLASP. CLASP and U4E are supporting the region toward common test protocols Ã¢â‚¬â€ a prerequisite for cross-border market harmonization that would allow manufacturers to produce to a single regional standard.</p>
           </div>
         </div>
         <div class="meps-regional-card">
@@ -1182,14 +1182,14 @@
             <i class="fa-solid fa-earth-africa"></i>
           </div>
           <div class="meps-regional-body">
-            <strong class="meps-regional-title">Africa — Bridging the Efficiency Gap</strong>
-            <p>Africa is expected to see the world's fastest growth in cooling demand, making the standards set today decisive. Regional blocs and national governments are moving from fragmented rules to harmonised, high-ambition MEPS across all sub-regions. In West Africa, ECOWAS has adopted regional MEPS and shared compliance tools are emerging. East and Southern Africa have gazetted and approved regional MEPS and labels for ACs and refrigerators — including tiered requirements that tighten over time and alignment to UNEP-U4E best-practice guidance. North Africa is tightening and extending long-running national standards. Central Africa has initiated a regional MEPS development track.</p>
+            <strong class="meps-regional-title">Africa Ã¢â‚¬â€ Bridging the Efficiency Gap</strong>
+            <p>Africa is expected to see the world's fastest growth in cooling demand, making the standards set today decisive. Regional blocs and national governments are moving from fragmented rules to harmonised, high-ambition MEPS across all sub-regions. In West Africa, ECOWAS has adopted regional MEPS and shared compliance tools are emerging. East and Southern Africa have gazetted and approved regional MEPS and labels for ACs and refrigerators Ã¢â‚¬â€ including tiered requirements that tighten over time and alignment to UNEP-U4E best-practice guidance. North Africa is tightening and extending long-running national standards. Central Africa has initiated a regional MEPS development track.</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ═══ MAP INTRO ═══ -->
+    <!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â MAP INTRO Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
     <div class="chapter-card" class:revealed>
       <span class="meps-eyebrow">Country & Regional View</span>
       <h2 class="meps-section-title">Explore the MEPS regulation of your country and region.</h2>
@@ -1257,26 +1257,26 @@
     <!-- U4E Country Savings Assessments CTA -->
     <a href="https://united4efficiency.org/countries/country-assessments/" target="_blank" rel="noopener noreferrer" class="u4e-cta-box">
       <div class="u4e-cta-left">
-        <img src="/images/unep.png" alt="U4E – United for Efficiency" class="u4e-logo" />
+        <img src="/images/unep.png" alt="U4E Ã¢â‚¬â€œ United for Efficiency" class="u4e-logo" />
       </div>
       <div class="u4e-cta-content">
         <div class="u4e-cta-eyebrow">Go further with U4E</div>
         <div class="u4e-cta-title">Country Savings Assessments</div>
         <p class="u4e-cta-desc">
           U4E has quantified the energy, emissions, and financial savings that <strong>156 developing countries</strong>
-          could achieve by implementing MEPS — including for room air conditioners and refrigerators.
-          Each country report covers projected reductions in electricity use, CO₂ emissions, and consumer bills.
+          could achieve by implementing MEPS Ã¢â‚¬â€ including for room air conditioners and refrigerators.
+          Each country report covers projected reductions in electricity use, COÃ¢â€šâ€š emissions, and consumer bills.
           Regional assessments are also available for ASEAN, East Africa, SADC, West Africa, and more.
         </p>
       </div>
       <div class="u4e-cta-arrow"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
     </a>
 
-    <!-- ═══ Ch03 THE WAY FORWARD ═══ -->
+    <!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â Ch03 THE WAY FORWARD Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
     <div class="chapter-card" class:revealed>
       <span class="meps-eyebrow meps-eyebrow-xl">The Way Forward</span>
       <h2 class="meps-section-title">Closing the Standards Gap: From Lock-in to Leapfrogging</h2>
-      <p class="meps-body-text">Most of the global market remains trapped in a cycle of inefficiency. By the time a consumer buys a cooling unit, the climate impact is already largely determined by the market's "efficiency floor." Efficiency is measured by the Cooling Seasonal Performance Factor (CSPF) or Energy Efficiency Ratio (EER). While best-in-class split ACs achieve a CSPF above 8.0, many unregulated markets still permit units below 3.0. CLASP data suggests that if every nation adopted MEPS aligned with best available technology, we could cut cooling energy consumption by 40–50% by 2050 — avoiding over 1,300 TWh of annual electricity consumption.</p>
+      <p class="meps-body-text">Most of the global market remains trapped in a cycle of inefficiency. By the time a consumer buys a cooling unit, the climate impact is already largely determined by the market's "efficiency floor." Efficiency is measured by the Cooling Seasonal Performance Factor (CSPF) or Energy Efficiency Ratio (EER). While best-in-class split ACs achieve a CSPF above 8.0, many unregulated markets still permit units below 3.0. CLASP data suggests that if every nation adopted MEPS aligned with best available technology, we could cut cooling energy consumption by 40Ã¢â‚¬â€œ50% by 2050 Ã¢â‚¬â€ avoiding over 1,300 TWh of annual electricity consumption.</p>
       <p class="meps-body-text">The primary barrier is a global patchwork of inconsistent standards. Over 80 countries have MEPS, but they vary wildly in stringency and enforcement. Closing this gap requires: (1) increasing MEPS stringency to match global benchmarks; (2) ensuring fans, refrigerators, and commercial chillers are covered; (3) strengthening capacity so standards exist in practice, not just on paper. Countries like Rwanda, Ghana, and Senegal are already demonstrating that nations can skip decades of incremental progress and move directly to high-efficiency standards by adopting U4E Model Regulation Guidelines.</p>
     </div>
 
@@ -1293,7 +1293,7 @@
       </div>
     </div>
 
-    <!-- ═══ RESOURCES ═══ -->
+    <!-- Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â RESOURCES Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â -->
     <div class="chapter-card" class:revealed>
       <span class="meps-eyebrow">Explore Global Standards and Initiatives</span>
       <h2 class="meps-section-title">Resources on Energy Efficiency Standards</h2>
@@ -1320,7 +1320,7 @@
             <p class="meps-resource-desc">Annual report providing the global benchmark for how efficiency is progressing across sectors, with latest CSPF and EER trend data.</p>
           </div>
         </a>
-        <a href="https://www.iea.org/topics/energy-efficiency/policy-toolkit" target="_blank" rel="noopener noreferrer" class="meps-resource-card">
+        <a href="https://www.iea.org/reports/energy-efficiency-policy-toolkit-2025" target="_blank" rel="noopener noreferrer" class="meps-resource-card">
           <div class="meps-resource-icon"><i class="fa-solid fa-toolbox"></i></div>
           <div class="meps-resource-body">
             <strong class="meps-resource-title">IEA Energy Efficiency Policy Toolkit 2025</strong>
@@ -1334,7 +1334,7 @@
             <p class="meps-resource-desc">Research on how high-efficiency cooling can reduce peak demand on the electrical grid.</p>
           </div>
         </a>
-        <a href="https://superefficient.org/" target="_blank" rel="noopener noreferrer" class="meps-resource-card">
+        <a href="https://www.cleanenergyministerial.org/initiatives-campaigns/super-efficient-equipment-and-deployment-sead-initiative/" target="_blank" rel="noopener noreferrer" class="meps-resource-card">
           <div class="meps-resource-icon"><i class="fa-solid fa-star"></i></div>
           <div class="meps-resource-body">
             <strong class="meps-resource-title">SEAD Initiative</strong>
@@ -1890,7 +1890,7 @@
   }
 
   /* ===========================
-     DESIGN SYSTEM — NARRATIVE TYPOGRAPHY
+     DESIGN SYSTEM Ã¢â‚¬â€ NARRATIVE TYPOGRAPHY
      Matches OverviewPillar flow-eyebrow / flow-title pattern
      =========================== */
   :global(#view-meps .pillar-stack) {
@@ -1995,8 +1995,8 @@
   }
 
   .meps-eyebrow.meps-eyebrow-xl {
-    font-size: 1.4rem;
-    letter-spacing: 0.08em;
+    font-size: 0.85rem;
+    letter-spacing: 0.14em;
     margin-bottom: 14px;
   }
 
@@ -2106,7 +2106,7 @@
   }
 
   /* ===========================
-     INVERTER REVOLUTION — STAT HIGHLIGHT
+     INVERTER REVOLUTION Ã¢â‚¬â€ STAT HIGHLIGHT
      =========================== */
   .meps-inverter-chapter {
     border-top: 1px solid rgba(0,0,0,0.06);
@@ -2160,7 +2160,7 @@
   }
 
   /* ===========================
-     RESOURCES GRID — 2-column card grid
+     RESOURCES GRID Ã¢â‚¬â€ 2-column card grid
      =========================== */
   .meps-resources-grid {
     display: grid;
@@ -2271,7 +2271,7 @@
     height: 480px;
   }
 
-  /* Peak Load chart wrapper — clean divider, no card-panel box */
+  /* Peak Load chart wrapper Ã¢â‚¬â€ clean divider, no card-panel box */
   .meps-chart-wrapper {
     border-top: 1px solid rgba(0,0,0,0.06);
     padding: 40px 48px;

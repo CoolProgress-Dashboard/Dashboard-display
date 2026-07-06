@@ -96,7 +96,7 @@ export const peakLoadData: PeakLoadEntry[] = [
     projectedYear: 2050,
     projectedPercent: 22,
     // Very low base but rapid expected growth
-    source: 'IEA Future of Cooling; SE4ALL',
+    source: 'IEA Future of Cooling; SEforALL',
   },
   {
     country: 'Middle East (avg)',

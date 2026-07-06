@@ -15,7 +15,7 @@
     <div class="nav-row">
       <a href="/dashboard/meps" class="back-link pillar-link" on:click|preventDefault={() => { if (window.history.length > 1) { window.history.back(); } else { window.location.href = '/dashboard/meps'; } }}><i class="fa-solid fa-arrow-left"></i> Back to Product Efficiency</a>
     </div>
-    <div class="meth-eyebrow">Product Efficiency Pillar · Grid Impact</div>
+    <div class="meth-eyebrow">Product Efficiency Pillar Â· Grid Impact</div>
     <h1>Cooling as a Share of Peak Electricity Load</h1>
     <p class="meth-subtitle">
       Methodology and source documentation for the baseline vs. 2050 projection chart
@@ -47,7 +47,7 @@
     <p>
       The chart contextualises why energy efficiency in cooling appliances matters beyond
       individual electricity bills. As cooling demand grows, it imposes increasingly large
-      <strong>peak electricity loads</strong> on national grids — triggering investment in
+      <strong>peak electricity loads</strong> on national grids â€” triggering investment in
       expensive peaking plant capacity that may only run a few hundred hours per year, and
       increasing curtailment of renewable energy during off-peak periods.
     </p>
@@ -62,7 +62,7 @@
       <div>
         <strong>Key message:</strong> In the fastest-growing markets (India, Indonesia), the
         share of cooling in peak electricity demand is projected to grow by more than
-        30 percentage points by 2050 — from a single-digit baseline to nearly half of total
+        30 percentage points by 2050 â€” from a single-digit baseline to nearly half of total
         peak load. Efficient appliances are one of the fastest levers to prevent grid stress.
       </div>
     </div>
@@ -72,7 +72,7 @@
   <section class="meth-section" id="appliances">
     <h2><i class="fa-solid fa-snowflake"></i> Appliance Scope</h2>
     <p>
-      This chart covers <strong>space cooling only</strong> — meaning air conditioners.
+      This chart covers <strong>space cooling only</strong> â€” meaning air conditioners.
       It does not include domestic refrigeration (fridges/freezers) or fans, even though
       those appliances are tracked separately elsewhere in the CoolProgress Dashboard.
     </p>
@@ -125,7 +125,7 @@
       <p>
         This indicator measures, as a percentage, the fraction of a country's
         <strong>maximum electricity system demand</strong> (peak load) that is attributable
-        to space cooling appliances — primarily air conditioners — at the moment of peak
+        to space cooling appliances â€” primarily air conditioners â€” at the moment of peak
         demand. Peak demand typically occurs on the hottest afternoon of the year, when
         cooling and other loads coincide.
       </p>
@@ -142,7 +142,7 @@
       <p>
         This is a <em>coincidence</em> metric, not an annual energy share. It reflects
         the worst-case grid stress from cooling, which is the figure relevant to capacity
-        planning and reliability — not the year-average electricity consumed by ACs.
+        planning and reliability â€” not the year-average electricity consumed by ACs.
       </p>
     </div>
 
@@ -150,7 +150,7 @@
       <h3>Two time points shown in the chart</h3>
       <div class="two-col">
         <div class="def-card def-green">
-          <div class="def-label">Baseline (2016–2018)</div>
+          <div class="def-label">Baseline (2016â€“2018)</div>
           <p>
             Observed or estimated values from the IEA Future of Cooling (2018) report,
             reflecting conditions at the time of publication. Baseline years vary slightly
@@ -175,7 +175,7 @@
     <h2><i class="fa-solid fa-calculator"></i> How Values Were Calculated</h2>
 
     <div class="meth-subsection">
-      <h3>Step 1 — Estimating peak cooling load (GW)</h3>
+      <h3>Step 1 â€” Estimating peak cooling load (GW)</h3>
       <p>
         The IEA estimated each country's cooling load at system peak by combining three
         inputs from national energy statistics and appliance surveys:
@@ -221,7 +221,7 @@
     </div>
 
     <div class="meth-subsection">
-      <h3>Step 2 — Total system peak demand (GW)</h3>
+      <h3>Step 2 â€” Total system peak demand (GW)</h3>
       <p>
         Total system peak was taken from national grid operator statistics and IEA
         electricity supply data. These are the reported maximum instantaneous demand
@@ -231,7 +231,7 @@
     </div>
 
     <div class="meth-subsection">
-      <h3>Step 3 — Projecting to 2050</h3>
+      <h3>Step 3 â€” Projecting to 2050</h3>
       <p>
         The IEA 2050 "Cooling Scenario" projects peak load share forward by modelling growth
         in all three components. The key drivers are:
@@ -246,7 +246,7 @@
         <li>
           <strong>No efficiency improvement assumed:</strong> The scenario holds average
           unit efficiency constant at the baseline level. This is a deliberate assumption
-          to isolate the scale of the challenge — it represents what happens without MEPS
+          to isolate the scale of the challenge â€” it represents what happens without MEPS
           or labelling programmes. It is not a forecast of likely outcomes.
         </li>
         <li>
@@ -286,25 +286,25 @@
       <a class="source-item" href="https://www.iea.org/reports/the-future-of-cooling" target="_blank" rel="noopener noreferrer">
         <div class="source-num src-iea">1</div>
         <div class="source-meta">
-          <strong>IEA — The Future of Cooling (2018)</strong>
-          <span class="source-org">International Energy Agency · May 2018</span>
+          <strong>IEA â€” The Future of Cooling (2018)</strong>
+          <span class="source-org">International Energy Agency Â· May 2018</span>
           <p>
             The sole primary source for all baseline and projected values in the chart.
             Chapters 2 and 3 of the report model peak load shares for major cooling markets
             under both a baseline and a dedicated "Cooling Scenario" through 2050. Every
-            country data point — baseline percentage, projected percentage, and the
-            underlying stock and coincidence factor estimates — derives from this publication.
+            country data point â€” baseline percentage, projected percentage, and the
+            underlying stock and coincidence factor estimates â€” derives from this publication.
           </p>
           <span class="source-url">https://www.iea.org/reports/the-future-of-cooling</span>
         </div>
-        <span class="source-ext">↗</span>
+        <span class="source-ext">â†—</span>
       </a>
 
       <a class="source-item" href="https://www.iea.org/data-and-statistics/charts/share-of-cooling-in-electricity-system-peak-loads-in-selected-countries-region-baseline-and-cooling-scenario" target="_blank" rel="noopener noreferrer">
         <div class="source-num src-iea">2</div>
         <div class="source-meta">
-          <strong>IEA — Share of Cooling in Peak Loads (interactive chart)</strong>
-          <span class="source-org">International Energy Agency · Data & Statistics</span>
+          <strong>IEA â€” Share of Cooling in Peak Loads (interactive chart)</strong>
+          <span class="source-org">International Energy Agency Â· Data & Statistics</span>
           <p>
             IEA's own interactive visualisation of the same indicator, published alongside
             the Future of Cooling report. Used to confirm the global average reference
@@ -312,22 +312,22 @@
           </p>
           <span class="source-url">https://www.iea.org/data-and-statistics/charts/share-of-cooling-in-electricity-system-peak-loads...</span>
         </div>
-        <span class="source-ext">↗</span>
+        <span class="source-ext">â†—</span>
       </a>
 
-      <a class="source-item" href="https://www.iea.org/news/electricity-demand-is-surging-across-the-middle-east-and-north-africa" target="_blank" rel="noopener noreferrer">
+      <a class="source-item" href="https://www.iea.org/news/electricity-demand-is-surging-across-the-middle-east-and-north-africa-driven-by-cooling-and-desalination-needs" target="_blank" rel="noopener noreferrer">
         <div class="source-num src-mena">3</div>
         <div class="source-meta">
-          <strong>IEA — Electricity Demand Surging in MENA</strong>
-          <span class="source-org">International Energy Agency · News article</span>
+          <strong>IEA â€” Electricity Demand Surging in MENA</strong>
+          <span class="source-org">International Energy Agency Â· News article</span>
           <p>
             Supporting source for the Middle East regional average entry. Confirms that
             approximately 40% of projected electricity demand increase in the MENA region
-            is attributable to cooling — consistent with the 40% baseline used in the chart.
+            is attributable to cooling â€” consistent with the 40% baseline used in the chart.
           </p>
           <span class="source-url">https://www.iea.org/news/electricity-demand-is-surging-across-the-middle-east-and-north-africa</span>
         </div>
-        <span class="source-ext">↗</span>
+        <span class="source-ext">â†—</span>
       </a>
 
     </div>
@@ -338,7 +338,7 @@
     <h2><i class="fa-solid fa-table"></i> Country Data & Source Mapping</h2>
     <p>
       All values are percentages of peak electricity load. The table marks how each value
-      was obtained — whether directly quoted from IEA text, read from the IEA chart, or
+      was obtained â€” whether directly quoted from IEA text, read from the IEA chart, or
       rounded from a cross-check figure.
     </p>
 
@@ -378,7 +378,7 @@
             <td class="num">2016</td>
             <td class="num">
               50%
-              <span class="origin-tag tag-chart" title="Lower bound of the 50–70% range cited in IEA and Saudi energy literature">chart</span>
+              <span class="origin-tag tag-chart" title="Lower bound of the 50â€“70% range cited in IEA and Saudi energy literature">chart</span>
             </td>
             <td class="num">
               60%
@@ -386,9 +386,9 @@
             </td>
             <td class="num growth-low">
               +10
-              <span class="origin-tag tag-derived" title="Calculated: 60 − 50">calc</span>
+              <span class="origin-tag tag-derived" title="Calculated: 60 âˆ’ 50">calc</span>
             </td>
-            <td>Baseline is lower bound of IEA/Saudi literature range of 50–70%</td>
+            <td>Baseline is lower bound of IEA/Saudi literature range of 50â€“70%</td>
           </tr>
 
           <!-- Middle East: both values from IEA chart -->
@@ -405,7 +405,7 @@
             </td>
             <td class="num growth-low">
               +10
-              <span class="origin-tag tag-derived" title="Calculated: 50 − 40">calc</span>
+              <span class="origin-tag tag-derived" title="Calculated: 50 âˆ’ 40">calc</span>
             </td>
             <td>Regional average; corroborated by IEA MENA electricity analysis</td>
           </tr>
@@ -424,7 +424,7 @@
             </td>
             <td class="num growth-high">
               +35
-              <span class="origin-tag tag-derived" title="Calculated: 45 − 10">calc</span>
+              <span class="origin-tag tag-derived" title="Calculated: 45 âˆ’ 10">calc</span>
             </td>
             <td>Both values directly quoted from IEA Future of Cooling report text</td>
           </tr>
@@ -443,7 +443,7 @@
             </td>
             <td class="num growth-high">
               +34
-              <span class="origin-tag tag-derived" title="Calculated: 41 − 7">calc</span>
+              <span class="origin-tag tag-derived" title="Calculated: 41 âˆ’ 7">calc</span>
             </td>
             <td>Projected value cross-checked at 40.7%; rounded to 41%</td>
           </tr>
@@ -462,7 +462,7 @@
             </td>
             <td class="num growth-mid">
               +19
-              <span class="origin-tag tag-derived" title="Calculated: 31 − 12">calc</span>
+              <span class="origin-tag tag-derived" title="Calculated: 31 âˆ’ 12">calc</span>
             </td>
             <td>Projected value cross-checked at 30.8%; rounded to 31%</td>
           </tr>
@@ -481,7 +481,7 @@
             </td>
             <td class="num growth-mid">
               +14
-              <span class="origin-tag tag-derived" title="Calculated: 30 − 16">calc</span>
+              <span class="origin-tag tag-derived" title="Calculated: 30 âˆ’ 16">calc</span>
             </td>
             <td>Baseline directly quoted; note baseline year is 2017, not 2016</td>
           </tr>
@@ -500,7 +500,7 @@
             </td>
             <td class="num growth-low">
               +5
-              <span class="origin-tag tag-derived" title="Calculated: 28 − 23">calc</span>
+              <span class="origin-tag tag-derived" title="Calculated: 28 âˆ’ 23">calc</span>
             </td>
             <td>High existing saturation; central ducted AC dominates (unlike other markets)</td>
           </tr>
@@ -519,7 +519,7 @@
             </td>
             <td class="num growth-mid">
               +14
-              <span class="origin-tag tag-derived" title="Calculated: 24 − 10">calc</span>
+              <span class="origin-tag tag-derived" title="Calculated: 24 âˆ’ 10">calc</span>
             </td>
             <td>Projected value cross-checked at 24.3%; rounded to 24%</td>
           </tr>
@@ -538,7 +538,7 @@
             </td>
             <td class="num growth-mid">
               +19
-              <span class="origin-tag tag-derived" title="Calculated: 22 − 3">calc</span>
+              <span class="origin-tag tag-derived" title="Calculated: 22 âˆ’ 3">calc</span>
             </td>
             <td>Very low AC penetration baseline; among the highest projected growth rates</td>
           </tr>
@@ -551,9 +551,9 @@
               14%
               <span class="origin-tag tag-quote" title='IEA: "space cooling accounted for 14% of peak demand in 2016"'>quote</span>
             </td>
-            <td class="num">—</td>
-            <td class="num">—</td>
-            <td>Reference line only — directly quoted from IEA Future of Cooling</td>
+            <td class="num">â€”</td>
+            <td class="num">â€”</td>
+            <td>Reference line only â€” directly quoted from IEA Future of Cooling</td>
           </tr>
 
         </tbody>
@@ -579,18 +579,18 @@
     </p>
     <ul class="selection-list">
       <li>
-        <strong>Already-high baseline markets</strong> (Saudi Arabia, Middle East avg, USA) —
+        <strong>Already-high baseline markets</strong> (Saudi Arabia, Middle East avg, USA) â€”
         illustrate the grid stress that persists even in markets with mature AC penetration,
         and where total system peak growth is the primary driver going forward.
       </li>
       <li>
-        <strong>Fast-growing emerging markets</strong> (India, Indonesia, Brazil, China, Mexico) —
+        <strong>Fast-growing emerging markets</strong> (India, Indonesia, Brazil, China, Mexico) â€”
         represent the bulk of future AC stock growth where rising incomes and urbanisation
         are rapidly expanding cooling demand, and where MEPS policy has the highest
         marginal impact on peak load.
       </li>
       <li>
-        <strong>Low-penetration high-risk market</strong> (Nigeria) — represents Sub-Saharan
+        <strong>Low-penetration high-risk market</strong> (Nigeria) â€” represents Sub-Saharan
         Africa, where cooling access is low today but grid infrastructure is fragile,
         making efficient-from-day-one appliance standards especially important.
       </li>
@@ -605,7 +605,7 @@
       <div class="limitation">
         <strong>Data vintage (2018):</strong>
         All values originate from the IEA Future of Cooling report published in May 2018.
-        Baseline electricity and cooling demand figures reflect 2016–2017 conditions.
+        Baseline electricity and cooling demand figures reflect 2016â€“2017 conditions.
         Significant AC market growth has occurred since, particularly in India, China,
         and Southeast Asia. Updated IEA projections should be incorporated if published.
       </div>
@@ -636,8 +636,8 @@
       </div>
       <div class="limitation">
         <strong>Coincidence factor uncertainty:</strong>
-        The coincidence factor — what fraction of installed ACs run simultaneously at
-        system peak — is the least certain input in the IEA model and varies with climate,
+        The coincidence factor â€” what fraction of installed ACs run simultaneously at
+        system peak â€” is the least certain input in the IEA model and varies with climate,
         building type, and consumer behaviour. Country-level estimates are not individually
         disclosed in the published report.
       </div>
@@ -665,7 +665,7 @@
     line-height: 1.6;
   }
 
-  /* ── Header ── */
+  /* â”€â”€ Header â”€â”€ */
   .nav-row {
     display: flex;
     align-items: center;
@@ -733,7 +733,7 @@
     padding: 0.25rem 0.75rem;
   }
 
-  /* ── TOC ── */
+  /* â”€â”€ TOC â”€â”€ */
   .toc-card {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -765,7 +765,7 @@
   }
   .toc-card a:hover { text-decoration: underline; }
 
-  /* ── Sections ── */
+  /* â”€â”€ Sections â”€â”€ */
   .meth-section {
     margin-bottom: 3rem;
     scroll-margin-top: 1.5rem;
@@ -792,7 +792,7 @@
     margin-bottom: 0.6rem;
   }
 
-  /* ── Formula card ── */
+  /* â”€â”€ Formula card â”€â”€ */
   .formula-card {
     background: #f0fdf4;
     border: 1px solid #86efac;
@@ -821,7 +821,7 @@
   .f-num { color: #1A5E56; }
   .f-op  { color: #52B788; }
 
-  /* ── Two-col definitions ── */
+  /* â”€â”€ Two-col definitions â”€â”€ */
   .two-col {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -845,7 +845,7 @@
   .def-orange { background: #fff7ed; border: 1px solid #fdba74; }
   .def-orange .def-label { color: #9a3412; }
 
-  /* ── Step grid ── */
+  /* â”€â”€ Step grid â”€â”€ */
   .step-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -878,14 +878,14 @@
   .step-card strong { font-size: 0.83rem; color: #1a1a1a; display: block; margin-bottom: 0.3rem; }
   .step-card p { font-size: 0.79rem; color: #555; margin: 0; line-height: 1.5; }
 
-  /* ── Calculation list ── */
+  /* â”€â”€ Calculation list â”€â”€ */
   .calc-list {
     margin: 0.5rem 0 0.5rem 1.2rem;
     font-size: 0.875rem;
   }
   .calc-list li { margin-bottom: 0.6rem; line-height: 1.6; }
 
-  /* ── Appliance cards ── */
+  /* â”€â”€ Appliance cards â”€â”€ */
   .appliance-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -917,7 +917,7 @@
   .appliance-card strong { font-size: 0.85rem; color: #1a1a1a; display: block; margin-bottom: 0.35rem; }
   .appliance-card p { font-size: 0.79rem; color: #555; margin: 0; line-height: 1.5; }
 
-  /* ── Origin legend ── */
+  /* â”€â”€ Origin legend â”€â”€ */
   .origin-legend {
     display: flex;
     flex-wrap: wrap;
@@ -939,7 +939,7 @@
   .chip-rounded { background: #FFF7ED; color: #9A3412; border-color: #FDBA74; }
   .chip-derived { background: #F5F3FF; color: #6D28D9; border-color: #DDD6FE; }
 
-  /* ── Origin tags (inline in table) ── */
+  /* â”€â”€ Origin tags (inline in table) â”€â”€ */
   .origin-tag {
     display: inline-block;
     font-size: 0.6rem;
@@ -967,7 +967,7 @@
     line-height: 1.6;
   }
 
-  /* ── Callouts ── */
+  /* â”€â”€ Callouts â”€â”€ */
   .callout {
     border-radius: 8px;
     padding: 1rem 1.25rem;
@@ -983,7 +983,7 @@
   .callout-info { background: #EFF6FF; border: 1px solid #BFDBFE; color: #1e3a5f; }
   .callout-info i { color: #2563EB; }
 
-  /* ── Source list ── */
+  /* â”€â”€ Source list â”€â”€ */
   .source-list { display: grid; gap: 0.75rem; margin-top: 1rem; }
   .source-item {
     background: #fafafa;
@@ -1020,7 +1020,7 @@
   .source-url { font-size: 0.7rem; color: #2D7D5A; word-break: break-all; display: block; }
   .source-ext { font-size: 0.85rem; color: #aaa; flex-shrink: 0; margin-top: 0.1rem; }
 
-  /* ── Data table ── */
+  /* â”€â”€ Data table â”€â”€ */
   .data-table-wrap {
     overflow-x: auto;
     margin: 1rem 0;
@@ -1058,14 +1058,14 @@
   }
   .global-avg-row td.bold { font-weight: 700; }
 
-  /* ── Selection list ── */
+  /* â”€â”€ Selection list â”€â”€ */
   .selection-list {
     margin: 0.75rem 0 0.75rem 1.2rem;
     font-size: 0.875rem;
   }
   .selection-list li { margin-bottom: 0.5rem; line-height: 1.6; }
 
-  /* ── Limitations ── */
+  /* â”€â”€ Limitations â”€â”€ */
   .limitations-list { display: grid; gap: 0.75rem; }
   .limitation {
     background: #fafafa;
@@ -1078,7 +1078,7 @@
   }
   .limitation strong { color: #1a1a1a; }
 
-  /* ── Footer ── */
+  /* â”€â”€ Footer â”€â”€ */
   .meth-footer {
     margin-top: 3rem;
     padding-top: 1.5rem;

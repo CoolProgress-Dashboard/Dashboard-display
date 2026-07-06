@@ -45,7 +45,7 @@ export const partners: Partner[] = [
     resources: [
       { label: 'World\'s Best MEPS', url: 'https://www.clasp.ngo/tools/worlds-best-meps/', icon: 'fa-bolt', description: 'Compare AC efficiency standards across countries' },
       { label: 'Policy Resource Center (CPRC)', url: 'https://cprc-clasp.ngo/', icon: 'fa-database', description: 'Comprehensive policy database for cooling appliances' },
-      { label: 'Country Savings Calculator', url: 'https://cprc-clasp.ngo/tools/country-savings', icon: 'fa-calculator', description: 'Model energy savings from MEPS adoption' },
+      { label: 'Mepsy Impact Model', url: 'https://www.clasp.ngo/tools/mepsy/', icon: 'fa-calculator', description: 'Model energy and emissions savings from MEPS adoption' },
       { label: 'NDC Appliance Toolkit', url: 'https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/', icon: 'fa-file-contract', description: 'Link appliance efficiency to NDC targets' },
     ],
   },
@@ -61,15 +61,15 @@ export const partners: Partner[] = [
     description:
       'UNEP-hosted platform uniting 100+ governments, cities, businesses, and civil society to accelerate the transition to clean, efficient, and accessible cooling.',
     keyContribution:
-      'Manages the Global Cooling Pledge (74 countries) aiming to reduce cooling-related emissions 68% by 2050 and increase average AC efficiency 50%.',
-    keyReport: 'Global Cooling Pledge Progress Report 2024',
+      'Manages the Global Cooling Pledge (74 countries) aiming to reduce cooling-related emissions 68% by 2050 relative to 2022 levels and increase average AC efficiency 50%.',
+    keyReport: 'Global Cooling Pledge Progress Dashboard',
     keyReportUrl:
-      'https://coolcoalition.org/wp-content/uploads/2024/11/2024-Global-Cooling-Pledge-Progress-Report.pdf',
+      'https://coolcoalition.org/knowledge-hub/gcp-progress-dashboard',
     category: 'policy',
     resources: [
       { label: 'Global Cooling Pledge', url: 'https://coolcoalition.org/global-cooling-pledge/', icon: 'fa-earth-americas', description: '74 nations committed to cooling transition' },
-      { label: 'Pledge Progress Report 2024', url: 'https://coolcoalition.org/wp-content/uploads/2024/11/2024-Global-Cooling-Pledge-Progress-Report.pdf', icon: 'fa-file-pdf', description: 'Annual tracking of pledge implementation' },
-      { label: 'Cool Coalition Resources', url: 'https://coolcoalition.org/resources/', icon: 'fa-folder-open', description: 'Policy briefs, case studies, and guidance documents' },
+      { label: 'GCP Progress Dashboard', url: 'https://coolcoalition.org/knowledge-hub/gcp-progress-dashboard', icon: 'fa-chart-line', description: 'Live tracking of pledge implementation' },
+      { label: 'Cool Coalition Resources', url: 'https://coolcoalition.org/knowledge-hub/', icon: 'fa-folder-open', description: 'Policy briefs, case studies, and guidance documents' },
     ],
   },
   {
@@ -121,7 +121,7 @@ export const partners: Partner[] = [
   },
   {
     id: 'giz',
-    name: 'Deutsche Gesellschaft für Internationale Zusammenarbeit - GIZ Proklima',
+    name: 'Deutsche Gesellschaft fÃ¼r Internationale Zusammenarbeit - GIZ Proklima',
     fullName: 'Deutsche Gesellschaft fuer Internationale Zusammenarbeit - Proklima',
     tagline: 'Promoting eco-friendly and sustainable cooling technologies worldwide',
     website: 'https://www.giz.de/en/worldwide/71271.html',
@@ -232,7 +232,7 @@ export const partners: Partner[] = [
   {
     id: 'lbnl',
     name: 'Lawrence Berkeley National Laboratory - LBNL',
-    fullName: 'Lawrence Berkeley National Laboratory — Energy Technologies Area',
+    fullName: 'Lawrence Berkeley National Laboratory â€” Energy Technologies Area',
     tagline: 'Science-based technical foundations for global appliance efficiency policy',
     website: 'https://eta.lbl.gov',
     coolingUrl: 'https://cooling.lbl.gov',
@@ -241,7 +241,7 @@ export const partners: Partner[] = [
     description:
       'The U.S. Department of Energy\'s Lawrence Berkeley National Laboratory (LBNL) Energy Technologies Area conducts the technical analyses that underpin appliance efficiency standards in the U.S. and globally. Its Appliance & Equipment Standards group has supported MEPS development in 50+ countries and co-developed key tools used by CLASP and UNEP U4E.',
     keyContribution:
-      'Co-developed the BUENAS model and U4E Model Regulation Guidelines for ACs and refrigerators. Estimated 389 TWh/yr electricity savings and 219 Mt CO₂/yr reductions achievable through MEPS in 12 major economies.',
+      'Co-developed the BUENAS model and U4E Model Regulation Guidelines for ACs and refrigerators. Estimated 389 TWh/yr electricity savings and 219 Mt COâ‚‚/yr reductions achievable through MEPS in 12 major economies.',
     keyReport: 'Global Cooling Efficiency Program',
     keyReportUrl: 'https://cooling.lbl.gov',
     category: 'research',
@@ -262,11 +262,11 @@ export const partners: Partner[] = [
         label: 'BUENAS Methodology',
         url: 'https://www.clasp.ngo/wp-content/uploads/2021/01/BottomUp-Energy-Analysis-System-BUENAS-Methodology-and-Results.pdf',
         icon: 'fa-chart-bar',
-        description: 'Bottom-Up Energy Analysis System — global MEPS savings model',
+        description: 'Bottom-Up Energy Analysis System â€” global MEPS savings model',
       },
       {
         label: 'International Energy Studies',
-        url: 'https://ies.lbl.gov/research-area/appliance-energy-efficiency',
+        url: 'https://eta.lbl.gov/research-development/area/appliance-energy-standards',
         icon: 'fa-earth-americas',
         description: 'Appliance efficiency research for international policy',
       },

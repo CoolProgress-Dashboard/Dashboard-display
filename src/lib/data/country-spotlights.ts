@@ -2,7 +2,7 @@
 // Sources:
 //   - IEA Future of Cooling (2018): https://www.iea.org/reports/the-future-of-cooling
 //   - IEA Future of Cooling in Southeast Asia: https://www.iea.org/reports/the-future-of-cooling-in-southeast-asia
-//   - SE4ALL Chilling Prospects (2025): https://www.seforall.org/data-stories/chilling-prospects-2025
+//   - SEforALL Chilling Prospects (2025): https://www.seforall.org/data-stories/chilling-prospects-2025
 //   - CLASP World's Best MEPS: https://www.clasp.ngo/tools/worlds-best-meps/
 //   - CCC Global Cooling Watch 2023: https://www.cleancoolingcollaborative.org/report/global-cooling-watch-2023/
 
@@ -132,7 +132,7 @@ export const countrySpotlights: CountrySpotlight[] = [
     mepsStatus: 'minimal',
     dominantRefrigerant: 'R-22 (phasing out); R-410A',
     keyChallenge: 'Providing cooling access where electricity is absent or unreliable',
-    source: 'SE4ALL Chilling Prospects 2025; IEA Energy Efficiency 2024',
+    source: 'SEforALL Chilling Prospects 2025; IEA Energy Efficiency 2024',
   },
   {
     id: 'latin-america',

@@ -74,7 +74,7 @@
     }
   ];
 
-  // Policy pillar partners: Cool Coalition → CLASP NDC → Climate Policy Radar → HEAT (last)
+  // Policy pillar partners: Cool Coalition â†’ CLASP NDC â†’ Climate Policy Radar â†’ HEAT (last)
   const policyPartnerIds = ['cool-coalition', 'clasp', 'climate-policy-radar', 'heat'];
   const policyPartners = policyPartnerIds
     .map(id => partners.find(p => p.id === id))
@@ -82,7 +82,7 @@
 
   let revealed = false;
 
-  // Exposed apply function — assigned after D3 init so reactive block can call it
+  // Exposed apply function â€” assigned after D3 init so reactive block can call it
   let _applyPolicyCountry: ((code: string | null) => void) | null = null;
 
   // React to URL country changes (sidebar selection)
@@ -92,10 +92,10 @@
   }
 
   onMount(() => {
-    // ── Reveal animation ──────────────────────────────────────────────────
+    // â”€â”€ Reveal animation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const revealTimer = setTimeout(() => { revealed = true; }, 150);
 
-    // ── Load D3 + TopoJSON from CDN, then boot policy logic ───────────────
+    // â”€â”€ Load D3 + TopoJSON from CDN, then boot policy logic â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const loadScript = (src: string): Promise<void> =>
       new Promise((resolve, reject) => {
         const existing = document.querySelector(`script[src="${src}"]`) as HTMLScriptElement | null;
@@ -122,7 +122,7 @@
 
       if (cleanupDone) return;
 
-      // ── ISO numeric → alpha-3 mapping (same as legacy) ──────────────────
+      // â”€â”€ ISO numeric â†’ alpha-3 mapping (same as legacy) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const countryIdToCode: Record<string, string> = {
         '4':'AFG','8':'ALB','10':'ATA','12':'DZA','16':'ASM','20':'AND','24':'AGO','28':'ATG','31':'AZE',
         '32':'ARG','36':'AUS','40':'AUT','44':'BHS','48':'BHR','50':'BGD','51':'ARM','52':'BRB',
@@ -167,7 +167,7 @@
       // On the NDC tracker they always render as No Data.
       const territoryParentForGcpNcap: Record<string, string> = { 'GRL': 'DNK' };
 
-      // ── Filter state ─────────────────────────────────────────────────────
+      // â”€â”€ Filter state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       let ndcType = 'Other';
       let ndcCategory = 'Energy Efficiency';
       let policyMapType = 'gcp';
@@ -176,10 +176,10 @@
 
       const getNdcFilters = (): NdcFilters => ({ type: ndcType, category: ndcCategory });
 
-      // ── Tooltip (scoped to policy section) ───────────────────────────────
+      // â”€â”€ Tooltip (scoped to policy section) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const tooltip = document.getElementById('tooltip') as HTMLElement;
 
-      // ── ECharts registry ─────────────────────────────────────────────────
+      // â”€â”€ ECharts registry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const charts: Record<string, any> = {};
       const chartObservers: Map<string, ResizeObserver> = new Map();
 
@@ -276,13 +276,13 @@
         });
       }
 
-      // ── Helpers ──────────────────────────────────────────────────────────
+      // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       function setText(id: string, value: string | number) {
         const el = document.getElementById(id);
         if (el) el.textContent = String(value);
       }
 
-      // ── NDC data helpers ─────────────────────────────────────────────────
+      // â”€â”€ NDC data helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const ndcCategories = [
         'Energy Efficiency', 'Kigali Amendment',
         'Refrigerators & freezers', 'Air Conditioners', 'MEPS & Labels'
@@ -321,10 +321,10 @@
         );
       }
 
-      // ── Map SVG handle ───────────────────────────────────────────────────
+      // â”€â”€ Map SVG handle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       let ndcMapSvg: any;
 
-      // ── D3 Mouse Handlers ────────────────────────────────────────────────
+      // â”€â”€ D3 Mouse Handlers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       function handleOut() {
         if (tooltip) tooltip.style.opacity = '0';
       }
@@ -345,7 +345,7 @@
 
         // Greenland: no data on NDC tracker; inherits Denmark on GCP/NCAP/Kigali
         if (rawCode === 'GRL' && policyMapType === 'ndc') {
-          tooltip.innerHTML = `<strong>Greenland</strong><br><em>No data — not an independent UNFCCC party</em>`;
+          tooltip.innerHTML = `<strong>Greenland</strong><br><em>No data â€” not an independent UNFCCC party</em>`;
           tooltip.style.opacity = '1';
           tooltip.style.left = (event.pageX + 10) + 'px';
           tooltip.style.top = (event.pageY + 10) + 'px';
@@ -425,7 +425,7 @@
         // Antarctica and Greenland-on-NDC are not clickable
         if (!rawCode || rawCode === 'ATA') return;
         if (rawCode === 'GRL' && policyMapType === 'ndc') return;
-        // Resolve territory to parent (Greenland → Denmark on GCP/NCAP/Kigali)
+        // Resolve territory to parent (Greenland â†’ Denmark on GCP/NCAP/Kigali)
         const code = territoryParentForGcpNcap[rawCode] ?? rawCode;
         const country = countries.find((c: any) => c.country_code === code);
         if (!country) return;
@@ -455,7 +455,7 @@
         }
       }
 
-      // ── Country detail panel ─────────────────────────────────────────────
+      // â”€â”€ Country detail panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       function showGlobalPolicyDetail() {
         const container = document.querySelector('#policy-country-detail .country-detail') as HTMLElement;
         if (!container) return;
@@ -522,7 +522,7 @@
         `;
       }
 
-      // ── Legend ────────────────────────────────────────────────────────────
+      // â”€â”€ Legend â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       function updatePolicyLegend(mapType: string) {
         const legendEl = document.getElementById('ndc-legend');
         if (!legendEl) return;
@@ -556,7 +556,7 @@
       }
 
 
-      // ── NDC KPIs ──────────────────────────────────────────────────────────
+      // â”€â”€ NDC KPIs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       function updateNDCKPIs() {
         const totalCountries = new Set(ndcTracker.map((n: any) => n.country_code)).size;
         const ndc30Submitted = new Set(
@@ -575,12 +575,12 @@
         setText('ndc-ac-mentioned', acMentioned);
       }
 
-      // ── Map update ────────────────────────────────────────────────────────
+      // â”€â”€ Map update â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       function updatePolicyMap(mapType: string) {
         policyMapType = mapType;
         if (!ndcMapSvg) return;
 
-        // Transition fill colors only — stroke is handled separately so highlights aren't lost
+        // Transition fill colors only â€” stroke is handled separately so highlights aren't lost
         ndcMapSvg.selectAll('.ndc-path')
           .transition()
           .duration(300)
@@ -628,7 +628,7 @@
         updatePolicyLegend(mapType);
       }
 
-      // ── Filter status bar ─────────────────────────────────────────────────
+      // â”€â”€ Filter status bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       function updatePolicyFilterStatusBar() {
         const tabTag = document.getElementById('policy-filter-tab');
         const regionTag = document.getElementById('policy-filter-region');
@@ -649,7 +649,7 @@
         }
       }
 
-      // ── NDC filter population ─────────────────────────────────────────────
+      // â”€â”€ NDC filter population â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       function populatePolicyNDCFilters() {
         const displayCategories = [
           'Energy Efficiency', 'Air Conditioners', 'Refrigerators & freezers',
@@ -690,7 +690,7 @@
         }
       }
 
-      // ── Chart renderers ───────────────────────────────────────────────────
+      // â”€â”€ Chart renderers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
       function renderPolicyKigaliCharts() {
         const kigaliParties = kigali.filter((k: any) => k.kigali_party === 1).length;
@@ -945,7 +945,7 @@
       }
 
       function updateNCAPCharts() {
-        // Brazil excluded — NCAP process only recently initiated, data not yet confirmed
+        // Brazil excluded â€” NCAP process only recently initiated, data not yet confirmed
         const ncapFiltered = ncap.filter((n: any) => n.country_code !== 'BRA');
 
         const ncapYears = ncapFiltered.map((n: any) => n.year).filter((y: any): y is number => y !== null && y !== undefined).sort((a: number, b: number) => a - b);
@@ -974,7 +974,7 @@
         }
       }
 
-      // ── Dynamic chart container builder ───────────────────────────────────
+      // â”€â”€ Dynamic chart container builder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       function updatePolicyChartsForMapType(mapType: string) {
         const container = document.getElementById('policy-charts-container');
         if (!container) return;
@@ -1044,7 +1044,7 @@
             <div class="policy-charts-flat">
               <div class="policy-chart-item" style="grid-column: 1 / -1;">
                 <p class="p-chart-eyebrow">By Region</p>
-                <h3 class="p-chart-title">Global Cooling Pledge — Signatories by Region</h3>
+                <h3 class="p-chart-title">Global Cooling Pledge â€” Signatories by Region</h3>
                 <p class="p-chart-subtitle">${gcpSignatoryCount} countries have signed the Global Cooling Pledge at COP28</p>
                 <div id="chart-gcp-by-region" class="chart-surface" style="width:100%;height:320px;min-height:320px;"></div>
               </div>
@@ -1064,7 +1064,7 @@
               <div style="flex:1;min-width:0;">
                 <div style="font-size:0.9rem;font-weight:800;color:#0f172a;margin-bottom:0.3rem;letter-spacing:-0.01em;">NDC data: CLASP NDC Appliance Efficiency Toolkit</div>
                 <p style="font-size:0.81rem;color:#334155;line-height:1.65;margin:0 0 0.6rem;">
-                  The NDC cooling mentions data shown in the charts and map above comes from CLASP's NDC Appliance Efficiency Toolkit — a resource tracking how countries integrate appliance efficiency into their Nationally Determined Contributions.
+                  The NDC cooling mentions data shown in the charts and map above comes from CLASP's NDC Appliance Efficiency Toolkit â€” a resource tracking how countries integrate appliance efficiency into their Nationally Determined Contributions.
                 </p>
                 <div style="display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center;">
                   <a href="https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.35rem;background:#2D7D5A;color:#fff;font-size:0.78rem;font-weight:700;padding:0.38rem 0.9rem;border-radius:3px;text-decoration:none;">
@@ -1079,19 +1079,19 @@
               <div class="policy-chart-item">
                 <p class="p-chart-eyebrow">By Category</p>
                 <h3 class="p-chart-title">NDC Cooling Mentions by Category</h3>
-                <p class="p-chart-subtitle">Previous NDC vs NDC 3.0 — by cooling topic</p>
+                <p class="p-chart-subtitle">Previous NDC vs NDC 3.0 â€” by cooling topic</p>
                 <div id="chart-ndc-categories" class="chart-surface" style="width:100%;height:300px;min-height:300px;"></div>
               </div>
               <div class="policy-chart-item">
                 <p class="p-chart-eyebrow">By Region</p>
                 <h3 class="p-chart-title">NDC Status by Region</h3>
-                <p class="p-chart-subtitle">Previous NDC vs NDC 3.0 — countries mentioning cooling by region</p>
+                <p class="p-chart-subtitle">Previous NDC vs NDC 3.0 â€” countries mentioning cooling by region</p>
                 <div id="chart-ndc-regions" class="chart-surface" style="width:100%;height:300px;min-height:300px;"></div>
               </div>
               <div class="policy-chart-item" style="grid-column: 1 / -1;">
                 <p class="p-chart-eyebrow">Comparison</p>
-                <h3 class="p-chart-title">NDC Cooling Mentions — All Categories</h3>
-                <p class="p-chart-subtitle">Previous NDC vs NDC 3.0 — countries with cooling mentions across all tracked categories</p>
+                <h3 class="p-chart-title">NDC Cooling Mentions â€” All Categories</h3>
+                <p class="p-chart-subtitle">Previous NDC vs NDC 3.0 â€” countries with cooling mentions across all tracked categories</p>
                 <div id="chart-ndc-comparison" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
             </div>
@@ -1114,7 +1114,7 @@
               </a>
               <div style="font-size:0.9rem;font-weight:800;color:#0f172a;margin-bottom:0.3rem;letter-spacing:-0.01em;">NCAP data: Climate Policy Radar</div>
               <p style="font-size:0.81rem;color:#334155;line-height:1.65;margin:0 0 0.6rem;">
-                The National Cooling Action Plan data shown in the map and charts above is tracked with the help of Climate Policy Radar — a tool that indexes national climate legislation, NDCs, and sectoral action plans across 200+ countries.
+                The National Cooling Action Plan data shown in the map and charts above is tracked with the help of Climate Policy Radar â€” a tool that indexes national climate legislation, NDCs, and sectoral action plans across 200+ countries.
               </p>
               <div style="display:flex;flex-wrap:wrap;gap:0.6rem;align-items:center;">
                 <a href="https://app.climatepolicyradar.org" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:0.35rem;background:#0369a1;color:#fff;font-size:0.78rem;font-weight:700;padding:0.38rem 0.9rem;border-radius:3px;text-decoration:none;">
@@ -1137,7 +1137,7 @@
               <div class="policy-chart-item">
                 <p class="p-chart-eyebrow">Countries with NCAPs</p>
                 <h3 class="p-chart-title">Countries with National Cooling Action Plans</h3>
-                <p class="p-chart-subtitle">Tracked via Climate Policy Radar · Brazil excluded — NCAP process only recently initiated</p>
+                <p class="p-chart-subtitle">Tracked via Climate Policy Radar Â· Brazil excluded â€” NCAP process only recently initiated</p>
                 <div id="ncap-countries-list" style="margin-top:0.5rem;max-height:320px;overflow-y:auto;scrollbar-width:thin;"></div>
               </div>
             </div>
@@ -1150,25 +1150,25 @@
                   <div style="padding:0.9rem 0;border-bottom:1px solid rgba(0,0,0,0.06);">
                     <div style="font-size:0.78rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:0.4rem;">United States</div>
                     <div style="font-size:0.8rem;color:#475569;line-height:1.65;">
-                      <strong style="color:#1e293b;">AIM Act (2020)</strong> — 85% HFC phasedown by 2036, implementing Kigali commitments.<br>
-                      <strong style="color:#1e293b;">DOE Appliance Standards</strong> — mandatory MEPS for AC and refrigeration.<br>
-                      <strong style="color:#1e293b;">IRA (2022)</strong> — tax credits for efficient heat pumps and cooling appliances.
+                      <strong style="color:#1e293b;">AIM Act (2020)</strong> â€” 85% HFC phasedown by 2036, implementing Kigali commitments.<br>
+                      <strong style="color:#1e293b;">DOE Appliance Standards</strong> â€” mandatory MEPS for AC and refrigeration.<br>
+                      <strong style="color:#1e293b;">IRA (2022)</strong> â€” tax credits for efficient heat pumps and cooling appliances.
                     </div>
                   </div>
                   <div style="padding:0.9rem 0;border-bottom:1px solid rgba(0,0,0,0.06);">
                     <div style="font-size:0.78rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:0.4rem;">European Union</div>
                     <div style="font-size:0.8rem;color:#475569;line-height:1.65;">
-                      <strong style="color:#1e293b;">F-Gas Regulation (2024)</strong> — HFC phasedown ahead of Kigali schedule; ban on high-GWP refrigerants.<br>
-                      <strong style="color:#1e293b;">Ecodesign Regulation</strong> — mandatory efficiency standards for cooling equipment.<br>
-                      <strong style="color:#1e293b;">EPBD (2024)</strong> — near-zero energy requirements for buildings including cooling demand limits.
+                      <strong style="color:#1e293b;">F-Gas Regulation (2024)</strong> â€” HFC phasedown ahead of Kigali schedule; ban on high-GWP refrigerants.<br>
+                      <strong style="color:#1e293b;">Ecodesign Regulation</strong> â€” mandatory efficiency standards for cooling equipment.<br>
+                      <strong style="color:#1e293b;">EPBD (2024)</strong> â€” near-zero energy requirements for buildings including cooling demand limits.
                     </div>
                   </div>
                   <div style="padding:0.9rem 0;">
                     <div style="font-size:0.78rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#64748b;margin-bottom:0.4rem;">Japan</div>
                     <div style="font-size:0.8rem;color:#475569;line-height:1.65;">
-                      <strong style="color:#1e293b;">Top Runner Program</strong> — world's most advanced MEPS, best-performing products set the future standard.<br>
-                      <strong style="color:#1e293b;">Fluorocarbon Emissions Control Act</strong> — mandatory refrigerant recovery and lifecycle management.<br>
-                      <strong style="color:#1e293b;">Building Energy Efficiency Act</strong> — energy performance standards covering cooling systems.
+                      <strong style="color:#1e293b;">Top Runner Program</strong> â€” world's most advanced MEPS, best-performing products set the future standard.<br>
+                      <strong style="color:#1e293b;">Fluorocarbon Emissions Control Act</strong> â€” mandatory refrigerant recovery and lifecycle management.<br>
+                      <strong style="color:#1e293b;">Building Energy Efficiency Act</strong> â€” energy performance standards covering cooling systems.
                     </div>
                   </div>
                 </div>
@@ -1182,7 +1182,7 @@
         }
       }
 
-      // ── initNDCMap ────────────────────────────────────────────────────────
+      // â”€â”€ initNDCMap â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       async function initNDCMap() {
         const container = document.getElementById('ndc-map-container');
         if (!container) return;
@@ -1206,7 +1206,7 @@
 
         const path = d3.geoPath().projection(projection);
 
-        // Ocean click handler – deselect country and return to global view
+        // Ocean click handler â€“ deselect country and return to global view
         ndcMapSvg.append('rect')
           .attr('width', width)
           .attr('height', height)
@@ -1262,20 +1262,20 @@
         }
       }
 
-      // ── initNDCCharts (NDC tracker chart initialization) ──────────────────
+      // â”€â”€ initNDCCharts (NDC tracker chart initialization) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       function initNDCCharts() {
         // Start with GCP charts (default active tab)
         updatePolicyChartsForMapType('gcp');
       }
 
-      // ── Window resize handler ─────────────────────────────────────────────
+      // â”€â”€ Window resize handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const onWindowResize = () => {
         requestAnimationFrame(forceResizePolicyCharts);
       };
       window.addEventListener('resize', onWindowResize);
       cleanupFns.push(() => window.removeEventListener('resize', onWindowResize));
 
-      // ── ResizeObserver on the policy section ──────────────────────────────
+      // â”€â”€ ResizeObserver on the policy section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const policySection = document.getElementById('view-policy');
       let sectionObserver: ResizeObserver | null = null;
       if (policySection) {
@@ -1290,7 +1290,7 @@
         cleanupFns.push(() => sectionObserver?.disconnect());
       }
 
-      // ── Event handlers: policy map tabs ───────────────────────────────────
+      // â”€â”€ Event handlers: policy map tabs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const policyTabHandlers: Array<{ btn: HTMLButtonElement; handler: () => void }> = [];
       document.querySelectorAll<HTMLButtonElement>('.policy-map-tab').forEach(btn => {
         const handler = () => {
@@ -1315,7 +1315,7 @@
         policyTabHandlers.forEach(({ btn, handler }) => btn.removeEventListener('click', handler));
       });
 
-      // ── Event handlers: NDC filter dropdowns ──────────────────────────────
+      // â”€â”€ Event handlers: NDC filter dropdowns â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const policyNdcTypeEl = document.getElementById('policy-ndc-type') as HTMLSelectElement | null;
       const ndcTypeHandler = () => {
         if (policyNdcTypeEl) {
@@ -1342,7 +1342,7 @@
         cleanupFns.push(() => policyNdcCategoryEl.removeEventListener('change', ndcCategoryHandler));
       }
 
-      // ── Bootstrap ─────────────────────────────────────────────────────────
+      // â”€â”€ Bootstrap â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       try { await initNDCMap(); } catch (e) { console.error('PolicyPillar initNDCMap error:', e); }
       try { populatePolicyNDCFilters(); } catch (e) { console.error('PolicyPillar populatePolicyNDCFilters error:', e); }
       try { initNDCCharts(); } catch (e) { console.error('PolicyPillar initNDCCharts error:', e); }
@@ -1382,7 +1382,7 @@
 
     })();
 
-    // ── Cleanup ──────────────────────────────────────────────────────────────
+    // â”€â”€ Cleanup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     return () => {
       cleanupDone = true;
       clearTimeout(revealTimer);
@@ -1394,24 +1394,24 @@
 <section id="view-policy" class="view-section" class:active>
   <div class="pillar-stack">
 
-    <!-- ═══ Section 1: THE LANDSCAPE ═══ -->
+    <!-- â•â•â• Section 1: THE LANDSCAPE â•â•â• -->
     <div class="chapter-card" class:revealed style="border-top: none;">
       <span class="ns-eyebrow">The Landscape</span>
-      <h2 class="ns-title">Cooling has historically been invisible in climate policy — that is changing.</h2>
-      <p class="ns-body">Historically, cooling was a "blind spot" in climate policy. That changed at COP28 with the launch of the <a href="https://www.coolcoalition.org/global-cooling-pledge/" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;border-bottom:1px solid rgba(3,105,161,0.3);text-decoration:none;">Global Cooling Pledge</a> — a voluntary commitment by national governments to reduce cooling-related emissions by 68% by 2050 through three core areas: passive cooling, energy efficiency, and a rapid refrigerant transition. As of April 2026, 74 countries have signed on, signalling intention to integrate cooling into the heart of national climate strategies. An additional 235 subnational governments have also endorsed the Pledge.</p>
+      <h2 class="ns-title">Cooling has historically been invisible in climate policy â€” that is changing.</h2>
+      <p class="ns-body">Historically, cooling was a "blind spot" in climate policy. That changed at COP28 with the launch of the <a href="https://www.coolcoalition.org/global-cooling-pledge/" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;border-bottom:1px solid rgba(3,105,161,0.3);text-decoration:none;">Global Cooling Pledge</a> â€” a voluntary commitment by national governments to reduce cooling-related emissions by 68% by 2050 relative to 2022 levels, through three core areas: passive cooling, energy efficiency, and a rapid refrigerant transition. As of 2026, {gcpCount} countries have signed on, signalling intention to integrate cooling into the heart of national climate strategies. An additional 235 subnational governments have also endorsed the Pledge.</p>
       <p class="ns-body">While many countries have signed the Pledge, very few have implemented the full regulatory framework required to reach the target emissions reduction. The gap between commitment and implementation remains the central challenge of global cooling governance.</p>
       <p class="ns-body" style="font-size:0.88rem;padding:0.7rem 0 0.7rem 1rem;border-left:3px solid #6BADA0;color:#334155;background:transparent;">
         <i class="fa-solid fa-circle-info" style="color:#6BADA0;margin-right:0.4rem;"></i>
-        The <strong>Kigali Amendment</strong> — the legally binding framework for phasing down HFC refrigerants — is tracked in detail under <strong>Pillar 3: Refrigerant Transition</strong>. This pillar focuses on the broader policy framework: NDCs, NCAPs, and pledge commitments.
+        The <strong>Kigali Amendment</strong> â€” the legally binding framework for phasing down HFC refrigerants â€” is tracked in detail under <strong>Pillar 3: Refrigerant Transition</strong>. This pillar focuses on the broader policy framework: NDCs, NCAPs, and pledge commitments.
       </p>
     </div>
 
-    <!-- ═══ POLICY INSTRUMENT EXPLAINERS ═══ -->
+    <!-- â•â•â• POLICY INSTRUMENT EXPLAINERS â•â•â• -->
     <div class="chapter-card" class:revealed>
       <span class="ns-eyebrow">Policy Instruments</span>
       <h2 class="ns-title">Understanding National Cooling Policy Instruments</h2>
 
-      <!-- ── Global Cooling Pledge — featured block ── -->
+      <!-- â”€â”€ Global Cooling Pledge â€” featured block â”€â”€ -->
       <div class="pledge-featured">
         <div class="pledge-featured-header">
           <div class="pledge-featured-icon"><i class="fa-solid fa-handshake-angle"></i></div>
@@ -1419,45 +1419,54 @@
             <strong>The Global Cooling Pledge</strong>
             <div class="pledge-featured-stats">
               <span><i class="fa-solid fa-flag" style="margin-right:0.35rem;opacity:0.7;"></i>{gcpCount} countries</span>
-              <span class="pledge-stat-sep">·</span>
+              <span class="pledge-stat-sep">Â·</span>
               <span><i class="fa-solid fa-city" style="margin-right:0.35rem;opacity:0.7;"></i>235 subnational governments</span>
-              <span class="pledge-stat-sep">·</span>
+              <span class="pledge-stat-sep">Â·</span>
               <span>Launched COP28, December 2023</span>
             </div>
           </div>
         </div>
-        <p class="pledge-featured-body">Launched at COP28 in Dubai, the Global Cooling Pledge is a voluntary commitment by national governments to collectively reduce cooling-related greenhouse gas emissions by at least 68% by 2050 relative to business-as-usual. Signatories commit to a package of 14 interconnected actions spanning five themes:</p>
+        <p class="pledge-featured-body">Launched at COP28 in Dubai, the Global Cooling Pledge is a voluntary commitment by national governments to collectively reduce cooling-related greenhouse gas emissions by at least 68% by 2050 relative to 2022 levels. Signatories commit to a package of 14 interconnected actions spanning five themes:</p>
         <div class="pledge-themes">
-          <div class="pledge-theme"><i class="fa-solid fa-bolt" style="color:#d97706;"></i><span><strong>Efficiency</strong> — Double the average efficiency of new cooling appliances by 2030 and implement best-in-class MEPS and energy labels.</span></div>
-          <div class="pledge-theme"><i class="fa-solid fa-snowflake" style="color:#0891b2;"></i><span><strong>Refrigerant transition</strong> — Accelerate the shift to low-GWP refrigerants, moving ahead of Kigali Amendment schedules where possible.</span></div>
-          <div class="pledge-theme"><i class="fa-solid fa-leaf" style="color:#2D7D5A;"></i><span><strong>Passive cooling</strong> — Integrate nature-based solutions, building codes, and urban planning to reduce cooling demand at source.</span></div>
-          <div class="pledge-theme"><i class="fa-solid fa-file-contract" style="color:#7c3aed;"></i><span><strong>Policy integration</strong> — Embed cooling in NDCs, NCAPs, and national budgets; support regional harmonisation of standards.</span></div>
-          <div class="pledge-theme"><i class="fa-solid fa-coins" style="color:#b45309;"></i><span><strong>Finance & capacity</strong> — Mobilise public and private finance for sustainable cooling in developing economies; build technician and regulatory capacity.</span></div>
+          <div class="pledge-theme"><i class="fa-solid fa-bolt" style="color:#d97706;"></i><span><strong>Efficiency</strong> â€” Double the average efficiency of new cooling appliances by 2030 and implement best-in-class MEPS and energy labels.</span></div>
+          <div class="pledge-theme"><i class="fa-solid fa-snowflake" style="color:#0891b2;"></i><span><strong>Refrigerant transition</strong> â€” Accelerate the shift to low-GWP refrigerants, moving ahead of Kigali Amendment schedules where possible.</span></div>
+          <div class="pledge-theme"><i class="fa-solid fa-leaf" style="color:#2D7D5A;"></i><span><strong>Passive cooling</strong> â€” Integrate nature-based solutions, building codes, and urban planning to reduce cooling demand at source.</span></div>
+          <div class="pledge-theme"><i class="fa-solid fa-file-contract" style="color:#7c3aed;"></i><span><strong>Policy integration</strong> â€” Embed cooling in NDCs, NCAPs, and national budgets; support regional harmonisation of standards.</span></div>
+          <div class="pledge-theme"><i class="fa-solid fa-coins" style="color:#b45309;"></i><span><strong>Finance & capacity</strong> â€” Mobilise public and private finance for sustainable cooling in developing economies; build technician and regulatory capacity.</span></div>
         </div>
-        <a href="https://coolcoalition.org/global-cooling-pledge/commitments" target="_blank" rel="noopener noreferrer" class="pledge-commitments-link">
-          <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.75rem;"></i>
-          View the full list of 14 commitments on the Cool Coalition website
-        </a>
+        <div class="pledge-links-row">
+          <a href="https://coolcoalition.org/global-cooling-pledge/commitments" target="_blank" rel="noopener noreferrer" class="pledge-commitments-link">
+            <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.75rem;"></i>
+            View the full list of 14 commitments
+          </a>
+          <a href="https://coolcoalition.org/knowledge-hub/gcp-progress-dashboard" target="_blank" rel="noopener noreferrer" class="pledge-commitments-link">
+            <i class="fa-solid fa-chart-line" style="font-size:0.75rem;"></i>
+            Progress is tracked on the Cool Coalition's GCP Progress Dashboard
+          </a>
+        </div>
       </div>
 
-      <!-- DATA: GCP emissions waterfall (PO-08) — the pledge's quantified ambition -->
+      <!-- Narrative bridge: pledge target â†’ waterfall (PO-08) -->
+      <p class="ns-body" style="margin-top:1.1rem;">What does the 68% goal mean in practice? The waterfall below puts the pledge's headline number in context. In 2022, cooling caused about 4.1 Gt CO&#8322;e, roughly a third of it direct refrigerant emissions and two thirds from the electricity that powers the equipment. Left unmanaged, growing demand more than doubles that to 9.0 Gt by 2050. Policies already on the books trim the growth to 6.1 Gt, and today's best cooling measures, efficient appliances, low-GWP refrigerants and passive design, bring emissions down to 2.4 Gt, well below today yet still short of the pledge target of at most 1.3 Gt. Only when those measures are paired with zero-carbon electricity does the sector reach 0.2 Gt, surpassing the 68% goal and approaching full decarbonisation. The pledge, in other words, is achievable, but not through cooling policy alone: it needs the power sector to decarbonise with it.</p>
+
+      <!-- DATA: GCP emissions waterfall (PO-08) â€” the pledge's quantified ambition -->
       <GcpEmissionsWaterfall />
 
-      <!-- ── Key policy documents ── -->
+      <!-- â”€â”€ Key policy documents â”€â”€ -->
       <p class="ns-subhead-label">Key Policy Documents</p>
       <div class="policy-explainer-grid">
         <div class="policy-explainer-card">
           <div class="policy-explainer-icon"><i class="fa-solid fa-file-contract" style="color:#0369a1;"></i></div>
           <div>
             <strong>NDCs (Nationally Determined Contributions)</strong>
-            <p>Under the Paris Agreement, countries submit NDCs outlining their climate targets and actions. Cooling-specific mentions in NDCs signal government recognition of the sector's importance. NDC 3.0s — the current submission round — are a key moment to embed concrete cooling efficiency requirements.</p>
+            <p>Under the Paris Agreement, countries submit NDCs outlining their climate targets and actions. Cooling-specific mentions in NDCs signal government recognition of the sector's importance. NDC 3.0s â€” the current submission round â€” are a key moment to embed concrete cooling efficiency requirements.</p>
           </div>
         </div>
         <div class="policy-explainer-card">
           <div class="policy-explainer-icon"><i class="fa-solid fa-map" style="color:#0369a1;"></i></div>
           <div>
             <strong>NCAPs (National Cooling Action Plans)</strong>
-            <p>NCAPs are comprehensive national strategies addressing sustainable cooling across sectors — from energy efficiency standards and refrigerant management to access for vulnerable populations. They are the primary bridge between high-level pledges and on-the-ground implementation.</p>
+            <p>NCAPs are comprehensive national strategies addressing sustainable cooling across sectors â€” from energy efficiency standards and refrigerant management to access for vulnerable populations. They are the primary bridge between high-level pledges and on-the-ground implementation.</p>
           </div>
         </div>
         <div class="policy-explainer-card">
@@ -1483,19 +1492,19 @@
       </div>
     </div>
 
-    <!-- ═══ Section 2: WHERE THINGS STAND ═══ -->
+    <!-- â•â•â• Section 2: WHERE THINGS STAND â•â•â• -->
     <div class="chapter-card" class:revealed>
       <span class="ns-eyebrow">Where Things Stand</span>
       <h2 class="ns-title">Cooling Policy: From Pledges to Implementation</h2>
-      <p class="ns-body">As of 2026, {gcpCount} governments have signed the Global Cooling Pledge, committing to a 68% cut in cooling-related emissions by 2050. Separately, the Global Cooling Watch 2025 finds that 134 countries reference cooling in their national climate strategies, a broad signal of awareness that extends well beyond the Pledge signatories. Of the {gcpCount} GCP signatories, 37 have also included cooling in their NDCs, showing that political endorsement does not automatically translate into binding climate commitments. Only 54 countries have enforceable regulations covering the three critical areas: passive cooling, high-efficiency standards (MEPS), and refrigerant transitions.</p>
+      <p class="ns-body">As of 2026, {gcpCount} governments have signed the Global Cooling Pledge, committing to a 68% cut in cooling-related emissions by 2050 relative to 2022 levels. Separately, the Global Cooling Watch 2025 finds that 134 countries reference cooling in their national climate strategies, a broad signal of awareness that extends well beyond the Pledge signatories. Of the {gcpCount} GCP signatories, 37 have also included cooling in their NDCs, showing that political endorsement does not automatically translate into binding climate commitments. Only 54 countries have enforceable regulations covering the three critical areas: passive cooling, high-efficiency standards (MEPS), and refrigerant transitions.</p>
       <p class="ns-body">NDC 3.0s are the latest round of updated national climate commitments submitted under the Paris Agreement. While 134 countries submitted them, very few contain specific air conditioning efficiency requirements, exposing a significant gap between political awareness and binding policy depth.</p>
-      <p class="ns-body">As of 2026, ~25 countries have finalised or are developing National Cooling Action Plans (NCAPs) — dedicated roadmaps that bridge high-level pledges and ground-level enforcement. Regional harmonisation efforts, such as ASEAN and ECOWAS efficiency standards, are also accelerating the transition beyond individual national efforts.</p>
+      <p class="ns-body">As of 2026, ~25 countries have finalised or are developing National Cooling Action Plans (NCAPs) â€” dedicated roadmaps that bridge high-level pledges and ground-level enforcement. Regional harmonisation efforts, such as ASEAN and ECOWAS efficiency standards, are also accelerating the transition beyond individual national efforts.</p>
       <p class="ns-body">Targeted climate finance from the Montreal Protocol's Multilateral Fund and the Green Climate Fund is helping close the gap between planning and implementation across developing economies.</p>
       <div class="policy-layers">
         <div class="policy-layer">
           <div class="policy-layer-badge commitment">Commitment</div>
           <div class="policy-layer-content">
-            <strong>Pledge signatures · Kigali ratification · NDC mentions</strong>
+            <strong>Pledge signatures Â· Kigali ratification Â· NDC mentions</strong>
             <p>Countries signal intent through international agreements and updated climate plans.</p>
           </div>
         </div>
@@ -1503,7 +1512,7 @@
         <div class="policy-layer">
           <div class="policy-layer-badge planning">Planning</div>
           <div class="policy-layer-content">
-            <strong>NCAPs · National strategies · Roadmaps</strong>
+            <strong>NCAPs Â· National strategies Â· Roadmaps</strong>
             <p>Dedicated national plans translate pledges into sector-specific targets and timelines.</p>
           </div>
         </div>
@@ -1511,8 +1520,8 @@
         <div class="policy-layer">
           <div class="policy-layer-badge implementation">Implementation</div>
           <div class="policy-layer-content">
-            <strong>Standards · Market transition · Finance · Refrigerant phase-down</strong>
-            <p>On-the-ground enforcement and financing close the gap between plans and outcomes. Full implementation tracking lives in Pillars 2–3.</p>
+            <strong>Standards Â· Market transition Â· Finance Â· Refrigerant phase-down</strong>
+            <p>On-the-ground enforcement and financing close the gap between plans and outcomes. Full implementation tracking lives in Pillars 2â€“3.</p>
           </div>
         </div>
       </div>
@@ -1527,7 +1536,7 @@
         </div>
         <span class="viewing-pill">Viewing: <strong id="policy-viewing">Global</strong></span>
       </div>
-      <!-- TABS: GCP → NDC → NCAP (Kigali is in Kigali pillar) -->
+      <!-- TABS: GCP â†’ NDC â†’ NCAP (Kigali is in Kigali pillar) -->
       <div class="policy-tabs">
         <button class="tab-btn policy-map-tab active" data-map="gcp" type="button">Global Cooling Pledge</button>
         <button class="tab-btn policy-map-tab" data-map="ndc" type="button">NDC Cooling Mentions</button>
@@ -1554,7 +1563,7 @@
           </div>
         </div>
       </div>
-      <!-- NDC-only source attribution — shown only when NDC tab is active -->
+      <!-- NDC-only source attribution â€” shown only when NDC tab is active -->
       <div id="ndc-clasp-source" style="display:none; align-items:center; gap:0.5rem; padding:0.45rem 0.75rem; background:#f0fdf4; border-left:3px solid #2D7D5A; border-radius:0 6px 6px 0; margin-bottom:0.5rem;">
         <span style="font-size:0.72rem; color:#334155; font-weight:500;">NDC data source:</span>
         <a href="https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/" target="_blank" rel="noopener noreferrer"
@@ -1586,7 +1595,7 @@
       <div id="policy-charts-container"></div>
     </div>
 
-    <!-- ═══ Section 3: THE WAY FORWARD ═══ -->
+    <!-- â•â•â• Section 3: THE WAY FORWARD â•â•â• -->
     <div class="chapter-card" class:revealed>
       <span class="ns-eyebrow">The Way Forward</span>
       <h2 class="ns-title">Turning Signals into Action</h2>
@@ -1610,7 +1619,7 @@
       <div class="policy-cooling-watch-link">
         <i class="fa-solid fa-arrow-up-right-from-square" style="color: #0369a1; margin-right: 0.4rem;"></i>
         For the latest analysis of cooling policy commitments and implementation, see the Cool Coalition's
-        <a href="https://www.unep.org/resources/global-cooling-watch-2025" target="_blank" rel="noopener noreferrer"><strong>Global Cooling Watch 2025</strong></a> ↗
+        <a href="https://www.unep.org/resources/global-cooling-watch-2025" target="_blank" rel="noopener noreferrer"><strong>Global Cooling Watch 2025</strong></a> â†—
       </div>
 
       <div class="policy-registry-note">
@@ -1618,14 +1627,14 @@
         To view a country's full NDC, visit the
         <a href="https://unfccc.int/NDCREG" target="_blank" rel="noopener noreferrer"><strong>UNFCCC NDC Registry</strong></a>.
         NCAPs are tracked with the help of
-        <a href="https://app.climatepolicyradar.org" target="_blank" rel="noopener noreferrer"><strong>Climate Policy Radar</strong></a> ↗
+        <a href="https://app.climatepolicyradar.org" target="_blank" rel="noopener noreferrer"><strong>Climate Policy Radar</strong></a> â†—
         and can also be found on the
         <a href="https://coolcoalition.org/knowledge-hub/gcp-progress-dashboard" target="_blank" rel="noopener noreferrer"><strong>Cool Coalition GCP Progress Dashboard</strong></a>.
       </div>
-      <p class="ns-body" style="margin-top:1rem;">Ultimately, the effectiveness of the cooling transition depends on policy coherence — ensuring that NDCs, NCAPs, Kigali Amendment compliance, and the wider Global Cooling Pledge commitments function as a unified system rather than parallel tracks. For full signatory progress against all 14 Global Cooling Pledge commitments, refer to the <a href="https://www.coolcoalition.org/global-cooling-pledge/" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;border-bottom:1px solid rgba(3,105,161,0.3);text-decoration:none;">Global Cooling Pledge progress tracker</a>.</p>
+      <p class="ns-body" style="margin-top:1rem;">Ultimately, the effectiveness of the cooling transition depends on policy coherence â€” ensuring that NDCs, NCAPs, Kigali Amendment compliance, and the wider Global Cooling Pledge commitments function as a unified system rather than parallel tracks. For full signatory progress against all 14 Global Cooling Pledge commitments, refer to the <a href="https://www.coolcoalition.org/global-cooling-pledge/" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;border-bottom:1px solid rgba(3,105,161,0.3);text-decoration:none;">Global Cooling Pledge progress tracker</a>.</p>
     </div>
 
-    <!-- ═══ KEY STATS BAR ═══ -->
+    <!-- â•â•â• KEY STATS BAR â•â•â• -->
     <div class="chapter-card ns-stat-bar" class:revealed>
       <div class="ns-stat-item">
         <span class="ns-stat-num">74</span>
@@ -1643,7 +1652,7 @@
       </div>
     </div>
 
-    <!-- ═══ RESOURCES ═══ -->
+    <!-- â•â•â• RESOURCES â•â•â• -->
     <div class="chapter-card" class:revealed>
       <span class="ns-eyebrow">Go Deeper</span>
       <h2 class="ns-title">Resources on Cooling Policy</h2>
@@ -1687,7 +1696,7 @@
         </a>
         <a href="https://www.ifc.org/en/insights-reports/2024/mobilizing-investment-for-the-developing-world-s-sustainable-cooling-needs" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
           <strong>Cooler Finance</strong>
-          <p>IFC report on financing sustainable cooling — tools, mechanisms, and investment opportunities for the cooling sector.</p>
+          <p>IFC report on financing sustainable cooling â€” tools, mechanisms, and investment opportunities for the cooling sector.</p>
         </a>
         <a href="https://www.ccacoalition.org/resources/national-cooling-action-plan-methodology-mena-region-technical-report" target="_blank" rel="noopener noreferrer" class="ns-resource-card">
           <strong>NCAP Methodology for MENA</strong>
@@ -1743,7 +1752,7 @@
 
   /* Eyebrow label */
   .ns-eyebrow {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 800;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -1975,6 +1984,12 @@
     margin-top: 0.15rem;
     width: 1rem;
     text-align: center;
+  }
+
+  .pledge-links-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
   }
 
   .pledge-commitments-link {

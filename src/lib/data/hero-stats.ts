@@ -1,7 +1,7 @@
 // hero-stats.ts - Hero Section Statistics
 // Sources:
 //   - IEA Future of Cooling (2018): https://www.iea.org/reports/the-future-of-cooling
-//   - SE4ALL Chilling Prospects (2025): https://www.seforall.org/data-stories/chilling-prospects-2025
+//   - SEforALL Chilling Prospects (2025): https://www.seforall.org/data-stories/chilling-prospects-2025
 
 export interface HeroStat {
   id: string;
@@ -41,7 +41,7 @@ export const heroStats: HeroStat[] = [
     label: 'people at high risk from heat',
     description:
       'More than 1 billion people worldwide face high risk from heat-related threats to their lives and well-being due to lack of cooling access.',
-    source: 'SE4ALL Chilling Prospects, 2025',
+    source: 'SEforALL Chilling Prospects, 2025',
     sourceUrl: 'https://www.seforall.org/data-stories/chilling-prospects-2025',
   },
   {

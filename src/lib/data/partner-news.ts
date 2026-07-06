@@ -30,7 +30,7 @@ export const partnerNews: NewsItem[] = [
     id: 'cop30-beat-heat',
     headline: 'Beat the Heat initiative launched at COP30 to accelerate local cooling action',
     source: 'Cool Coalition',
-    sourceUrl: 'https://coolcoalition.org/cool-coalition-coordinates-action-ahead-of-cop30/',
+    sourceUrl: 'https://news.un.org/en/story/2025/11/1166332',
     date: 'Nov 2025',
     summary: 'COP30 flagship effort by Brazil presidency and UNEP Cool Coalition to translate the Global Cooling Pledge into local action across cities worldwide.',
     category: 'Events',

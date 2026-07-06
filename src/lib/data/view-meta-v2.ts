@@ -126,7 +126,7 @@ export const viewMetaV2: ViewMetaMap = {
 			},
 			{
 				name: 'MLF Project Database',
-				url: 'https://www.multilateralfund.org/OurWork/default.aspx'
+				url: 'https://www.multilateralfund.org/about'
 			},
 			{
 				name: 'Kigali Amendment Tracker',
