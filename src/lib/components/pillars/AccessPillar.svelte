@@ -28,11 +28,11 @@
   /** SEforALL country-level high-risk % data (data.accessCountryPct) */
   export let accessCountryPct: AccessCountryPct[] = [];
 
-  // PCT lookup keyed by country_code â€” rebuilt reactively whenever prop changes
+  // PCT lookup keyed by country_code — rebuilt reactively whenever prop changes
   let pctLookup: Record<string, number> = {};
   $: pctLookup = Object.fromEntries(accessCountryPct.map(r => [r.country_code, r.pct_at_risk ?? 0]));
 
-  // Exposed apply function â€” assigned after D3 init so reactive block can call it
+  // Exposed apply function — assigned after D3 init so reactive block can call it
   let _applyCountry: ((code: string | null) => void) | null = null;
 
   // React to URL country changes (sidebar selection or map click propagation)
@@ -55,18 +55,18 @@
     },
     {
       value: '2.83B',
-      label: 'people at medium risk â€” the "double burden"',
+      label: 'people at medium risk — the "double burden"',
       context: 'The medium-risk group faces a double burden: unaffordable quality cooling leaves them exposed to heat, while cheaper inefficient options risk locking in a high-emissions trajectory. Source: SEforALL Chilling Prospects 2025.'
     },
     {
       value: '1.05B',
       label: 'people forecast at high risk by 2030',
-      context: 'Under a business-as-usual scenario, approximately 1.05 billion people will remain at high risk by 2030 â€” around 50 million more than in 2024 â€” as population growth outpaces access gains. Source: SEforALL Chilling Prospects 2025.'
+      context: 'Under a business-as-usual scenario, approximately 1.05 billion people will remain at high risk by 2030 — around 50 million more than in 2024 — as population growth outpaces access gains. Source: SEforALL Chilling Prospects 2025.'
     },
     {
       value: '512M',
       label: 'women among those at highest risk',
-      context: 'Women make up 512 million of those at high risk â€” slightly more than men (492M). Women face compounded vulnerability through higher care burdens, poorly built homes, and intersecting inequalities in services and employment. Source: SEforALL Chilling Prospects 2025.'
+      context: 'Women make up 512 million of those at high risk — slightly more than men (492M). Women face compounded vulnerability through higher care burdens, poorly built homes, and intersecting inequalities in services and employment. Source: SEforALL Chilling Prospects 2025.'
     }
   ];
 
@@ -103,7 +103,7 @@
   let showAdvancedFilters = false;
 
   // -------------------------------------------------------
-  // ISO numeric â†’ alpha-3 code mapping (complete)
+  // ISO numeric → alpha-3 code mapping (complete)
   // -------------------------------------------------------
   const countryIdToCode: Record<string, string> = {
     '4': 'AFG', '8': 'ALB', '12': 'DZA', '16': 'ASM', '20': 'AND',
@@ -190,16 +190,16 @@
     let selectedCountry: string | null = null;
 
     // -------------------------------------------------------
-    // Color / threshold config â€” SEforALL % based system
+    // Color / threshold config — SEforALL % based system
     // -------------------------------------------------------
     const PCT_THRESHOLDS = [0.05, 0.30, 0.50]; // Low | Moderate | High | Critical
     const PCT_COLORS = [
-      '#E0BE3C', // <5%   â€” yellow: low share, but not "no problem" (green would signal solved)
-      '#E8914A', // 5-30% â€” Moderate (light orange)
-      '#C5443A', // 30-50% â€” High (red, matches SEFORALL High)
-      '#7F1D1D', // >50%   â€” Critical (dark red)
+      '#E0BE3C', // <5%   — yellow: low share, but not "no problem" (green would signal solved)
+      '#E8914A', // 5-30% — Moderate (light orange)
+      '#C5443A', // 30-50% — High (red, matches SEFORALL High)
+      '#7F1D1D', // >50%   — Critical (dark red)
     ] as const;
-    const PCT_LABELS = ['Under 5%', '5â€“30%', '30â€“50%', 'Over 50%'];
+    const PCT_LABELS = ['Under 5%', '5–30%', '30–50%', 'Over 50%'];
 
     const SEFORALL_RISK_COLORS: Record<string, string> = {
       'High':   '#C5443A',  // SEforALL red
@@ -374,7 +374,7 @@
 
       const path = d3.geoPath().projection(projection);
 
-      // Ocean click â†’ reset to global view
+      // Ocean click → reset to global view
       accessMapSvg.append('rect')
         .attr('width', width)
         .attr('height', height)
@@ -504,7 +504,7 @@
           : r.region
       }));
 
-      // Range: 2022â€“2030 â€” SEforALL data only (AC-04: start 2022; no HEAT projections beyond 2030)
+      // Range: 2022–2030 — SEforALL data only (AC-04: start 2022; no HEAT projections beyond 2030)
       const allRecords = [...accessData, ...normalizedForecast].filter(r => r.year >= 2022 && r.year <= 2030);
 
       // Apply risk level filter only
@@ -514,7 +514,7 @@
       });
 
       const years = Array.from(new Set(filtered.map(r => r.year))).sort((a, b) => a - b);
-      // Low first â†’ High last so High renders on top of the stack
+      // Low first → High last so High renders on top of the stack
       const riskLevels = ['Low', 'Medium', 'High'];
 
       const seriesData: Record<string, number[]> = {};
@@ -624,13 +624,13 @@
 
       const countryData = [...accessData, ...accessForecast].filter(r => r.country_code === code);
 
-      // Low first â†’ High last so High renders on top of the stack
+      // Low first → High last so High renders on top of the stack
       const riskLevels = ['Low', 'Medium', 'High'];
 
-      // 2022â€“2030 â€” SEforALL data only
+      // 2022–2030 — SEforALL data only
       const CHART_YEARS = ACCESS_ALL_YEARS.filter((y: number) => y >= 2022 && y <= 2030);
 
-      // Build stacked data by risk level over 2022â€“2030
+      // Build stacked data by risk level over 2022–2030
       const stackedData = riskLevels.map(lvl => ({
         name: lvl,
         data: CHART_YEARS.map((year: number) => {
@@ -975,7 +975,7 @@
 <section id="view-access" class="view-section" class:active>
   <div class="pillar-stack">
 
-    <!-- â•â•â• Ch01 THE CHALLENGE â•â•â• -->
+    <!-- ═══ Ch01 THE CHALLENGE ═══ -->
     <div class="access-narrative-section" class:revealed>
       <span class="access-eyebrow">The Challenge</span>
       <h2 class="access-section-title">Access to cooling is not a luxury, it is a human right.</h2>
@@ -999,12 +999,12 @@
         <div class="access-impact-card">
           <div class="access-impact-icon"><i class="fa-solid fa-heart-crack"></i></div>
           <h4 class="access-impact-title">The Human Cost</h4>
-          <p class="access-impact-body">Heat is now the leading weather-related cause of death. In the Global South, where data is often under-reported, the impact is most severe in dense informal settlements that act as heat traps â€” particularly for the elderly, young children, and outdoor workers.</p>
+          <p class="access-impact-body">Heat is now the leading weather-related cause of death. In the Global South, where data is often under-reported, the impact is most severe in dense informal settlements that act as heat traps — particularly for the elderly, young children, and outdoor workers.</p>
         </div>
         <div class="access-impact-card">
           <div class="access-impact-icon"><i class="fa-solid fa-briefcase"></i></div>
           <h4 class="access-impact-title">Economic Fragility</h4>
-          <p class="access-impact-body">Heat stress is a direct threat to global labour. The ILO estimates that by 2030, the world could lose 2.2% of total working hours â€” equivalent to 80 million full-time jobs â€” due to extreme heat, concentrated in agriculture and construction across South Asia and Africa.</p>
+          <p class="access-impact-body">Heat stress is a direct threat to global labour. The ILO estimates that by 2030, the world could lose 2.2% of total working hours — equivalent to 80 million full-time jobs — due to extreme heat, concentrated in agriculture and construction across South Asia and Africa.</p>
         </div>
         <div class="access-impact-card">
           <div class="access-impact-icon"><i class="fa-solid fa-temperature-low"></i></div>
@@ -1029,15 +1029,15 @@
           <p class="access-humidity-sub">Heat alone does not tell the full story. The combination of high heat and high humidity is what kills.</p>
         </div>
       </div>
-      <p class="access-humidity-body">The human body cools itself by sweating. But sweating only works when the air can absorb that moisture. In high humidity, sweat cannot evaporate â€” and the body loses its ability to regulate temperature. At a wet-bulb temperature of around 35Â°C (a combination of roughly 46Â°C air temperature at 50% humidity, or lower temperatures at higher humidity), the human body cannot survive outdoors for more than a few hours, even in shade. This threshold is being crossed more frequently in South Asia, the Persian Gulf, and parts of sub-Saharan Africa.</p>
-      <p class="access-humidity-note"><i class="fa-solid fa-circle-info"></i> The maps and data on this dashboard reflect heat risk. Humidity data is not yet integrated â€” areas with moderate temperature but high humidity may be more dangerous than the data suggests.</p>
+      <p class="access-humidity-body">The human body cools itself by sweating. But sweating only works when the air can absorb that moisture. In high humidity, sweat cannot evaporate — and the body loses its ability to regulate temperature. At a wet-bulb temperature of around 35°C (a combination of roughly 46°C air temperature at 50% humidity, or lower temperatures at higher humidity), the human body cannot survive outdoors for more than a few hours, even in shade. This threshold is being crossed more frequently in South Asia, the Persian Gulf, and parts of sub-Saharan Africa.</p>
+      <p class="access-humidity-note"><i class="fa-solid fa-circle-info"></i> The maps and data on this dashboard reflect heat risk. Humidity data is not yet integrated — areas with moderate temperature but high humidity may be more dangerous than the data suggests.</p>
     </aside>
 
-    <!-- â•â•â• Ch02 WHO IS MOST AFFECTED â•â•â• -->
+    <!-- ═══ Ch02 WHO IS MOST AFFECTED ═══ -->
     <div class="access-narrative-section" style="border-top: 1px solid rgba(0,0,0,0.06);" class:revealed>
       <span class="access-eyebrow">Who Is Most Affected</span>
       <h2 class="access-section-title">Three groups face distinct but interconnected cooling risks.</h2>
-      <p class="access-body-text">The Chilling Prospects framework identifies populations by their level of risk and the nature of the cooling challenge they face. Understanding each group is essential â€” because the solutions are different.</p>
+      <p class="access-body-text">The Chilling Prospects framework identifies populations by their level of risk and the nature of the cooling challenge they face. Understanding each group is essential — because the solutions are different.</p>
 
       <div class="access-risk-groups">
         <div class="access-risk-group access-risk-high">
@@ -1045,27 +1045,27 @@
             <span class="access-risk-badge" style="background:#C5443A;">HIGH RISK</span>
             <strong>1 billion+ people</strong>
           </div>
-          <p>The rural and urban poor who cannot afford or access any cooling solution. This group faces the most severe and immediate threat from extreme heat â€” to their health, food security, and livelihoods. Over 309 million are among the rural poor; 695 million among the urban poor.</p>
+          <p>The rural and urban poor who cannot afford or access any cooling solution. This group faces the most severe and immediate threat from extreme heat — to their health, food security, and livelihoods. Over 309 million are among the rural poor; 695 million among the urban poor.</p>
         </div>
         <div class="access-risk-group access-risk-medium">
           <div class="access-risk-group-header">
             <span class="access-risk-badge" style="background:#C9921A;">MEDIUM RISK</span>
             <strong>2.83 billion people</strong>
           </div>
-          <p>Lower-middle-income households who face a <strong>double burden</strong>: quality cooling solutions remain unaffordable, leaving them exposed to heat â€” but the cheaper, inefficient options available risk locking in a high-emissions trajectory for decades.</p>
+          <p>Lower-middle-income households who face a <strong>double burden</strong>: quality cooling solutions remain unaffordable, leaving them exposed to heat — but the cheaper, inefficient options available risk locking in a high-emissions trajectory for decades.</p>
         </div>
         <div class="access-risk-group access-risk-low">
           <div class="access-risk-group-header">
             <span class="access-risk-badge" style="background:#2D7D32;">LOW RISK</span>
             <strong>1.2 billion people</strong>
           </div>
-          <p>Middle-income households who can access efficient cooling solutions today. As heat extremes increase globally, this group must be supported by policy and technology to make sustainable choices â€” or they will drive significant emissions growth.</p>
+          <p>Middle-income households who can access efficient cooling solutions today. As heat extremes increase globally, this group must be supported by policy and technology to make sustainable choices — or they will drive significant emissions growth.</p>
         </div>
       </div>
 
       <aside class="access-trajectory-callout">
         <i class="fa-solid fa-arrow-trend-up" style="color:#C5443A; font-size:1.1rem; flex-shrink:0;"></i>
-        <p><strong>The trajectory is heading in the wrong direction.</strong> Under a business-as-usual scenario, 1.05 billion people will remain at high risk by 2030 â€” approximately 50 million more than in 2024. Population growth is outpacing progress on energy access and affordability, particularly in urban areas where the urban poor at high risk are projected to grow by 7% to 744 million people.</p>
+        <p><strong>The trajectory is heading in the wrong direction.</strong> Under a business-as-usual scenario, 1.05 billion people will remain at high risk by 2030 — approximately 50 million more than in 2024. Population growth is outpacing progress on energy access and affordability, particularly in urban areas where the urban poor at high risk are projected to grow by 7% to 744 million people.</p>
       </aside>
 
       <div class="access-highlights-grid">
@@ -1107,7 +1107,7 @@
       <p class="chart-hint">Hover over a country to see the population at risk and risk level breakdown. Click a country to explore income group and time-series detail.</p>
       <div id="access-map-container" class="map-surface"></div>
       <div class="legend legend-row">
-        <span class="legend-label">Map â€” % of population at risk:</span>
+        <span class="legend-label">Map — % of population at risk:</span>
         <div id="access-legend" class="legend-items"></div>
       </div>
       <div class="progress-bar access-progress">
@@ -1134,12 +1134,12 @@
         </div>
       </div>
 
-      <!-- Risk Level filter â€” below the timeline chart -->
+      <!-- Risk Level filter — below the timeline chart -->
       <div class="access-checkboxes" id="access-filters-panel">
         <div class="checkbox-group">
           <span class="checkbox-label"><i class="fa-solid fa-triangle-exclamation"></i> Risk Level <i class="fa-solid fa-circle-info" style="font-size:0.7rem;color:#94a3b8;margin-left:0.3rem;" title="Hover over each filter for more information"></i></span>
           <div class="checkbox-items" id="access-impact-checks">
-            <label class="tick-box" title="HIGH RISK: Populations facing the most severe cooling vulnerability â€” lack of energy access, extreme poverty, high exposure to dangerous heat."><input type="checkbox" value="High" checked /><span class="tick-mark risk-high"></span>High</label>
+            <label class="tick-box" title="HIGH RISK: Populations facing the most severe cooling vulnerability — lack of energy access, extreme poverty, high exposure to dangerous heat."><input type="checkbox" value="High" checked /><span class="tick-mark risk-high"></span>High</label>
             <label class="tick-box" title="MEDIUM RISK: Populations on the brink of purchasing inefficient cooling devices; at risk of locking into high-emissions solutions without access to efficient alternatives."><input type="checkbox" value="Medium" checked /><span class="tick-mark risk-medium"></span>Medium</label>
             <label class="tick-box" title="LOW RISK: Populations with growing access to cooling but still facing affordability and efficiency challenges."><input type="checkbox" value="Low" checked /><span class="tick-mark risk-low"></span>Low</label>
           </div>
@@ -1158,12 +1158,12 @@
       </div>
     </div>
 
-    <!-- â•â•â• THE WAY FORWARD â•â•â• -->
-    <!-- â•â•â• THE WAY FORWARD + SOLUTIONS â•â•â• -->
+    <!-- ═══ THE WAY FORWARD ═══ -->
+    <!-- ═══ THE WAY FORWARD + SOLUTIONS ═══ -->
     <div class="access-narrative-section" style="border-top: 1px solid rgba(0,0,0,0.06);" class:revealed>
       <span class="access-eyebrow">The Way Forward</span>
       <h2 class="access-section-title">Sustainable Cooling for All: Fast Enough to Matter</h2>
-      <p class="access-body-text">Closing the global cooling access gap sustainably requires a comprehensive and systemic shift. Economic growth alone will not be sufficient to bridge the gap for the poorest households. SEforALL organises sustainable cooling solutions into <strong>five approaches in order of priority</strong> â€” from protecting the most vulnerable today, to building systemic conditions for long-term impact â€” delivered across four solution types. Source: <a href="https://www.seforall.org/chilling-prospects-2020/sustainable-cooling-solutions" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(3,105,161,0.3);">SEforALL Sustainable Cooling Solutions</a></p>
+      <p class="access-body-text">Closing the global cooling access gap sustainably requires a comprehensive and systemic shift. Economic growth alone will not be sufficient to bridge the gap for the poorest households. SEforALL organises sustainable cooling solutions into <strong>five approaches in order of priority</strong> — from protecting the most vulnerable today, to building systemic conditions for long-term impact — delivered across four solution types. Source: <a href="https://www.seforall.org/chilling-prospects-2020/sustainable-cooling-solutions" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(3,105,161,0.3);">SEforALL Sustainable Cooling Solutions</a></p>
 
       <!-- 5 approaches as a visual flow -->
       <div class="sol-approach-flow">
@@ -1171,28 +1171,28 @@
           <div class="sol-approach-num" style="background:#2D7D32;">1</div>
           <div class="sol-approach-icon" style="color:#2D7D32;"><i class="fa-solid fa-shield-halved"></i></div>
           <h4 class="sol-approach-title" style="color:#2D7D32;">Protect</h4>
-          <p class="sol-approach-desc">Reduce vulnerability to heat with cooling solutions that are <strong>affordable, safe and reliable</strong> â€” prioritising people, businesses, and governments most at risk.</p>
+          <p class="sol-approach-desc">Reduce vulnerability to heat with cooling solutions that are <strong>affordable, safe and reliable</strong> — prioritising people, businesses, and governments most at risk.</p>
         </div>
         <div class="sol-approach-arrow"><i class="fa-solid fa-arrow-right"></i></div>
         <div class="sol-approach-step">
           <div class="sol-approach-num" style="background:#0369a1;">2</div>
           <div class="sol-approach-icon" style="color:#0369a1;"><i class="fa-solid fa-leaf"></i></div>
           <h4 class="sol-approach-title" style="color:#0369a1;">Reduce</h4>
-          <p class="sol-approach-desc">Lower demand for active cooling through <strong>passive design, urban planning, and nature-based solutions</strong> â€” water, trees, earth, and traditional low-tech approaches.</p>
+          <p class="sol-approach-desc">Lower demand for active cooling through <strong>passive design, urban planning, and nature-based solutions</strong> — water, trees, earth, and traditional low-tech approaches.</p>
         </div>
         <div class="sol-approach-arrow"><i class="fa-solid fa-arrow-right"></i></div>
         <div class="sol-approach-step">
           <div class="sol-approach-num" style="background:#7C3AED;">3</div>
           <div class="sol-approach-icon" style="color:#7C3AED;"><i class="fa-solid fa-rotate"></i></div>
           <h4 class="sol-approach-title" style="color:#7C3AED;">Shift</h4>
-          <p class="sol-approach-desc">Change the approach to achieve emissions savings â€” <strong>renewable energy, natural refrigerants</strong>, and conservation measures that transform how cooling is delivered.</p>
+          <p class="sol-approach-desc">Change the approach to achieve emissions savings — <strong>renewable energy, natural refrigerants</strong>, and conservation measures that transform how cooling is delivered.</p>
         </div>
         <div class="sol-approach-arrow"><i class="fa-solid fa-arrow-right"></i></div>
         <div class="sol-approach-step">
           <div class="sol-approach-num" style="background:#B8860B;">4</div>
           <div class="sol-approach-icon" style="color:#B8860B;"><i class="fa-solid fa-gauge-high"></i></div>
           <h4 class="sol-approach-title" style="color:#B8860B;">Improve</h4>
-          <p class="sol-approach-desc">Pure <strong>efficiency measures</strong> â€” delivering the same cooling with less energy through MEPS, energy labels, and best-available-technology standards.</p>
+          <p class="sol-approach-desc">Pure <strong>efficiency measures</strong> — delivering the same cooling with less energy through MEPS, energy labels, and best-available-technology standards.</p>
         </div>
         <div class="sol-approach-arrow"><i class="fa-solid fa-arrow-right"></i></div>
         <div class="sol-approach-step">
@@ -1209,7 +1209,7 @@
         <div class="access-impact-card">
           <div class="access-impact-icon" style="background:rgba(3,105,161,0.1);color:#0369a1;"><i class="fa-solid fa-microchip"></i></div>
           <h4 class="access-impact-title">Technology</h4>
-          <p class="access-impact-body"><strong>Nature-based &amp; passive:</strong> water, trees, plants, earth â€” traditional low-tech and modern high-tech approaches. <strong>Active:</strong> fans, air conditioners, refrigerators, and district cooling systems â€” varying in efficiency and refrigerant type.</p>
+          <p class="access-impact-body"><strong>Nature-based &amp; passive:</strong> water, trees, plants, earth — traditional low-tech and modern high-tech approaches. <strong>Active:</strong> fans, air conditioners, refrigerators, and district cooling systems — varying in efficiency and refrigerant type.</p>
         </div>
         <div class="access-impact-card">
           <div class="access-impact-icon" style="background:rgba(22,163,74,0.1);color:#15803d;"><i class="fa-solid fa-briefcase"></i></div>
@@ -1224,15 +1224,15 @@
         <div class="access-impact-card">
           <div class="access-impact-icon" style="background:rgba(184,134,11,0.1);color:#B8860B;"><i class="fa-solid fa-coins"></i></div>
           <h4 class="access-impact-title">Financial</h4>
-          <p class="access-impact-body"><strong>Finance:</strong> loans enabling access to sustainable technology. <strong>Fiscal:</strong> tax credits, energy and carbon pricing, import duties and subsidy reform. <strong>Funding:</strong> grants and rebates that require no repayment â€” critical for reaching the poorest households.</p>
+          <p class="access-impact-body"><strong>Finance:</strong> loans enabling access to sustainable technology. <strong>Fiscal:</strong> tax credits, energy and carbon pricing, import duties and subsidy reform. <strong>Funding:</strong> grants and rebates that require no repayment — critical for reaching the poorest households.</p>
         </div>
       </div>
 
-      <p class="access-body-text" style="margin-top: 1rem;">A rights-based approach to cooling recognises that access is a prerequisite for health, food security, and economic participation. By integrating these solutions into NDCs and national development plans, we can break the cycle of emissions and heat â€” ensuring that cooling is sustainable, equitable, and fast enough to matter.</p>
+      <p class="access-body-text" style="margin-top: 1rem;">A rights-based approach to cooling recognises that access is a prerequisite for health, food security, and economic participation. By integrating these solutions into NDCs and national development plans, we can break the cycle of emissions and heat — ensuring that cooling is sustainable, equitable, and fast enough to matter.</p>
 
       <div class="sol-thisiscool">
         <i class="fa-solid fa-circle-check" style="color:#2D7D32; flex-shrink:0;"></i>
-        <p>The <strong>#ThisIsCool</strong> solutions directory helps communities find the best sustainable cooling solutions matched to their specific context and needs. <a href="https://www.seforall.org/chilling-prospects-2020/sustainable-cooling-solutions" target="_blank" rel="noopener noreferrer">Explore solutions on SEforALL â†’</a></p>
+        <p>The <strong>#ThisIsCool</strong> solutions directory helps communities find the best sustainable cooling solutions matched to their specific context and needs. <a href="https://www.seforall.org/chilling-prospects-2020/sustainable-cooling-solutions" target="_blank" rel="noopener noreferrer">Explore solutions on SEforALL →</a></p>
       </div>
 
       <div class="access-pledge-badge">
@@ -1245,7 +1245,7 @@
       </div>
     </div>
 
-    <!-- â•â•â• RESOURCES â•â•â• -->
+    <!-- ═══ RESOURCES ═══ -->
     <div class="access-narrative-section access-resources-section" style="border-top: 1px solid rgba(0,0,0,0.06);" class:revealed>
       <span class="access-eyebrow">Go Deeper</span>
       <h2 class="access-section-title">Resources on Cooling Access &amp; Vulnerability</h2>
@@ -1253,19 +1253,19 @@
       <div class="access-resources-grid">
         <a href="https://www.seforall.org/our-work/research-analysis/chilling-prospects-series" target="_blank" rel="noopener noreferrer" class="access-resource-card">
           <strong class="access-resource-title">Chilling Prospects Series (SEforALL)</strong>
-          <span class="access-resource-desc">The definitive annual tracker of cooling access gaps across 77 countries â€” identifying who is at risk, where, and why. Includes the 2025 data release and all previous editions.</span>
+          <span class="access-resource-desc">The definitive annual tracker of cooling access gaps across 77 countries — identifying who is at risk, where, and why. Includes the 2025 data release and all previous editions.</span>
         </a>
         <a href="https://thisiscool.seforall.org/solutions" target="_blank" rel="noopener noreferrer" class="access-resource-card">
-          <strong class="access-resource-title">#ThisIsCool â€” Sustainable Cooling Solutions Tool</strong>
+          <strong class="access-resource-title">#ThisIsCool — Sustainable Cooling Solutions Tool</strong>
           <span class="access-resource-desc">SEforALL's interactive directory of sustainable cooling solutions. Find the best options matched to community context across Technology, Services, Policy, and Financial solution types.</span>
         </a>
         <a href="https://documents1.worldbank.org/curated/en/099053124150533090/pdf/P174321194a3b10131a1ee1c550a837e664.pdf" target="_blank" rel="noopener noreferrer" class="access-resource-card">
           <strong class="access-resource-title">World Bank: Sustainable Cooling in Off-Grid Rural Areas</strong>
-          <span class="access-resource-desc">World Bank / ESMAP report on the nexus between energy access and clean cooling in off-grid rural communities â€” cold chains, solar cooling, and financing pathways for the most underserved populations.</span>
+          <span class="access-resource-desc">World Bank / ESMAP report on the nexus between energy access and clean cooling in off-grid rural communities — cold chains, solar cooling, and financing pathways for the most underserved populations.</span>
         </a>
         <a href="https://aseanenergy.org/publications/roadmap-for-extreme-heat-protection-through-passive-cooling-in-asean-region/" target="_blank" rel="noopener noreferrer" class="access-resource-card">
           <strong class="access-resource-title">UNEP/ASEAN: Roadmap for Extreme Heat Protection</strong>
-          <span class="access-resource-desc">Technical roadmap for a "Passive First" design philosophy demonstrating 20â€“50% cooling energy savings from natural ventilation and reflective surfaces.</span>
+          <span class="access-resource-desc">Technical roadmap for a "Passive First" design philosophy demonstrating 20–50% cooling energy savings from natural ventilation and reflective surfaces.</span>
         </a>
         <a href="https://www.unep.org/resources/report/beating-heat-sustainable-cooling-handbook-cities" target="_blank" rel="noopener noreferrer" class="access-resource-card">
           <strong class="access-resource-title">Cool Coalition: Beating the Heat Handbook</strong>
@@ -1316,7 +1316,7 @@
 
 <style>
   /* ===========================
-     DESIGN SYSTEM â€” narrative sections
+     DESIGN SYSTEM — narrative sections
      =========================== */
   .access-narrative-section {
     padding: 32px 64px;
@@ -1350,7 +1350,7 @@
   }
 
   /* ===========================
-     IMPACT / STRATEGY 2Ã—2 GRID CARDS
+     IMPACT / STRATEGY 2×2 GRID CARDS
      =========================== */
   .access-impact-grid {
     display: grid;
@@ -1729,7 +1729,7 @@
     .access-risk-groups { grid-template-columns: 1fr; }
   }
 
-  /* â•â•â• SOLUTIONS SECTION â•â•â• */
+  /* ═══ SOLUTIONS SECTION ═══ */
 
   /* 5-approach horizontal flow */
   .sol-approach-flow {
@@ -1925,7 +1925,7 @@
   /* KPI panel */
   .kpi-panel { padding: 1rem 1.25rem; }
 
-  /* Pill-style filters â€” matching Emissions green pill aesthetic */
+  /* Pill-style filters — matching Emissions green pill aesthetic */
   .access-checkboxes {
     display: flex;
     gap: 1.25rem;
@@ -1962,7 +1962,7 @@
     flex-wrap: wrap;
   }
 
-  /* Pill button â€” unselected state: blue outline, light bg */
+  /* Pill button — unselected state: blue outline, light bg */
   .tick-box {
     display: inline-flex;
     align-items: center;
@@ -1987,7 +1987,7 @@
     color: #0284c7;
   }
 
-  /* Pill button â€” selected state: filled blue, white text */
+  /* Pill button — selected state: filled blue, white text */
   .tick-box:has(input:checked) {
     background: #0369a1;
     border-color: #0369a1;
@@ -2002,7 +2002,7 @@
 
   .tick-box input { display: none; }
 
-  /* Hide tick mark â€” pills are self-indicating */
+  /* Hide tick mark — pills are self-indicating */
   .tick-mark { display: none; }
 
   /* Risk level pills retain colour-coded active states */

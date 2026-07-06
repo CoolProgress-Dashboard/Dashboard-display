@@ -56,7 +56,7 @@ export const pillarContent: PillarContentMap = {
 			{
 				value: '~3 billion',
 				label: 'more ACs expected by 2050',
-				context: 'Under business-as-usual, the global AC stock will grow from ~3.1 billion today to ~6.5 billion by 2050 â€” mostly in the hottest, fastest-growing markets. Source: CLASP Mepsy / IEA.'
+				context: 'Under business-as-usual, the global AC stock will grow from ~3.1 billion today to ~6.5 billion by 2050 — mostly in the hottest, fastest-growing markets. Source: CLASP Mepsy / IEA.'
 			},
 			{
 				value: '1B+',
@@ -71,7 +71,7 @@ export const pillarContent: PillarContentMap = {
 			{
 				value: '71',
 				label: 'nations signed the Cooling Pledge',
-				context: '71 countries committed to the Global Cooling Pledge at COP28 in Dubai â€” covering efficiency, refrigerant transition, and expanded access.'
+				context: '71 countries committed to the Global Cooling Pledge at COP28 in Dubai — covering efficiency, refrigerant transition, and expanded access.'
 			}
 		]
 	},

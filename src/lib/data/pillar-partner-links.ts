@@ -51,7 +51,7 @@ export const partnerLinks: PartnerLink[] = [
 	// Reports and Publications
 	{
 		mention: 'Chilling Prospects',
-		url: 'https://www.seforall.org/chilling-prospects',
+		url: 'https://www.seforall.org/our-work/research-analysis/chilling-prospects-series',
 		label: 'SEforALL Chilling Prospects Series'
 	},
 	{

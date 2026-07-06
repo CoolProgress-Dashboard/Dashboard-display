@@ -121,7 +121,7 @@ export const partners: Partner[] = [
   },
   {
     id: 'giz',
-    name: 'Deutsche Gesellschaft fÃ¼r Internationale Zusammenarbeit - GIZ Proklima',
+    name: 'Deutsche Gesellschaft für Internationale Zusammenarbeit - GIZ Proklima',
     fullName: 'Deutsche Gesellschaft fuer Internationale Zusammenarbeit - Proklima',
     tagline: 'Promoting eco-friendly and sustainable cooling technologies worldwide',
     website: 'https://www.giz.de/en/worldwide/71271.html',
@@ -232,7 +232,7 @@ export const partners: Partner[] = [
   {
     id: 'lbnl',
     name: 'Lawrence Berkeley National Laboratory - LBNL',
-    fullName: 'Lawrence Berkeley National Laboratory â€” Energy Technologies Area',
+    fullName: 'Lawrence Berkeley National Laboratory — Energy Technologies Area',
     tagline: 'Science-based technical foundations for global appliance efficiency policy',
     website: 'https://eta.lbl.gov',
     coolingUrl: 'https://cooling.lbl.gov',
@@ -241,7 +241,7 @@ export const partners: Partner[] = [
     description:
       'The U.S. Department of Energy\'s Lawrence Berkeley National Laboratory (LBNL) Energy Technologies Area conducts the technical analyses that underpin appliance efficiency standards in the U.S. and globally. Its Appliance & Equipment Standards group has supported MEPS development in 50+ countries and co-developed key tools used by CLASP and UNEP U4E.',
     keyContribution:
-      'Co-developed the BUENAS model and U4E Model Regulation Guidelines for ACs and refrigerators. Estimated 389 TWh/yr electricity savings and 219 Mt COâ‚‚/yr reductions achievable through MEPS in 12 major economies.',
+      'Co-developed the BUENAS model and U4E Model Regulation Guidelines for ACs and refrigerators. Estimated 389 TWh/yr electricity savings and 219 Mt CO₂/yr reductions achievable through MEPS in 12 major economies.',
     keyReport: 'Global Cooling Efficiency Program',
     keyReportUrl: 'https://cooling.lbl.gov',
     category: 'research',
@@ -262,7 +262,7 @@ export const partners: Partner[] = [
         label: 'BUENAS Methodology',
         url: 'https://www.clasp.ngo/wp-content/uploads/2021/01/BottomUp-Energy-Analysis-System-BUENAS-Methodology-and-Results.pdf',
         icon: 'fa-chart-bar',
-        description: 'Bottom-Up Energy Analysis System â€” global MEPS savings model',
+        description: 'Bottom-Up Energy Analysis System — global MEPS savings model',
       },
       {
         label: 'International Energy Studies',
