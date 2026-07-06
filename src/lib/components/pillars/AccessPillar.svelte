@@ -194,8 +194,8 @@
     // -------------------------------------------------------
     const PCT_THRESHOLDS = [0.05, 0.30, 0.50]; // Low | Moderate | High | Critical
     const PCT_COLORS = [
-      '#F0D878', // <5%   — light yellow: low share, but not "no problem" (green would signal solved)
-      '#C9921A', // 5-30% — Moderate (amber, matches SEFORALL Medium)
+      '#E0BE3C', // <5%   — yellow: low share, but not "no problem" (green would signal solved)
+      '#E8914A', // 5-30% — Moderate (light orange)
       '#C5443A', // 30-50% — High (red, matches SEFORALL High)
       '#7F1D1D', // >50%   — Critical (dark red)
     ] as const;

@@ -1354,12 +1354,13 @@ select {
 }
 
 .progress-segment.access-low {
-  /* light yellow, matches the map's under-5% bucket (green read as "solved") */
-  background: #F0D878;
+  /* yellow, matches the map's under-5% bucket (green read as "solved") */
+  background: #E0BE3C;
 }
 
 .progress-segment.access-medium {
-  background: #C9921A;
+  /* light orange, matches the map's 5-30% bucket */
+  background: #E8914A;
 }
 
 .progress-segment.access-high {
