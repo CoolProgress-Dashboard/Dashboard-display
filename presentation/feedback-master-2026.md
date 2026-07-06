@@ -1,6 +1,6 @@
 # CoolProgress Dashboard — Master Feedback Register
-**Last updated:** 2026-06-26  
-**Total items:** 95 (38 completed, 57 pending)  
+**Last updated:** 2026-07-03  
+**Total items:** 80 (54 completed, 3 dropped, 23 open: 7 High / 13 Medium / 2 Blocked / 1 Low; recounted 3 Jul 2026, earlier "95" was stale)  
 **Sources:** Noah/CCC, Ari/CLASP, Patrick/HEAT, Jamie/CPR, Giorgia/SEforAll, Stefanie/HEAT, Dietram/UNEP, London event (12 May 2026), CCC orchestration board
 
 ---
@@ -56,21 +56,21 @@
 | ME-01 | MEPS Stringency section moved after map | UI | Internal | ✅ Done |
 | ME-02 | Unverified AC CSPF and fridge EEI tables replaced with WIP callouts | Data accuracy | Internal | ✅ Done |
 | ME-03 | ASEAN narrative added | Content | Patrick/HEAT | ✅ Done (0ccbf08) |
-| ME-04 | SADC AC MEPS values too low vs U4E | Data accuracy | Patrick/HEAT | 🔴 High |
-| ME-05 | EAC AC MEPS values too low vs U4E | Data accuracy | Patrick/HEAT | 🔴 High |
-| ME-06 | Nigeria AC MEPS values too low | Data accuracy | Patrick/HEAT | 🔴 High |
-| ME-07 | Saudi Arabia AC MEPS value needs verification | Data accuracy | Patrick/HEAT | 🔴 High |
-| ME-08 | Japan Top Runner conversion unverified | Data accuracy | Patrick/HEAT | 🔴 High |
-| ME-09 | Australia EER→CSPF conversion unverified | Data accuracy | Patrick/HEAT | 🔴 High |
-| ME-10 | U4E capacity range: shows 4.5–9.5 kW, standard is 2.5–5 kW | Data accuracy | Patrick/HEAT | 🔴 High |
-| ME-11 | U4E high-efficiency label: current 6.5, should be 7.6 or 8.0 | Data accuracy | Patrick/HEAT | 🔴 High |
+| ME-04 | SADC AC MEPS values too low vs U4E | Data accuracy | Patrick/HEAT | ✅ Done 3 Jul 2026 — 4.50 (2024) / 6.10 (2027), HT 110:2023 Table 10, MEPS review v2 (uncommitted) |
+| ME-05 | EAC AC MEPS values too low vs U4E | Data accuracy | Patrick/HEAT | ✅ Done 3 Jul 2026 — 4.50 (2025) / 6.10 (2027), EAS 1213:2025, MEPS review v2 |
+| ME-06 | Nigeria AC MEPS values too low | Data accuracy | Patrick/HEAT | ✅ Done 3 Jul 2026 — relabelled SON/ECN (approved 25 Feb 2025); phased values kept, flagged estimated (baseline NSEER 3.0 unpublished — obtain SON text via Patrick/U4E) |
+| ME-07 | Saudi Arabia AC MEPS value needs verification | Data accuracy | Patrick/HEAT | ✅ Done 3 Jul 2026 — old values matched no SASO cell; now EER 11.8 Btu/Wh (2018, eq 3.67) + SASO 2663:2025 SEER 12.8 (Nov 2026, eq 3.75) |
+| ME-08 | Japan Top Runner conversion unverified | Data accuracy | Patrick/HEAT | ✅ Done 3 Jul 2026 — old x0.90 wrong in direction; replaced with Park et al. 2020 equation; fleet-average caveat added |
+| ME-09 | Australia EER→CSPF conversion unverified | Data accuracy | Patrick/HEAT | ✅ Done 3 Jul 2026 — no valid AEER→CSPF conversion exists (IEA 4E); Australia removed from CSPF chart, documented in changelog |
+| ME-10 | U4E capacity range: shows 4.5–9.5 kW, standard is 2.5–5 kW | Data accuracy | Patrick/HEAT | ✅ Done 3 Jul 2026 — reference line now CSPF 6.10, Group 1 ≤4.5 kW (Table 5); typical residential band |
+| ME-11 | U4E high-efficiency label: current 6.5, should be 7.6 or 8.0 | Data accuracy | Patrick/HEAT | ✅ Done 3 Jul 2026 — now 8.00 (Annex 2 Table 13, Group 1 ≤4.5 kW); 6.5 was the Group 2 value |
 | ME-12 | Inverter savings understated: claim 40–44%, should be "up to 60%" | Data accuracy | Noah/CCC | ✅ Done — stat box now says "up to 60%", body text updated |
-| ME-13 | Full MEPS benchmarking audit — U4E flagged additional low values at London | Data accuracy | U4E (London) | 🔴 High |
+| ME-13 | Full MEPS benchmarking audit — U4E flagged additional low values at London | Data accuracy | U4E (London) | ✅ Done 3 Jul 2026 — all 16 AC jurisdictions + refrigerator chart source-verified; 50-record v2 dataset (meps_timeline_v2.json), calculation workbook in presentation/meps-review-2026/, findings 01–06 |
 | ME-14 | LBNL inverter share dataset: % AC sales inverter vs fixed-speed by country, SE Asia zoom-in, time series | Data gap | Noah/CCC + London | 🔴 High |
 | ME-15 | Super-efficient fans story: ~2M India sales, 50% energy reduction, price drop | Content | Noah/CCC | 🔴 High |
 | ME-16 | High-temp + high-humidity operating conditions context — core to 5x efficiency / GCP story | Content | Noah/CCC | 🔴 High |
-| ME-17 | MEPS map metric (MEPS/labels count) unexplained — add tooltip or remove | UI | Noah/CCC | 🟡 Medium |
-| ME-18 | Recent MEPS updates section: China fridges, Nigeria ACs, ASEAN harmonization | Content | Noah/CCC + Patrick | 🟡 Medium |
+| ME-17 | MEPS map metric (MEPS/labels count) unexplained — add tooltip or remove | UI | Noah/CCC | ✅ Done 3 Jul 2026 — tooltip now says "MEPS policies / Labelling policies" with a counts-explainer line, plus a note under the map legend (coverage, not stringency) |
+| ME-18 | Recent MEPS updates section: China fridges, Nigeria ACs, ASEAN harmonization | Content | Noah/CCC + Patrick | ✅ Done 3 Jul 2026 — section rewritten with verified facts (GB 12021.2-2025, Nigeria Feb 2025 NSEER phases, ASEAN roadmap + Singapore 6.10, SADC/EAC card added); stale "under review" disclaimers replaced |
 | ME-19 | U4E country assessments: at least one example shown | Content | Noah/CCC | 🟡 Medium |
 | ME-20 | Lifecycle cost (LCC) data: total cost of ownership per product and country | Data gap | Foundation (London) | 🟡 Medium |
 
@@ -85,12 +85,12 @@
 | KI-03 | 6-step lifecycle infographic added | Content | Internal | ✅ Done |
 | KI-04 | Kigali ratification map restored | UI | Internal | ✅ Done |
 | KI-05 | Appliance scope labels added | Narrative | Ari/CLASP | ✅ Done |
-| KI-06 | Historical scenario lines diverge before 2025 — must converge to single line | UI bug | Internal | ✅ Done — pre-2025 years now mirror BAU values for all scenario lines; smooth curves share the same historical path |
+| KI-06 | Historical scenario lines diverge before 2025 — must converge to single line | UI bug | Internal | ✅ Done — superseded 3 Jul 2026 per Manuel: scenario lines now hidden entirely before 2025 (branch from the 2025 BAU point); legend renamed to plain language (Business as Usual / Kigali Implementation / Kigali+ accelerated) since "BAU" was unclear |
 | KI-07 | LBNL refrigerant transition data: R-410A → R-32 market share by region, past 5 years | Data gap | Noah/CCC | 🔴 High |
-| KI-08 | Kigali Amendment framing: introductory explanation of Montreal Protocol / HFC phasedown | Content | Noah/CCC | 🟡 Medium |
-| KI-09 | Build refrigerant data from BTR 1 + BTR 2 (Paris transparency framework) | Data accuracy | Satish/AEEE | 🟡 Medium |
-| KI-10 | Add EIA F-Gas fact sheet link + EU F-Gas rule summary link | Links | Noah/CCC | 🟡 Medium |
-| KI-11 | Automate Kigali ratification count via API (currently hardcoded) | Automation | Internal | 🟡 Medium |
+| KI-08 | Kigali Amendment framing: introductory explanation of Montreal Protocol / HFC phasedown | Content | Noah/CCC | ✅ Done 3 Jul 2026 — "The Framework" section added (Montreal 1987 → Kigali 2016 → 2019 entry into force → 173 parties), MLF context (USD 965M 2024-2026, KIPs, ExCom 98 Jun 2026 Montreal) with Ozone Secretariat + MLF links |
+| KI-09 | Build refrigerant data from BTR 1 + BTR 2 (Paris transparency framework) | Data accuracy | Satish/AEEE | — Discarded 3 Jul 2026 (decision Manuel) — BTR reconciliation not pursued |
+| KI-10 | Add EIA F-Gas fact sheet link + EU F-Gas rule summary link | Links | Noah/CCC | ✅ Done (0ccbf08) — EU F-Gas Reg 2024/573 card with EIA plain-language guide + PDF, plus EIA F-Gas campaign card; register was stale, verified in code 3 Jul 2026 |
+| KI-11 | Automate Kigali ratification count via API (currently hardcoded) | Automation | Internal | ✅ Done 3 Jul 2026 — scripts/check_kigali_ratifications.mjs compares kip table against ozone.unep.org/all-ratifications (with --fix mode + duplicate detection); data corrected: Haiti flagged (ratified 8 Apr 2026), PRK row inserted (ratified 2017, was missing), duplicate KOR row deleted; kip now 173 = UNEP 173; pillar fallback updated to 173. Run the script monthly or on ratification news |
 
 ---
 
@@ -148,8 +148,8 @@
 |--------|---------|----------|-----------|-------|--------|
 | Overview | 0 | 3 | 0 | 0 | 4 |
 | Emissions | 0 | 1 | 1 | 0 | 13 |
-| MEPS | 9 | 4 | 0 | 0 | 4 |
-| Kigali | 1 | 4 | 0 | 0 | 6 |
+| MEPS | 3 | 2 | 0 | 0 | 15 |
+| Kigali | 1 | 0 | 0 | 0 | 9 (1 discarded) |
 | Access | 0 | 7 | 0 | 0 | 2 |
 | Policy | 3 | 2 | 1 | 1 | 7 |
 | Cross-cutting | 0 | 3 | 0 | 0 | 2 |

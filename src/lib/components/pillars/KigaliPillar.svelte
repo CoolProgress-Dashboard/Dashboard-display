@@ -31,15 +31,18 @@
   const meta = VIEW_META.kigali;
   const kigaliContent = pillarContent.kigali;
 
-  // Derive ratification count live from data (falls back to 172 if data not loaded yet)
-  $: ratifiedCount = kigaliData.filter((k: any) => k.kigali_party === 1).length || 172;
+  // Derive ratification count live from the kip table. Fallback (used only
+  // before data loads) verified against UNEP Ozone Secretariat on 3 Jul 2026:
+  // 173 parties (latest: Haiti, 8 Apr 2026). To re-check or sync, run
+  // scripts/check_kigali_ratifications.mjs.
+  $: ratifiedCount = kigaliData.filter((k: any) => k.kigali_party === 1).length || 173;
 
   // Animated stat cards
   $: kigaliStats = [
     {
       value: String(ratifiedCount),
       label: 'Kigali parties ratified',
-      context: `${ratifiedCount} countries have ratified the Kigali Amendment, covering over 95% of global HFC consumption. Source: UNEP Ozone Secretariat.`
+      context: `${ratifiedCount} parties (countries plus the EU) have ratified the Kigali Amendment, covering over 95% of global HFC consumption. Source: UNEP Ozone Secretariat, verified July 2026.`
     },
     {
       value: '0.5\u00B0C',
@@ -81,7 +84,7 @@
     {
       icon: 'fa-chart-line',
       title: 'Direct Emissions Trend',
-      description: 'Compare BAU, Kigali, and Mitigation scenarios for refrigerant emissions',
+      description: 'Compare business-as-usual, Kigali, and accelerated scenarios for refrigerant emissions',
       color: '#2D7D5A'
     }
   ];
@@ -681,9 +684,9 @@
         'KIP_PLUS': SCENARIO.KIP_PLUS
       };
       const scenarioNames: Record<string, string> = {
-        'BAU': 'BAU',
+        'BAU': 'Business as Usual',
         'KIP': 'Kigali Implementation',
-        'KIP_PLUS': 'Kigali+'
+        'KIP_PLUS': 'Kigali+ (accelerated)'
       };
 
       // Static fallback scenario data (UNEP/HEAT reference trajectories, global, Mt CO₂e)
@@ -691,9 +694,9 @@
       const STATIC_SCENARIO_DATA: { years: number[]; series: { name: string; data: (number | null)[]; color: string }[] } = {
         years: [2020, 2025, 2030, 2035, 2040, 2045],
         series: [
-          { name: 'BAU',                   data: [1.8, 1.8, 3.1, 4.0, 5.0, 6.1], color: SCENARIO.BAU },
+          { name: 'Business as Usual',      data: [1.8, 1.8, 3.1, 4.0, 5.0, 6.1], color: SCENARIO.BAU },
           { name: 'Kigali Implementation',  data: [null, 1.8, 2.6, 2.7, 2.4, 1.9], color: SCENARIO.KIP },
-          { name: 'Kigali+',               data: [null, 1.8, 2.2, 2.0, 1.5, 1.0], color: SCENARIO.KIP_PLUS }
+          { name: 'Kigali+ (accelerated)',  data: [null, 1.8, 2.2, 2.0, 1.5, 1.0], color: SCENARIO.KIP_PLUS }
         ]
       };
 
@@ -729,10 +732,15 @@
           });
         });
 
-        // Before and including 2025: mirror BAU values so all lines share the same historical path
+        // The scenario lines are projections: draw them only from the 2025
+        // branch point (anchored to the BAU value there). Before 2025 only the
+        // BAU line is shown, since history has no alternative scenarios.
         const idx2025 = years.indexOf(2025);
         years.forEach((y: number, i: number) => {
-          if (y <= 2025) {
+          if (y < 2025) {
+            rawData['KIP'][i] = null;
+            rawData['KIP_PLUS'][i] = null;
+          } else if (y === 2025) {
             rawData['KIP'][i] = rawData['BAU'][i];
             rawData['KIP_PLUS'][i] = rawData['BAU'][i];
           }
@@ -762,11 +770,11 @@
           trigger: 'axis',
           formatter: function(params: any) {
             let result = `<strong>${params[0].axisValue}</strong><br/>`;
-            const bauVal = params.find((p: any) => p.seriesName === 'BAU')?.value || 0;
+            const bauVal = params.find((p: any) => p.seriesName === 'Business as Usual')?.value || 0;
             params.forEach((p: any) => {
               if (p.value == null) return;
-              const pct = bauVal > 0 && p.seriesName !== 'BAU'
-                ? ` (${((1 - p.value / bauVal) * 100).toFixed(0)}% reduction vs BAU)`
+              const pct = bauVal > 0 && p.seriesName !== 'Business as Usual'
+                ? ` (${((1 - p.value / bauVal) * 100).toFixed(0)}% below Business as Usual)`
                 : '';
               result += `${p.marker} ${p.seriesName}: ${p.value.toFixed(1)} Mt CO\u2082e${pct}<br/>`;
             });
@@ -806,7 +814,7 @@
           itemStyle: { color: s.color },
           areaStyle: s.name === 'Business as Usual' ? { color: `${s.color}15` }
                    : s.name === 'Kigali Implementation' ? { color: `${s.color}10` }
-                   : s.name === 'Kigali+' ? { color: `${s.color}08` }
+                   : s.name === 'Kigali+ (accelerated)' ? { color: `${s.color}08` }
                    : undefined
         }))
       });
@@ -1128,6 +1136,45 @@
       </div>
     </div>
 
+    <!-- ═══════════════════════════════════════════════════
+         SECTION 1b — THE FRAMEWORK (KI-08: Montreal-to-Kigali primer)
+         ═══════════════════════════════════════════════════ -->
+    <div class="k-section" class:revealed>
+      <span class="k-eyebrow k-eyebrow-xl">The Framework</span>
+      <h2 class="k-title k-title-xl">From Montreal to Kigali: the treaty machinery behind the phase-down.</h2>
+      <p class="k-body">The Montreal Protocol (1987) is widely considered the most successful environmental treaty in history: it eliminated nearly 99% of ozone-depleting substances, including the CFCs once standard in cooling, and it is universally ratified. The Kigali Amendment, adopted at the 28th Meeting of the Parties in Kigali, Rwanda in October 2016 and in force since 1 January 2019, extends that proven machinery to HFCs. HFCs do not damage the ozone layer, but they are potent greenhouse gases, so the amendment commits parties to phase down HFC production and consumption by more than 80%, on legally binding schedules differentiated between developed (non-Article 5) and developing (Article 5) countries, shown below.</p>
+      <div class="kigali-problem-stats">
+        <div class="kigali-problem-stat">
+          <div class="kps-value">1987</div>
+          <div class="kps-gwp">Montreal Protocol</div>
+          <div class="kps-label">Signed to protect the ozone layer; phased out CFCs and is phasing out HCFCs. Ratified by every UN member state.</div>
+        </div>
+        <div class="kigali-problem-stat">
+          <div class="kps-value">2016</div>
+          <div class="kps-gwp">Kigali Amendment</div>
+          <div class="kps-label">Adopted at MOP28 in Rwanda: extends the Protocol to HFCs, the first global, binding phase-down of a greenhouse gas family.</div>
+        </div>
+        <div class="kigali-problem-stat">
+          <div class="kps-value">2019</div>
+          <div class="kps-gwp">Entry into force</div>
+          <div class="kps-label">First reduction step for developed countries in 2019; consumption freeze for most developing countries from 2024.</div>
+        </div>
+        <div class="kigali-problem-stat kps-highlight">
+          <div class="kps-value">{ratifiedCount}</div>
+          <div class="kps-gwp">parties in 2026</div>
+          <div class="kps-label">Countries plus the EU that have ratified, covering over 95% of global HFC consumption. Latest: Haiti, April 2026.</div>
+        </div>
+      </div>
+      <p class="k-body">Implementation is coordinated by the UNEP Ozone Secretariat and financed for developing countries through the Multilateral Fund (MLF), replenished with a record USD 965 million for 2024 to 2026, the first triennium explicitly funding Kigali HFC Implementation Plans (KIPs). The Fund's Executive Committee meets twice a year to approve country plans and projects; its 98th meeting took place in Montreal in June 2026.</p>
+      <p class="k-body" style="font-size:0.78rem;">
+        <a href="https://ozone.unep.org/treaties/montreal-protocol" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;">Ozone Secretariat: the Montreal Protocol <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.6rem;"></i></a>
+        &nbsp;·&nbsp;
+        <a href="https://ozone.unep.org/all-ratifications" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;">Ratification status <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.6rem;"></i></a>
+        &nbsp;·&nbsp;
+        <a href="https://www.multilateralfund.org/meetings" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;">Multilateral Fund meetings <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.6rem;"></i></a>
+      </p>
+    </div>
+
     <!-- DATA 1: Direct emissions chart -->
     <div class="kigali-story-bridge">
       <div class="kigali-bridge-label">
@@ -1136,7 +1183,7 @@
         Without action, global HFC emissions triple by 2050
       </div>
       <div class="chart-card-header" style="padding: 1rem 1rem 0;">
-        <p class="chart-subtitle">Global direct (refrigerant) emissions: BAU vs Kigali Implementation</p>
+        <p class="chart-subtitle">Global direct (refrigerant) emissions under three scenarios: Business as Usual (no new policies), Kigali Implementation (the agreed HFC phase-down schedules), and Kigali+ (an accelerated transition to low-GWP refrigerants). Scenario lines branch from 2025; history before that has no alternative paths.</p>
         <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.3rem;">
           <span class="k-scope-badge"><i class="fa-solid fa-wind"></i> Residential AC</span>
           <span class="k-scope-badge"><i class="fa-solid fa-snowflake"></i> Domestic Refrigerators</span>
@@ -1151,7 +1198,7 @@
       <div class="chart-card-body">
         <div id="chart-kigali-direct-emissions" class="chart-surface" style="width: 100%; height: 380px; min-height: 380px;"></div>
       </div>
-      <p class="kigali-chart-caption">Full Kigali implementation cuts direct refrigerant emissions by over 80% from BAU levels, avoiding roughly 1 GtCO₂e per year by 2050.</p>
+      <p class="kigali-chart-caption">Full Kigali implementation cuts direct refrigerant emissions by over 80% compared with business as usual, avoiding roughly 1 GtCO₂e per year by 2050.</p>
     </div>
 
     <!-- ═══════════════════════════════════════════════════
@@ -1159,8 +1206,8 @@
          ═══════════════════════════════════════════════════ -->
     <div class="k-section" class:revealed>
       <span class="k-eyebrow k-eyebrow-xl">Global Progress</span>
-      <h2 class="k-title k-title-xl">{ratifiedCount} Countries Have Signed. Now Comes the Hard Part.</h2>
-      <p class="k-body">As of April 2026, {ratifiedCount} countries have ratified the Kigali Amendment, bringing 95% of global HFC consumption under a legally binding framework. However, ratification is only the initial milestone. The true measure of success lies in execution: whether national phasedown schedules translate into converted manufacturing lines, modernised safety codes for flammable alternatives, and robust recovery infrastructure. The transition depends on shifting the entire market from high-GWP HFCs to climate-safe, sustainable alternatives.</p>
+      <h2 class="k-title k-title-xl">{ratifiedCount} Parties Have Ratified. Now Comes the Hard Part.</h2>
+      <p class="k-body">As of April 2026, {ratifiedCount} parties (countries plus the EU) have ratified the Kigali Amendment, bringing over 95% of global HFC consumption under a legally binding framework. However, ratification is only the initial milestone. The true measure of success lies in execution: whether national phasedown schedules translate into converted manufacturing lines, modernised safety codes for flammable alternatives, and robust recovery infrastructure. The transition depends on shifting the entire market from high-GWP HFCs to climate-safe, sustainable alternatives.</p>
 
       <!-- Chart highlights -->
       <div class="kigali-chart-highlights">
