@@ -1,0 +1,20 @@
+{
+  "source": "Cool Coalition, GCP Progress Dashboard (Global Cooling Pledge)",
+  "source_url": "https://coolcoalition.org/knowledge-hub/gcp-progress-dashboard",
+  "retrieved": "2026-07-06",
+  "unit": "Gt CO2e",
+  "notes": "Values extracted verbatim from the waterfall_chart data block embedded in the Cool Coalition page (drupal-settings-json). Scenario bars split into direct (refrigerant) and indirect (electricity) emissions; bridge groups are the stepwise changes between scenarios. In the origin schema 'top' is the direct segment and 'base' the indirect segment.",
+  "scenarios": [
+    { "name": "2022\nEmissions", "direct": 1.5, "indirect": 2.6 },
+    { "name": "2050\nWithout Measures", "direct": 4.9, "indirect": 4.1 },
+    { "name": "2050 With\nBAU Cooling Measures", "direct": 2.3, "indirect": 3.8 },
+    { "name": "2050 With\nBest Cooling Measures", "direct": 0.5, "indirect": 1.9 },
+    { "name": "2050 With Near-Zero\nCooling Measures", "direct": 0.2, "indirect": 0 }
+  ],
+  "changes": [
+    { "name": "Growth", "steps": [4.3, 0.6] },
+    { "name": "BAU Cooling Measures", "steps": [-1.0, -1.9] },
+    { "name": "Best Cooling Measures", "steps": [-1.3, -1.9, -0.5] },
+    { "name": "Best Cooling Measures + Zero-Carbon Electricity", "steps": [-0.8, -0.6, -0.8] }
+  ]
+}

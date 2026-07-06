@@ -1,6 +1,6 @@
 # CoolProgress Dashboard — Master Feedback Register
 **Last updated:** 2026-07-06  
-**Total items:** 80 (59 completed, 4 dropped, 17 open: 7 High / 7 Medium / 2 Blocked / 1 Low; updated 6 Jul 2026)  
+**Total items:** 80 (60 completed, 4 dropped, 16 open: 6 High / 7 Medium / 2 Blocked / 1 Low; updated 6 Jul 2026)  
 **Sources:** Noah/CCC, Ari/CLASP, Patrick/HEAT, Jamie/CPR, Giorgia/SEforAll, Stefanie/HEAT, Dietram/UNEP, London event (12 May 2026), CCC orchestration board
 
 ---
@@ -120,7 +120,7 @@
 | PO-05 | Chapter-card padding reduced: 56px → 16px | UI | Internal | ✅ Done |
 | PO-06 | Policy map legend colors do not match bottom color bar | UI bug | Internal | ✅ Done — country detail NDC icon/border now uses #6BADA0 for Mentioned (was wrongly using #D4A843) |
 | PO-07 | NDC narrative contradiction: "37 signatories" vs "134 countries" vs "NDC 3.0 bleak" — one coherent message | Narrative | Noah/CCC | ✅ Done — rewritten to present 74 GCP signatories, 37 with cooling in NDCs, and 134 strategy mentions as three separate facts; NDC 3.0 gap clearly stated |
-| PO-08 | GCP commitments not shown on dashboard — users click through twice to Cool Coalition | UI/Content | Noah/CCC | 🔴 High |
+| PO-08 | GCP commitments not shown on dashboard — users click through twice to Cool Coalition | UI/Content | Noah/CCC | ✅ Done 6 Jul 2026 — GCP emissions waterfall (2022→2050 scenarios, direct/indirect split, Gt CO2e) reproduced on the Policy pillar from the Cool Coalition GCP Progress Dashboard (values extracted from origin page, dated in gcp_waterfall.json); complements the existing 5-theme commitments block + 14-commitments link |
 | PO-09 | Regulation behind pledges: surface binding national instrument per GCP/NDC/NCAP commitment | Content | CCC convention | 🔴 High |
 | PO-10 | Policy pillar: full broken link audit (Cool Coalition Cooling Watch, CPR, Resources) | Links | Jamie/CPR | 🔴 High |
 | PO-11 | CPR logo update — new version awaited from Jamie | Links | Jamie/CPR | 🔵 Blocked |
@@ -151,7 +151,7 @@
 | MEPS | 3 | 2 | 0 | 0 | 15 |
 | Kigali | 1 | 0 | 0 | 0 | 9 (1 discarded) |
 | Access | 0 | 0 | 0 | 0 | 7 (1 discarded) |
-| Policy | 3 | 2 | 1 | 1 | 7 |
+| Policy | 2 | 2 | 1 | 1 | 8 |
 | Cross-cutting | 0 | 3 | 0 | 0 | 2 |
 | **Total** | **13** | **24** | **2** | **1** | **38** |
 

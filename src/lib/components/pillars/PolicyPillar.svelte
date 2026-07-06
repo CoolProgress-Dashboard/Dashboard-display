@@ -7,6 +7,7 @@
   import PillarHeader from '$lib/components/shared/PillarHeader.svelte';
   import PillarInsight from '$lib/components/shared/PillarInsight.svelte';
   import FurtherReading from '$lib/components/shared/FurtherReading.svelte';
+  import GcpEmissionsWaterfall from '$lib/components/charts/GcpEmissionsWaterfall.svelte';
   import type { NdcFilters } from '$lib/services/dashboard-types';
   import { STATUS, CHROME, NO_DATA, YES, NO, rgba } from '$lib/components/shared/colors';
 
@@ -1432,6 +1433,9 @@
           View the full list of 14 commitments on the Cool Coalition website
         </a>
       </div>
+
+      <!-- DATA: GCP emissions waterfall (PO-08) — the pledge's quantified ambition -->
+      <GcpEmissionsWaterfall />
 
       <!-- ── Key policy documents ── -->
       <p class="ns-subhead-label">Key Policy Documents</p>
