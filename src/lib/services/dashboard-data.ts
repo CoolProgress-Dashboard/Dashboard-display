@@ -213,7 +213,7 @@ export const loadDashboardData = async (
 ): Promise<DashboardData> => {
   // clasp_energy_consumption and global_model_subcool are intentionally excluded —
   // they require 60+ sequential requests. EmissionsPillar loads them lazily.
-  const [countries, pledge, kigali, meps, access, accessForecast, emissions, ndcTracker, ncap, regions, refrigerants, acInverterShare, acGrowthData, coolingMilestones, applianceTimeseries, peakLoadData, countrySpotlights, kigaliCountryOverrides, accessCountryPct] =
+  const [countries, pledge, kigali, meps, access, accessForecast, emissions, ndcTracker, ncap, regions, refrigerants, acInverterShare, acGrowthData, coolingMilestones, applianceTimeseries, peakLoadData, countrySpotlights, kigaliCountryOverrides, accessCountryPct, mepsTimelineV2] =
     await Promise.all([
       safeFetch(url, key, 'countries', 'country_code,country_name,region'),
       safeFetch(url, key, 'global_cooling_pledge', 'country_code,country_name,signatory'),
@@ -301,12 +301,18 @@ export const loadDashboardData = async (
         'id,spotlight_id,name,region,flag_emoji,narrative,meps_status,dominant_refrigerant,key_challenge,source,stats'
       ),
       safeFetch(url, key, 'kigali_country_schedule_overrides', 'country_code,group_type'),
-      safeFetch<AccessCountryPct>(url, key, 'access_country_pct', 'country_code,country_name,national_pop,total_at_risk,pct_at_risk,female_at_risk,male_at_risk,year')
+      safeFetch<AccessCountryPct>(url, key, 'access_country_pct', 'country_code,country_name,national_pop,total_at_risk,pct_at_risk,female_at_risk,male_at_risk,year'),
+      safeFetch<MepsTimelineRecord>(
+        url,
+        key,
+        'meps_level_timeline_v2',
+        'id,country_code,country_name,appliance_type,year,meps_level_national,metric_name,meps_level_cspf_equiv,standard_version,is_projected,source,status,conversion,conversion_source,source_url,notes'
+      )
     ]);
-  // meps_level_timeline and meps_levels tables do not yet exist in Supabase.
-  // MepsLevelChart falls back to the bundled JSON files (src/lib/data/meps_timeline.json
-  // and meps_levels.json) when these arrays are empty.
-  const mepsTimeline: MepsTimelineRecord[] = [];
+  // meps_level_timeline_v2 holds the source-verified July 2026 review data.
+  // If the table is missing or empty, MepsLevelChart falls back to the bundled
+  // src/lib/data/meps_timeline_v2.json. The v1 table and JSON remain untouched.
+  const mepsTimeline: MepsTimelineRecord[] = mepsTimelineV2 ?? [];
   const mepsLevels: MepsLevelRecord[] = [];
 
   return {

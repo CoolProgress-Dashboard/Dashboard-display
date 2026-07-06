@@ -13,7 +13,7 @@
   import MepsByRegionChart from '$lib/components/charts/MepsByRegionChart.svelte';
   import MepsEquipmentChart from '$lib/components/charts/MepsEquipmentChart.svelte';
   import PeakLoadChart from '$lib/components/charts/PeakLoadChart.svelte';
-  import type { Meps, Country } from '$lib/services/dashboard-types';
+  import type { Meps, Country, MepsTimelineRecord, MepsLevelRecord, PeakLoadRecord } from '$lib/services/dashboard-types';
 
   export let active: boolean = false;
   export let onPillarInfoClick: (() => void) | null = null;
@@ -24,6 +24,11 @@
   // Props providing raw MEPS records and country list for the D3 choropleth maps
   export let mepsData: Meps[] = [];
   export let countries: Country[] = [];
+  // Supabase meps_level_timeline_v2 rows for the stringency chart (falls back
+  // to the bundled v2 JSON inside MepsLevelChart when empty)
+  export let mepsTimeline: MepsTimelineRecord[] = [];
+  export let mepsLevels: MepsLevelRecord[] = [];
+  export let peakLoadData: PeakLoadRecord[] = [];
 
   const meta = VIEW_META.meps;
   const mepsContent = pillarContent.meps;
@@ -854,11 +859,12 @@
             let html = `<strong>${country?.country_name || code || 'Unknown'}</strong><br><span style="color:${getMepsColor(status.level)};font-weight:600">${status.label}</span>`;
             if (allRecs.length > 0) {
               html += `<br><span style="color:#ddd;font-size:0.85em">`;
-              if (mepsRecs.length > 0) html += `MEPS: ${mepsRecs.length}`;
+              if (mepsRecs.length > 0) html += `MEPS policies: ${mepsRecs.length}`;
               if (mepsRecs.length > 0 && labelRecs.length > 0) html += ` | `;
-              if (labelRecs.length > 0) html += `Labels: ${labelRecs.length}`;
+              if (labelRecs.length > 0) html += `Labelling policies: ${labelRecs.length}`;
               html += `</span>`;
               if (equips.length > 0) html += `<br><span style="font-size:0.8em">${equips.join(', ')}</span>`;
+              html += `<br><span style="font-size:0.72em;color:#aaa">Counts = policy records in the CLASP database, one per appliance and requirement type</span>`;
             }
             if (tooltip) {
               tooltip.innerHTML = html;
@@ -1089,18 +1095,32 @@
           <div class="meps-update-flag"><i class="fa-solid fa-bolt" style="color:#c51b00;"></i></div>
           <div class="meps-update-body">
             <strong class="meps-update-country">China — Domestic Refrigerators</strong>
-            <p>China has updated its domestic refrigerator MEPS (GB 12021), tightening minimum energy efficiency requirements significantly. The revised standard closes the gap with EU benchmarks and is expected to drive market transformation across the world's largest refrigerator market.</p>
+            <p>China issued GB 12021.2-2025 in May 2025, mandatory from 1 June 2026. The revised standard redefines the national efficiency baseline roughly 40% tighter than the 2015 edition, so even the entry grade demands substantially better performance. As the world's largest refrigerator producer and market, the revision will ripple through export markets globally. Source: SAMR / CLASP.</p>
           </div>
         </div>
         <div class="meps-update-card">
           <div class="meps-update-flag"><i class="fa-solid fa-bolt" style="color:#008751;"></i></div>
           <div class="meps-update-body">
             <strong class="meps-update-country">Nigeria — Room Air Conditioners</strong>
-            <p>Nigeria has introduced updated MEPS for room air conditioners, aligned with U4E Model Regulation Guidelines. The regulation targets inverter-class performance and sets a trajectory toward best-available efficiency by 2031 — a significant step for one of Africa's fastest-growing AC markets.</p>
+            <p>Nigeria's Energy Commission and SON approved new AC MEPS on 25 February 2025, developed with U4E support. Measured in NSEER (Nigeria-specific seasonal bins), efficiency must improve 6% by 2026, 36% by 2029, and 48% by 2031, with a refrigerant GWP cap from 2029, a decisive step for one of Africa's fastest-growing AC markets. Source: U4E / ECN.</p>
+          </div>
+        </div>
+        <div class="meps-update-card">
+          <div class="meps-update-flag"><i class="fa-solid fa-bolt" style="color:#0369a1;"></i></div>
+          <div class="meps-update-body">
+            <strong class="meps-update-country">ASEAN — Regional Harmonization</strong>
+            <p>The updated ASEAN roadmap (endorsed by energy ministers in 2021) targets ISO CSPF 3.7 as Step 1 and CSPF 6.09 as Step 2, matching China's current MEPS. Singapore got there first: since April 2025 its single-split MEPS equals CSPF 6.10, the first ASEAN market to reach the U4E Group 1 recommendation. Most member states still sit near CSPF 3.1 to 3.4, so the regional target remains the benchmark to legislate. Source: ACE / U4E / NEA.</p>
+          </div>
+        </div>
+        <div class="meps-update-card">
+          <div class="meps-update-flag"><i class="fa-solid fa-bolt" style="color:#7B5269;"></i></div>
+          <div class="meps-update-body">
+            <strong class="meps-update-country">East &amp; Southern Africa — Harmonized Regional MEPS</strong>
+            <p>SADC approved harmonized AC and refrigerator MEPS in November 2023 (CSPF 4.5 now, 6.1 from 2027, matching the U4E recommendation), and the EAC gazetted identical standards in July 2025. Mauritius became the first country to enforce them nationally in September 2025; transposition elsewhere is under way. Source: SADCSTAN / EAC / U4E.</p>
           </div>
         </div>
       </div>
-      <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> Data currently under review by HEAT and partners.</p>
+      <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> All facts source-verified July 2026 (legal instruments and U4E/CLASP publications); details and links in the MEPS Stringency chart tooltips and methodology.</p>
     </div>
 
     <!-- ═══ ASEAN HARMONIZATION ═══ -->
@@ -1203,6 +1223,10 @@
           <span class="legend-label">Policy Status:</span>
           <div id="meps-legend" class="legend-items"></div>
         </div>
+        <div class="meps-map-metric-note">
+          <i class="fa-solid fa-circle-info"></i>
+          Hover counts show the number of policy records per country in the CLASP Policy Resource Center database (one record per appliance and requirement type). They indicate policy coverage, not stringency; see the MEPS Stringency chart below for levels.
+        </div>
         <div class="progress-bar" id="meps-progress">
           <span class="progress-segment" id="meps-progress-both" title="MEPS & Labels" style="background:#4A9088"></span>
           <span class="progress-segment" id="meps-progress-meps" title="MEPS Only" style="background:#2563eb"></span>
@@ -1226,8 +1250,8 @@
 
     <!-- DATA: MEPS Stringency Chart -->
     <div class="meps-level-wrapper">
-      <MepsLevelChart />
-      <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> Data currently under review by HEAT and partners.</p>
+      <MepsLevelChart {mepsTimeline} {mepsLevels} />
+      <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> All values source-verified against their legal instruments, July 2026. See the methodology for conversion equations and the full audit trail.</p>
     </div>
 
     <!-- U4E Country Savings Assessments CTA -->
@@ -1264,7 +1288,7 @@
       </div>
       <div class="chart-card-body">
         <p class="chart-hint">This chart shows cooling's current and projected share of peak electricity demand by country. Hover over bars to see absolute values and growth projections.</p>
-        <PeakLoadChart />
+        <PeakLoadChart {peakLoadData} />
         <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> Data currently under review by HEAT and partners.</p>
       </div>
     </div>
@@ -2049,6 +2073,22 @@
     color: #1e293b;
     line-height: 1.78;
     margin: 0 0 16px;
+  }
+
+  .meps-map-metric-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    font-size: 0.7rem;
+    color: #94a3b8;
+    font-style: italic;
+    margin: 0.35rem 0 0.25rem;
+    line-height: 1.5;
+  }
+
+  .meps-map-metric-note i {
+    margin-top: 0.15rem;
+    flex-shrink: 0;
   }
 
   .meps-data-disclaimer {

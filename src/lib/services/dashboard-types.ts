@@ -329,6 +329,12 @@ export type MepsTimelineRecord = {
   standard_version?: string | null;
   is_projected: boolean;
   source?: string | null;
+  // v2 fields (meps_level_timeline_v2 / meps_timeline_v2.json, July 2026 review)
+  status?: string | null;
+  conversion?: string | null;
+  conversion_source?: string | null;
+  source_url?: string | null;
+  notes?: string | null;
 };
 
 // MEPS current levels by country/appliance

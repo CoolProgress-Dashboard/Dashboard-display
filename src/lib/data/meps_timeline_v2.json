@@ -1,0 +1,498 @@
+[
+  {
+    "country_code": "CN", "country_name": "China", "appliance_type": "AC", "year": 2010,
+    "meps_level_national": 3.2, "metric_name": "EER (W/W)", "meps_level_cspf_equiv": 3.40,
+    "standard_version": "GB 12021.3-2010 (fixed-speed split, Grade 3 floor)", "is_projected": false,
+    "source": "SAMR / CLASP", "status": "superseded",
+    "conversion": "CSPF = 1.062 x EER (fixed-speed, ISO bins)", "conversion_source": "LBNL/U4E ASEAN Harmonization 2021, p.19",
+    "source_url": "https://openstd.samr.gov.cn/bzgk/gb/newGbInfo?hcno=BC04CDC71AD8C36B62C0FF4AE58F633C",
+    "notes": "Fixed-speed product class; later points are variable-speed heat pumps."
+  },
+  {
+    "country_code": "CN", "country_name": "China", "appliance_type": "AC", "year": 2013,
+    "meps_level_national": 3.5, "metric_name": "APF (Wh/Wh)", "meps_level_cspf_equiv": 4.27,
+    "standard_version": "GB 21455-2013 (VS heat-pump split <=4.5 kW, Grade 3 floor)", "is_projected": false,
+    "source": "SAMR / CLASP", "status": "superseded",
+    "conversion": "ISO CSPF = 1.798 x APF - 2.027", "conversion_source": "Park et al. 2020, Table B1",
+    "source_url": "https://www.clasp.ngo/wp-content/uploads/2023/06/Chinas-MEPS-Lead-to-Major-AC-Market-Transformation-2.pdf",
+    "notes": "Cooling-only VS floor was SEER 4.3 (no published SEER conversion at this level)."
+  },
+  {
+    "country_code": "CN", "country_name": "China", "appliance_type": "AC", "year": 2020,
+    "meps_level_national": 4.0, "metric_name": "APF (Wh/Wh)", "meps_level_cspf_equiv": 5.17,
+    "standard_version": "GB 21455-2019 (VS heat-pump split <=4.5 kW, Grade 3 floor; eff. 1 Jul 2020)", "is_projected": false,
+    "source": "SAMR/CNIS / CLASP", "status": "in_force",
+    "conversion": "ISO CSPF = 1.798 x APF - 2.027", "conversion_source": "Park et al. 2020, Table B1",
+    "source_url": "https://www.iea.org/policies/11661",
+    "notes": "Cooling-only VS floor SEER 5.00 = ISO CSPF 6.09 (Park 2020 Table 6 anchor). Revision in drafting (SAMR plan 20251031-Q-469), values not public."
+  },
+  {
+    "country_code": "IN", "country_name": "India", "appliance_type": "AC", "year": 2018,
+    "meps_level_national": 3.1, "metric_name": "ISEER", "meps_level_cspf_equiv": 3.42,
+    "standard_version": "BEE star table (split), 1-star min; eff. 1 Jan 2018", "is_projected": false,
+    "source": "BEE / IEA", "status": "superseded",
+    "conversion": "ISO CSPF = 7.726 x ln(ISEER) - 5.318", "conversion_source": "Park et al. 2020, Table B1",
+    "source_url": "https://www.iea.org/policies/20476",
+    "notes": ""
+  },
+  {
+    "country_code": "IN", "country_name": "India", "appliance_type": "AC", "year": 2022,
+    "meps_level_national": 3.3, "metric_name": "ISEER", "meps_level_cspf_equiv": 3.91,
+    "standard_version": "BEE S.O. 3897(E) table, 1-star min; eff. 1 Jul 2022", "is_projected": false,
+    "source": "BEE / IEA", "status": "superseded",
+    "conversion": "ISO CSPF = 7.726 x ln(ISEER) - 5.318", "conversion_source": "Park et al. 2020, Table B1",
+    "source_url": "https://www.iea.org/policies/20476",
+    "notes": "Table extended through 31 Dec 2025."
+  },
+  {
+    "country_code": "IN", "country_name": "India", "appliance_type": "AC", "year": 2026,
+    "meps_level_national": 3.5, "metric_name": "ISEER", "meps_level_cspf_equiv": 4.36,
+    "standard_version": "BEE revised star table, 1-star min; eff. 1 Jan 2026", "is_projected": false,
+    "source": "BEE (advisory 30 Sep 2025)", "status": "in_force",
+    "conversion": "ISO CSPF = 7.726 x ln(ISEER) - 5.318", "conversion_source": "Park et al. 2020, Table B1",
+    "source_url": "https://www.beestarlabel.com",
+    "notes": "1-star ISEER 3.5 from 1 Jan 2026 (table valid to 31 Dec 2028) corroborated by multiple 2026 sources; gazette number and the 30 Sep 2025 advisory date pending confirmation. 2027/2030/2033 trajectory (ISEER 5.0/6.3/7.4) is an IECC UC Berkeley proposal, NOT notified; excluded."
+  },
+  {
+    "country_code": "US", "country_name": "USA (South)", "appliance_type": "AC", "year": 2006,
+    "meps_level_national": 13.0, "metric_name": "SEER (Btu/Wh)", "meps_level_cspf_equiv": 3.75,
+    "standard_version": "66 FR 7170; 10 CFR 430.32(c); manuf. from 23 Jan 2006", "is_projected": false,
+    "source": "US DOE", "status": "superseded",
+    "conversion": "SEER/3.412 -> ISO CSPF = 0.962 x X + 0.087", "conversion_source": "Econoler 2011 p.36 (units); Park et al. 2020, Table B1",
+    "source_url": "https://www.govinfo.gov/content/pkg/FR-2001-01-22/html/01-1790.htm",
+    "notes": "National standard (no regional split until 2015)."
+  },
+  {
+    "country_code": "US", "country_name": "USA (South)", "appliance_type": "AC", "year": 2015,
+    "meps_level_national": 14.0, "metric_name": "SEER (Btu/Wh)", "meps_level_cspf_equiv": 4.03,
+    "standard_version": "76 FR 37408; Southeast regional standard; installed from 1 Jan 2015", "is_projected": false,
+    "source": "US DOE", "status": "superseded",
+    "conversion": "SEER/3.412 -> ISO CSPF = 0.962 x X + 0.087", "conversion_source": "Econoler 2011 p.36 (units); Park et al. 2020, Table B1",
+    "source_url": "https://www.govinfo.gov/content/pkg/FR-2011-06-27/html/2011-14557.htm",
+    "notes": "Southwest additionally EER 12.2 (<45 kBtu/h)."
+  },
+  {
+    "country_code": "US", "country_name": "USA (South)", "appliance_type": "AC", "year": 2023,
+    "meps_level_national": 14.3, "metric_name": "SEER2 (Btu/Wh)", "meps_level_cspf_equiv": 4.30,
+    "standard_version": "82 FR 1786; 10 CFR 430.32(c)(6) regional standard; installed from 1 Jan 2023; <45 kBtu/h", "is_projected": false,
+    "source": "US DOE / AHRI", "status": "in_force",
+    "conversion": "SEER2 -> SEER via DOE crosswalk tables (82 FR 1786 Tables V-29/V-30), approximated as /0.957 -> /3.412 -> ISO CSPF = 0.962 x X + 0.087 (approximation: no published SEER2->CSPF conversion)", "conversion_source": "DOE Table V-29/V-30 crosswalk; Park et al. 2020, Table B1",
+    "source_url": "https://www.govinfo.gov/content/pkg/FR-2017-01-06/html/2016-29992.htm",
+    "notes": "IEA 4E 2020 explicitly excludes SEER2 from published conversions; chain labeled approximate. Crosswalk is table-based, not one ratio: SEER2 14.3 pairs with SEER 15 (ratio 0.953); the 0.957 ratio comes from the 14 -> 13.4 pair."
+  },
+  {
+    "country_code": "US_N", "country_name": "USA (North)", "appliance_type": "AC", "year": 2006,
+    "meps_level_national": 13.0, "metric_name": "SEER (Btu/Wh)", "meps_level_cspf_equiv": 3.75,
+    "standard_version": "66 FR 7170; 10 CFR 430.32(c); manuf. from 23 Jan 2006", "is_projected": false,
+    "source": "US DOE", "status": "superseded",
+    "conversion": "SEER/3.412 -> ISO CSPF = 0.962 x X + 0.087", "conversion_source": "Econoler 2011 p.36 (units); Park et al. 2020, Table B1",
+    "source_url": "https://www.govinfo.gov/content/pkg/FR-2001-01-22/html/01-1790.htm",
+    "notes": ""
+  },
+  {
+    "country_code": "US_N", "country_name": "USA (North)", "appliance_type": "AC", "year": 2023,
+    "meps_level_national": 13.4, "metric_name": "SEER2 (Btu/Wh)", "meps_level_cspf_equiv": 4.03,
+    "standard_version": "82 FR 1786; 10 CFR 430.32(c)(5) national standard; manuf. from 1 Jan 2023", "is_projected": false,
+    "source": "US DOE / AHRI", "status": "in_force",
+    "conversion": "SEER2/0.957 -> SEER -> /3.412 -> ISO CSPF = 0.962 x X + 0.087 (approximation)", "conversion_source": "DOE crosswalk; Park et al. 2020, Table B1",
+    "source_url": "https://www.govinfo.gov/content/pkg/FR-2017-01-06/html/2016-29992.htm",
+    "notes": ""
+  },
+  {
+    "country_code": "EU", "country_name": "European Union", "appliance_type": "AC", "year": 2013,
+    "meps_level_national": 3.6, "metric_name": "EU SEER (EN 14825)", "meps_level_cspf_equiv": 3.37,
+    "standard_version": "Reg (EU) 206/2012 Tier 1 (Annex I 2(b), Table 4); from 1 Jan 2013", "is_projected": false,
+    "source": "European Commission", "status": "superseded",
+    "conversion": "ISO CSPF = 1.113 x EU SEER - 0.639", "conversion_source": "Park et al. 2020, Table B1",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32012R0206",
+    "notes": "Low-GWP (GWP < 150) allowance: SEER 3.24."
+  },
+  {
+    "country_code": "EU", "country_name": "European Union", "appliance_type": "AC", "year": 2014,
+    "meps_level_national": 4.6, "metric_name": "EU SEER (EN 14825)", "meps_level_cspf_equiv": 4.48,
+    "standard_version": "Reg (EU) 206/2012 Tier 2 (Annex I 2(c), Table 6); <6 kW; from 1 Jan 2014", "is_projected": false,
+    "source": "European Commission", "status": "in_force",
+    "conversion": "ISO CSPF = 1.113 x EU SEER - 0.639", "conversion_source": "Park et al. 2020, Table B1",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32012R0206",
+    "notes": "6-12 kW: SEER 4.30. Successor draft (split SEER 6.0, Consultation Forum Mar 2023) NOT adopted as of Jul 2026; excluded."
+  },
+  {
+    "country_code": "JP", "country_name": "Japan", "appliance_type": "AC", "year": 2010,
+    "meps_level_national": 5.8, "metric_name": "APF (JIS C 9612)", "meps_level_cspf_equiv": 6.22,
+    "standard_version": "Top Runner FY2010 target, wall-mounted <=3.2 kW (Category A)", "is_projected": false,
+    "source": "METI / ECCJ", "status": "in_force",
+    "conversion": "ISO CSPF = 1.735 x exp(0.220 x APF)", "conversion_source": "Park et al. 2020, Table B1",
+    "source_url": "https://www.eccj.or.jp/top_runner/pdf/tr_air_con_06.pdf",
+    "notes": "Top Runner is a shipment-weighted corporate fleet average, not a per-unit MEPS."
+  },
+  {
+    "country_code": "JP", "country_name": "Japan", "appliance_type": "AC", "year": 2026,
+    "meps_level_national": 5.8, "metric_name": "APF (JIS C 9612)", "meps_level_cspf_equiv": 6.22,
+    "standard_version": "FY2010 standard in force until FY2026", "is_projected": false,
+    "source": "METI / ECCJ", "status": "in_force",
+    "conversion": "ISO CSPF = 1.735 x exp(0.220 x APF)", "conversion_source": "Park et al. 2020, Table B1",
+    "source_url": "https://www.meti.go.jp/press/2022/05/20220531003/20220531003.html",
+    "notes": "Flat continuation point; next standard promulgated 31 May 2022 with FY2027 target."
+  },
+  {
+    "country_code": "JP", "country_name": "Japan", "appliance_type": "AC", "year": 2027,
+    "meps_level_national": 6.6, "metric_name": "APF (JIS C 9612)", "meps_level_cspf_equiv": 7.41,
+    "standard_version": "Top Runner FY2027 target, wall-mounted <=2.8 kW non-cold-region (Category I)", "is_projected": true,
+    "source": "METI", "status": "adopted_future",
+    "conversion": "ISO CSPF = 1.735 x exp(0.220 x APF)", "conversion_source": "Park et al. 2020, Table B1",
+    "source_url": "https://www.meti.go.jp/press/2022/05/20220531003/20220531003.html",
+    "notes": "Fleet-average target; >2.8 kW formula E = 6.84 - 0.210 x (A - 2.8), capped 6.6."
+  },
+  {
+    "country_code": "KR", "country_name": "South Korea", "appliance_type": "AC", "year": 2018,
+    "meps_level_national": 3.5, "metric_name": "CSPF (KS C 9306)", "meps_level_cspf_equiv": 3.44,
+    "standard_version": "MOTIE notice, split <4 kW MEPS; eff. 1 Oct 2018", "is_projected": false,
+    "source": "MOTIE / KEA", "status": "superseded",
+    "conversion": "ISO CSPF = 0.970 x Korea CSPF + 0.048", "conversion_source": "Park et al. 2020, Table B1",
+    "source_url": "https://eep.energy.or.kr/pds/view.aspx?cate=4&no=161",
+    "notes": "Korean climate bins (24-38 C); integrated/window MEPS was 3.17, 4-10 kW split 3.15. Value 3.50 verified from MOTIE Notice 2020-83 Annex 1 full text (Jul 2026 review)."
+  },
+  {
+    "country_code": "KR", "country_name": "South Korea", "appliance_type": "AC", "year": 2021,
+    "meps_level_national": 4.5, "metric_name": "CSPF (KS C 9306)", "meps_level_cspf_equiv": 4.41,
+    "standard_version": "MOTIE notice 2020-225, split <4 kW Grade-5 floor; eff. 1 Oct 2021", "is_projected": false,
+    "source": "MOTIE / KEA", "status": "superseded",
+    "conversion": "ISO CSPF = 0.970 x Korea CSPF + 0.048", "conversion_source": "Park et al. 2020, Table B1",
+    "source_url": "https://www.law.go.kr/admRulLsInfoP.do?admRulSeq=2100000196679",
+    "notes": ""
+  },
+  {
+    "country_code": "KR", "country_name": "South Korea", "appliance_type": "AC", "year": 2025,
+    "meps_level_national": 4.63, "metric_name": "CSPF (KS C 9306)", "meps_level_cspf_equiv": 4.54,
+    "standard_version": "MOTIE notice 2025-145, split <4 kW; eff. 1 Nov 2025", "is_projected": false,
+    "source": "MOTIE / KEA", "status": "in_force",
+    "conversion": "ISO CSPF = 0.970 x Korea CSPF + 0.048", "conversion_source": "Park et al. 2020, Table B1",
+    "source_url": "https://www.law.go.kr",
+    "notes": ""
+  },
+  {
+    "country_code": "BR", "country_name": "Brazil", "appliance_type": "AC", "year": 2019,
+    "meps_level_national": 3.02, "metric_name": "EER (W/W)", "meps_level_cspf_equiv": 3.21,
+    "standard_version": "Interministerial Ordinance MME/MDIC/MCTIC No 2/2018; manuf./import from 30 Jun 2019", "is_projected": false,
+    "source": "MME / INMETRO", "status": "superseded",
+    "conversion": "CSPF = 1.062 x EER (fixed-speed, ISO bins)", "conversion_source": "LBNL/U4E ASEAN Harmonization 2021, p.19",
+    "source_url": "https://www.iea.org/policies/6907-minimum-efficiency-levels-for-air-conditioners",
+    "notes": "Raised from EER 2.60 (pre-2019)."
+  },
+  {
+    "country_code": "BR", "country_name": "Brazil", "appliance_type": "AC", "year": 2023,
+    "meps_level_national": 3.14, "metric_name": "IDRS (ISO 16358-1, BR climate)", "meps_level_cspf_equiv": 3.14,
+    "standard_version": "INMETRO Portaria 234/2020 Phase 1 (Class F floor); CGIEE Resolucao 1/2022; manuf./import from 31 Dec 2022", "is_projected": false,
+    "source": "INMETRO / CLASP", "status": "superseded",
+    "conversion": "1:1 (IDRS is CSPF per ISO 16358-1 with Brazilian climate)", "conversion_source": "CLASP; IIF/IIR",
+    "source_url": "https://www.clasp.ngo/updates/brazils-latest-ac-policy-to-dramatically-cut-costs-and-emissions/",
+    "notes": "Statutory MEPS formalised by CGIEE Resolucao No 1 of 29 Apr 2022 (Programa de Metas)."
+  },
+  {
+    "country_code": "BR", "country_name": "Brazil", "appliance_type": "AC", "year": 2026,
+    "meps_level_national": 3.50, "metric_name": "IDRS (ISO 16358-1, BR climate)", "meps_level_cspf_equiv": 3.50,
+    "standard_version": "INMETRO Portaria 234/2020 Phase 2 (Class F floor); CGIEE Resolucao 1/2022; manuf./import from 31 Dec 2025", "is_projected": false,
+    "source": "INMETRO / CLASP", "status": "in_force",
+    "conversion": "1:1 (IDRS is CSPF per ISO 16358-1 with Brazilian climate)", "conversion_source": "CLASP; IIF/IIR",
+    "source_url": "https://www.clasp.ngo/updates/brazils-latest-ac-policy-to-dramatically-cut-costs-and-emissions/",
+    "notes": "Class A becomes IDRS >= 7.00. 3.50 is the lowest split-class floor; some split categories carry higher minimums (up to IDRS 4.5 per CGIEE Resolucao 1/2022 stage 2)."
+  },
+  {
+    "country_code": "SA", "country_name": "Saudi Arabia", "appliance_type": "AC", "year": 2018,
+    "meps_level_national": 11.8, "metric_name": "EER T1 (Btu/Wh)", "meps_level_cspf_equiv": 3.67,
+    "standard_version": "SASO 2663:2018/2021 Table 2, split <=65 kBtu/h (EER-only MEPS)", "is_projected": false,
+    "source": "SASO / IEA", "status": "in_force",
+    "conversion": "EER/3.412 -> x1.062 (fixed-speed approximation; no seasonal MEPS exists)", "conversion_source": "SASO draft cl. 3.36 (units); LBNL/U4E ASEAN 2021 p.19",
+    "source_url": "https://www.iea.org/policies/8944-saso-26632018-meps-small-air-conditioners",
+    "notes": "T3 (46 C): EER 8.30. SEER labelling-only until 2026. Approximation flag: conversion assumes fixed-speed."
+  },
+  {
+    "country_code": "SA", "country_name": "Saudi Arabia", "appliance_type": "AC", "year": 2026,
+    "meps_level_national": 12.8, "metric_name": "SASO SEER (Btu/Wh)", "meps_level_cspf_equiv": 3.75,
+    "standard_version": "SASO 2663:2025 Table 1, variable-speed split; in force 23 Nov 2026", "is_projected": true,
+    "source": "SASO", "status": "adopted_future",
+    "conversion": "CSPF = SASO SEER / 3.412 (exact, SASO cl. 3.36)", "conversion_source": "SASO DRAFT 2663 clause 3.36",
+    "source_url": "https://www.saso.gov.sa/ar/Laws-And-Regulations/public_multimedia/Documents/SASO%20DRAFT%202663-0000.pdf",
+    "notes": "First seasonal MEPS. Fixed-speed split: SEER 10.10-10.30 = CSPF 2.96-3.02. Effective date from single secondary source (jqccn.com); confirm."
+  },
+  {
+    "country_code": "ZA", "country_name": "South Africa", "appliance_type": "AC", "year": 2016,
+    "meps_level_national": 3.0, "metric_name": "EER (W/W)", "meps_level_cspf_equiv": 3.19,
+    "standard_version": "VC 9008 / SANS 941 (class B minimum), <=7.1 kW", "is_projected": false,
+    "source": "NRCS / SABS / IEA", "status": "in_force",
+    "conversion": "CSPF = 1.062 x EER (fixed-speed approximation)", "conversion_source": "LBNL/U4E ASEAN 2021 p.19",
+    "source_url": "https://www.iea.org/policies/8418-compulsory-specifications-for-energy-efficiency-and-labelling-of-electrical-and-electronic-apparatus-vc-9008",
+    "notes": "SADC HT 110:2023 NOT yet transposed by South Africa (only Mauritius enforcing as of mid-2026)."
+  },
+  {
+    "country_code": "SADC", "country_name": "SADC Region", "appliance_type": "AC", "year": 2024,
+    "meps_level_national": 4.5, "metric_name": "CSPF (ISO 16358-1)", "meps_level_cspf_equiv": 4.50,
+    "standard_version": "SADC HT 110:2023 Tier 1, <=4.5 kW (approved 7 Nov 2023, circulated Feb 2024)", "is_projected": false,
+    "source": "SADCSTAN / U4E", "status": "regional_approved",
+    "conversion": "1:1 (native ISO 16358-1 CSPF)", "conversion_source": "SADC HT 110:2023 Table 10",
+    "source_url": "https://united4efficiency.org/wp-content/uploads/2024/02/SADC-HT-110-SADC-Harmonised-MEPS-on-Air-Conditioners-_v5Dec2023.pdf",
+    "notes": "National transposition pending; only Mauritius enforcing (1 Sep 2025). 4.5-9.5 kW: 4.20; 9.5-16 kW: 3.80."
+  },
+  {
+    "country_code": "SADC", "country_name": "SADC Region", "appliance_type": "AC", "year": 2027,
+    "meps_level_national": 6.1, "metric_name": "CSPF (ISO 16358-1)", "meps_level_cspf_equiv": 6.10,
+    "standard_version": "SADC HT 110:2023 Tier 2, <=4.5 kW (2027 and beyond)", "is_projected": true,
+    "source": "SADCSTAN / U4E", "status": "adopted_future",
+    "conversion": "1:1 (native ISO 16358-1 CSPF)", "conversion_source": "SADC HT 110:2023 Table 10",
+    "source_url": "https://united4efficiency.org/wp-content/uploads/2024/02/SADC-HT-110-SADC-Harmonised-MEPS-on-Air-Conditioners-_v5Dec2023.pdf",
+    "notes": "4.5-9.5 kW: 5.10; 9.5-16 kW: 4.50."
+  },
+  {
+    "country_code": "EAC", "country_name": "EAC Region", "appliance_type": "AC", "year": 2025,
+    "meps_level_national": 4.5, "metric_name": "CSPF (ISO 16358-1)", "meps_level_cspf_equiv": 4.50,
+    "standard_version": "EAS 1213:2025 Phase 1, <=4.5 kW (gazetted 2 Jul 2025)", "is_projected": false,
+    "source": "EAC / U4E", "status": "regional_approved",
+    "conversion": "1:1 (native ISO 16358-1 CSPF)", "conversion_source": "DEAS 1213:2024 Table 10 (identical to SADC HT 110)",
+    "source_url": "https://www.rsb.gov.rw/fileadmin/user_upload/DEAS_1213__2024.pdf",
+    "notes": "Values verified from 2024 draft text; national transposition status per country unverified."
+  },
+  {
+    "country_code": "EAC", "country_name": "EAC Region", "appliance_type": "AC", "year": 2027,
+    "meps_level_national": 6.1, "metric_name": "CSPF (ISO 16358-1)", "meps_level_cspf_equiv": 6.10,
+    "standard_version": "EAS 1213:2025 Phase 2, <=4.5 kW (2027 and beyond)", "is_projected": true,
+    "source": "EAC / U4E", "status": "adopted_future",
+    "conversion": "1:1 (native ISO 16358-1 CSPF)", "conversion_source": "DEAS 1213:2024 Table 10",
+    "source_url": "https://www.rsb.gov.rw/fileadmin/user_upload/DEAS_1213__2024.pdf",
+    "notes": ""
+  },
+  {
+    "country_code": "NG", "country_name": "Nigeria", "appliance_type": "AC", "year": 2017,
+    "meps_level_national": 2.8, "metric_name": "EER (W/W)", "meps_level_cspf_equiv": 2.97,
+    "standard_version": "NIS ECOSTAND 071-2:2017 (ECOWAS standard adopted nationally)", "is_projected": false,
+    "source": "SON / ECREEE / U4E", "status": "in_force",
+    "conversion": "CSPF = 1.062 x EER (fixed-speed approximation)", "conversion_source": "LBNL/U4E ASEAN 2021 p.19",
+    "source_url": "https://united4efficiency.org/wp-content/uploads/2024/02/Final-Report-ACs-Market-Assessment-in-Nigeria_20240222.pdf",
+    "notes": "Weak enforcement documented (19.6% of shop models below)."
+  },
+  {
+    "country_code": "NG", "country_name": "Nigeria", "appliance_type": "AC", "year": 2026,
+    "meps_level_national": 3.18, "metric_name": "NSEER (est.)", "meps_level_cspf_equiv": 3.18,
+    "standard_version": "SON/ECN MEPS (U4E supported), approved 25 Feb 2025; Phase 1 (+6%)", "is_projected": true,
+    "source": "SON / ECN / U4E", "status": "adopted_future_estimated",
+    "conversion": "NSEER ~ CSPF (Nigeria-specific bins); absolute value ESTIMATED from assumed NSEER 3.0 baseline (unpublished)", "conversion_source": "U4E announcement (percentages verified; thresholds unpublished)",
+    "source_url": "https://united4efficiency.org/nigerian-government-approves-new-meps-for-air-conditioners-to-boost-energy-efficiency/",
+    "notes": "U4E: '6% by 2026, 36% by 2029, 48% by 2031'. Absolute thresholds await SON standard text."
+  },
+  {
+    "country_code": "NG", "country_name": "Nigeria", "appliance_type": "AC", "year": 2029,
+    "meps_level_national": 4.08, "metric_name": "NSEER (est.)", "meps_level_cspf_equiv": 4.08,
+    "standard_version": "SON/ECN MEPS Phase 2 (+36% cumulative)", "is_projected": true,
+    "source": "SON / ECN / U4E", "status": "adopted_future_estimated",
+    "conversion": "ESTIMATED from assumed NSEER 3.0 baseline", "conversion_source": "U4E announcement",
+    "source_url": "https://united4efficiency.org/nigerian-government-approves-new-meps-for-air-conditioners-to-boost-energy-efficiency/",
+    "notes": "Refrigerant GWP cap also applies from 2029."
+  },
+  {
+    "country_code": "NG", "country_name": "Nigeria", "appliance_type": "AC", "year": 2031,
+    "meps_level_national": 4.44, "metric_name": "NSEER (est.)", "meps_level_cspf_equiv": 4.44,
+    "standard_version": "SON/ECN MEPS Phase 3 (+48% cumulative)", "is_projected": true,
+    "source": "SON / ECN / U4E", "status": "adopted_future_estimated",
+    "conversion": "ESTIMATED from assumed NSEER 3.0 baseline", "conversion_source": "U4E announcement",
+    "source_url": "https://united4efficiency.org/nigerian-government-approves-new-meps-for-air-conditioners-to-boost-energy-efficiency/",
+    "notes": ""
+  },
+  {
+    "country_code": "ECOWAS", "country_name": "ECOWAS Region", "appliance_type": "AC", "year": 2017,
+    "meps_level_national": 2.8, "metric_name": "EER (W/W)", "meps_level_cspf_equiv": 2.97,
+    "standard_version": "ECOSTAND 071-2:2017 (adopted by ECOWAS ministers 2017)", "is_projected": false,
+    "source": "ECREEE / CLASP", "status": "in_force",
+    "conversion": "CSPF = 1.062 x EER (fixed-speed approximation)", "conversion_source": "LBNL/U4E ASEAN 2021 p.19",
+    "source_url": "https://cprc-clasp.ngo/policies/ecostand-071-22017ee-minimum-energy-performance-standards-part-2-air-conditioning-products",
+    "notes": "Prior '2026 CSPF 3.2 proposal' unverified; removed. Ghana L.I. 2458 (2022, enforced Dec 2025): AEER 3.66 gate + min TSCPF 2.60 label floor (see Excel)."
+  },
+  {
+    "country_code": "ASEAN", "country_name": "ASEAN Region", "appliance_type": "AC", "year": 2020,
+    "meps_level_national": 3.08, "metric_name": "CSPF (ISO 16358-1)", "meps_level_cspf_equiv": 3.08,
+    "standard_version": "Regional roadmap target 'by 2020' (endorsed 33rd AMEM, 7 Oct 2015)", "is_projected": true,
+    "source": "ASEAN / ACE", "status": "endorsed_target",
+    "conversion": "1:1 (native ISO CSPF)", "conversion_source": "ASEAN roadmap",
+    "source_url": "https://policy.asiapacificenergy.org/node/2936",
+    "notes": "Regional targets, not in-force MEPS; member states legislate individually."
+  },
+  {
+    "country_code": "ASEAN", "country_name": "ASEAN Region", "appliance_type": "AC", "year": 2023,
+    "meps_level_national": 3.7, "metric_name": "CSPF (ISO 16358-1)", "meps_level_cspf_equiv": 3.70,
+    "standard_version": "Updated roadmap Step 1 (endorsed 39th AMEM, Sep 2021)", "is_projected": true,
+    "source": "ACE / IIEC / U4E", "status": "endorsed_target",
+    "conversion": "1:1 (native ISO CSPF)", "conversion_source": "U4E/IIEC roadmap 2021",
+    "source_url": "https://united4efficiency.org/wp-content/uploads/2022/07/Policy-Recommendations-to-Update-the-Regional-Policy-Roadmap-for-AC.pdf",
+    "notes": "Most member states still at ~3.08-3.4 as of 2024."
+  },
+  {
+    "country_code": "ASEAN", "country_name": "ASEAN Region", "appliance_type": "AC", "year": 2025,
+    "meps_level_national": 6.09, "metric_name": "CSPF (ISO 16358-1)", "meps_level_cspf_equiv": 6.09,
+    "standard_version": "Updated roadmap Step 2 'by 2025' (endorsed 39th AMEM)", "is_projected": true,
+    "source": "ACE / IIEC / U4E", "status": "endorsed_target",
+    "conversion": "1:1 (native ISO CSPF)", "conversion_source": "U4E/IIEC roadmap 2021",
+    "source_url": "https://united4efficiency.org/wp-content/uploads/2022/07/Policy-Recommendations-to-Update-the-Regional-Policy-Roadmap-for-AC.pdf",
+    "notes": "ACE blog (May 2025) reports timeline slipping to 2030; no AMEM-endorsed 2030 date exists."
+  },
+  {
+    "country_code": "SG", "country_name": "Singapore", "appliance_type": "AC", "year": 2016,
+    "meps_level_national": 3.78, "metric_name": "Weighted COP", "meps_level_cspf_equiv": 4.82,
+    "standard_version": "NEA MEPS, split inverter; eff. 1 Sep 2016", "is_projected": false,
+    "source": "NEA Singapore", "status": "superseded",
+    "conversion": "CSPF = 1.1917 x WCOP + 0.3111 (NEA/LBNL regression, inverter units)", "conversion_source": "U4E MELS-MEPS Overview 2024; LBNL ASEAN 2021 Annex D",
+    "source_url": "https://united4efficiency.org/wp-content/uploads/2024/11/1-MELS-MEPS-Overview.pdf",
+    "notes": ""
+  },
+  {
+    "country_code": "SG", "country_name": "Singapore", "appliance_type": "AC", "year": 2022,
+    "meps_level_national": 4.04, "metric_name": "Weighted COP", "meps_level_cspf_equiv": 5.13,
+    "standard_version": "NEA MEPS tightening; eff. 1 Jan 2022", "is_projected": false,
+    "source": "NEA Singapore", "status": "superseded",
+    "conversion": "CSPF = 1.1917 x WCOP + 0.3111", "conversion_source": "U4E MELS-MEPS Overview 2024",
+    "source_url": "https://www.nea.gov.sg",
+    "notes": ""
+  },
+  {
+    "country_code": "SG", "country_name": "Singapore", "appliance_type": "AC", "year": 2025,
+    "meps_level_national": 4.86, "metric_name": "Weighted COP", "meps_level_cspf_equiv": 6.10,
+    "standard_version": "NEA MEPS, single-split (4-tick); eff. 1 Apr 2025", "is_projected": false,
+    "source": "NEA Singapore", "status": "in_force",
+    "conversion": "CSPF = 1.1917 x WCOP + 0.3111; NEA itself states 'CSPF Equivalent 6.10'", "conversion_source": "NEA circular NEA-LSD-CIRCULAR-ECA-00001-2026",
+    "source_url": "https://www.nea.gov.sg/docs/default-source/our-services/energy-efficiency/nea-lsd-circular-eca-reminder-for-wh-csr-and-revised-meps.pdf",
+    "notes": "Multi-split: WCOP 5.50 = CSPF-eq 6.86."
+  },
+  {
+    "country_code": "U4E", "country_name": "U4E Recommendation", "appliance_type": "AC", "year": 2019,
+    "meps_level_national": 6.1, "metric_name": "ISO CSPF", "meps_level_cspf_equiv": 6.10,
+    "standard_version": "U4E Model Regulation Table 5, MEPS, climate Group 1, <=4.5 kW", "is_projected": false,
+    "source": "UNEP U4E", "status": "reference",
+    "conversion": "1:1", "conversion_source": "U4E AC Model Regulation Guidelines (2019, EN 2021-11-08)",
+    "source_url": "https://united4efficiency.org/wp-content/uploads/2021/11/U4E_AC_Model-Regulation_EN_2021-11-08.pdf",
+    "notes": "4.5-9.5 kW: 5.10; 9.5-16 kW: 4.50."
+  },
+  {
+    "country_code": "U4E_HE", "country_name": "U4E High Efficiency", "appliance_type": "AC", "year": 2019,
+    "meps_level_national": 8.0, "metric_name": "ISO CSPF", "meps_level_cspf_equiv": 8.00,
+    "standard_version": "U4E Model Regulation Annex 2 Table 13, High Efficiency, Group 1, <=4.5 kW", "is_projected": false,
+    "source": "UNEP U4E", "status": "reference",
+    "conversion": "1:1", "conversion_source": "U4E AC Model Regulation Guidelines (2019, EN 2021-11-08)",
+    "source_url": "https://united4efficiency.org/wp-content/uploads/2021/11/U4E_AC_Model-Regulation_EN_2021-11-08.pdf",
+    "notes": "4.5-9.5 kW: 7.60. Replaces previous mislabeled 6.5 (that was Group 2)."
+  },
+
+  {
+    "country_code": "EU", "country_name": "European Union", "appliance_type": "Refrigerator", "year": 2021,
+    "meps_level_national": 125, "metric_name": "EEI (Reg 2019/2016 method)", "meps_level_cspf_equiv": 125,
+    "standard_version": "Reg (EU) 2019/2019 Annex II Table 1; from 1 Mar 2021", "is_projected": false,
+    "source": "European Commission", "status": "superseded",
+    "conversion": "native EEI (new scale)", "conversion_source": "Reg (EU) 2019/2019",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02019R2019-20210501",
+    "notes": "Pre-2021 EU MEPS (old-scale EEI 55/44/42 under 643/2009) not comparable; excluded from index axis."
+  },
+  {
+    "country_code": "EU", "country_name": "European Union", "appliance_type": "Refrigerator", "year": 2024,
+    "meps_level_national": 100, "metric_name": "EEI (Reg 2019/2016 method)", "meps_level_cspf_equiv": 100,
+    "standard_version": "Reg (EU) 2019/2019 Annex II Table 2; from 1 Mar 2024", "is_projected": false,
+    "source": "European Commission", "status": "in_force",
+    "conversion": "native EEI (new scale)", "conversion_source": "Reg (EU) 2019/2019",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A02019R2019-20210501",
+    "notes": "Adopted law, NOT a 2026 proposal. Review underway (Call for Evidence May 2025), no new floor proposed."
+  },
+  {
+    "country_code": "UK", "country_name": "UK", "appliance_type": "Refrigerator", "year": 2021,
+    "meps_level_national": 125, "metric_name": "EEI (mirrors EU 2019/2016 method)", "meps_level_cspf_equiv": 125,
+    "standard_version": "SI 2021/745 Schedule 13 Table 16; from 1 Jul 2021 (GB only)", "is_projected": false,
+    "source": "UK legislation.gov.uk", "status": "superseded",
+    "conversion": "native EEI (identical reference line to EU 2019/2019)", "conversion_source": "SI 2021/745 Schedule 14",
+    "source_url": "https://www.legislation.gov.uk/uksi/2021/745/schedule/13",
+    "notes": "Post-Brexit mirror of EU Reg 2019/2019; 125 tier legally started 1 Jul 2021 in GB (vs 1 Mar 2021 in the EU). Northern Ireland remains under EU law."
+  },
+  {
+    "country_code": "UK", "country_name": "UK", "appliance_type": "Refrigerator", "year": 2024,
+    "meps_level_national": 100, "metric_name": "EEI (mirrors EU 2019/2016 method)", "meps_level_cspf_equiv": 100,
+    "standard_version": "SI 2021/745 Schedule 13 Table 16; from 1 Mar 2024", "is_projected": false,
+    "source": "UK legislation.gov.uk", "status": "in_force",
+    "conversion": "native EEI (identical reference line to EU 2019/2019)", "conversion_source": "SI 2021/745 Schedule 14",
+    "source_url": "https://www.legislation.gov.uk/uksi/2021/745/schedule/13",
+    "notes": "Identical to the EU tier and date."
+  },
+  {
+    "country_code": "TR", "country_name": "Turkey", "appliance_type": "Refrigerator", "year": 2021,
+    "meps_level_national": 125, "metric_name": "EEI (mirrors EU 2019/2016 method)", "meps_level_cspf_equiv": 125,
+    "standard_version": "Communique SGM:2021/7 (2019/2019/AB) Table 3; OG 25 Mar 2021 No 31434", "is_projected": false,
+    "source": "TR Ministry of Trade", "status": "superseded",
+    "conversion": "native EEI (transposed EU calculation, Annex III)", "conversion_source": "SGM:2021/7 Annex III",
+    "source_url": "https://www.resmigazete.gov.tr/eskiler/2021/03/20210325M1-10.htm",
+    "notes": "Full transposition of EU Reg 2019/2019."
+  },
+  {
+    "country_code": "TR", "country_name": "Turkey", "appliance_type": "Refrigerator", "year": 2024,
+    "meps_level_national": 100, "metric_name": "EEI (mirrors EU 2019/2016 method)", "meps_level_cspf_equiv": 100,
+    "standard_version": "Communique SGM:2021/7 Table 4; from 1 Mar 2024", "is_projected": false,
+    "source": "TR Ministry of Trade", "status": "in_force",
+    "conversion": "native EEI (transposed EU calculation, Annex III)", "conversion_source": "SGM:2021/7 Annex III",
+    "source_url": "https://www.resmigazete.gov.tr/eskiler/2021/03/20210325M1-10.htm",
+    "notes": "Identical to the EU tier and date."
+  },
+  {
+    "country_code": "CH", "country_name": "Switzerland", "appliance_type": "Refrigerator", "year": 2021,
+    "meps_level_national": 100, "metric_name": "EEI (per EU 2019/2019 Annex III, by reference)", "meps_level_cspf_equiv": 100,
+    "standard_version": "Energieeffizienzverordnung (EnEV, SR 730.02) Annex 1.1, version of 22 Apr 2020; from 1 Mar 2021", "is_projected": false,
+    "source": "Swiss BFE / Fedlex", "status": "in_force",
+    "conversion": "native EEI (EU 2019/2019 method applied by direct reference)", "conversion_source": "EnEV SR 730.02 Annex 1.1",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2017/765/de",
+    "notes": "EEI <= 100 from Mar 2021, three years ahead of the EU. Exception: single-door appliances with a small frozen compartment stay at 125 until EU tier 2."
+  },
+  {
+    "country_code": "SADC", "country_name": "SADC Region", "appliance_type": "Refrigerator", "year": 2024,
+    "meps_level_national": 100, "metric_name": "Index vs U4E/SADC reference line (100/R)", "meps_level_cspf_equiv": 100,
+    "standard_version": "SADC HT 111:2023, R >= 1.00 (2024)", "is_projected": false,
+    "source": "SADCSTAN / U4E", "status": "regional_approved",
+    "conversion": "Index = 100 / R; AECMax = 0.222 x AV + 161 (combis, IEC 62552 at 24 C)", "conversion_source": "SADC HT 111:2023",
+    "source_url": "https://united4efficiency.org/wp-content/uploads/2024/02/SADC-HT-111-SADC-Harmonised-MEPS-for-Refrigerating-Appliances-2023_v5_Dec2023.pdf",
+    "notes": "SADC/U4E reference line differs from EU SAE (~SADC 100 = EU EEI ~111 for a 400L combi); see methodology."
+  },
+  {
+    "country_code": "SADC", "country_name": "SADC Region", "appliance_type": "Refrigerator", "year": 2027,
+    "meps_level_national": 80, "metric_name": "Index vs U4E/SADC reference line (100/R)", "meps_level_cspf_equiv": 80,
+    "standard_version": "SADC HT 111:2023, R >= 1.25 (2027)", "is_projected": true,
+    "source": "SADCSTAN / U4E", "status": "adopted_future",
+    "conversion": "Index = 100 / R", "conversion_source": "SADC HT 111:2023",
+    "source_url": "https://united4efficiency.org/wp-content/uploads/2024/02/SADC-HT-111-SADC-Harmonised-MEPS-for-Refrigerating-Appliances-2023_v5_Dec2023.pdf",
+    "notes": ""
+  },
+  {
+    "country_code": "EAC", "country_name": "EAC Region", "appliance_type": "Refrigerator", "year": 2025,
+    "meps_level_national": 100, "metric_name": "Index vs U4E reference line (100/R)", "meps_level_cspf_equiv": 100,
+    "standard_version": "EAS 1214:2025 Phase 1 (gazetted 2 Jul 2025)", "is_projected": false,
+    "source": "EAC / U4E", "status": "regional_approved",
+    "conversion": "Index = 100 / R (probable, pending confirmation of numeric tables)", "conversion_source": "EACREEE / EELA announcements",
+    "source_url": "https://www.eacreee.org/article/eac-adopts-minimum-energy-performance-standards-cooling-appliances",
+    "notes": "U4E/LBNL-drafted like SADC; numeric tables not yet retrieved."
+  },
+  {
+    "country_code": "EAC", "country_name": "EAC Region", "appliance_type": "Refrigerator", "year": 2027,
+    "meps_level_national": 80, "metric_name": "Index vs U4E reference line (100/R)", "meps_level_cspf_equiv": 80,
+    "standard_version": "EAS 1214:2025 Phase 2 (2027)", "is_projected": true,
+    "source": "EAC / U4E", "status": "adopted_future",
+    "conversion": "Index = 100 / R (probable, pending confirmation)", "conversion_source": "EACREEE / EELA announcements",
+    "source_url": "https://www.eacreee.org/article/eac-adopts-minimum-energy-performance-standards-cooling-appliances",
+    "notes": ""
+  },
+  {
+    "country_code": "U4E_FRIDGE", "country_name": "U4E Model Reg MEPS", "appliance_type": "Refrigerator", "year": 2019,
+    "meps_level_national": 100, "metric_name": "Index vs U4E reference line (100/R)", "meps_level_cspf_equiv": 100,
+    "standard_version": "U4E Model Regulation: AEC <= AECMax (R >= 1.0)", "is_projected": false,
+    "source": "UNEP U4E", "status": "reference",
+    "conversion": "Index = 100 / R", "conversion_source": "U4E Refrigerators Model Regulation 2019, Table 2 + Eq. 5",
+    "source_url": "https://united4efficiency.org/wp-content/uploads/2019/09/U4E_Refrigerators_Model-Regulation_20190923.pdf",
+    "notes": "Previous 'EEI 102' label was the intercept constant of the U4E refrigerator formula, not an EEI."
+  },
+  {
+    "country_code": "U4E_FRIDGE_HE", "country_name": "U4E High Efficiency", "appliance_type": "Refrigerator", "year": 2019,
+    "meps_level_national": 67, "metric_name": "Index vs U4E reference line (100/R)", "meps_level_cspf_equiv": 67,
+    "standard_version": "U4E Model Regulation Annex 3 Table 8: High Efficiency R >= 1.50", "is_projected": false,
+    "source": "UNEP U4E", "status": "reference",
+    "conversion": "Index = 100 / 1.50 = 66.7", "conversion_source": "U4E Refrigerators Model Regulation 2019, Table 8",
+    "source_url": "https://united4efficiency.org/wp-content/uploads/2019/09/U4E_Refrigerators_Model-Regulation_20190923.pdf",
+    "notes": "Replaces unverifiable 'EEI 50'. Intermediate tier R >= 1.25 = index 80."
+  }
+]

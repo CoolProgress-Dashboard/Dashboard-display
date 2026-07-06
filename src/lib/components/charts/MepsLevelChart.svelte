@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import mepsTimelineJson from '$lib/data/meps_timeline.json';
+  import mepsTimelineJson from '$lib/data/meps_timeline_v2.json';
   import mepsLevelsJson from '$lib/data/meps_levels.json';
   import { COUNTRY_LINES, CHROME } from '$lib/components/shared/colors';
   import type { MepsTimelineRecord, MepsLevelRecord } from '$lib/services/dashboard-types';
@@ -30,13 +30,16 @@
     { code: 'IN', name: 'India', color: COUNTRY_LINES['India'], defaultOn: true },
     { code: 'CN', name: 'China', color: COUNTRY_LINES['China'], defaultOn: true },
     { code: 'EU', name: 'EU', color: COUNTRY_LINES['EU'], defaultOn: true },
+    { code: 'UK', name: 'UK', color: COUNTRY_LINES['UK'], defaultOn: false },
+    { code: 'TR', name: 'Turkey', color: COUNTRY_LINES['Turkey'], defaultOn: false },
+    { code: 'CH', name: 'Switzerland', color: COUNTRY_LINES['Switzerland'], defaultOn: true },
     { code: 'US', name: 'USA (South)', color: COUNTRY_LINES['USA (South)'], defaultOn: true },
+    { code: 'US_N', name: 'USA (North)', color: COUNTRY_LINES['USA (North)'], defaultOn: false },
     { code: 'BR', name: 'Brazil', color: COUNTRY_LINES['Brazil'], defaultOn: true },
     { code: 'JP', name: 'Japan', color: COUNTRY_LINES['Japan'], defaultOn: false },
     { code: 'KR', name: 'South Korea', color: COUNTRY_LINES['South Korea'], defaultOn: false },
     { code: 'SA', name: 'Saudi Arabia', color: COUNTRY_LINES['Saudi Arabia'], defaultOn: false },
     { code: 'ZA', name: 'South Africa', color: COUNTRY_LINES['South Africa'], defaultOn: false },
-    { code: 'AU', name: 'Australia', color: COUNTRY_LINES['Australia'], defaultOn: false },
     { code: 'SG', name: 'Singapore', color: COUNTRY_LINES['Singapore'], defaultOn: false },
     { code: 'NG', name: 'Nigeria', color: COUNTRY_LINES['Nigeria'], defaultOn: false },
     { code: 'SADC', name: 'SADC Region', color: COUNTRY_LINES['SADC'], defaultOn: false },
@@ -60,38 +63,37 @@
     updateChart();
   }
 
-  // U4E reference levels — minimum MEPS tier
-  // AC: CSPF 5.1 = Group 1 minimum (4.5–9.5kW), U4E Model Reg Table 5
-  // Refrigerator: EEI 102 = R≥1.0 minimum, derived from AECMax=279 kWh/yr ÷ 274 × 100
-  const u4eRef: Record<ApplianceTab, { value: number; label: string } | null> = {
-    AC: { value: 5.1, label: 'U4E Minimum MEPS (CSPF 5.1)' },
-    Refrigerator: { value: 102, label: 'U4E Minimum MEPS – R≥1.0 (EEI 102)' },
-    Fan: null,
+  // U4E AC reference tiers by climate group, <=4.5 kW capacity band.
+  // MEPS floor: Model Regulation Table 5. Intermediate and High Efficiency:
+  // label tier floors from Annex 2 Tables 13 (Group 1), 14 (Group 2), 15 (Group 3).
+  // Note: U4E assigns climate groups to developing and emerging economies only
+  // (Annex 3 Table 19); industrialized countries are not covered by the model
+  // regulation.
+  type ClimateGroup = 'G1' | 'G2' | 'G3';
+  const U4E_AC_TIERS: Record<ClimateGroup, { meps: number; intermediate: number; high: number; short: string }> = {
+    G1: { meps: 6.1, intermediate: 7.1, high: 8.0, short: 'Group 1 (humid/hot)' },
+    G2: { meps: 5.0, intermediate: 5.8, high: 6.5, short: 'Group 2 (extremely hot-dry)' },
+    G3: { meps: 5.3, intermediate: 6.0, high: 6.7, short: 'Group 3 (mixed/cool)' },
   };
+  let u4eClimateGroup: ClimateGroup = 'G1';
 
-  // U4E intermediate efficiency tier
-  // AC: CSPF 6.5 = High Efficiency label, Group 2, U4E Annex 2 Table 14
-  // Refrigerator: EEI 81 = R≥1.25 Intermediate, 223 kWh/yr ÷ 274 × 100
-  const u4eIntermediate: Record<ApplianceTab, { value: number; label: string } | null> = {
-    AC: { value: 6.5, label: 'U4E High Efficiency Label (CSPF 6.5)' },
-    Refrigerator: { value: 81, label: 'U4E Intermediate – R≥1.25 (EEI 81)' },
-    Fan: null,
-  };
+  const climateGroupOptions: { key: ClimateGroup; label: string }[] = [
+    { key: 'G1', label: 'Group 1 · humid/hot' },
+    { key: 'G2', label: 'Group 2 · extremely hot-dry' },
+    { key: 'G3', label: 'Group 3 · mixed/cool' },
+  ];
 
-  // U4E high efficiency / aspirational target
-  // AC: CSPF 8.75 = Global Cooling Prize target
-  // Refrigerator: EEI 68 = R≥1.50 High Efficiency, 186 kWh/yr ÷ 274 × 100
-  const u4eHighEfficiency: Record<ApplianceTab, { value: number; label: string } | null> = {
-    AC: { value: 8.75, label: 'Global Cooling Prize (CSPF 8.75)' },
-    Refrigerator: { value: 68, label: 'U4E High Efficiency – R≥1.50 (EEI 68)' },
-    Fan: null,
-  };
+  // Refrigerator reference tiers: Index = 100/R (Model Reg Eq. 5 / SADC HT 111),
+  // R >= 1.0 / 1.25 / 1.50 (Annex 3 Table 8). No climate dependency.
+  const U4E_FRIDGE_TIERS = { meps: 100, intermediate: 80, high: 67 };
 
-  // Appliance tab options
+  // Appliance tab options.
+  // Fans tab removed July 2026: fan MEPS use incomparable national metrics
+  // (max W vs CFM/W) and the underlying values were never source-verified.
+  // Reinstate only with verified data (feedback ME-15).
   const applianceTabs: { key: ApplianceTab; label: string }[] = [
     { key: 'AC', label: 'Air Conditioners' },
     { key: 'Refrigerator', label: 'Refrigerators' },
-    { key: 'Fan', label: 'Fans' },
   ];
 
   // Show methodology
@@ -142,11 +144,11 @@
     const appliance = selectedAppliance;
 
     if (appliance === 'AC') {
-      return buildTimelineChart('AC', 'CSPF Equivalent (Wh/Wh)', true);
+      return buildTimelineChart('AC', 'ISO CSPF Equivalent (Wh/Wh)', true);
     }
 
     if (appliance === 'Refrigerator') {
-      return buildTimelineChart('Refrigerator', 'Energy Efficiency Index (EEI)', false);
+      return buildTimelineChart('Refrigerator', 'Index (100 = reference)', false);
     }
 
     // For Fans, show a simpler comparison (no universal metric exists)
@@ -155,15 +157,15 @@
 
   function buildTimelineChart(appliance: ApplianceTab, yAxisLabel: string, higherIsBetter: boolean) {
     const excludeCodes = appliance === 'AC'
-      ? ['U4E', 'GCP']
+      ? ['U4E', 'U4E_HE', 'GCP']
       : ['U4E_FRIDGE', 'U4E_FRIDGE_HE'];
     const availableCodes = getAvailableCountries(appliance);
     const activeCodes = availableCodes.filter(c =>
       enabledCountries.has(c) && !excludeCodes.includes(c)
     );
 
-    let minYear = appliance === 'AC' ? 2006 : 2001;
-    let maxYear = 2035;
+    let minYear = appliance === 'AC' ? 2006 : 2018;
+    let maxYear = appliance === 'AC' ? 2033 : 2029;
 
     const series: any[] = [];
 
@@ -177,11 +179,26 @@
       const historicalPoints = data.filter((d: any) => !d.is_projected);
       const projectedPoints = data.filter((d: any) => d.is_projected);
 
+      // Points converted from a full-load metric (fixed-speed EER approximation)
+      // or estimated from an unpublished baseline get a hollow marker so they
+      // are never mistaken for measured seasonal (CSPF-family) values.
+      // (Filled triangles read as directional arrows at line ends, so hollow
+      // circles are used instead.)
+      const isApproxConversion = (d: any) => {
+        const c = String(d.conversion ?? '');
+        return c.includes('fixed-speed') || c.includes('approximation') || c.includes('ESTIMATED');
+      };
+      const toPoint = (d: any, baseSymbol: string, baseSize: number) => ({
+        value: [d.year, d.meps_level_cspf_equiv],
+        symbol: isApproxConversion(d) ? 'emptyCircle' : baseSymbol,
+        symbolSize: isApproxConversion(d) ? baseSize + 1 : baseSize,
+      });
+
       if (historicalPoints.length > 0) {
         series.push({
           name: name,
           type: 'line',
-          data: historicalPoints.map((d: any) => [d.year, d.meps_level_cspf_equiv]),
+          data: historicalPoints.map((d: any) => toPoint(d, 'circle', 6)),
           lineStyle: { width: 2.5, color },
           itemStyle: { color },
           symbol: 'circle',
@@ -192,13 +209,13 @@
       }
 
       if (projectedPoints.length > 0) {
-        const bridgeData: [number, number][] = [];
+        const bridgeData: any[] = [];
         if (historicalPoints.length > 0) {
           const lastHist = historicalPoints[historicalPoints.length - 1];
-          bridgeData.push([lastHist.year, lastHist.meps_level_cspf_equiv]);
+          bridgeData.push(toPoint(lastHist, 'circle', 5));
         }
         for (const d of projectedPoints) {
-          bridgeData.push([d.year, d.meps_level_cspf_equiv]);
+          bridgeData.push(toPoint(d, 'diamond', 5));
         }
 
         series.push({
@@ -215,73 +232,93 @@
       }
     }
 
-    // U4E reference line
-    const u4e = u4eRef[appliance];
-    if (u4e) {
+    // U4E reference lines: for AC the tier values follow the selected climate
+    // group; for refrigerators they are climate-independent.
+    const t = appliance === 'AC' ? U4E_AC_TIERS[u4eClimateGroup] : U4E_FRIDGE_TIERS;
+    const groupTag = appliance === 'AC' ? `, ${U4E_AC_TIERS[u4eClimateGroup].short}` : '';
+    const fmt = (v: number) => (appliance === 'AC' ? `CSPF ${v.toFixed(2)}` : `Index ${v}`);
+    const refLines = [
+      {
+        value: t.meps,
+        label: appliance === 'AC'
+          ? `U4E Minimum MEPS${groupTag}, ≤4.5 kW (${fmt(t.meps)})`
+          : `U4E/SADC Reference Line, R≥1.0 (${fmt(t.meps)})`,
+        color: '#94a3b8', style: 'dashed', width: 2,
+      },
+      {
+        value: t.intermediate,
+        label: appliance === 'AC'
+          ? `U4E Intermediate Label${groupTag} (${fmt(t.intermediate)})`
+          : `U4E Intermediate, R≥1.25 (${fmt(t.intermediate)})`,
+        color: '#F59E0B', style: 'dashed', width: 1.5,
+      },
+      {
+        value: t.high,
+        label: appliance === 'AC'
+          ? `U4E High Efficiency Label${groupTag} (${fmt(t.high)})`
+          : `U4E High Efficiency, R≥1.50 (${fmt(t.high)})`,
+        color: '#52B788', style: 'dotted', width: 1.5,
+      },
+    ];
+    for (const line of refLines) {
       series.push({
-        name: u4e.label,
+        name: line.label,
         type: 'line',
-        data: [[minYear, u4e.value], [maxYear, u4e.value]],
-        lineStyle: { width: 2, color: '#94a3b8', type: 'dashed' },
-        itemStyle: { color: '#94a3b8' },
+        data: [[minYear, line.value], [maxYear, line.value]],
+        lineStyle: { width: line.width, color: line.color, type: line.style },
+        itemStyle: { color: line.color },
         symbol: 'none',
       });
     }
 
-    // Intermediate efficiency target line
-    const intermediate = u4eIntermediate[appliance];
-    if (intermediate) {
-      series.push({
-        name: intermediate.label,
-        type: 'line',
-        data: [[minYear, intermediate.value], [maxYear, intermediate.value]],
-        lineStyle: { width: 1.5, color: '#F59E0B', type: 'dashed' },
-        itemStyle: { color: '#F59E0B' },
-        symbol: 'none',
-      });
-    }
-
-    // High efficiency target line
-    const heTarget = u4eHighEfficiency[appliance];
-    if (heTarget) {
-      series.push({
-        name: heTarget.label,
-        type: 'line',
-        data: [[minYear, heTarget.value], [maxYear, heTarget.value]],
-        lineStyle: { width: 1.5, color: '#52B788', type: 'dotted' },
-        itemStyle: { color: '#52B788' },
-        symbol: 'none',
-      });
-    }
-
-    const metricLabel = appliance === 'AC' ? 'CSPF Equivalent' : 'EEI';
-    const directionNote = higherIsBetter ? '' : ' (lower = more stringent)';
+    const metricLabel = appliance === 'AC' ? 'ISO CSPF Equivalent' : 'Index';
+    // Direction is explained in the subtitle; keep the axis name short so it
+    // does not collide with the plot area.
+    const directionNote = higherIsBetter ? '' : ', lower = stricter';
 
     return {
       tooltip: {
         trigger: 'item',
+        // Long standard/conversion strings otherwise blow the tooltip up into
+        // an oversized box that escapes the canvas.
+        confine: true,
+        extraCssText: 'max-width: 340px; white-space: normal; word-break: break-word;',
         formatter: (params: any) => {
-          if (!params.data || !Array.isArray(params.data)) return '';
-          const [year, val] = params.data;
+          const point = Array.isArray(params.data) ? params.data : params.data?.value;
+          if (!point || !Array.isArray(point)) return '';
+          const [year, val] = point;
           const seriesName = params.seriesName.replace(' (projected)', '');
           const isProjected = params.seriesName.includes('projected');
 
-          let html = `<strong>${seriesName}</strong> (${year})${isProjected ? ' <em style="color:#94a3b8">staged / future effective date</em>' : ''}<br/>`;
-          html += `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${params.color};margin-right:4px;"></span>`;
-          html += `${metricLabel}: <strong>${val.toFixed(appliance === 'AC' ? 2 : 0)}</strong><br/>`;
-
           const code = countryConfigs.find(c => c.name === seriesName)?.code;
-          if (code) {
-            const entry = effectiveTimeline.find(
-              (d: any) => d.country_code === code && d.year === year && d.appliance_type === appliance
-            );
-            if (entry) {
-              const e = entry as any;
-              if (e.standard_version) {
-                html += `<span style="color:#888;font-size:0.85em">${e.standard_version}</span><br/>`;
-              }
-              html += `<span style="color:#aaa;font-size:0.8em">Source: ${e.source}</span>`;
+          const entry = code
+            ? effectiveTimeline.find(
+                (d: any) => d.country_code === code && d.year === year && d.appliance_type === appliance
+              )
+            : undefined;
+          const e = entry as any;
+
+          const statusTag = e?.status?.includes('endorsed')
+            ? 'endorsed regional target, not in-force MEPS'
+            : e?.status?.includes('estimated')
+              ? 'estimated, thresholds not yet published'
+              : 'adopted, future effective date';
+          let html = `<strong>${seriesName}</strong> (${year})${isProjected ? ` <em style="color:#94a3b8">${statusTag}</em>` : ''}<br/>`;
+          html += `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${params.color};margin-right:4px;"></span>`;
+          html += `${metricLabel}: <strong>${val.toFixed(appliance === 'AC' ? 2 : 0)}</strong>`;
+          if (e?.meps_level_national != null && e?.metric_name && e.metric_name !== 'ISO CSPF') {
+            html += ` <span style="color:#888;font-size:0.85em">(national: ${e.meps_level_national} ${e.metric_name})</span>`;
+          }
+          html += `<br/>`;
+
+          if (e) {
+            if (e.standard_version) {
+              html += `<span style="color:#888;font-size:0.85em">${e.standard_version}</span><br/>`;
             }
+            if (e.conversion && !String(e.conversion).startsWith('1:1')) {
+              html += `<span style="color:#94a3b8;font-size:0.8em">Conversion: ${e.conversion}</span><br/>`;
+            }
+            html += `<span style="color:#aaa;font-size:0.8em">Source: ${e.source}</span>`;
           }
 
           return html;
@@ -304,9 +341,15 @@
       yAxis: {
         type: 'value',
         name: yAxisLabel + directionNote,
-        nameLocation: 'end',
+        // On the inverted refrigerator axis 'end' renders at the bottom and
+        // collides with the year labels; 'start' is the top there.
+        nameLocation: higherIsBetter ? 'end' : 'start',
         nameGap: 10,
-        min: appliance === 'AC' ? 0 : undefined,
+        // Fixed ranges on both charts so the scale never shifts when toggling
+        // countries or the U4E climate group; comparisons stay stable.
+        // AC: data spans ~2.9-7.4 plus reference lines up to 8.0.
+        min: appliance === 'AC' ? 2 : 50,
+        max: appliance === 'AC' ? 8.5 : 140,
         nameTextStyle: { fontSize: 13, color: '#334155', fontWeight: 600 },
         axisLabel: { fontSize: 13, color: '#334155', fontWeight: 500, formatter: (v: number) => appliance === 'AC' ? v.toFixed(1) : String(Math.round(v)) },
         splitLine: { lineStyle: { color: '#f1f5f9' } },
@@ -409,7 +452,7 @@
     chartInstance.setOption(buildChartOption(), true);
   }
 
-  $: selectedAppliance, updateChart();
+  $: selectedAppliance, u4eClimateGroup, updateChart();
 
   onMount(async () => {
     const echarts = await import('echarts');
@@ -434,9 +477,9 @@
     </div>
     <span class="chart-subtitle">
       {#if selectedAppliance === 'AC'}
-        Harmonized to ISO CSPF (Wh/Wh) for cross-country comparison
+        National metrics converted to ISO 16358-1 CSPF equivalents (Park et al. 2020), source-verified July 2026
       {:else if selectedAppliance === 'Refrigerator'}
-        Harmonized to EEI (lower = more stringent) for cross-country comparison
+        Index relative to the U4E/SADC reference line (lower = more stringent). Only jurisdictions regulating on an index metric are shown
       {:else}
         National metrics shown (no universal fan metric exists)
       {/if}
@@ -456,18 +499,14 @@
     {/each}
   </div>
 
-  <!-- Country toggles -->
+  <!-- Country toggles: only countries with data for the selected appliance -->
   <div class="meps-country-toggles">
     {#each countryConfigs as cfg}
-      {#if getAvailableCountries(selectedAppliance).includes(cfg.code) || enabledCountries.has(cfg.code)}
-        <label
-          class="meps-country-toggle"
-          class:disabled={!getAvailableCountries(selectedAppliance).includes(cfg.code)}
-        >
+      {#if getAvailableCountries(selectedAppliance).includes(cfg.code)}
+        <label class="meps-country-toggle">
           <input
             type="checkbox"
             checked={enabledCountries.has(cfg.code)}
-            disabled={!getAvailableCountries(selectedAppliance).includes(cfg.code)}
             on:change={() => toggleCountry(cfg.code)}
           />
           <span class="meps-country-dot" style="background: {cfg.color};"></span>
@@ -476,6 +515,22 @@
       {/if}
     {/each}
   </div>
+
+  <!-- U4E climate group selector (AC only): the U4E reference tiers depend on climate group -->
+  {#if selectedAppliance === 'AC'}
+    <div class="meps-climate-row">
+      <span class="meps-climate-label">U4E reference tiers for climate:</span>
+      {#each climateGroupOptions as opt}
+        <button
+          class="chart-pill"
+          class:active={u4eClimateGroup === opt.key}
+          on:click={() => { u4eClimateGroup = opt.key; }}
+        >
+          {opt.label}
+        </button>
+      {/each}
+    </div>
+  {/if}
 
   <!-- Chart -->
   <div class="chart-container" bind:this={chartContainer}></div>
@@ -491,30 +546,39 @@
       </span>
       {#if selectedAppliance === 'AC'}
         <span class="meps-legend-item">
-          <span class="meps-legend-line ref"></span> U4E Min. MEPS (CSPF 5.1)
+          <span class="meps-legend-line ref"></span> U4E Min. MEPS, {U4E_AC_TIERS[u4eClimateGroup].short} ≤4.5 kW (CSPF {U4E_AC_TIERS[u4eClimateGroup].meps.toFixed(2)})
         </span>
         <span class="meps-legend-item">
-          <span class="meps-legend-line intermediate"></span> U4E High Eff. Label (CSPF 6.5)
+          <span class="meps-legend-line intermediate"></span> U4E Intermediate Label (CSPF {U4E_AC_TIERS[u4eClimateGroup].intermediate.toFixed(2)})
         </span>
         <span class="meps-legend-item">
-          <span class="meps-legend-line gcp"></span> Global Cooling Prize (CSPF 8.75)
+          <span class="meps-legend-line gcp"></span> U4E High Eff. Label (CSPF {U4E_AC_TIERS[u4eClimateGroup].high.toFixed(2)})
         </span>
       {:else}
         <span class="meps-legend-item">
-          <span class="meps-legend-line ref"></span> U4E Min. MEPS – R≥1.0 (EEI 102)
+          <span class="meps-legend-line ref"></span> U4E/SADC Reference, R≥1.0 (Index 100)
         </span>
         <span class="meps-legend-item">
-          <span class="meps-legend-line intermediate"></span> U4E Intermediate – R≥1.25 (EEI 81)
+          <span class="meps-legend-line intermediate"></span> U4E Intermediate, R≥1.25 (Index 80)
         </span>
         <span class="meps-legend-item">
-          <span class="meps-legend-line gcp"></span> U4E High Eff. – R≥1.50 (EEI 68)
+          <span class="meps-legend-line gcp"></span> U4E High Eff., R≥1.50 (Index 67)
         </span>
       {/if}
     </div>
     <div class="meps-adopted-note">
       <i class="fa-solid fa-circle-info"></i>
-      Only officially adopted or effective standards are shown. Aspirational targets not yet legislated are excluded.
+      Solid lines: MEPS in force. Dashed lines: adopted with a future effective date, regionally endorsed targets pending national legislation, or estimated phase-in values (see tooltips).
+      {#if selectedAppliance === 'AC'}
+        Hollow markers: approximate conversion from a full-load metric (EER) or an estimated baseline, not a measured seasonal value.
+      {/if}
     </div>
+    {#if selectedAppliance === 'AC'}
+      <div class="meps-adopted-note">
+        <i class="fa-solid fa-earth-africa"></i>
+        U4E reference tiers depend on the climate group; use the selector above the chart (values: Model Regulation Table 5 and Annex 2 Tables 13–15, ≤4.5 kW band). U4E assigns climate groups to developing and emerging economies only (Annex 3 Table 19); industrialized countries are not covered by the model regulation. See the methodology for the country table.
+      </div>
+    {/if}
   {/if}
 
   <!-- Methodology toggle -->
@@ -530,37 +594,44 @@
       {#if selectedAppliance === 'AC'}
         <h4><i class="fa-solid fa-flask"></i> CSPF Harmonization Note</h4>
         <p>
-          Different countries use different seasonal performance metrics for air conditioners.
-          All national MEPS values are converted to an approximate ISO CSPF equivalent (Wh/Wh).
+          Countries use different seasonal performance metrics for air conditioners. National MEPS values are
+          converted to an approximate ISO 16358-1 CSPF equivalent using the peer-reviewed regression equations of
+          Park et al. (2020), Energy for Sustainable Development 55:56-68, Table B1, plus published unit identities.
         </p>
         <div class="meps-conversion-table">
-          <div class="meps-conv-row header"><span>National Metric</span><span>Countries</span><span>Conversion</span></div>
-          <div class="meps-conv-row"><span>CSPF (ISO 16358)</span><span>China, Singapore, ASEAN, SADC</span><span>1:1</span></div>
-          <div class="meps-conv-row"><span>APF (JIS)</span><span>Japan</span><span>x 0.90</span></div>
-          <div class="meps-conv-row"><span>ISEER</span><span>India</span><span>x 0.92</span></div>
-          <div class="meps-conv-row"><span>EU SEER</span><span>EU-27</span><span>x 0.95</span></div>
-          <div class="meps-conv-row"><span>SEER2</span><span>USA</span><span>x 0.293 x 1.1</span></div>
-          <div class="meps-conv-row"><span>EER</span><span>Saudi Arabia, Ghana</span><span>x 1.062 (fixed)</span></div>
-          <div class="meps-conv-row"><span>AEER</span><span>Australia, NZ</span><span>x 1.06</span></div>
+          <div class="meps-conv-row header"><span>National Metric</span><span>Used for</span><span>To ISO CSPF</span></div>
+          <div class="meps-conv-row"><span>CSPF / IDRS / NSEER (ISO 16358-1 family)</span><span>ASEAN, SADC, EAC, Brazil (2023+), Nigeria</span><span>1:1</span></div>
+          <div class="meps-conv-row"><span>APF (GB 21455)</span><span>China</span><span>1.798 x APF - 2.027</span></div>
+          <div class="meps-conv-row"><span>ISEER (IS 1391)</span><span>India</span><span>7.726 x ln(ISEER) - 5.318</span></div>
+          <div class="meps-conv-row"><span>APF (JIS C 9612)</span><span>Japan</span><span>1.735 x e^(0.220 x APF)</span></div>
+          <div class="meps-conv-row"><span>CSPF (KS C 9306)</span><span>South Korea</span><span>0.970 x X + 0.048</span></div>
+          <div class="meps-conv-row"><span>SEER / SEER2 (Btu/Wh)</span><span>USA</span><span>(/0.957 for SEER2) /3.412, then 0.962 x X + 0.087</span></div>
+          <div class="meps-conv-row"><span>EU SEER (EN 14825)</span><span>EU</span><span>1.113 x X - 0.639</span></div>
+          <div class="meps-conv-row"><span>EER, fixed-speed (W/W)</span><span>Saudi Arabia (/3.412 first), South Africa, Nigeria 2017, ECOWAS, Brazil 2019, China 2010</span><span>x 1.062</span></div>
+          <div class="meps-conv-row"><span>Weighted COP</span><span>Singapore</span><span>1.1917 x X + 0.3111 (NEA)</span></div>
         </div>
+        <p>
+          Australia is not shown: its AEER metric embeds inactive power and no published conversion to ISO CSPF
+          exists (IEA 4E, 2020). Nigeria absolute values are estimated from an assumed NSEER 3.0 baseline; only
+          the phased improvement percentages are published by U4E. EER-derived and estimated points are drawn
+          with hollow markers.
+        </p>
       {:else if selectedAppliance === 'Refrigerator'}
-        <h4><i class="fa-solid fa-flask"></i> EEI Harmonization Note</h4>
+        <h4><i class="fa-solid fa-flask"></i> Refrigerator Index Note</h4>
         <p>
-          Countries use different refrigerator efficiency metrics (kWh/yr, TEEI%, EEI, star ratings).
-          To compare, all values are normalized to a common Energy Efficiency Index (EEI) using a
-          reference 400L frost-free refrigerator-freezer at 24°C (IEC 62552-3:2015).
+          Only jurisdictions that regulate refrigerators on an index metric are plotted: the EU (EEI, Regulation
+          2019/2019) and its legal mirrors UK, Turkey and Switzerland (Switzerland reached EEI 100 three years
+          ahead of the EU), plus SADC and EAC (R = AECMax / AEC per IEC 62552 at 24°C) and the U4E Model
+          Regulation (same R metric). The chart shows <strong>Index = 100 / R</strong>, where 100 marks the
+          reference line. Lower = more stringent.
         </p>
         <p>
-          <strong>EEI = (MEPS max AEC / Reference AEC) × 100</strong> — Lower EEI = more stringent MEPS.
-          Reference AEC ≈ 274 kWh/yr for a 400L combo (300L fresh + 100L frozen).
+          EU EEI (new 2021 scale) is a sister metric plotted on the same axis: for a typical 400L combi the EU
+          reference line sits roughly 5 to 12% below the U4E/SADC line, so small cross-scheme differences are not
+          meaningful. Countries regulating in absolute kWh/yr on their own test methods (USA, China, India, Japan,
+          Korea, Brazil, Singapore, Australia) cannot be placed on this axis without unpublished conversions and
+          are therefore not shown.
         </p>
-        <div class="meps-conversion-table">
-          <div class="meps-conv-row header"><span>National Metric</span><span>Countries</span><span>To EEI</span></div>
-          <div class="meps-conv-row"><span>EEI (direct)</span><span>EU, SADC, EAC, Australia</span><span>1:1</span></div>
-          <div class="meps-conv-row"><span>kWh/yr (400L ref)</span><span>USA, India, Japan, Korea</span><span>÷ 2.74</span></div>
-          <div class="meps-conv-row"><span>TEEI (%)</span><span>China</span><span>≈ TEEI × 1.0</span></div>
-          <div class="meps-conv-row"><span>kWh/month</span><span>Brazil</span><span>× 12 ÷ 2.74</span></div>
-        </div>
       {:else}
         <h4><i class="fa-solid fa-flask"></i> Fan Metric Note</h4>
         <p>
@@ -569,18 +640,19 @@
         </p>
       {/if}
       <p class="meps-caveat">
-        All conversions are approximate. Test condition variations, product scope, and
-        climate assumptions affect real-world equivalence. See full methodology for details.
+        Per Park et al. (2020), these conversions are suitable for initial cross-country comparison but not for
+        compliance purposes. Test conditions, product scope, and climate assumptions affect real-world equivalence.
+        Full derivations and references: MEPS Review 2026 calculation workbook.
       </p>
     </div>
   {/if}
 
   <div class="chart-source">
-    Sources:
-    <a href="https://cprc-clasp.ngo/" target="_blank" rel="noopener noreferrer">CLASP CPRC</a>;
+    Sources: national regulations (see tooltips);
+    <a href="https://escholarship.org/uc/item/5jh2g8v5" target="_blank" rel="noopener noreferrer">Park et al. 2020 (conversions)</a>;
     <a href="https://united4efficiency.org" target="_blank" rel="noopener noreferrer">UNEP U4E</a>;
-    <a href="https://www.iea.org/policies" target="_blank" rel="noopener noreferrer">IEA Policies DB</a>;
-    <a href="https://eta-publications.lbl.gov" target="_blank" rel="noopener noreferrer">LBNL</a>
+    <a href="https://cprc-clasp.ngo/" target="_blank" rel="noopener noreferrer">CLASP CPRC</a>;
+    <a href="https://www.iea.org/policies" target="_blank" rel="noopener noreferrer">IEA Policies DB</a>
     &middot;
     <a href="/methodology/meps-stringency" style="font-weight: 700;">Methodology</a>
   </div>
@@ -663,11 +735,6 @@
     transition: opacity 0.2s ease;
   }
 
-  .meps-country-toggle.disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-  }
-
   .meps-country-toggle input {
     width: 12px;
     height: 12px;
@@ -684,6 +751,22 @@
 
   .meps-country-name {
     font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* U4E climate group selector */
+  .meps-climate-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin: 0.2rem 0 0.4rem;
+  }
+
+  .meps-climate-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #64748b;
     white-space: nowrap;
   }
 
