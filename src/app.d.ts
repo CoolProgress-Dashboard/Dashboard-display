@@ -4,7 +4,7 @@ import type { Database } from '$lib/types/supabase';
 declare global {
   namespace App {
     interface Locals {
-      supabase: SupabaseClient<Database>;
+      supabase: SupabaseClient<Database, 'public', Database['public']>;
       getSession: () => Promise<Session | null>;
     }
 

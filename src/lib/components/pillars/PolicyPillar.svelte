@@ -206,6 +206,27 @@
         splitLine: splitLineStyle
       });
 
+      const percentAxis = () => ({
+        ...valueAxis(),
+        max: 100,
+        axisLabel: { ...axisLabelStyle, formatter: '{value}%' }
+      });
+
+      const percentTooltip = (params: any[]) => {
+        const rows = Array.isArray(params) ? params : [params];
+        const axisName = rows[0]?.axisValueLabel || rows[0]?.name || '';
+        return [
+          `<strong>${axisName}</strong>`,
+          ...rows.map((p: any) => {
+            const data = p.data || {};
+            const count = data.total ? ` (${data.mentioned}/${data.total} countries)` : '';
+            return `${p.marker} ${p.seriesName}: ${p.value}%${count}`;
+          })
+        ].join('<br/>');
+      };
+
+      const percentLabel = (p: any) => p.value > 0 ? `${p.value}%` : '';
+
       function setChart(id: string, option: any) {
         const el = getChartEl(id);
         if (!el) return;
@@ -291,6 +312,22 @@
       function getFilteredNDC() {
         const filters = getNdcFilters();
         return ndcTracker.filter(n => n.ndc_type === filters.type && n.category === filters.category);
+      }
+
+      function getNdcShare(ndcTypeValue: string, category: string, continent?: string) {
+        const records = ndcTracker.filter((n: any) =>
+          n.ndc_type === ndcTypeValue &&
+          n.category === category &&
+          (!continent || n.continent === continent) &&
+          n.mention_status !== 'No NDC submitted'
+        );
+        const totalCountries = new Set(records.map((n: any) => n.country_code).filter(Boolean)).size;
+        const mentionedCountries = new Set(records.filter((n: any) => n.mention_value === 1).map((n: any) => n.country_code).filter(Boolean)).size;
+        return {
+          value: totalCountries ? Math.round((mentionedCountries / totalCountries) * 100) : 0,
+          mentioned: mentionedCountries,
+          total: totalCountries
+        };
       }
 
       function getNDCColor(status: string | null | undefined): string {
@@ -816,19 +853,15 @@
           'Energy Efficiency': 'Energy Eff.', 'Kigali Amendment': 'Kigali',
           'Refrigerators & freezers': 'Refrigerators', 'Air Conditioners': 'ACs', 'Appliance MEPS': 'MEPS', 'Appliance Labels': 'Labels'
         };
-        const prevNdcMentions = ndcEvolutionCategories.map(cat =>
-          new Set(ndcTracker.filter((n: any) => n.ndc_type === 'Other' && n.category === cat && n.mention_value === 1).map((n: any) => n.country_code)).size
-        );
-        const ndc30Mentions = ndcEvolutionCategories.map(cat =>
-          new Set(ndcTracker.filter((n: any) => n.ndc_type === 'NDC 3.0' && n.category === cat && n.mention_value === 1).map((n: any) => n.country_code)).size
-        );
+        const prevNdcMentions = ndcEvolutionCategories.map(cat => getNdcShare('Other', cat));
+        const ndc30Mentions = ndcEvolutionCategories.map(cat => getNdcShare('NDC 3.0', cat));
 
         setChart('chart-ndc-evolution', {
-          tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+          tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: percentTooltip },
           legend: { data: ['Previous NDC', 'NDC 3.0'], bottom: 0, itemWidth: 12, itemHeight: 12, textStyle: { fontSize: 11, color: '#334155' } },
           grid: { left: '3%', right: '4%', bottom: '18%', top: '10%', containLabel: true },
           xAxis: { type: 'category', data: ndcEvolutionCategories.map(c => categoryAbbrev[c] || c), axisLabel: { color: '#475569', fontSize: 9, rotate: 25, interval: 0 } },
-          yAxis: { type: 'value', name: 'Countries', nameTextStyle: { color: '#475569', fontSize: 11 }, axisLabel: { color: '#475569', fontSize: 10 } },
+          yAxis: { ...percentAxis(), name: 'Share of countries', nameTextStyle: { color: '#475569', fontSize: 11 } },
           series: [
             { name: 'Previous NDC', type: 'bar', data: prevNdcMentions, itemStyle: { color: '#6BADA0', borderRadius: [3, 3, 0, 0] } },
             { name: 'NDC 3.0', type: 'bar', data: ndc30Mentions, itemStyle: { color: '#D4A843', borderRadius: [3, 3, 0, 0] } }
@@ -865,19 +898,16 @@
       }
 
       function updateNDCCharts() {
-        const prevCategoryCounts = ndcCategories.map(cat =>
-          ndcTracker.filter((n: any) => n.ndc_type === 'Other' && n.category === cat && n.mention_value === 1).length
-        );
-        const ndc30CategoryCounts = ndcCategories.map(cat =>
-          ndcTracker.filter((n: any) => n.ndc_type === 'NDC 3.0' && n.category === cat && n.mention_value === 1).length
-        );
+        const prevCategoryCounts = ndcCategories.map(cat => getNdcShare('Other', cat));
+        const ndc30CategoryCounts = ndcCategories.map(cat => getNdcShare('NDC 3.0', cat));
         setChart('chart-ndc-categories', {
-          tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+          tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: percentTooltip },
           legend: { data: ['Previous NDC', 'NDC 3.0'], right: 0, top: 0, itemWidth: 12, itemHeight: 12, textStyle: { fontSize: 11, color: '#334155' } },
           grid: { left: '3%', right: '8%', bottom: '5%', top: '14%', containLabel: true },
           xAxis: {
             type: 'value',
-            axisLabel: { color: '#475569', fontSize: 10 },
+            max: 100,
+            axisLabel: { color: '#475569', fontSize: 10, formatter: '{value}%' },
             splitLine: { lineStyle: { color: '#f1f5f9' } }
           },
           yAxis: {
@@ -888,45 +918,38 @@
             axisTick: { show: false }
           },
           series: [
-            { name: 'Previous NDC', type: 'bar', data: prevCategoryCounts, itemStyle: { color: '#6BADA0', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 11, fontWeight: 700, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } },
-            { name: 'NDC 3.0', type: 'bar', data: ndc30CategoryCounts, itemStyle: { color: '#D4A843', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 11, fontWeight: 700, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } }
+            { name: 'Previous NDC', type: 'bar', data: prevCategoryCounts, itemStyle: { color: '#6BADA0', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 11, fontWeight: 700, formatter: percentLabel } },
+            { name: 'NDC 3.0', type: 'bar', data: ndc30CategoryCounts, itemStyle: { color: '#D4A843', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 11, fontWeight: 700, formatter: percentLabel } }
           ]
         });
 
         const ndcRegions = [...new Set(ndcTracker.map((n: any) => n.continent).filter(Boolean))] as string[];
-        const regionMentionedPrev = ndcRegions.map(region =>
-          ndcTracker.filter((n: any) => n.ndc_type === 'Other' && n.category === ndcCategory && n.continent === region && n.mention_value === 1).length
-        );
-        const regionMentionedNdc30 = ndcRegions.map(region =>
-          ndcTracker.filter((n: any) => n.ndc_type === 'NDC 3.0' && n.category === ndcCategory && n.continent === region && n.mention_value === 1).length
-        );
+        const regionMentionedPrev = ndcRegions.map(region => getNdcShare('Other', ndcCategory, region));
+        const regionMentionedNdc30 = ndcRegions.map(region => getNdcShare('NDC 3.0', ndcCategory, region));
 
         setChart('chart-ndc-regions', {
-          tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+          tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: percentTooltip },
           legend: { data: ['Previous NDC', 'NDC 3.0'], bottom: 0, itemWidth: 12, itemHeight: 12, textStyle: { fontSize: 11, color: '#334155' } },
           grid: { left: '3%', right: '3%', bottom: '18%', top: '8%', containLabel: true },
           xAxis: categoryAxis(ndcRegions),
-          yAxis: valueAxis(),
+          yAxis: percentAxis(),
           series: [
             { name: 'Previous NDC', type: 'bar', data: regionMentionedPrev, itemStyle: { color: '#6BADA0', borderRadius: [3, 3, 0, 0] } },
             { name: 'NDC 3.0', type: 'bar', data: regionMentionedNdc30, itemStyle: { color: '#D4A843', borderRadius: [3, 3, 0, 0] } }
           ]
         });
 
-        const prevMentionedByCategory = ndcCategories.map(cat =>
-          new Set(ndcTracker.filter((n: any) => n.ndc_type === 'Other' && n.category === cat && n.mention_value === 1).map((n: any) => n.country_code)).size
-        );
-        const ndc30MentionedByCategory = ndcCategories.map(cat =>
-          new Set(ndcTracker.filter((n: any) => n.ndc_type === 'NDC 3.0' && n.category === cat && n.mention_value === 1).map((n: any) => n.country_code)).size
-        );
+        const prevMentionedByCategory = ndcCategories.map(cat => getNdcShare('Other', cat));
+        const ndc30MentionedByCategory = ndcCategories.map(cat => getNdcShare('NDC 3.0', cat));
 
         setChart('chart-ndc-comparison', {
-          tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+          tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: percentTooltip },
           legend: { data: ['Previous NDC', 'NDC 3.0'], right: 0, top: 0, itemWidth: 12, itemHeight: 12, textStyle: { fontSize: 11, color: '#334155' } },
           grid: { left: '3%', right: '8%', bottom: '5%', top: '14%', containLabel: true },
           xAxis: {
             type: 'value',
-            axisLabel: { color: '#475569', fontSize: 10 },
+            max: 100,
+            axisLabel: { color: '#475569', fontSize: 10, formatter: '{value}%' },
             splitLine: { lineStyle: { color: '#f1f5f9' } }
           },
           yAxis: {
@@ -937,8 +960,8 @@
             axisTick: { show: false }
           },
           series: [
-            { name: 'Previous NDC', type: 'bar', data: prevMentionedByCategory, itemStyle: { color: '#6BADA0', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } },
-            { name: 'NDC 3.0', type: 'bar', data: ndc30MentionedByCategory, itemStyle: { color: '#D4A843', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 10, formatter: (p: any) => p.value > 0 ? String(p.value) : '' } }
+            { name: 'Previous NDC', type: 'bar', data: prevMentionedByCategory, itemStyle: { color: '#6BADA0', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 10, formatter: percentLabel } },
+            { name: 'NDC 3.0', type: 'bar', data: ndc30MentionedByCategory, itemStyle: { color: '#D4A843', borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', color: '#334155', fontSize: 10, formatter: percentLabel } }
           ]
         });
 
@@ -966,9 +989,9 @@
         if (listEl) {
           const sortedNcap = [...ncapFiltered].sort((a: any, b: any) => a.country_name.localeCompare(b.country_name));
           listEl.innerHTML = sortedNcap.map((n: any) => `
-            <div class="ncap-country-card" style="background: transparent; border: none; border-top: 1px solid rgba(0,0,0,0.06); padding: 0.75rem 0 0.75rem 1rem; border-left: 3px solid #5A8FC2;">
-              <div style="font-weight: 600; color: #1e293b;">${n.country_name}</div>
-              <div style="font-size: 0.8rem; color: #64748b;">${n.year ? 'Adopted: ' + n.year : 'Year not specified'}</div>
+            <div class="ncap-country-card">
+              <div class="ncap-country-name">${n.country_name}</div>
+              <div class="ncap-country-year">${n.year ? 'Adopted: ' + n.year : 'Year not specified'}</div>
             </div>
           `).join('');
         }
@@ -1079,19 +1102,19 @@
               <div class="policy-chart-item">
                 <p class="p-chart-eyebrow">By Category</p>
                 <h3 class="p-chart-title">NDC Cooling Mentions by Category</h3>
-                <p class="p-chart-subtitle">Previous NDC vs NDC 3.0 — by cooling topic</p>
+                <p class="p-chart-subtitle">Previous NDC vs NDC 3.0 - share of countries mentioning each cooling topic</p>
                 <div id="chart-ndc-categories" class="chart-surface" style="width:100%;height:300px;min-height:300px;"></div>
               </div>
               <div class="policy-chart-item">
                 <p class="p-chart-eyebrow">By Region</p>
                 <h3 class="p-chart-title">NDC Status by Region</h3>
-                <p class="p-chart-subtitle">Previous NDC vs NDC 3.0 — countries mentioning cooling by region</p>
+                <p class="p-chart-subtitle">Previous NDC vs NDC 3.0 - share of countries mentioning cooling by region</p>
                 <div id="chart-ndc-regions" class="chart-surface" style="width:100%;height:300px;min-height:300px;"></div>
               </div>
               <div class="policy-chart-item" style="grid-column: 1 / -1;">
                 <p class="p-chart-eyebrow">Comparison</p>
                 <h3 class="p-chart-title">NDC Cooling Mentions — All Categories</h3>
-                <p class="p-chart-subtitle">Previous NDC vs NDC 3.0 — countries with cooling mentions across all tracked categories</p>
+                <p class="p-chart-subtitle">Previous NDC vs NDC 3.0 - share of countries with cooling mentions across all tracked categories</p>
                 <div id="chart-ndc-comparison" class="chart-surface" style="width:100%;height:280px;min-height:280px;"></div>
               </div>
             </div>
@@ -1138,7 +1161,7 @@
                 <p class="p-chart-eyebrow">Countries with NCAPs</p>
                 <h3 class="p-chart-title">Countries with National Cooling Action Plans</h3>
                 <p class="p-chart-subtitle">Tracked via Climate Policy Radar · Brazil excluded — NCAP process only recently initiated</p>
-                <div id="ncap-countries-list" style="margin-top:0.5rem;max-height:320px;overflow-y:auto;scrollbar-width:thin;"></div>
+                <div id="ncap-countries-list" class="ncap-countries-grid"></div>
               </div>
             </div>
             <div class="policy-charts-flat" style="padding-top:0;">
@@ -2261,6 +2284,32 @@
     color: #334155;
     font-weight: 600;
     margin-bottom: 0.5rem;
+  }
+
+  :global(.ncap-countries-grid) {
+    margin-top: 0.75rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+  }
+
+  :global(.ncap-country-card) {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    min-height: 76px;
+  }
+
+  :global(.ncap-country-name) {
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  :global(.ncap-country-year) {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: 0.25rem;
   }
 
   /* ===========================

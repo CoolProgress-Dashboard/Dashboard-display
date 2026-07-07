@@ -10,7 +10,7 @@ export const getRevenueByMonth = async (
   supabase: SupabaseClient<Database>,
   range: DateRange
 ) => {
-  const { data, error } = await supabase.rpc('revenue_by_month', {
+  const { data, error } = await (supabase as any).rpc('revenue_by_month', {
     start_date: range.startDate,
     end_date: range.endDate
   });
@@ -23,7 +23,7 @@ export const getUsersByCountry = async (
   supabase: SupabaseClient<Database>,
   range: DateRange
 ) => {
-  const { data, error } = await supabase.rpc('users_by_country', {
+  const { data, error } = await (supabase as any).rpc('users_by_country', {
     start_date: range.startDate,
     end_date: range.endDate
   });

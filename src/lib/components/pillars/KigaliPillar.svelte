@@ -1531,7 +1531,7 @@
       <!-- ── Connected section: Technical Safeguards (Steps 3–5) ── -->
       <div class="k-connected-heading" style="--ch-color: #2D7D5A; margin-top: 1.75rem;">
         <div class="k-ch-badge">
-          <span class="k-ch-stepnum" style="color:#2D7D5A;">3</span>
+          <span class="k-ch-stepnum">3</span>
           <span>Step 3: Responsible Deployment — Technical Safeguards</span>
         </div>
         <h3 class="k-sub-heading" style="margin-top:0.5rem;margin-bottom:0.5rem;">Technical Considerations for Alternative Refrigerants</h3>
@@ -3016,8 +3016,8 @@
 
   /* ── Connected headings: left-border connector from step → section ── */
   .k-connected-heading {
-    border-left: 3px solid var(--ch-color);
-    padding-left: 1.25rem;
+    border-left: none;
+    padding-left: 0;
     margin-top: 1.75rem;
   }
   .k-ch-badge {
@@ -3050,10 +3050,10 @@
 
   /* ── Card variants for connected sections ── */
   .k-step-card {
-    border-top: 3px solid var(--card-accent, #0284c7);
+    border-top: 1px solid rgba(0,0,0,0.08);
   }
   .k-safeguard-card {
-    border-top: 3px solid var(--card-accent, #C25B33);
+    border-top: 1px solid rgba(0,0,0,0.08);
   }
   .k-card-tag {
     display: inline-flex;

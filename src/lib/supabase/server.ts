@@ -11,10 +11,10 @@ export const createSupabaseServerClient = (event: RequestEvent) => {
     PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
-        get(key) {
+        get(key: string) {
           return event.cookies.get(key);
         },
-        set(key, value, options) {
+        set(key: string, value: string, options?: CookieOptions) {
           try {
             const { domain, ...rest } = options ?? {};
             event.cookies.set(key, value, {
@@ -22,13 +22,13 @@ export const createSupabaseServerClient = (event: RequestEvent) => {
               path: '/',
               sameSite: rest.sameSite ?? 'lax',
               secure: isSecure
-            } as CookieOptions);
+            } as any);
           } catch {
             // Supabase may attempt to refresh the session after the response
             // has already been sent; silently ignore those late cookie writes.
           }
         },
-        remove(key, options) {
+        remove(key: string, options?: CookieOptions) {
           try {
             const { domain, ...rest } = options ?? {};
             event.cookies.delete(key, {
@@ -36,7 +36,7 @@ export const createSupabaseServerClient = (event: RequestEvent) => {
               path: '/',
               sameSite: rest.sameSite ?? 'lax',
               secure: isSecure
-            } as CookieOptions);
+            } as any);
           } catch {
             // Same as above — ignore late cookie deletes.
           }

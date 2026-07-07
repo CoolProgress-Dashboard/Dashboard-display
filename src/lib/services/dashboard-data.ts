@@ -8,16 +8,21 @@ import type {
   ApplianceTimeseriesRecord,
   ClaspEnergyRecord,
   CoolingMilestoneRecord,
+  Country,
   CountrySpotlightRecord,
   DashboardData,
   EmissionsFilters,
   EmissionsRecord,
+  Kigali,
+  KigaliCountryOverride,
+  Meps,
   MepsLevelRecord,
   MepsTimelineRecord,
   NcapRecord,
   NdcFilters,
   NdcTrackerRecord,
   PeakLoadRecord,
+  Pledge,
   RefrigerantRecord,
   RegionRecord,
   SubcoolRecord
@@ -103,6 +108,8 @@ export const createDefaultData = (): DashboardData => ({
   countrySpotlights: [],
   mepsTimeline: [],
   mepsLevels: [],
+  kigaliGroupSchedules: [],
+  kigaliCountryOverrides: [],
   accessCountryPct: []
 });
 
@@ -215,10 +222,10 @@ export const loadDashboardData = async (
   // they require 60+ sequential requests. EmissionsPillar loads them lazily.
   const [countries, pledge, kigali, meps, access, accessForecast, emissions, ndcTracker, ncap, regions, refrigerants, acInverterShare, acGrowthData, coolingMilestones, applianceTimeseries, peakLoadData, countrySpotlights, kigaliCountryOverrides, accessCountryPct, mepsTimelineV2] =
     await Promise.all([
-      safeFetch(url, key, 'countries', 'country_code,country_name,region'),
-      safeFetch(url, key, 'global_cooling_pledge', 'country_code,country_name,signatory'),
-      safeFetch(url, key, 'kip', 'country_code,kigali_party,group_type'),
-      safeFetch(
+      safeFetch<Country>(url, key, 'countries', 'country_code,country_name,region'),
+      safeFetch<Pledge>(url, key, 'global_cooling_pledge', 'country_code,country_name,signatory'),
+      safeFetch<Kigali>(url, key, 'kip', 'country_code,kigali_party,group_type'),
+      safeFetch<Meps>(
         url,
         key,
         'meps',
@@ -240,7 +247,7 @@ export const loadDashboardData = async (
         '',
         10000
       ),
-      safeFetch(
+      safeFetch<EmissionsRecord>(
         url,
         key,
         'v_emissions_summary',
@@ -248,7 +255,7 @@ export const loadDashboardData = async (
         '',
         10000
       ),
-      safeFetch(
+      safeFetch<NdcTrackerRecord>(
         url,
         key,
         'ndc_tracker_clasp',
@@ -300,7 +307,7 @@ export const loadDashboardData = async (
         'country_spotlights',
         'id,spotlight_id,name,region,flag_emoji,narrative,meps_status,dominant_refrigerant,key_challenge,source,stats'
       ),
-      safeFetch(url, key, 'kigali_country_schedule_overrides', 'country_code,group_type'),
+      safeFetch<KigaliCountryOverride>(url, key, 'kigali_country_schedule_overrides', 'country_code,group_type'),
       safeFetch<AccessCountryPct>(url, key, 'access_country_pct', 'country_code,country_name,national_pop,total_at_risk,pct_at_risk,female_at_risk,male_at_risk,year'),
       safeFetch<MepsTimelineRecord>(
         url,

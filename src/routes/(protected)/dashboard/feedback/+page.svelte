@@ -25,7 +25,7 @@
     submitting = true;
     errorMsg = '';
 
-    const { error } = await supabaseBrowser.from('feedback').insert({
+    const { error } = await (supabaseBrowser as any).from('feedback').insert({
       user_name: userName || null,
       user_email: userEmail || null,
       current_pillar: referringPillar,

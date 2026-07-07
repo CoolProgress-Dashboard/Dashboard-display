@@ -1085,10 +1085,26 @@
     </div>
 
     <!-- ═══ RECENT MEPS UPDATES ═══ -->
+
     <div class="chapter-card" class:revealed>
       <span class="meps-eyebrow">Standards in Motion</span>
       <h2 class="meps-section-title">Recent MEPS Updates Across Key Markets</h2>
       <p class="meps-body-text">Efficiency standards are not static. Several major markets have recently updated or are actively revising their MEPS, reflecting growing ambition and alignment with net-zero pathways.</p>
+
+      <a
+        href="https://www.clasp.ngo/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="meps-clasp-infobox"
+      >
+        <div class="meps-clasp-infobox-left">
+          <img src="/images/clasp-logo.png" alt="CLASP" class="meps-clasp-logo" />
+        </div>
+        <div class="meps-clasp-infobox-body">
+          <strong class="meps-clasp-infobox-title">Bridging the Cooling Gap: Efficiency as a Driver for Appliance Access</strong>
+          <p>Doubling the efficiency of air conditioners in India, Indonesia, and Nigeria does not just cut emissions - it makes cooling <em>affordable</em>. Lower running costs expand access for low-income households who can bear the purchase price but not the monthly electricity bill. CLASP research shows that ambitious MEPS, combined with targeted financing and subsidy schemes, can expand the addressable market for cooling by tens of millions of households in high-growth, climate-vulnerable economies.</p>
+        </div>
+      </a>
 
       <div class="meps-updates-grid">
         <div class="meps-update-card">
@@ -1123,31 +1139,7 @@
       <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> All facts source-verified July 2026 (legal instruments and U4E/CLASP publications); details and links in the MEPS Stringency chart tooltips and methodology.</p>
     </div>
 
-    <!-- ═══ ASEAN HARMONIZATION ═══ -->
-    <div class="chapter-card" class:revealed>
-      <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.5rem;">
-        <span class="meps-eyebrow meps-eyebrow-xl" style="margin-bottom:0;">Regional Focus</span>
-        <span class="appliance-scope-badge"><i class="fa-solid fa-earth-asia"></i> Southeast Asia</span>
-      </div>
-      <h2 class="meps-section-title">ASEAN Harmonization: A Region Converging on Shared Standards</h2>
-      <p class="meps-body-text">Southeast Asian economies are converging on shared MEPS frameworks through the ASEAN Economic Community. Thailand and Vietnam lead with mandatory inverter-class standards for room ACs. Singapore is advancing its second MEPS revision with updated test procedures, raising the efficiency floor toward best-available performance. Malaysia has its first MEPS for room ACs in place and is planning its initial revision. The Philippines is developing updated MEPS with support from CLASP and the Department of Energy. Indonesia is advancing tiered efficiency labels linked to a future mandatory MEPS floor, with ongoing technical support from U4E and CLASP.</p>
-      <p class="meps-body-text">CLASP and U4E are supporting the region toward common test protocols — a prerequisite for cross-border market harmonization that would allow manufacturers to produce to a single regional standard.</p>
-      <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> Source: CLASP / U4E regional programme.</p>
-    </div>
-
-    <!-- ═══ CLASP INFO BOX: BRIDGING THE COOLING GAP ═══ -->
-    <div class="meps-clasp-infobox" class:revealed>
-      <div class="meps-clasp-infobox-left">
-        <img src="/images/clasp-logo.png" alt="CLASP" class="meps-clasp-logo" />
-      </div>
-      <div class="meps-clasp-infobox-body">
-        <strong class="meps-clasp-infobox-title">Bridging the Cooling Gap: Efficiency as a Driver for Appliance Access</strong>
-        <p>Doubling the efficiency of air conditioners in India, Indonesia, and Nigeria does not just cut emissions — it makes cooling <em>affordable</em>. Lower running costs expand access for low-income households who can bear the purchase price but not the monthly electricity bill. CLASP research shows that ambitious MEPS, combined with targeted financing and subsidy schemes, can expand the addressable market for cooling by tens of millions of households in high-growth, climate-vulnerable economies.</p>
-        <a href="https://www.clasp.ngo/" target="_blank" rel="noopener noreferrer" class="meps-clasp-infobox-link">Read the CLASP analysis <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-      </div>
-    </div>
-
-    <!-- ═══ Ch02 GLOBAL COVERAGE ═══ -->
+    <!-- Ch02 GLOBAL COVERAGE -->
     <div class="chapter-card" class:revealed>
       <span class="meps-eyebrow">Global Coverage</span>
       <h2 class="meps-section-title">Progress is real but deeply uneven across regions.</h2>
@@ -1656,7 +1648,16 @@
     border-left: 4px solid #0369a1;
     border-radius: 8px;
     padding: 1.25rem 1.5rem;
-    margin: 0 64px 1.5rem;
+    margin: 1rem 0 1.5rem;
+    color: inherit;
+    text-decoration: none;
+    transition: box-shadow 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
+  }
+
+  .meps-clasp-infobox:hover {
+    border-color: #7dd3fc;
+    box-shadow: 0 8px 24px rgba(3, 105, 161, 0.12);
+    transform: translateY(-1px);
   }
 
   .meps-clasp-infobox-left {
@@ -1686,20 +1687,6 @@
 
   .meps-clasp-infobox-body p {
     margin: 0 0 0.5rem;
-  }
-
-  .meps-clasp-infobox-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: #0369a1;
-    text-decoration: none;
-  }
-
-  .meps-clasp-infobox-link:hover {
-    text-decoration: underline;
   }
 
   /* ===========================
@@ -1905,6 +1892,20 @@
   :global(#view-meps .map-card) {
     padding-left: 64px !important;
     padding-right: 64px !important;
+  }
+
+  @media (max-width: 1200px) {
+    :global(#view-meps .map-card) {
+      padding-left: 32px !important;
+      padding-right: 32px !important;
+    }
+  }
+
+  @media (max-width: 900px) {
+    :global(#view-meps .map-card) {
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+    }
   }
 
   .meps-level-wrapper {
@@ -2269,6 +2270,24 @@
   /* MAP HEIGHT */
   #meps-map-container {
     height: 480px;
+  }
+
+  @media (min-width: 1400px) {
+    #meps-map-container {
+      height: 600px;
+    }
+  }
+
+  @media (min-width: 1600px) {
+    #meps-map-container {
+      height: 660px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    #meps-map-container {
+      height: 360px;
+    }
   }
 
   /* Peak Load chart wrapper — clean divider, no card-panel box */
