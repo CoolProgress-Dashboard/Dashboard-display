@@ -5,6 +5,18 @@
 
 ---
 
+## RECENT IMPLEMENTATION UPDATE (July 2026)
+
+- [x] **Product Efficiency / MEPS** - CLASP "Bridging the Cooling Gap" callout moved under "Recent MEPS Updates Across Key Markets"; the entire box is clickable and the redundant text link was removed.
+- [x] **Product Efficiency / MEPS** - Standalone ASEAN harmonization section removed to reduce repetition and make room for other regional initiatives.
+- [x] **Product Efficiency / MEPS** - MEPS map sizing adjusted for both small and large screens.
+- [x] **Refrigerant Transition / Kigali** - Step 3 badge now matches Step 2 visual treatment; extra colored left bars and card top bars were removed to reduce visual noise.
+- [x] **Plans & Commitments / Policy** - NCAP countries now display as a responsive grid rather than a scrollable list.
+- [x] **Plans & Commitments / Policy** - NDC comparison charts now show percentages/share of countries rather than raw totals.
+- [x] **Code Quality** - `npm.cmd run check` now completes with 0 errors; remaining output is warnings only.
+
+---
+
 ## PENDING DECISIONS (blockers — do not implement until resolved)
 
 - [x] **Medium | UI** — RESOLVED (Option B): Cross-reference Kigali map from Emissions pillar with a link to Pillar 3: Refrigerant Transition. Implemented as styled note below direct-emissions intro. (2026-05-07)
@@ -52,8 +64,8 @@
 - [ ] **High | Data** — Update MEPS data for Indonesia and Singapore (flagged in 2026-04-22 session). Also add Thailand, Vietnam, and Malaysia MEPS updates — all recently updated in the ASEAN region. (Patrick + Session 2, 2026-04-22)
 - [ ] **Medium | Content** — Update inverter savings claim: note that while demand reduction of 25–44% is typical, recent testing shows up to 60% savings and a 5x efficiency potential exists (Global Cooling Prize).
 - [ ] **Medium | Content** — Add a dedicated "Super-Efficient Fans" highlight: approximately 2 million sales in India, significant price reductions achieved, energy use approximately 50% of conventional fans.
-- [ ] **Medium | Content** — Add "Recent MEPS Updates" highlight section covering: China refrigerator MEPS update, Nigeria room AC update, and ongoing regional MEPS work.
-- [ ] **Medium | Content** — Add CLASP info box: "Bridging the Cooling Gap: Energy Efficiency as a Driver for Appliance Access" — covering how doubling efficiency in India, Indonesia, and Nigeria expands access by making cooling more affordable.
+- [x] **Medium | Content** - Add "Recent MEPS Updates" highlight section covering: China refrigerator MEPS update, Nigeria room AC update, and ongoing regional MEPS work. Updated again in July 2026 with the CLASP access callout placed directly under this section.
+- [x] **Medium | Content** - Add CLASP info box: "Bridging the Cooling Gap: Energy Efficiency as a Driver for Appliance Access" - covering how doubling efficiency in India, Indonesia, and Nigeria expands access by making cooling more affordable. Implemented as a full-card link under Recent MEPS Updates.
 - [ ] **Medium | Content** — Add section on high-temperature and high-humidity operating conditions and its relevance to the 5x/Global Cooling Prize efficiency potential.
 - [ ] **Medium | UI** — Retain the peak electricity load chart — do not replace with energy-only view. Peak load (grid stress, blackout risk) tells a different story than total energy. (Ari/CLASP, 2026-04-22)
 - [ ] **Low | UI** — Clarify the meaning of "number of MEPS/labels per country" on the map, or consider removing the metric if the meaning cannot be made clear.
@@ -66,7 +78,7 @@
 - [ ] **High | Bug Fix** — Fix U4E capacity range mismatch on MEPS benchmarking chart: chart uses 4.5–9.5 kW range but U4E model regulation covers 2.5–5 kW — this causes misleading comparisons and must be corrected. (Patrick/HEAT, 2026-05-04)
 - [ ] **High | Bug Fix** — Fix U4E high-efficiency label value on chart: currently shown as 6.5, should be 7.6 or 8.0 depending on the correct capacity range applied. (Patrick/HEAT, 2026-05-04)
 - [ ] **High | Data** — Fix Nigerian AC MEPS value: currently too low; should align with U4E levels by 2031. Conversion methodology from Nigerian standard to CSPF is not explained — must be corrected and documented. (Patrick/HEAT, 2026-05-04)
-- [ ] **High | Content** — Add ASEAN Harmonization narrative section: cover Singapore (2nd revision underway, test procedures updated), Malaysia (1st MEPS in place, revision planned), Philippines (MEPS in development with CLASP/DOE support), Indonesia (ongoing updates with U4E/CLASP support). Reference regional momentum and ASEAN harmonization goal. (Patrick/HEAT, 2026-05-04)
+- [x] **High | Content** - Add ASEAN Harmonization narrative section covering ASEAN MEPS momentum. Superseded July 2026: standalone section removed after review because ASEAN harmonization was overrepresented; content emphasis shifted toward Recent MEPS Updates and broader regional balance.
 - [ ] **Medium | Data** — Verify and fix Saudi Arabia AC MEPS value: likely too low, requires cross-check against current Saudi standards. (Patrick/HEAT, 2026-05-04)
 - [ ] **Medium | Data** — Fix EER/CSPF conversion for variable-speed units (Australia, Saudi Arabia): show EER and CSPF as separate values or add a clear methodology note explaining the conversion approach. (Patrick/HEAT, 2026-05-04)
 - [ ] **Medium | Data** — Verify India 2033 and China 2025 future MEPS levels: no official publication found for these forward values — must confirm source or remove until confirmed. (Patrick/HEAT, 2026-05-04)
@@ -132,7 +144,7 @@
 - [ ] **Medium | Content** — Add final policy coherence paragraph: "Ultimately, the effectiveness of the cooling transition depends on policy coherence, ensuring that NDCs, NCAPs, Kigali Amendment compliance, and the wider Global Cooling Pledge commitments function as a unified system. For full signatory progress against all 14 Global Cooling Pledge commitments, please refer to the Global Cooling Pledge progress tracker here [link TBD]."
 - [ ] **Medium | Content** — Update all section body text with the revised copy provided in Textbausteine.
 - [ ] **Medium | Content** — Add source cards: NDCs Cooling Guide (wedocs.unep.org), Cooler Finance (IFC report), World Bank Urban Heat Handbook, NCAP MENA Methodology.
-- [ ] **Medium | Data** — Automate the Global Cooling Pledge signatory count via API. Do not leave as a hard-coded number in the codebase. (Session 2, 2026-04-22)
+- [x] **Medium | Data** - Automate the Global Cooling Pledge signatory count via API. Do not leave as a hard-coded number in the codebase. (Session 2, 2026-04-22) Implemented via Supabase-derived live counts.
 - [ ] **Medium | Content** — Archive NCAP PDFs locally and add Wayback Machine backup links for official NCAP documents to prevent link rot when ministry websites restructure. (Session 2, 2026-04-22)
 - [ ] **Medium | UI** — Break up text-heavy intro paragraphs into shorter, more readable blocks across all sections.
 - [ ] **Low | UI** — Evaluate embedding Global Cooling Pledge commitment details directly on the page rather than requiring a click-through to the Cool Coalition site.

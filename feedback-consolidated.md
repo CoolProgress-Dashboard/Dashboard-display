@@ -3,7 +3,20 @@
 > Compiled from: Noah (CCC), Jamie (Climate Policy Radar), Giorgia (SEforAll), Stefanie (HEAT internal), Ari (CLASP), Cool Coalition meeting notes (Dietram/UNEP, 2026-04-29), Colleague text edits (Textbausteine — internal copywriting), Patrick (HEAT) + Ari (CLASP) + Manuel + Dietram session (2026-04-22), Patrick (HEAT) email (2026-05-04)
 
 ---
+## IMPLEMENTATION STATUS UPDATE (July 2026)
 
+Recent dashboard updates have closed or superseded several high-priority feedback threads:
+
+- MEPS: Recent MEPS Updates now hosts the CLASP "Bridging the Cooling Gap" callout as a full-card link.
+- MEPS: The standalone ASEAN harmonization section was removed after review to reduce repetition and rebalance attention across regions.
+- MEPS: Map sizing was adjusted for small and large screens.
+- Kigali: Step 3 styling was simplified to match Step 2 and reduce excessive color bars.
+- Policy: NCAP country display changed from a scrollable list to a responsive grid.
+- Policy: NDC comparison charts now show percentages/share of countries rather than raw totals.
+- Policy/Data: Global Cooling Pledge counts now use Supabase-derived live counts instead of hard-coded values.
+- Code Quality: `npm.cmd run check` now completes with 0 errors; remaining output is warnings only.
+
+---
 ## OPEN CONFLICTS (pending discussion)
 
 1. **Kigali Amendment map — Refrigerant pillar only, or also in Policy pillar?**
