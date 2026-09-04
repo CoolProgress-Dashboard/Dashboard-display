@@ -1,20 +1,11 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { partnerNews, NEWS_LAST_UPDATED, CATEGORY_META, type NewsItem } from '$lib/data/partner-news';
+  import { partnerNews } from '$lib/data/partner-news';
   import type { Country } from '$lib/services/dashboard-types';
 
   export let currentView: string = 'overview'; // kept for legacy compatibility
   export let countries: Country[] = [];
-
-  let newsExpanded = false;
-  let activeFilter: NewsItem['category'] | 'all' = 'all';
-
-  const categoryKeys = Object.keys(CATEGORY_META) as NewsItem['category'][];
-
-  $: filteredNews = activeFilter === 'all'
-    ? partnerNews
-    : partnerNews.filter(n => n.category === activeFilter);
 
   // Active view comes from the URL
   $: activeView = $page.url.pathname.split('/').at(-1) ?? 'overview';
@@ -82,15 +73,6 @@
 
   <div class="nav-section nav-section-partners">
     <a
-      href="/dashboard/partners"
-      class="nav-btn nav-item nav-item-partners"
-      class:active={activeView === 'partners'}
-      data-view="partners"
-    >
-      <span class="nav-icon"><i class="fa-solid fa-handshake"></i></span>
-      <span>Partner Ecosystem</span>
-    </a>
-    <a
       href="/dashboard/feedback"
       class="nav-btn nav-item nav-item-feedback"
       class:active={activeView === 'feedback'}
@@ -101,76 +83,18 @@
     </a>
   </div>
 
-  <!-- Latest News Section -->
-  <div class="sidebar-news">
-    <button
-      class="news-toggle"
-      type="button"
-      on:click={() => newsExpanded = !newsExpanded}
-      aria-expanded={newsExpanded}
+  <!-- Cool News — links to the dedicated news page -->
+  <div class="nav-section nav-section-news">
+    <a
+      href="/dashboard/news"
+      class="nav-btn nav-item nav-item-news"
+      class:active={activeView === 'news'}
+      data-view="news"
     >
-      <span class="news-toggle-left">
-        <i class="fa-solid fa-newspaper"></i>
-        <span>Latest News</span>
-        <span class="news-count">{partnerNews.length}</span>
-      </span>
-      <i class="fa-solid fa-chevron-down news-chevron" class:rotated={newsExpanded}></i>
-    </button>
-
-    {#if newsExpanded}
-      <div class="news-panel">
-        <!-- Category filter pills -->
-        <div class="news-filters">
-          <button
-            class="news-filter-pill"
-            class:active={activeFilter === 'all'}
-            type="button"
-            on:click={() => activeFilter = 'all'}
-          >All</button>
-          {#each categoryKeys as cat}
-            <button
-              class="news-filter-pill"
-              class:active={activeFilter === cat}
-              type="button"
-              on:click={() => activeFilter = cat}
-              style="--pill-color: {CATEGORY_META[cat].color}"
-            >
-              <i class="fa-solid {CATEGORY_META[cat].icon}"></i>
-              {CATEGORY_META[cat].label}
-            </button>
-          {/each}
-        </div>
-
-        <!-- News items list -->
-        <div class="news-list">
-          {#each filteredNews as item (item.id)}
-            <a
-              href={item.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="news-item"
-            >
-              <div class="news-item-icon" style="background: {item.color}18; color: {item.color}">
-                <i class="fa-solid {item.icon}"></i>
-              </div>
-              <div class="news-item-body">
-                <div class="news-item-meta">
-                  <span class="news-cat-tag" style="color: {item.color}">{item.category}</span>
-                  <span class="news-item-date">{item.date}</span>
-                </div>
-                <p class="news-item-headline">{item.headline}</p>
-                <p class="news-item-source">{item.source}</p>
-              </div>
-              <i class="fa-solid fa-arrow-up-right-from-square news-ext-icon"></i>
-            </a>
-          {/each}
-        </div>
-
-        <div class="news-footer">
-          <span>Updated {NEWS_LAST_UPDATED}</span>
-        </div>
-      </div>
-    {/if}
+      <span class="nav-icon"><i class="fa-solid fa-newspaper"></i></span>
+      <span>Cool News</span>
+      <span class="news-count">{partnerNews.length}</span>
+    </a>
   </div>
 </aside>
 

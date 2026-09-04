@@ -892,8 +892,10 @@
 
       // Build timeline as array — replace first step with actual KIP target when available
       const tsEU = isEU ? EU_FGAS_STEPS.map((s: any) => ({ label: `${s.pct}% by ${s.year}${s.note ? ' (' + s.note + ')' : ''}`, isKip: false })) : null;
-      const kip1 = kipOverride ? { label: `${kipOverride.step1_pct}% by ${kipOverride.step1_year}`, isKip: true } : null;
-      const kip2 = kipOverride?.step2_pct ? { label: `${kipOverride.step2_pct}% by ${kipOverride.step2_year}`, isKip: true } : null;
+      const kip1 = (kipOverride && kipOverride.step1_pct != null && kipOverride.step1_year != null)
+        ? { label: `${kipOverride.step1_pct}% by ${kipOverride.step1_year}`, isKip: true } : null;
+      const kip2 = (kipOverride?.step2_pct != null && kipOverride?.step2_year != null)
+        ? { label: `${kipOverride.step2_pct}% by ${kipOverride.step2_year}`, isKip: true } : null;
 
       let timelineSteps: { label: string; isKip: boolean }[] = [];
       if (isEU && tsEU) {
@@ -1114,7 +1116,7 @@
         <span class="k-scope-badge"><i class="fa-solid fa-wind"></i> Residential AC</span>
         <span class="k-scope-badge"><i class="fa-solid fa-snowflake"></i> Domestic Refrigerators</span>
       </div>
-      <h2 class="k-title k-title-xl">Refrigerants are leaking the climate away.</h2>
+      <h2 class="k-title k-title-xl">Refrigerant leaks are a massive climate risk.</h2>
       <p class="k-body">Refrigerants are the essential "working fluids" that enable cooling by circulating through equipment to absorb and release heat — but they present a massive "invisible" climate risk through leakage during manufacturing, operation, servicing, and disposal.</p>
       <p class="k-body">While the Montreal Protocol has already eliminated ozone-depleting CFCs and is phasing out HCFCs, their common replacements — hydrofluorocarbons (HFCs) — are potent greenhouse gases with a Global Warming Potential (GWP) thousands of times higher than CO₂. Common refrigerants like R-134a (GWP 1,430) and R-410A (GWP 2,088) mean that even minor leaks contribute significantly to global heating. Left unchecked, HFC growth alone would add 0.5°C of warming by 2100. To avert this, the Kigali Amendment establishes a legally binding pathway to phase down HFC production and consumption by over 80%, driving the global transition toward climate-friendly, low-GWP alternatives.</p>
       <div class="kigali-problem-stats">
@@ -1640,8 +1642,8 @@
       <!-- Partner logos -->
       <div class="kigali-partner-bar">
         <div class="kigali-partner-header">
-          <i class="fa-solid fa-handshake"></i>
-          <span class="kigali-partner-title">Data Partners</span>
+          <i class="fa-solid fa-database"></i>
+          <span class="kigali-partner-title">Data Sources</span>
         </div>
         <div class="kigali-partner-logos">
           {#each kigaliPartners as partner (partner.id)}

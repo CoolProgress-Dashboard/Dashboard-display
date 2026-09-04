@@ -60,13 +60,13 @@
   //         DB: BAU 601 Mt → KIP 117 Mt = 484 Mt saved = 80% reduction
   const emissionsStats = [
     {
-      value: '2,344',
-      label: 'Mt CO₂e from cooling today',
+      value: '2.3',
+      label: 'Gt CO₂e from cooling today',
       context: 'Total cooling emissions in 2025 across the full cooling sector (CLASP Mepsy indirect: 1,545 Mt + GCI direct refrigerant: 422 Mt + commercial cooling and cold chain sub-sectors). The chart below shows explicitly modelled appliances only. Source: CLASP Mepsy + GCI/HEAT.'
     },
     {
-      value: '5,950',
-      label: 'Mt CO₂e by 2050 under BAU',
+      value: '6',
+      label: 'Gt CO₂e by 2050 under BAU',
       context: 'Business-as-usual trajectory across the full cooling sector: indirect energy emissions (CLASP: 3,177 Mt) + direct refrigerant emissions (GCI: 601 Mt) + commercial cooling and cold chain sub-sectors by 2050. The chart shows explicitly modelled appliances. Cooling demand surges in South Asia, Africa, and SE Asia without policy intervention. Source: CLASP Mepsy + GCI/HEAT.'
     },
     {
@@ -222,10 +222,14 @@
       }
     }
 
+    function noClaspAppliancesSelected(): boolean {
+      return emissionsDataSource === 'clasp' && localEmissionsAppliances.length === 0;
+    }
+
     function getFilteredClaspData() {
       return localClaspEnergy.filter((r: any) => {
         if (r.year !== localEmissionsYear) return false;
-        if (!(localEmissionsAppliances.length === 0 || localEmissionsAppliances.includes(r.appliance))) return false;
+        if (!localEmissionsAppliances.includes(r.appliance)) return false;
         if (emissionsRegion) {
           if (getCountryRegion(r.country_code) !== emissionsRegion) return false;
         }
@@ -395,6 +399,15 @@
     function updateNewEmissionsLegend(maxValue: number) {
       const container = document.getElementById('emissions-legend');
       if (!container) return;
+      if (noClaspAppliancesSelected()) {
+        container.innerHTML = `<div class="legend-item legend-empty">
+          <div class="legend-color" style="background:${NO_DATA}"></div>
+          No appliances selected
+        </div>`;
+        const labelEl = document.getElementById('emissions-legend-label');
+        if (labelEl) labelEl.textContent = 'Indirect Emissions (Mt CO₂):';
+        return;
+      }
       const thresholds = [0.10, 0.35, 0.55, 0.78, 1.0];
       const colors = [ACCESS_RISK[1], ACCESS_RISK[2], ACCESS_RISK[3], ACCESS_RISK[5], ACCESS_RISK[6]];
       const labels = ['Low', 'Medium', 'Medium-High', 'High', 'Very High'];
@@ -485,10 +498,12 @@
       if (emissionsDataSource === 'clasp') {
         const countryRecords = localClaspEnergy.filter((r: any) =>
           r.country_code === code && r.year === localEmissionsYear &&
-          (localEmissionsAppliances.length === 0 || localEmissionsAppliances.includes(r.appliance))
+          localEmissionsAppliances.includes(r.appliance)
         );
         if (countryRecords.length === 0) {
-          tooltipContent = `<strong>${countryName}</strong><br><em>No CLASP data available</em>`;
+          tooltipContent = noClaspAppliancesSelected()
+            ? `<strong>${countryName}</strong><br><em>No appliances selected</em>`
+            : `<strong>${countryName}</strong><br><em>No CLASP data available</em>`;
         } else {
           const scenarioName = CLASP_SCENARIO_NAMES[emissionsScenario] || emissionsScenario;
           let total = 0; let breakdown = '';
@@ -588,6 +603,7 @@
       let stackedSeriesData: { name: string; data: number[]; color: string }[] = [];
       let currentYearBreakdown: { name: string; value: number; color: string }[] = [];
       let currentYearTotal = 0;
+      let currentYearBreakdownTotal = 0;
       let dataSourceLabel = '';
       let scenarioLabel = '';
 
@@ -596,12 +612,12 @@
         scenarioLabel = CLASP_SCENARIO_NAMES[emissionsScenario] || emissionsScenario;
         const countryClaspData = localClaspEnergy.filter((r: any) =>
           r.country_code === code &&
-          (localEmissionsAppliances.length === 0 || localEmissionsAppliances.includes(r.appliance))
+          localEmissionsAppliances.includes(r.appliance)
         );
         const yearSet = new Set<number>();
         countryClaspData.forEach((r: any) => { if (r.year >= 2020 && r.year <= 2050) yearSet.add(r.year); });
         years = Array.from(yearSet).sort((a, b) => a - b);
-        const appliancesToShow = localEmissionsAppliances.length > 0 ? localEmissionsAppliances : CLASP_APPLIANCES;
+        const appliancesToShow = localEmissionsAppliances;
         (appliancesToShow as string[]).forEach(appliance => {
           const appData = years.map(year => {
             const records = countryClaspData.filter((r: any) => r.year === year && r.appliance === appliance);
@@ -617,7 +633,10 @@
         });
         const currentYearClaspData = countryClaspData.filter((r: any) => r.year === localEmissionsYear);
         const applianceMap = new Map<string, number>();
-        currentYearClaspData.forEach((r: any) => {
+        const currentYearAllClaspData = localClaspEnergy.filter((r: any) =>
+          r.country_code === code && r.year === localEmissionsYear
+        );
+        currentYearAllClaspData.forEach((r: any) => {
           const co2 = getClaspCO2(r, emissionsScenario);
           applianceMap.set(r.appliance, (applianceMap.get(r.appliance) || 0) + co2);
         });
@@ -629,6 +648,7 @@
             color: applianceColors[name] || '#64748b'
           }));
         currentYearTotal = currentYearClaspData.reduce((sum: number, r: any) => sum + getClaspCO2(r, emissionsScenario), 0);
+        currentYearBreakdownTotal = currentYearAllClaspData.reduce((sum: number, r: any) => sum + getClaspCO2(r, emissionsScenario), 0);
       } else {
         dataSourceLabel = 'GCI Data';
         scenarioLabel = HEAT_SCENARIO_NAMES[emissionsScenario] || emissionsScenario;
@@ -646,14 +666,23 @@
           const records = countrySubcoolData.filter((r: any) => r.year === year);
           return records.reduce((sum: number, r: any) => sum + (r.indirect_emission_mt || 0), 0);
         });
-        if (directData.some(v => v > 0))   stackedSeriesData.push({ name: 'Direct (Refrigerants)', data: directData,   color: emissionTypeColors['Direct'] });
-        if (indirectData.some(v => v > 0)) stackedSeriesData.push({ name: 'Indirect (Energy)',     data: indirectData, color: emissionTypeColors['Indirect'] });
+        if (emissionsType !== 'indirect' && directData.some(v => v > 0)) {
+          stackedSeriesData.push({ name: 'Direct (Refrigerants)', data: directData, color: emissionTypeColors['Direct'] });
+        }
+        if (emissionsType !== 'direct' && indirectData.some(v => v > 0)) {
+          stackedSeriesData.push({ name: 'Indirect (Energy)', data: indirectData, color: emissionTypeColors['Indirect'] });
+        }
         const currentYearSubcoolData = countrySubcoolData.filter((r: any) => r.year === localEmissionsYear);
         const directTotal   = currentYearSubcoolData.reduce((sum: number, r: any) => sum + (r.direct_emission_mt   || 0), 0);
         const indirectTotal = currentYearSubcoolData.reduce((sum: number, r: any) => sum + (r.indirect_emission_mt || 0), 0);
-        if (directTotal   > 0) currentYearBreakdown.push({ name: 'Direct',   value: directTotal,   color: emissionTypeColors['Direct'] });
+        if (directTotal > 0) currentYearBreakdown.push({ name: 'Direct', value: directTotal, color: emissionTypeColors['Direct'] });
         if (indirectTotal > 0) currentYearBreakdown.push({ name: 'Indirect', value: indirectTotal, color: emissionTypeColors['Indirect'] });
-        currentYearTotal = directTotal + indirectTotal;
+        currentYearTotal = emissionsType === 'direct'
+          ? directTotal
+          : emissionsType === 'indirect'
+            ? indirectTotal
+            : directTotal + indirectTotal;
+        currentYearBreakdownTotal = directTotal + indirectTotal;
       }
 
       // Trend calculation
@@ -679,7 +708,13 @@
         changeIcon  = change > 0 ? 'fa-arrow-up' : change < 0 ? 'fa-arrow-down' : 'fa-minus';
         comparisonText = `vs ${years[0]}`;
       }
-      const lineChartTitle = emissionsDataSource === 'clasp' ? 'Emissions by Appliance Over Time' : 'Direct vs Indirect Emissions Over Time';
+      const lineChartTitle = emissionsDataSource === 'clasp'
+        ? 'Emissions by Appliance Over Time'
+        : emissionsType === 'direct'
+          ? 'Direct Emissions Over Time'
+          : emissionsType === 'indirect'
+            ? 'Indirect Emissions Over Time'
+            : 'Direct vs Indirect Emissions Over Time';
       const trendDirection = Number(changePercent) > 0 ? 'increase' : Number(changePercent) < 0 ? 'decrease' : 'remain stable';
       const trendDescription = years.length >= 2
         ? `Emissions are projected to ${trendDirection} by ${Math.abs(Number(changePercent))}% from 2025 to ${localEmissionsYear} under the ${scenarioLabel} scenario.`
@@ -688,7 +723,7 @@
         ? currentYearBreakdown.reduce((a, b) => a.value > b.value ? a : b)
         : null;
       const breakdownDescription = topSource
-        ? `In ${localEmissionsYear}, ${topSource.name} accounts for the largest share at ${((topSource.value / currentYearTotal) * 100).toFixed(0)}% (${topSource.value.toFixed(2)} Mt CO2).`
+        ? `In ${localEmissionsYear}, ${topSource.name} accounts for the largest share at ${((topSource.value / (currentYearBreakdownTotal || currentYearTotal)) * 100).toFixed(0)}% (${topSource.value.toFixed(2)} Mt CO2).`
         : 'No detailed breakdown available for the selected year.';
 
       const emissionTypeLabel = emissionsDataSource === 'clasp'
@@ -903,7 +938,7 @@
         const countrySavings: Record<string, { name: string; bauCumul: number; mepsSavings: number; deepEeSavings: number; batSavings: number; gridSavings: number; totalSavings: number }> = {};
         years.forEach(year => {
           const yearData = localClaspEnergy.filter((r: any) =>
-            r.year === year && (localEmissionsAppliances.length === 0 || localEmissionsAppliances.includes(r.appliance))
+            r.year === year && localEmissionsAppliances.includes(r.appliance)
           );
           const filtered = emissionsRegion ? yearData.filter((r: any) => getCountryRegion(r.country_code) === emissionsRegion) : yearData;
           filtered.forEach((r: any) => {
@@ -968,10 +1003,10 @@
 
       // Pre-compute interpolated BAU 2023 value (3/5 of the way from 2020 to 2025)
       const bau2020 = +localClaspEnergy
-        .filter((r: any) => r.year === 2020 && (localEmissionsAppliances.length === 0 || localEmissionsAppliances.includes(r.appliance)))
+        .filter((r: any) => r.year === 2020 && localEmissionsAppliances.includes(r.appliance))
         .reduce((t: number, r: any) => t + getClaspCO2(r, 'BAU'), 0).toFixed(1);
       const bau2025 = +localClaspEnergy
-        .filter((r: any) => r.year === 2025 && (localEmissionsAppliances.length === 0 || localEmissionsAppliances.includes(r.appliance)))
+        .filter((r: any) => r.year === 2025 && localEmissionsAppliances.includes(r.appliance))
         .reduce((t: number, r: any) => t + getClaspCO2(r, 'BAU'), 0).toFixed(1);
       const bau2023 = +(bau2020 * 0.4 + bau2025 * 0.6).toFixed(1);
 
@@ -980,7 +1015,7 @@
         const xyData: [number, number][] = dataYears.map((y) => {
           if (scenario === 'BAU' && y === 2023) return [2023, bau2023];
           const filtered = localClaspEnergy.filter((r: any) =>
-            r.year === y && (localEmissionsAppliances.length === 0 || localEmissionsAppliances.includes(r.appliance))
+            r.year === y && localEmissionsAppliances.includes(r.appliance)
           );
           const val = +filtered.reduce((total: number, r: any) => total + getClaspCO2(r, scenario), 0).toFixed(1);
           return [y, val];
@@ -1341,7 +1376,7 @@
         <span class="ep-scope-badge"><i class="fa-solid fa-fan"></i> Ceiling Fans</span>
       </div>
       <h2 class="ep-section-title">Cooling demand is rising and so are the emissions that power it.</h2>
-      <p class="ep-body">On a fossil-reliant grid, every air conditioner adds CO₂ to the atmosphere, while refrigerant leaks release gases hundreds to thousands of times more potent than carbon. This creates a vicious cycle: rising temperatures drive cooling demand, which accelerates emissions, further heating the planet. Without intervention, cooling-related emissions are on track to double by 2040 and potentially triple by 2050.</p>
+      <p class="ep-body">On a grid powered by fossil fuels, every air conditioner adds CO₂ to the atmosphere, while refrigerant leaks release gases hundreds to thousands of times more potent than carbon. This creates a vicious cycle: rising temperatures drive cooling demand, which accelerates emissions, further heating the planet. Without intervention, cooling-related emissions are on track to double by 2040 and potentially triple by 2050.</p>
 
       <div class="emissions-counters">
         {#each emissionsStats as stat, i}
@@ -1375,7 +1410,7 @@
       <p class="ep-body">Both <strong>direct emissions</strong> (refrigerant leaks from cooling equipment) and <strong>indirect emissions</strong> (electricity-related CO₂ from powering compressors) are shown on the map below. Click any country to explore its full breakdown by appliance type and emission source.</p>
       <p class="ep-xref-note">
         <i class="fa-solid fa-arrow-right-long" style="color: #6BADA0;"></i>
-        For the full HFC refrigerant phase-down trajectory and Kigali Amendment ratification status, see <a href="/dashboard/kigali" class="ep-xref-link"><strong>Pillar 3: Refrigerant Transition</strong></a>.
+        For more information about refrigerants and the work to transition away from HFCs, see <a href="/dashboard/kigali" class="ep-xref-link"><strong>Pillar 3: Refrigerant Transition</strong></a>.
       </p>
     </div>
 
@@ -1455,8 +1490,8 @@
           <div class="filter-group">
             <label class="filter-label">Source</label>
             <div class="toggle-group" id="emissions-source-toggles">
-              <button class="toggle-btn" data-source="clasp" type="button" title="Indirect emissions only (energy-related CO2) by appliance">CLASP</button>
               <button class="toggle-btn active" data-source="subcool" type="button" title="Direct and indirect emissions with Kigali scenarios (GCI/GIZ data)">GCI</button>
+              <button class="toggle-btn" data-source="clasp" type="button" title="Indirect emissions only (energy-related CO2) by appliance">CLASP</button>
             </div>
           </div>
 
@@ -1486,7 +1521,7 @@
 
           <!-- Emission Type Toggles (for Subcool/GCI) -->
           <div class="filter-group" id="emissions-type-row">
-            <label class="filter-label">Type</label>
+            <label class="filter-label">Emissions Type</label>
             <div class="toggle-group" id="emissions-type-toggles">
               <button class="toggle-btn active" data-type="total" type="button">Total</button>
               <button class="toggle-btn" data-type="direct" type="button">Direct</button>
@@ -1525,7 +1560,7 @@
     <div class="chapter-card" class:revealed>
       <span class="ep-eyebrow ep-eyebrow-xl">The Way Forward</span>
       <h2 class="ep-section-title">Breaking the vicious cycle of heat, demand, and emissions.</h2>
-      <p class="ep-body">Cooling-related climate impact is driven by two distinct streams: indirect emissions from the electricity used to power compressors and fans — currently responsible for roughly 70% of the sector's impact — and direct emissions from high-GWP refrigerant leaks, such as R-410A and R-22, during manufacturing, operation, maintenance and disposal. Tackling one without the other solves only half the problem, as air conditioning and refrigeration already account for over 1 GtCO₂e annually, particularly in fast-growing regions (e.g. South Asia, Africa, Southeast Asia) with fossil-heavy grids.</p>
+      <p class="ep-body">Cooling-related climate impact is driven by two distinct streams. Indirect emissions come from the electricity used to power compressors and fans. Direct emissions come from high-GWP refrigerant leaks, such as R-410A and R-22, during manufacturing, operation, maintenance and disposal. Across the sector, indirect emissions account for roughly 70% of the impact and direct emissions for about 30%, although the split varies with the equipment, the refrigerant and how clean the grid is, and it shifts over time as grids decarbonise (UNEP Ozone Secretariat; Green Cooling Initiative). Tackling one without the other solves only half the problem, and the challenge is greatest in fast-growing regions such as South Asia, Africa and Southeast Asia, where cooling demand is rising quickly and grids still rely heavily on fossil fuels. Household refrigerators add little to the direct total, since the industry has already moved to ultra-low-GWP refrigerants such as R-600a, so the direct refrigerant challenge is concentrated in air conditioning.</p>
       <p class="ep-body">Bending the emissions curve requires three simultaneous moves: shifting to ultra-low-GWP refrigerants, doubling equipment energy efficiency, and accelerating grid decarbonisation. According to the IEA Efficient Cooling Scenario, this integrated approach could avoid 460 GtCO₂e in cumulative emissions by 2060 — equivalent to eight years of current global energy-related output — and the data on this dashboard tracks our progress toward that critical trajectory.</p>
 
       <div class="cooling-pledge-badge">
@@ -1643,11 +1678,11 @@
         </a>
       </div>
 
-      <!-- Data Partners -->
+      <!-- Data Sources -->
       <div class="emissions-partner-bar">
         <div class="emissions-partner-header">
-          <i class="fa-solid fa-handshake"></i>
-          <span class="emissions-partner-title">Data Partners</span>
+          <i class="fa-solid fa-database"></i>
+          <span class="emissions-partner-title">Data Sources</span>
         </div>
         <div class="emissions-partner-logos">
           {#each emissionsPartners as partner (partner.id)}

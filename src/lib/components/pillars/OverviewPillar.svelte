@@ -6,14 +6,7 @@
 
   import FourPillarFramework from '$lib/components/overview/FourPillarFramework.svelte';
   import { partners } from '$lib/data/partner-data';
-  import { partnerNews, NEWS_LAST_UPDATED, CATEGORY_META, type NewsItem } from '$lib/data/partner-news';
-
-  let activeFilter: NewsItem['category'] | 'all' = 'all';
-  const categoryKeys = Object.keys(CATEGORY_META) as NewsItem['category'][];
-
-  $: filteredNews = activeFilter === 'all'
-    ? partnerNews
-    : partnerNews.filter(n => n.category === activeFilter);
+  import { partnerNews } from '$lib/data/partner-news';
 
   let newsRevealed = false;
   onMount(() => {
@@ -234,18 +227,11 @@
 
     </div><!-- /overview-flow -->
 
-    <!-- Compact Partner Bar -->
+    <!-- Compact Data Sources Bar -->
     <div class="partner-bar card-panel">
       <div class="partner-bar-header">
-        <i class="fa-solid fa-handshake"></i>
-        <span class="partner-bar-title">Powered by Our Partners</span>
-        <button
-          class="partner-bar-cta"
-          type="button"
-          on:click={() => { onNavigate('partners'); setTimeout(() => { document.querySelector('.main-content')?.scrollTo({ top: 0, behavior: 'instant' }); }, 50); }}
-        >
-          View All <i class="fa-solid fa-arrow-right"></i>
-        </button>
+        <i class="fa-solid fa-database"></i>
+        <span class="partner-bar-title">Our Data Sources</span>
       </div>
       <div class="partner-bar-logos">
         {#each partners as partner (partner.id)}
@@ -262,68 +248,23 @@
       </div>
     </div>
 
-    <!-- Latest News Card (pillar-style) -->
-    <div class="news-story-card" class:revealed={newsRevealed}>
-      <!-- Header -->
-      <div class="news-story-header">
-        <div class="news-story-text">
-          <h2 class="news-headline">
-            <i class="fa-solid fa-newspaper"></i>
-            Latest News
-            <span class="news-badge">{partnerNews.length}</span>
-          </h2>
-          <p class="news-subhead">Key developments from across the global cooling ecosystem</p>
-        </div>
-        <div class="news-updated">Updated {NEWS_LAST_UPDATED}</div>
+    <!-- Cool News — compact box linking to the dedicated news page -->
+    <a class="cool-news-box" class:revealed={newsRevealed} href="/dashboard/news">
+      <div class="cool-news-head">
+        <span class="cool-news-eyebrow"><i class="fa-solid fa-newspaper"></i> Cool News</span>
+        <span class="cool-news-all">All news <i class="fa-solid fa-arrow-right"></i></span>
       </div>
-
-      <!-- Category filter pills -->
-      <div class="news-filter-row">
-        <button
-          class="news-pill"
-          class:active={activeFilter === 'all'}
-          type="button"
-          on:click={() => activeFilter = 'all'}
-        >All</button>
-        {#each categoryKeys as cat}
-          <button
-            class="news-pill"
-            class:active={activeFilter === cat}
-            type="button"
-            on:click={() => activeFilter = cat}
-          >
-            <i class="fa-solid {CATEGORY_META[cat].icon}"></i>
-            {CATEGORY_META[cat].label}
-          </button>
+      <p class="cool-news-tag">The latest in cooling this month</p>
+      <ul class="cool-news-teasers">
+        {#each partnerNews.slice(0, 3) as item (item.id)}
+          <li class="cool-news-teaser">
+            <span class="cool-news-dot" style="background:{item.color}"></span>
+            <span class="cool-news-teaser-head">{item.headline}</span>
+            <span class="cool-news-teaser-date">{item.date}</span>
+          </li>
         {/each}
-      </div>
-
-      <!-- News items grid -->
-      <div class="news-grid">
-        {#each filteredNews as item (item.id)}
-          <a
-            href={item.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="news-card"
-          >
-            <div class="news-card-icon" style="background: {item.color}14; color: {item.color}">
-              <i class="fa-solid {item.icon}"></i>
-            </div>
-            <div class="news-card-body">
-              <div class="news-card-meta">
-                <span class="news-card-cat" style="color: {item.color}">{item.category}</span>
-                <span class="news-card-date">{item.date}</span>
-                <span class="news-card-source">&middot; {item.source}</span>
-              </div>
-              <p class="news-card-headline">{item.headline}</p>
-              <p class="news-card-summary">{item.summary}</p>
-            </div>
-            <i class="fa-solid fa-arrow-up-right-from-square news-card-ext"></i>
-          </a>
-        {/each}
-      </div>
-    </div>
+      </ul>
+    </a>
 
   </div>
 </section>
@@ -901,6 +842,93 @@
   /* ===========================
      LATEST NEWS
      =========================== */
+
+  /* Cool News — compact box linking to the dedicated /dashboard/news page */
+  .cool-news-box {
+    display: block;
+    text-decoration: none;
+    background: linear-gradient(135deg, #0f2a47 0%, #0d3b5e 55%, #083d4a 100%);
+    border-radius: 16px;
+    padding: 1.3rem 1.5rem 1.4rem;
+    box-shadow: 0 6px 20px rgba(15, 42, 71, 0.18);
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.2s ease;
+  }
+  .cool-news-box.revealed { opacity: 1; transform: translateY(0); }
+  .cool-news-box:hover { box-shadow: 0 10px 28px rgba(15, 42, 71, 0.28); }
+
+  .cool-news-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.35rem;
+  }
+  .cool-news-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #5eead4;
+  }
+  .cool-news-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #ffffff;
+    white-space: nowrap;
+  }
+  .cool-news-all i { transition: transform 0.15s ease; }
+  .cool-news-box:hover .cool-news-all i { transform: translateX(3px); }
+
+  .cool-news-tag {
+    font-size: 0.86rem;
+    color: rgba(255, 255, 255, 0.72);
+    margin: 0 0 0.9rem;
+  }
+
+  .cool-news-teasers {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .cool-news-teaser {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+  }
+  .cool-news-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .cool-news-teaser-head {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #f1f5f9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .cool-news-teaser-date {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.5);
+    flex-shrink: 0;
+  }
+
   .news-story-card {
     background: linear-gradient(160deg, #bfdbfe 0%, #dbeafe 30%, #e0f2fe 65%, #cffafe 100%);
     border-radius: 16px;

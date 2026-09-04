@@ -35,7 +35,7 @@ export const VIEW_META: Record<string, ViewMeta> = {
     headline: 'Cooling emissions will triple by 2050 \u2014 unless we act now',
     subhead: 'AC alone will emit more than global aviation by 2035. Three interventions can cut 73% by mid-century.',
     insight:
-      'Today\u2019s cooling sector emits 2,344 Mt CO\u2082e annually \u2014 more than the entire EU. On the current trajectory, that rises to 5,950 Mt by 2050 (across the full cooling sector). But three proven interventions \u2014 efficient appliances, low-GWP refrigerants, and clean grids \u2014 can cut the majority of that growth. That is like taking every car in Europe and North America off the road.',
+      'Today\u2019s cooling sector emits around 2.3 Gt CO\u2082e annually, more than the entire EU. On the current trajectory, that rises to about 6 Gt by 2050 (across the full cooling sector). But three proven interventions, efficient appliances, low-GWP refrigerants, and clean grids, can cut the majority of that growth. That is like taking every car in Europe and North America off the road.',
     methodology: 'Three-layer DECARB: HEAT GmbH (direct emissions, Kigali phase-down) + CLASP (efficiency scenarios) + IEA STEPS (grid decarbonization). See /methodology for details.',
     sources: [
       { name: 'HEAT GmbH', url: 'https://www.heat-international.de/', logo: '/images/heat-logo.png' },
@@ -86,17 +86,6 @@ export const VIEW_META: Record<string, ViewMeta> = {
       { name: 'Cool Coalition Pledge', url: 'https://coolcoalition.org/global-cooling-pledge/', logo: '/images/unep.png', logoLarge: true },
       { name: 'CLASP NDC Toolkit', url: 'https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/', logo: '/images/clasp-logo.png' },
       { name: 'Climate Policy Radar', url: 'https://www.climatepolicyradar.org/', logo: '/images/cpr-logo-dark.png' }
-    ]
-  },
-  partners: {
-    headline: 'Partner Ecosystem',
-    subhead: 'Organizations driving the global transition to clean, efficient, and accessible cooling',
-    insight:
-      'CoolProgress integrates authoritative data from leading global partners. HEAT GmbH provides the analytical backbone, CLASP the efficiency data, IEA the energy projections, and SEforALL the access tracking.',
-    sources: [
-      { name: 'HEAT GmbH', url: 'https://www.heat-international.de/', logo: '/images/heat-logo.png' },
-      { name: 'Cool Coalition', url: 'https://coolcoalition.org/', logo: '/images/cool-coalition.png' },
-      { name: 'CLASP', url: 'https://www.clasp.ngo/', logo: '/images/clasp-logo.png' }
     ]
   }
 };

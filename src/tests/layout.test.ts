@@ -69,10 +69,6 @@ describe('Layout header visibility logic', () => {
     expect(headerVisible('overview')).toBe(true);
   });
 
-  it('Header is visible on the partners view', () => {
-    expect(headerVisible('partners')).toBe(true);
-  });
-
   it.each(PILLAR_VIEWS)(
     'Header is hidden on the %s pillar view (pillar has its own story card)',
     (view) => {

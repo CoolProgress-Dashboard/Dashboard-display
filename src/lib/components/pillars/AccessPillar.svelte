@@ -1287,8 +1287,8 @@
 
       <div class="access-partner-bar">
         <div class="access-partner-header">
-          <i class="fa-solid fa-handshake"></i>
-          <span class="access-partner-title">Data Partners</span>
+          <i class="fa-solid fa-database"></i>
+          <span class="access-partner-title">Data Sources</span>
         </div>
         <div class="access-partner-logos">
           {#each accessPartners as partner (partner.id)}

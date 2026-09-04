@@ -15,7 +15,7 @@ const route = (path: string) => readFileSync(resolve(DASHBOARD, path), 'utf-8');
 
 // ─── File existence ────────────────────────────────────────────────────────────
 describe('Dashboard route files exist', () => {
-  const PILLAR_ROUTES = ['overview', 'emissions', 'meps', 'kigali', 'access', 'policy', 'partners'];
+  const PILLAR_ROUTES = ['overview', 'emissions', 'meps', 'kigali', 'access', 'policy'];
 
   it.each(PILLAR_ROUTES)('%s/+page.svelte exists', (pillar) => {
     expect(existsSync(resolve(DASHBOARD, pillar, '+page.svelte'))).toBe(true);
@@ -85,12 +85,6 @@ describe('Pillar route prop wiring', () => {
     expect(c).toContain('ndcTracker');
     expect(c).toContain('ncap');
     expect(c).toContain('countries');
-  });
-
-  it('partners renders PartnersPillar with active={true}', () => {
-    const c = route('partners/+page.svelte');
-    expect(c).toContain('PartnersPillar');
-    expect(c).toContain('active={true}');
   });
 });
 

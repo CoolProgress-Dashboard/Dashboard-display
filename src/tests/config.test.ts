@@ -6,7 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import { VIEW_META } from '$lib/components/shared/config';
 
-const ALL_VIEWS = ['overview', 'emissions', 'meps', 'kigali', 'access', 'policy', 'partners'];
+const ALL_VIEWS = ['overview', 'emissions', 'meps', 'kigali', 'access', 'policy'];
 const PILLAR_VIEWS = ['emissions', 'meps', 'kigali', 'access', 'policy'];
 
 describe('VIEW_META config', () => {
@@ -55,8 +55,7 @@ describe('VIEW_META config', () => {
     }
   });
 
-  it('overview and partners are NOT in pillar views', () => {
+  it('overview is NOT in pillar views', () => {
     expect(PILLAR_VIEWS).not.toContain('overview');
-    expect(PILLAR_VIEWS).not.toContain('partners');
   });
 });

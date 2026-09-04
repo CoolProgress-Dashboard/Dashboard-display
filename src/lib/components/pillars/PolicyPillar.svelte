@@ -1733,7 +1733,7 @@
 
       <div class="policy-partner-bar">
         <div class="policy-partner-header">
-          <i class="fa-solid fa-handshake"></i>
+          <i class="fa-solid fa-database"></i>
           <span class="policy-partner-title">Data Sources</span>
         </div>
         <div class="policy-partner-logos">

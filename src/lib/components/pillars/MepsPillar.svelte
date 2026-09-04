@@ -856,15 +856,19 @@
             const mepsRecs = allRecs.filter(r => isMepsRecord(r));
             const labelRecs = allRecs.filter(r => isLabelRecord(r));
             const equips = [...new Set(allRecs.map(m => m.equipment_type).filter(Boolean))];
-            let html = `<strong>${country?.country_name || code || 'Unknown'}</strong><br><span style="color:${getMepsColor(status.level)};font-weight:600">${status.label}</span>`;
+            const updateYears = allRecs.map(r => r.year_revised || r.year_adopted).filter(Boolean) as number[];
+            const lastUpdate = updateYears.length ? Math.max(...updateYears) : null;
+            let html = `<strong style="font-size:1.05em;color:#0f2a47">${country?.country_name || code || 'Unknown'}</strong>`
+              + `<br><span style="display:inline-flex;align-items:center;gap:5px;font-weight:700;color:#0f2a47"><span style="width:9px;height:9px;border-radius:50%;background:${getMepsColor(status.level)};display:inline-block;border:1px solid rgba(0,0,0,0.2)"></span>${status.label}</span>`;
+            if (lastUpdate) html += `<br><span style="font-size:1.25em;font-weight:800;color:#0f2a47">Last updated: ${lastUpdate}</span>`;
             if (allRecs.length > 0) {
-              html += `<br><span style="color:#ddd;font-size:0.85em">`;
+              html += `<br><span style="color:#334155;font-size:0.85em">`;
               if (mepsRecs.length > 0) html += `MEPS policies: ${mepsRecs.length}`;
               if (mepsRecs.length > 0 && labelRecs.length > 0) html += ` | `;
               if (labelRecs.length > 0) html += `Labelling policies: ${labelRecs.length}`;
               html += `</span>`;
-              if (equips.length > 0) html += `<br><span style="font-size:0.8em">${equips.join(', ')}</span>`;
-              html += `<br><span style="font-size:0.72em;color:#aaa">Counts = policy records in the CLASP database, one per appliance and requirement type</span>`;
+              if (equips.length > 0) html += `<br><span style="font-size:0.8em;color:#334155">${equips.join(', ')}</span>`;
+              html += `<br><span style="font-size:0.72em;color:#64748b">Counts = policy records in the CLASP database, one per appliance and requirement type</span>`;
             }
             if (tooltip) {
               tooltip.innerHTML = html;
@@ -1046,12 +1050,12 @@
       <p class="meps-body-text">The Inverter Revolution changed the game. Instead of a switch, an inverter acts like a dimmer. It uses a variable-speed drive to slow down or speed up the compressor based on the actual cooling need. Once the room is cool, the inverter keeps the compressor running at a low, ultra-efficient hum.</p>
 
       <div class="meps-inverter-stat-highlight">
-        <div class="meps-inverter-stat-value">up to 60%</div>
+        <div class="meps-inverter-stat-value">25% to 30%</div>
         <div class="meps-inverter-stat-label">energy savings over standard fixed-speed models</div>
-        <div class="meps-inverter-stat-note">In optimised high-temperature and high-humidity units, savings reach up to 60% (CLASP inverter benchmarking). A 5x efficiency potential exists for next-generation designs, demonstrated by the Global Cooling Prize.</div>
+        <div class="meps-inverter-stat-note">In real-world use a good inverter unit cuts energy use by roughly 25% to 30% against a comparable fixed-speed model (CLASP inverter benchmarking). A much larger 5x efficiency potential exists for next-generation designs, demonstrated by the Global Cooling Prize, though no product on the market reaches it today.</div>
       </div>
 
-      <p class="meps-body-text">By eliminating the wasteful start-stop cycles, inverter ACs typically achieve <strong>up to 60% energy savings</strong> over standard fixed-speed models, with optimised units for high-temperature, high-humidity climates consistently reaching that ceiling (CLASP inverter benchmarking). The Global Cooling Prize demonstrated that a five-fold improvement in efficiency is achievable for next-generation designs, underscoring the enormous headroom that still exists above today's best-available standards. For a typical household in a hot climate, this transition already slashes electricity bills and reduces the peak load on national power grids.</p>
+      <p class="meps-body-text">By eliminating the wasteful start-stop cycles, inverter ACs typically achieve <strong>around 25% to 30% energy savings</strong> over standard fixed-speed models (CLASP inverter benchmarking). The Global Cooling Prize showed that a five-fold improvement in efficiency is achievable for next-generation designs, underscoring the enormous headroom that still exists above today's best-available standards, even though no product on the market reaches it yet. For a typical household in a hot climate, this transition already slashes electricity bills and reduces the peak load on national power grids.</p>
     </div>
 
     <!-- ═══ SUPER-EFFICIENT FANS ═══ -->
@@ -1281,7 +1285,7 @@
       <div class="chart-card-body">
         <p class="chart-hint">This chart shows cooling's current and projected share of peak electricity demand by country. Hover over bars to see absolute values and growth projections.</p>
         <PeakLoadChart {peakLoadData} />
-        <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> Data currently under review by HEAT and partners.</p>
+        <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> Data currently under review by HEAT and contributing organisations.</p>
       </div>
     </div>
 
@@ -1337,8 +1341,8 @@
 
       <div class="meps-partner-bar">
         <div class="meps-partner-header">
-          <i class="fa-solid fa-handshake"></i>
-          <span class="meps-partner-title">Data Partners</span>
+          <i class="fa-solid fa-database"></i>
+          <span class="meps-partner-title">Data Sources</span>
         </div>
         <div class="meps-partner-logos">
           {#each mepsPartners as partner (partner.id)}

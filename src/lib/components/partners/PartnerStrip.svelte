@@ -6,8 +6,8 @@
 
 <div class="partner-strip" class:compact>
   <div class="strip-label">
-    <i class="fa-solid fa-handshake"></i>
-    <span>Partners</span>
+    <i class="fa-solid fa-database"></i>
+    <span>Data Sources</span>
   </div>
   <div class="strip-logos">
     {#each partners as partner (partner.id)}

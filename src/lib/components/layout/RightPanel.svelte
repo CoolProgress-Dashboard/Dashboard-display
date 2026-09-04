@@ -14,7 +14,7 @@
 <aside class="sidebar-right">
   <!-- Partner Logos Grid -->
   <div class="side-card partner-logos-card" style="margin-top: auto;">
-    <h3>Data & Knowledge Partners</h3>
+    <h3>Data & Knowledge Sources</h3>
     <div class="partner-logos-grid">
       {#each partnerLogos as partner}
         <a href={partner.url} target="_blank" rel="noopener noreferrer" class="partner-logo-link" title={partner.alt}>

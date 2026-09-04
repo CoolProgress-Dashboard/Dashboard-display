@@ -3,7 +3,7 @@
  *
  * The Header renders the .story-box with headline, subhead, methodology,
  * source links, and an optional "Pillar Information" button.
- * It is shown only for overview/partners views (hidden for pillar views).
+ * It is shown only for the overview view (hidden for pillar views).
  */
 import { describe, it, expect, vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/svelte';
