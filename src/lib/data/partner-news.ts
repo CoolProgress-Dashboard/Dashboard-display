@@ -16,13 +16,14 @@ export interface NewsItem {
   section: NewsSection;
   icon: string;        // FontAwesome icon relating to what the item is about
   color: string;       // pillar accent (or dark blue) used sparingly for icon + source
+  date: string;        // ISO publication date (YYYY-MM-DD) of the source article/event
   headline: string;    // the key message, shown bold
   summary: string;     // supporting detail (may be empty for one-line reads)
   links: NewsLink[];   // one or more source links
 }
 
 export const SECTION_META: Record<NewsSection, { label: string; icon: string; color: string }> = {
-  headlines: { label: 'In case you missed it', icon: 'fa-newspaper', color: '#0d9488' },
+  headlines: { label: 'Highlights', icon: 'fa-newspaper', color: '#0d9488' },
   events: { label: 'Upcoming events', icon: 'fa-calendar-check', color: '#E85A4F' },
   reads: { label: 'Other interesting reads', icon: 'fa-book-open', color: '#3D6B6B' }
 };
@@ -33,13 +34,14 @@ export const partnerNews: NewsItem[] = [
     section: 'headlines',
     icon: 'fa-temperature-arrow-up',
     color: '#ea580c',
+    date: '2026-09-10',
     headline: 'Hottest summer on record in more countries than ever',
     summary:
       'Summer 2026 broke records across the US and France, and globally August 2026 became Earth’s hottest month ever recorded.',
     links: [
-      { label: 'US (NOAA)', url: 'https://www.ncei.noaa.gov/news/national-climate-202608' },
-      { label: 'France (Le Monde)', url: 'https://www.lemonde.fr/en/environment/article/2026/09/04/summer-2026-becomes-by-far-the-hottest-ever-recorded-in-france-beating-the-record-by-almost-1-c-in-a-single-season-is-huge_6757141_114.html' },
-      { label: 'August (NPR)', url: 'https://www.npr.org/2026/09/10/nx-s1-5964676/scientists-august-hottest' }
+      { label: 'NOAA', url: 'https://www.ncei.noaa.gov/news/national-climate-202608' },
+      { label: 'Le Monde', url: 'https://www.lemonde.fr/en/environment/article/2026/09/04/summer-2026-becomes-by-far-the-hottest-ever-recorded-in-france-beating-the-record-by-almost-1-c-in-a-single-season-is-huge_6757141_114.html' },
+      { label: 'NPR', url: 'https://www.npr.org/2026/09/10/nx-s1-5964676/scientists-august-hottest' }
     ]
   },
   {
@@ -47,6 +49,7 @@ export const partnerNews: NewsItem[] = [
     section: 'headlines',
     icon: 'fa-calendar-week',
     color: '#d97706',
+    date: '2026-09-10',
     headline: 'Extreme heat is creeping into the shoulder seasons',
     summary:
       'Carbon Brief finds heat events spreading beyond summer in over half the world: arriving earlier in western Europe, southern Africa and north-western India, and later across much of the US, eastern China and northern Africa.',
@@ -59,6 +62,7 @@ export const partnerNews: NewsItem[] = [
     section: 'headlines',
     icon: 'fa-hurricane',
     color: '#0891b2',
+    date: '2026-09-03',
     headline: 'UN warns the current El Niño is turning “very strong”',
     summary:
       'Months of extreme heat, floods and drought are expected as it peaks around year-end, with a near-100% chance it persists through February 2027.',
@@ -71,6 +75,7 @@ export const partnerNews: NewsItem[] = [
     section: 'headlines',
     icon: 'fa-tree',
     color: '#16a34a',
+    date: '2026-08-05',
     headline: 'Green-blue infrastructure cools cities by up to 2.5 °C',
     summary:
       'A UK study of six infrastructure types found all were 1.81–2.49 °C cooler than built-up sites, with woodland up to 6 °C cooler on the hottest days.',
@@ -83,6 +88,7 @@ export const partnerNews: NewsItem[] = [
     section: 'headlines',
     icon: 'fa-seedling',
     color: '#2D7D5A',
+    date: '2026-09-04',
     headline: 'Tree shade and soil moisture both drive urban cooling',
     summary:
       'New research quantifies the roles of tree-cast shadows and transpiration, showing why managing tree soil moisture sustains the cooling benefit.',
@@ -95,6 +101,7 @@ export const partnerNews: NewsItem[] = [
     section: 'headlines',
     icon: 'fa-file-signature',
     color: '#7c3aed',
+    date: '2026-09-03',
     headline: 'Nashik signs a five-year heat-resilience plan with NRDC',
     summary:
       'The MOU aims to cut heat-related vulnerabilities, promote sustainable cooling and strengthen climate-responsive urban planning in the Indian city.',
@@ -107,6 +114,7 @@ export const partnerNews: NewsItem[] = [
     section: 'headlines',
     icon: 'fa-snowflake',
     color: '#0ea5e9',
+    date: '2026-09-05',
     headline: 'Island states deepen cooperation on HFC controls',
     summary:
       'UNEP OzonAction convened Caribbean and Pacific ozone officers in Thailand to strengthen HFC licensing, quota systems and refrigeration and AC efficiency.',
@@ -119,6 +127,7 @@ export const partnerNews: NewsItem[] = [
     section: 'headlines',
     icon: 'fa-fan',
     color: '#0d9488',
+    date: '2026-09-06',
     headline: 'Is air conditioning the answer to extreme heat?',
     summary:
       'A record-breaking summer prompted a wave of coverage debating the role, and the limits, of air conditioning in a warming world.',
@@ -133,6 +142,7 @@ export const partnerNews: NewsItem[] = [
     section: 'headlines',
     icon: 'fa-smog',
     color: '#6366f1',
+    date: '2026-09-07',
     headline: 'Wildfires and heat threaten hard-won air-quality gains',
     summary:
       'The WMO warns that pollution from intensifying wildfires and heat waves could undermine global efforts to improve air quality and protect health.',
@@ -145,6 +155,7 @@ export const partnerNews: NewsItem[] = [
     section: 'headlines',
     icon: 'fa-heart-pulse',
     color: '#dc2626',
+    date: '2026-09-07',
     headline: 'Southern Europe’s heat deaths are 26x more likely',
     summary:
       'New analysis finds 2022-like heat-mortality events roughly ten times more likely than the European average, with sharp regional and demographic disparities.',
@@ -157,6 +168,7 @@ export const partnerNews: NewsItem[] = [
     section: 'headlines',
     icon: 'fa-people-group',
     color: '#db2777',
+    date: '2026-07-01',
     headline: 'Extreme heat cuts Thai women’s earnings by half',
     summary:
       'A HERA report on the 11 million women in Thailand’s informal sector finds heat can halve earnings while driving severe health impacts.',
@@ -169,6 +181,7 @@ export const partnerNews: NewsItem[] = [
     section: 'events',
     icon: 'fa-route',
     color: '#E85A4F',
+    date: '2026-10-05',
     headline: 'South Asia Cooling Innovation Road Show · Oct 5–14',
     summary: 'Hosted by the World Bank Group, UK Government and the Cool Coalition.',
     links: [
@@ -180,6 +193,7 @@ export const partnerNews: NewsItem[] = [
     section: 'reads',
     icon: 'fa-arrows-rotate',
     color: '#0891b2',
+    date: '2026-09-08',
     headline: 'The world is adapting to extreme heat, but not nearly fast enough',
     summary: '',
     links: [{ label: 'Grist', url: 'https://grist.org/extreme-weather/the-world-is-adapting-to-extreme-heat-but-not-nearly-fast-enough/' }]
@@ -189,6 +203,7 @@ export const partnerNews: NewsItem[] = [
     section: 'reads',
     icon: 'fa-house-chimney',
     color: '#7c3aed',
+    date: '2026-09-05',
     headline: 'When the power goes out, how can architecture keep a house cool?',
     summary: '',
     links: [{ label: 'Design Boom', url: 'https://www.designboom.com/architecture/power-goes-out-keep-house-cooling-passive-survivability/' }]
@@ -198,6 +213,7 @@ export const partnerNews: NewsItem[] = [
     section: 'reads',
     icon: 'fa-sun',
     color: '#ea580c',
+    date: '2026-09-04',
     headline: '“People really die”: a relentless summer, avoiding the day and waiting for night',
     summary: '',
     links: [{ label: 'The Asia Business Daily', url: 'https://www.asiae.co.kr/en/visual-news/article/2026090420011553057' }]
@@ -207,6 +223,7 @@ export const partnerNews: NewsItem[] = [
     section: 'reads',
     icon: 'fa-temperature-high',
     color: '#dc2626',
+    date: '2026-09-07',
     headline: '‘Her body temperature was 106’: how heat is killing Americans in their homes',
     summary: '',
     links: [{ label: 'NPR', url: 'https://www.npr.org/2026/09/07/nx-s1-5644782/heat-deaths-manufactured-mobile-homes' }]
@@ -216,6 +233,7 @@ export const partnerNews: NewsItem[] = [
     section: 'reads',
     icon: 'fa-bell',
     color: '#d97706',
+    date: '2026-09-06',
     headline: 'The Guardian view on extreme heat: its scale should be a wake-up call',
     summary: '',
     links: [{ label: 'The Guardian', url: 'https://www.theguardian.com/commentisfree/2026/sep/06/the-guardian-view-on-extreme-heat-its-scale-should-be-a-wake-up-call-to-us-all' }]
@@ -225,6 +243,7 @@ export const partnerNews: NewsItem[] = [
     section: 'reads',
     icon: 'fa-tree',
     color: '#16a34a',
+    date: '2026-09-07',
     headline: 'UNECE guide helps cities finance urban forests to survive extreme heat',
     summary: '',
     links: [{ label: 'UNECE', url: 'https://unece.org/climate-change/press/unece-guide-helps-cities-finance-urban-forests-survive-extreme-heat' }]
@@ -234,6 +253,7 @@ export const partnerNews: NewsItem[] = [
     section: 'reads',
     icon: 'fa-city',
     color: '#0369a1',
+    date: '2026-09-08',
     headline: 'Cities in Great Britain most vulnerable to extreme heat revealed',
     summary: '',
     links: [{ label: 'The Guardian', url: 'https://www.theguardian.com/environment/2026/sep/08/cities-great-britain-most-vulnerable-extreme-heat-revealed' }]
@@ -243,6 +263,7 @@ export const partnerNews: NewsItem[] = [
     section: 'reads',
     icon: 'fa-droplet',
     color: '#0891b2',
+    date: '2026-09-09',
     headline: 'Heat sets new records as oppressive humidity strangles Southern California',
     summary: '',
     links: [{ label: 'LA Times', url: 'https://www.latimes.com/california/story/2026-09-09/southern-california-braces-for-very-dangerous-unusual-heat-plus-oppressive-humidity' }]

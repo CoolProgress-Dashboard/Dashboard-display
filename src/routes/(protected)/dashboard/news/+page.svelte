@@ -8,6 +8,13 @@
     type NewsSection
   } from '$lib/data/partner-news';
 
+  // Format an ISO date (YYYY-MM-DD) as e.g. "6 Sep 2026"
+  function formatNewsDate(iso: string): string {
+    const d = new Date(iso + 'T00:00:00');
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
   // Group the digest items by section, preserving the digest order
   const grouped = SECTION_ORDER
     .map((section) => ({
@@ -40,6 +47,9 @@
             <article class="news-item" style="--c: {item.color}">
               <span class="news-ico"><i class="fa-solid {item.icon}"></i></span>
               <div class="news-body">
+                {#if item.date}
+                  <span class="news-date">{formatNewsDate(item.date)}</span>
+                {/if}
                 {#if item.links.length === 1}
                   <a class="news-headline" href={item.links[0].url} target="_blank" rel="noopener noreferrer">{item.headline}</a>
                 {:else}
@@ -148,6 +158,15 @@
   }
 
   .news-body { flex: 1 1 auto; min-width: 0; }
+  .news-date {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 0.3rem;
+  }
   .news-headline {
     display: block;
     font-size: 1.3rem;
