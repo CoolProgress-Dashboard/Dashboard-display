@@ -405,7 +405,7 @@
           No appliances selected
         </div>`;
         const labelEl = document.getElementById('emissions-legend-label');
-        if (labelEl) labelEl.textContent = 'Indirect Emissions (Mt CO₂):';
+        if (labelEl) labelEl.textContent = 'Annual Indirect Emissions (Mt CO₂/yr):';
         return;
       }
       const thresholds = [0.10, 0.35, 0.55, 0.78, 1.0];
@@ -422,8 +422,8 @@
       const labelEl = document.getElementById('emissions-legend-label');
       if (labelEl) {
         const typeText = emissionsDataSource === 'subcool'
-          ? (emissionsType === 'direct' ? 'Direct Emissions (Mt CO₂):' : emissionsType === 'indirect' ? 'Indirect Emissions (Mt CO₂):' : 'Total Emissions (Mt CO₂):')
-          : 'Indirect Emissions (Mt CO₂):';
+          ? (emissionsType === 'direct' ? 'Annual Direct Emissions (Mt CO₂/yr):' : emissionsType === 'indirect' ? 'Annual Indirect Emissions (Mt CO₂/yr):' : 'Annual Total Emissions (Mt CO₂/yr):')
+          : 'Annual Indirect Emissions (Mt CO₂/yr):';
         labelEl.textContent = typeText;
       }
     }
@@ -515,11 +515,11 @@
           });
           Object.entries(byAppliance).forEach(([app, val]) => {
             if ((val as number) > 0)
-              breakdown += `${(CLASP_APPLIANCE_SHORT as any)[app] || app}: ${(val as number).toFixed(3)} Mt<br>`;
+              breakdown += `${(CLASP_APPLIANCE_SHORT as any)[app] || app}: ${(val as number).toFixed(3)} Mt/yr<br>`;
           });
           tooltipContent = `<strong>${countryName}</strong><br>
             <span style="color:#64748b;font-size:0.85em">CLASP (Indirect) | ${scenarioName} | ${localEmissionsYear}</span><br>
-            <strong>Indirect: ${total.toFixed(3)} Mt CO2</strong><br>${breakdown}`;
+            <strong>Indirect: ${total.toFixed(3)} Mt CO₂/yr</strong><br>${breakdown}`;
         }
       } else {
         const countryRecords = subcoolData.filter((r: any) =>
@@ -544,11 +544,11 @@
           let breakdown = '';
           Object.entries(bySubsector).forEach(([sub, vals]) => {
             const subVal = emissionsType === 'direct' ? (vals as any).direct : emissionsType === 'indirect' ? (vals as any).indirect : ((vals as any).direct + (vals as any).indirect);
-            if (subVal > 0) breakdown += `${(HEAT_SUBSECTOR_SHORT as any)[sub] || sub}: ${subVal.toFixed(3)} Mt<br>`;
+            if (subVal > 0) breakdown += `${(HEAT_SUBSECTOR_SHORT as any)[sub] || sub}: ${subVal.toFixed(3)} Mt/yr<br>`;
           });
           tooltipContent = `<strong>${countryName}</strong><br>
             <span style="color:#64748b;font-size:0.85em">HEAT | ${scenarioName} | ${localEmissionsYear}</span><br>
-            <strong>${typeLabel}: ${displayValue.toFixed(3)} Mt CO2</strong><br>${breakdown}`;
+            <strong>${typeLabel}: ${displayValue.toFixed(3)} Mt CO₂/yr</strong><br>${breakdown}`;
         }
       }
       tt.innerHTML = tooltipContent;
@@ -723,7 +723,7 @@
         ? currentYearBreakdown.reduce((a, b) => a.value > b.value ? a : b)
         : null;
       const breakdownDescription = topSource
-        ? `In ${localEmissionsYear}, ${topSource.name} accounts for the largest share at ${((topSource.value / (currentYearBreakdownTotal || currentYearTotal)) * 100).toFixed(0)}% (${topSource.value.toFixed(2)} Mt CO2).`
+        ? `In ${localEmissionsYear}, ${topSource.name} accounts for the largest share at ${((topSource.value / (currentYearBreakdownTotal || currentYearTotal)) * 100).toFixed(0)}% (${topSource.value.toFixed(2)} Mt CO₂/yr).`
         : 'No detailed breakdown available for the selected year.';
 
       const emissionTypeLabel = emissionsDataSource === 'clasp'
@@ -749,7 +749,7 @@
               </div>
               <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.2rem;">
                 <span style="font-size:0.9rem;font-weight:700;color:#C25B33;">
-                  <i class="fa-solid fa-cloud" style="margin-right:0.25rem;font-size:0.8rem;"></i>${currentYearTotal.toFixed(2)} Mt CO₂
+                  <i class="fa-solid fa-cloud" style="margin-right:0.25rem;font-size:0.8rem;"></i>${currentYearTotal.toFixed(2)} Mt CO₂/yr
                 </span>
                 <span style="font-size:0.8rem;font-weight:500;color:${changeColor};">
                   <i class="fa-solid ${changeIcon}" style="margin-right:0.2rem;font-size:0.75rem;"></i>${Math.abs(Number(changePercent))}% ${comparisonText}
@@ -811,9 +811,9 @@
               grid: { top: 30, right: 25, bottom: 32, left: 50 },
               legend: { show: true, top: 0, left: 'center', itemWidth: 14, itemHeight: 10, textStyle: { fontSize: 11, color: '#475569', fontWeight: 500 }, itemGap: 10 },
               xAxis: { type: 'category', data: years.map(String), axisLabel: { fontSize: 11, fontWeight: 500, color: '#475569' }, axisLine: { lineStyle: { color: '#cbd5e1' } }, axisTick: { show: false }, boundaryGap: false },
-              yAxis: { type: 'value', axisLabel: { fontSize: 11, fontWeight: 500, color: '#475569', formatter: (v: number) => v >= 1 ? `${v.toFixed(1)}` : `${(v * 1000).toFixed(0)}k` }, splitLine: { lineStyle: { color: '#e2e8f0' } }, name: 'Mt CO2', nameLocation: 'middle', nameGap: 35, nameTextStyle: { fontSize: 10, color: '#64748b', fontWeight: 500 } },
+              yAxis: { type: 'value', axisLabel: { fontSize: 11, fontWeight: 500, color: '#475569', formatter: (v: number) => v >= 1 ? `${v.toFixed(1)}` : `${(v * 1000).toFixed(0)}k` }, splitLine: { lineStyle: { color: '#e2e8f0' } }, name: 'Annual emissions (Mt CO₂/yr)', nameLocation: 'middle', nameGap: 35, nameTextStyle: { fontSize: 10, color: '#64748b', fontWeight: 500 } },
               series: stackedSeriesData.map(s => ({ name: s.name, type: 'line', stack: 'total', smooth: true, symbol: 'none', color: s.color, lineStyle: { width: 0 }, areaStyle: { opacity: 0.8 }, emphasis: { focus: 'series' }, data: s.data })),
-              tooltip: { trigger: 'axis', textStyle: { fontSize: 11 }, axisPointer: { type: 'cross', label: { backgroundColor: '#6a7985' } }, formatter: (params: any) => { let total = 0; let html = `<strong style="font-size:12px">${params[0].axisValue}</strong><br/>`; params.forEach((p: any) => { if (p.value > 0) { html += `<span style="display:inline-block;width:8px;height:8px;background:${p.color};border-radius:50%;margin-right:4px;"></span>${p.seriesName}: ${p.value.toFixed(3)} Mt<br/>`; total += p.value; } }); html += `<strong>Total: ${total.toFixed(3)} Mt</strong>`; return html; } }
+              tooltip: { trigger: 'axis', textStyle: { fontSize: 11 }, axisPointer: { type: 'cross', label: { backgroundColor: '#6a7985' } }, formatter: (params: any) => { let total = 0; let html = `<strong style="font-size:12px">${params[0].axisValue}</strong><br/>`; params.forEach((p: any) => { if (p.value > 0) { html += `<span style="display:inline-block;width:8px;height:8px;background:${p.color};border-radius:50%;margin-right:4px;"></span>${p.seriesName}: ${p.value.toFixed(3)} Mt/yr<br/>`; total += p.value; } }); html += `<strong>Total: ${total.toFixed(3)} Mt/yr</strong>`; return html; } }
             });
           } else if (lineContainer) {
             lineContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:0.75rem;">No data available</div>';
@@ -821,7 +821,7 @@
           if (pieContainer && currentYearBreakdown.length > 0) {
             emissionsCountryPieChart = echartsLib.init(pieContainer);
             emissionsCountryPieChart.setOption({
-              tooltip: { trigger: 'item', textStyle: { fontSize: 12 }, formatter: (params: any) => `<strong>${params.name}</strong><br/>${params.value.toFixed(3)} Mt CO2 (${params.percent}%)` },
+              tooltip: { trigger: 'item', textStyle: { fontSize: 12 }, formatter: (params: any) => `<strong>${params.name}</strong><br/>${params.value.toFixed(3)} Mt CO₂/yr (${params.percent}%)` },
               legend: { show: false },
               series: [{ type: 'pie', radius: ['32%', '56%'], center: ['50%', '52%'], avoidLabelOverlap: true, itemStyle: { borderRadius: 4, borderColor: '#fff', borderWidth: 2 }, label: { show: true, position: 'outside', fontSize: 13, fontWeight: 500, color: '#475569', overflow: 'break', formatter: (params: any) => `${params.name}\n${params.percent}%` }, labelLine: { show: true, length: 6, length2: 6 }, emphasis: { label: { show: true, fontSize: 15, fontWeight: 'bold' }, itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0,0,0,0.5)' } }, data: currentYearBreakdown.map(c => ({ name: c.name, value: c.value, itemStyle: { color: c.color } })) }]
             });
@@ -861,7 +861,7 @@
               <i class="fa-solid fa-globe" style="margin-right:0.35rem;"></i>Global Total (${localEmissionsYear} • ${scenarioLabel})
             </div>
             <div style="font-size:1.5rem;font-weight:700;color:#0369a1;">
-              ${globalTotal.toFixed(1)} Mt CO<sub>2</sub>
+              ${globalTotal.toFixed(1)} Mt CO<sub>2</sub>/yr
             </div>
           </div>
         </div>
@@ -890,7 +890,7 @@
         <div class="ep-country-select-prompt" style="margin-top: 2.5rem; padding-top: 3rem;">
           <i class="fa-solid fa-earth-americas ep-csp-icon"></i>
           <strong class="ep-csp-heading">Select a country on the map above</strong>
-          <span class="ep-csp-sub">Explore its cooling emissions breakdown — direct refrigerant leaks and indirect electricity-related CO₂</span>
+          <span class="ep-csp-sub">Explore its cooling emissions breakdown — direct refrigerant leaks and indirect power-plant CO₂</span>
         </div>
       `;
       setTimeout(() => {
@@ -1039,7 +1039,19 @@
 
       setChart('chart-emissions-timeline-static', {
         title: { text: '', subtext: 'Source: CLASP Mepsy Tool', subtextStyle: { fontSize: 9, color: '#94a3b8' }, left: 4, bottom: 18 },
-        tooltip: { trigger: 'axis' },
+        tooltip: {
+          trigger: 'axis',
+          formatter: (params: any[]) => {
+            const year = params?.[0]?.axisValue;
+            let html = `<strong>${year}</strong><br/>`;
+            for (const p of params) {
+              if (p.value == null) continue;
+              const v = Array.isArray(p.value) ? p.value[1] : p.value;
+              html += `${p.marker}${p.seriesName}: <strong>${Number(v).toLocaleString()} Mt CO₂/yr</strong><br/>`;
+            }
+            return html;
+          }
+        },
         legend: { bottom: 0, textStyle: { fontSize: 11 } },
         grid: { left: 70, right: '4%', bottom: '15%', top: '10%', containLabel: false },
         xAxis: {
@@ -1047,7 +1059,7 @@
           min: 2023, max: 2050,
           axisLabel: { fontSize: 11, formatter: (v: number) => (v % 5 === 0 && v >= 2025) ? String(v) : '' }
         },
-        yAxis: { type: 'value', name: 'Mt CO₂', nameLocation: 'middle', nameGap: 45, axisLabel: { fontSize: 10 } },
+        yAxis: { type: 'value', name: 'Annual emissions (Mt CO₂/yr)', nameLocation: 'middle', nameGap: 45, axisLabel: { fontSize: 10 } },
         series
       }, echartsLib);
     }
@@ -1407,7 +1419,7 @@
         <span class="ep-scope-badge"><i class="fa-solid fa-fan"></i> Ceiling Fans</span>
       </div>
       <h2 class="ep-section-title">Look at your country's cooling emissions.</h2>
-      <p class="ep-body">Both <strong>direct emissions</strong> (refrigerant leaks from cooling equipment) and <strong>indirect emissions</strong> (electricity-related CO₂ from powering compressors) are shown on the map below. Click any country to explore its full breakdown by appliance type and emission source.</p>
+      <p class="ep-body">Both <strong>direct emissions</strong> (refrigerant that leaks from cooling equipment) and <strong>indirect emissions</strong> (the CO₂ released at power plants generating the electricity that runs the equipment) are shown on the map below. Click any country to explore its full breakdown by appliance type and emission source.</p>
       <p class="ep-xref-note">
         <i class="fa-solid fa-arrow-right-long" style="color: #6BADA0;"></i>
         For more information about refrigerants and the work to transition away from HFCs, see <a href="/dashboard/kigali" class="ep-xref-link"><strong>Pillar 3: Refrigerant Transition</strong></a>.
@@ -1427,7 +1439,7 @@
         </a>
       </div>
       <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.25rem; padding: 0;">
-        Cooling sector emissions in Mt CO2. Click a country for detailed breakdown.
+        Annual cooling-sector emissions, Mt CO₂/yr. Click a country for detailed breakdown.
       </div>
       <div id="emissions-clasp-note" style="display: none; font-size: 0.72rem; color: #64748b; margin-bottom: 0.5rem; padding: 0.35rem 0.5rem; background: rgba(3,105,161,0.04); border-left: 2px solid #0369a1; border-radius: 0 4px 4px 0;">
         <i class="fa-solid fa-circle-info" style="color: #0369a1; margin-right: 0.3rem; font-size: 0.65rem;"></i>
@@ -1443,7 +1455,7 @@
         {/if}
       </div>
       <div class="legend legend-row">
-        <span class="legend-label" id="emissions-legend-label">Total Emissions (Mt CO₂):</span>
+        <span class="legend-label" id="emissions-legend-label">Annual Total Emissions (Mt CO₂/yr):</span>
         <div id="emissions-legend" class="legend-items"></div>
       </div>
       <div class="progress-bar" id="emissions-progress">
@@ -1751,6 +1763,10 @@
       <p class="ep-chart-addl-note">
         <i class="fa-solid fa-lightbulb" style="color:#0369a1;margin-right:0.4rem;"></i>
         <strong>Additional context:</strong> Use the Emissions Trajectory chart above alongside this view to understand how appliance-level efficiency gains translate into global emission reductions over time.
+      </p>
+      <p class="ep-chart-addl-note">
+        <i class="fa-solid fa-circle-info" style="color:#0369a1;margin-right:0.4rem;"></i>
+        <strong>On scope:</strong> the AC series here counts CLASP-modelled residential split air conditioners (roughly 1.5 billion today, rising toward 3.2 billion by 2050). That is a narrower group than the headline of about 3 billion air conditioners in use today, which counts every AC type (IEA). The two figures measure different things and are not in conflict.
       </p>
       <ApplianceGrowthChart
         applianceTimeseries={computedApplianceTimeseries}

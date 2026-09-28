@@ -1,12 +1,21 @@
 <script lang="ts">
-  import { partnerNews, NEWS_LAST_UPDATED, CATEGORY_META, type NewsItem } from '$lib/data/partner-news';
+  import {
+    partnerNews,
+    NEWS_LAST_UPDATED,
+    NEWS_SOURCE,
+    SECTION_META,
+    SECTION_ORDER,
+    type NewsSection
+  } from '$lib/data/partner-news';
 
-  let activeFilter: NewsItem['category'] | 'all' = 'all';
-  const categoryKeys = Object.keys(CATEGORY_META) as NewsItem['category'][];
-
-  $: filteredNews = activeFilter === 'all'
-    ? partnerNews
-    : partnerNews.filter((n) => n.category === activeFilter);
+  // Group the digest items by section, preserving the digest order
+  const grouped = SECTION_ORDER
+    .map((section) => ({
+      section: section as NewsSection,
+      meta: SECTION_META[section],
+      items: partnerNews.filter((n) => n.section === section)
+    }))
+    .filter((g) => g.items.length > 0);
 </script>
 
 <section class="news-page">
@@ -16,51 +25,49 @@
     <header class="news-page-head">
       <span class="news-page-eyebrow"><i class="fa-solid fa-newspaper"></i> Cool News</span>
       <h1 class="news-page-title">The latest in cooling</h1>
-      <p class="news-page-sub">Curated developments from across the global cooling ecosystem. Last updated {NEWS_LAST_UPDATED}.</p>
+      <p class="news-page-sub">{NEWS_SOURCE}. Updated {NEWS_LAST_UPDATED}.</p>
     </header>
 
-    <div class="news-page-filters">
-      <button class="np-pill" class:active={activeFilter === 'all'} type="button" on:click={() => (activeFilter = 'all')}>All</button>
-      {#each categoryKeys as cat}
-        <button
-          class="np-pill"
-          class:active={activeFilter === cat}
-          type="button"
-          on:click={() => (activeFilter = cat)}
-          style="--pill-color: {CATEGORY_META[cat].color}"
-        >
-          <i class="fa-solid {CATEGORY_META[cat].icon}"></i>
-          {CATEGORY_META[cat].label}
-        </button>
-      {/each}
-    </div>
+    {#each grouped as group (group.section)}
+      <section class="news-section">
+        <div class="news-section-head">
+          <span class="nsh-label"><i class="fa-solid {group.meta.icon}"></i> {group.meta.label}</span>
+          <span class="nsh-count">{group.items.length}</span>
+        </div>
 
-    <div class="news-page-grid">
-      {#each filteredNews as item (item.id)}
-        <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer" class="np-card">
-          <div class="np-card-icon" style="background: {item.color}14; color: {item.color}">
-            <i class="fa-solid {item.icon}"></i>
-          </div>
-          <div class="np-card-body">
-            <div class="np-card-meta">
-              <span class="np-card-cat" style="color: {item.color}">{item.category}</span>
-              <span class="np-card-date">{item.date}</span>
-              <span class="np-card-source">&middot; {item.source}</span>
-            </div>
-            <p class="np-card-headline">{item.headline}</p>
-            <p class="np-card-summary">{item.summary}</p>
-          </div>
-          <i class="fa-solid fa-arrow-up-right-from-square np-card-ext"></i>
-        </a>
-      {/each}
-    </div>
+        <div class="news-list">
+          {#each group.items as item (item.id)}
+            <article class="news-item" style="--c: {item.color}">
+              <span class="news-ico"><i class="fa-solid {item.icon}"></i></span>
+              <div class="news-body">
+                {#if item.links.length === 1}
+                  <a class="news-headline" href={item.links[0].url} target="_blank" rel="noopener noreferrer">{item.headline}</a>
+                {:else}
+                  <h3 class="news-headline news-headline-static">{item.headline}</h3>
+                {/if}
+                {#if item.summary}
+                  <p class="news-summary">{item.summary}</p>
+                {/if}
+              </div>
+              <div class="news-sources">
+                {#each item.links as link}
+                  <a class="news-source" href={link.url} target="_blank" rel="noopener noreferrer">
+                    {link.label}<i class="fa-solid fa-arrow-up-right-from-square"></i>
+                  </a>
+                {/each}
+              </div>
+            </article>
+          {/each}
+        </div>
+      </section>
+    {/each}
   </div>
 </section>
 
 <style>
   .news-page {
-    padding: 2rem clamp(1rem, 3vw, 2.5rem) 4rem;
-    max-width: 1100px;
+    padding: 2rem clamp(1.5rem, 4vw, 4rem) 4rem;
+    max-width: 1400px;
     margin: 0 auto;
   }
   .news-back {
@@ -75,12 +82,12 @@
   }
   .news-back:hover { color: #0f2a47; }
 
-  .news-page-head { margin-bottom: 1.6rem; }
+  .news-page-head { margin-bottom: 0.5rem; }
   .news-page-eyebrow {
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     font-weight: 700;
     letter-spacing: 1.5px;
     text-transform: uppercase;
@@ -88,87 +95,112 @@
     margin-bottom: 0.6rem;
   }
   .news-page-title {
-    font-size: clamp(1.6rem, 3vw, 2.3rem);
+    font-size: clamp(1.9rem, 3.4vw, 2.7rem);
     font-weight: 800;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.6px;
     color: #0f2a47;
     margin: 0 0 0.5rem;
   }
-  .news-page-sub { font-size: 0.95rem; color: #475569; margin: 0; max-width: 640px; }
+  .news-page-sub { font-size: 1rem; color: #64748b; margin: 0; }
 
-  .news-page-filters {
+  /* Sections divided by small lines */
+  .news-section { margin-top: 2.75rem; }
+  .news-section-head {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin: 1.4rem 0 1.8rem;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid #cbd5e1;
+    margin-bottom: 0.25rem;
   }
-  .np-pill {
+  .nsh-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: #475569;
+  }
+  .nsh-label i { color: #94a3b8; font-size: 0.8rem; }
+  .nsh-count { font-size: 0.8rem; font-weight: 700; color: #94a3b8; }
+
+  /* Editorial list: hairline between items, no boxes, no color bars */
+  .news-list { display: flex; flex-direction: column; }
+  .news-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #e9edf2;
+  }
+  .news-item:last-child { border-bottom: none; }
+
+  /* Icons carry the only colour on the page */
+  .news-ico {
+    flex-shrink: 0;
+    width: 2.6rem;
+    text-align: center;
+    font-size: 1.45rem;
+    color: var(--c, #1e3a5f);
+    padding-top: 0.15rem;
+  }
+
+  .news-body { flex: 1 1 auto; min-width: 0; }
+  .news-headline {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #0f2a47;
+    line-height: 1.32;
+    letter-spacing: -0.2px;
+    margin: 0 0 0.45rem;
+    text-decoration: none;
+  }
+  a.news-headline:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .news-headline-static { cursor: default; }
+  .news-summary {
+    font-size: 0.98rem;
+    color: #52606d;
+    line-height: 1.62;
+    margin: 0;
+  }
+
+  /* Sources on the right so items use the full width */
+  .news-sources {
+    flex-shrink: 0;
+    width: 210px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.45rem;
+    padding-top: 0.2rem;
+  }
+  .news-source {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: #475569;
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    padding: 0.4rem 0.9rem;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .np-pill:hover { border-color: #cbd5e1; }
-  .np-pill.active {
-    color: #fff;
-    background: var(--pill-color, #0f2a47);
-    border-color: var(--pill-color, #0f2a47);
-  }
-
-  .news-page-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1rem;
-  }
-  .np-card {
-    display: flex;
-    gap: 0.9rem;
-    align-items: flex-start;
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.1rem 1.2rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #334155;
     text-decoration: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    transition: box-shadow 0.15s, border-color 0.15s, transform 0.15s;
   }
-  .np-card:hover {
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-    border-color: #cbd5e1;
-    transform: translateY(-2px);
+  .news-source i { font-size: 0.66rem; color: #94a3b8; }
+  .news-source:hover { color: #0f2a47; text-decoration: underline; text-underline-offset: 2px; }
+
+  @media (max-width: 820px) {
+    .news-item { flex-wrap: wrap; gap: 0.75rem 1.25rem; }
+    .news-sources {
+      width: auto;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0.35rem 1.1rem;
+      padding-left: 3.85rem;
+    }
   }
-  .np-card-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    flex-shrink: 0;
+  @media (max-width: 600px) {
+    .news-ico { display: none; }
+    .news-sources { padding-left: 0; }
   }
-  .np-card-body { flex: 1; min-width: 0; }
-  .np-card-meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.72rem;
-    margin-bottom: 0.4rem;
-  }
-  .np-card-cat { font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
-  .np-card-date { color: #64748b; }
-  .np-card-source { color: #94a3b8; }
-  .np-card-headline { font-size: 0.95rem; font-weight: 700; color: #0f2a47; line-height: 1.3; margin: 0 0 0.35rem; }
-  .np-card-summary { font-size: 0.83rem; color: #475569; line-height: 1.55; margin: 0; }
-  .np-card-ext { color: #cbd5e1; font-size: 0.8rem; flex-shrink: 0; margin-top: 0.2rem; }
-  .np-card:hover .np-card-ext { color: #0d9488; }
 </style>

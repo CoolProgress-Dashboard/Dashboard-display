@@ -1,6 +1,7 @@
 # CoolProgress Dashboard — Master Feedback Register
-**Last updated:** 2026-09-01  
-**Total items:** 127 IDs (47 new in the 31 Aug Noah/CCC batch). Open after batch: 65 (27 High / 34 Medium / 3 Blocked / 1 Low). 4 dropped, 4 superseded. See Priority Summary.  
+**Last updated:** 2026-09-08  
+**Total items:** 127 IDs (47 new in the 31 Aug Noah/CCC batch). Open: 61 (23 High / 34 Medium / 3 Blocked / 1 Low). 4 dropped, 4 superseded. See Priority Summary.  
+**8 Sep session:** Emissions batch closed — EM-17 (direct/indirect definitions), EM-21 (number formatting / MT/yr / annual-emissions legend), EM-26 (trajectory axis label), EM-27 (AC-stock chart contradiction + axis units). CC-09 (annual-vs-cumulative /yr sweep) done for the Emissions pillar; Kigali/MEPS/Overview still pending.  
 **Sources:** Noah/CCC, Christina Hayes/CCC, Ari/CLASP, Patrick/HEAT, Jamie/CPR, Giorgia/SEforAll, Stefanie/HEAT, Dietram/UNEP, London event (12 May 2026), CCC orchestration board
 
 > **Batch note (31 Aug 2026):** Combined CCC/team feedback received via Noah. Top-level ask: keep a laser focus on crisp progress snapshots (inverter transition, refrigerant GWP trends). Noah authorizes creative workarounds for the LBNL data-rights blocker, including less granular or password-protected sharing. See new items tagged "Noah/CCC (31 Aug)". Access & National Plans feedback still awaited as a follow-up. Call to review: Fri or Tue 8 Sep.
@@ -58,17 +59,17 @@
 | EM-14 | Abdel Aziz (UNEP/AUC) modelling data needed for scenario alignment | Data gap | Lily Riahi/UNEP | 🔵 Blocked |
 | EM-15 | Direct emissions 2050 trajectory does not reflect HFC phasedown — data task, closed | Data accuracy | Noah/CCC | ✅ Done |
 | EM-16 | Say "fossil fuel", not "fossil" | Content | Noah/CCC (31 Aug) | ✅ Done — "fossil-reliant"/"fossil-heavy" reworded to "powered by / rely on fossil fuels" in EmissionsPillar |
-| EM-17 | Fix definitions: direct = refrigerant leaks; indirect = CO2 from electricity generation at power plants | Content | Noah/CCC (31 Aug) | 🔴 High |
+| EM-17 | Fix definitions: direct = refrigerant leaks; indirect = CO2 from electricity generation at power plants | Content | Noah/CCC (31 Aug) | ✅ Done (8 Sep) — map intro reworded to "direct emissions (refrigerant that leaks from cooling equipment)" + "indirect emissions (the CO₂ released at power plants generating the electricity that runs the equipment)"; country-select prompt aligned ("indirect power-plant CO₂") in EmissionsPillar |
 | EM-18 | Add ~70% usage (indirect) / ~30% leakage (direct) split, with caveat it varies by equipment/refrigerant/grid and shifts over time. NEEDS the correct figure (Noah's is a guess) | Content | Noah/CCC (31 Aug) | ✅ Done — Noah's guess CONFIRMED by literature: ~71% indirect / 29% direct for the RAC sector (UNEP Ozone Secretariat briefing note + Green Cooling Initiative; IEA ~70/30 for mobile AC). Text now states ~70% indirect / ~30% direct with the varies-by-equipment/refrigerant/grid + shifts-over-time caveat and inline source. Note: domestic fridges are >95% indirect (backs EM-28) |
 | EM-19 | Top-line figures in GT not MT (5,950 MT becomes ~6 GT); fewer significant figures | UI | Noah/CCC (31 Aug) | ✅ Done — stat cards now 2.3 Gt (today) and 6 Gt (2050 BAU); Header insight text updated to match. Detailed Mt breakdowns kept in hover context |
 | EM-20 | Reword Pillar 3 cross-ref to drop "Kigali" (not yet introduced): "For more information about refrigerants and work to transition away from HFCs, see Pillar 3" | Content | Noah/CCC (31 Aug) | ✅ Done — cross-ref reworded, "Kigali Amendment ratification status" removed |
-| EM-21 | Number formatting: commas as thousands separators (1,312 not 1.312); map hover shows MT/yr; legend says "annual emissions" | UI | Noah/CCC (31 Aug) | 🔴 High |
+| EM-21 | Number formatting: commas as thousands separators (1,312 not 1.312); map hover shows MT/yr; legend says "annual emissions" | UI | Noah/CCC (31 Aug) | ✅ Done (8 Sep) — map hover totals + per-appliance/subsector breakdowns now read "Mt CO₂/yr" / "Mt/yr"; map legend labels (dynamic + static) now "Annual … Emissions (Mt CO₂/yr):"; map caption "Annual cooling-sector emissions, Mt CO₂/yr"; trajectory tooltip uses toLocaleString (comma thousands). Stat cards already comma-separated |
 | EM-22 | Add caveat: map shading is NOT normalized for population or climate, so not a ranking of country performance | Narrative | Noah/CCC (31 Aug) | 🟡 Medium |
 | EM-23 | Fix confusing "over 1 GtCO2e annually" sentence (contradicts earlier 2.3 GT/yr; fast-growing-regions logic doesn't follow) | Narrative | Noah/CCC (31 Aug) | ✅ Done — removed the contradictory "over 1 GtCO₂e annually" clause; reworded so fast-growing-regions point reads clearly |
 | EM-24 | Emissions map: remove logos and "data partner" term. Part of CC-07 | UI | Noah/CCC (31 Aug) | ✅ Done (4 Sep) — "data partner" wording gone dashboard-wide: every "Data Partners" bar (Emissions, MEPS, Kigali, Access) now reads "Data Sources"; Overview "Powered by Our Partners" → "Our Data Sources" (dead "View All" link to removed partners page deleted); RightPanel "Data & Knowledge Partners" → "Sources"; handshake icons → database. Logos RETAINED per Manuel (keep data referenced with logos as now), so the "remove logos" half of EM-24 is intentionally NOT applied |
 | EM-25 | Pledge text + progress link appears out of context; introduce it properly or remove | Narrative | Noah/CCC (31 Aug) | 🟡 Medium |
-| EM-26 | Emissions trajectory chart: label as "annual emissions (Mt CO2/yr)" | UI | Noah/CCC (31 Aug) | 🔴 High |
-| EM-27 | ⚠️ REOPENS EM-09. AC-stock chart still confuses "3B additional by 2050" with a graph showing ~3B total / +1.5B increase; y-axis says "millions of units" but values are billions (confirmed in his screenshot). Noah's 31 Aug instruction wins over the earlier "verified, closed" | Data accuracy | Noah/CCC (31 Aug) | 🔴 High |
+| EM-26 | Emissions trajectory chart: label as "annual emissions (Mt CO2/yr)" | UI | Noah/CCC (31 Aug) | ✅ Done (8 Sep) — "Emissions Trajectory — Scenario Comparison" chart y-axis now "Annual emissions (Mt CO₂/yr)" + tooltip appends "Mt CO₂/yr" with comma thousands; country-detail line chart y-axis also relabelled |
+| EM-27 | ⚠️ REOPENS EM-09. AC-stock chart still confuses "3B additional by 2050" with a graph showing ~3B total / +1.5B increase; y-axis says "millions of units" but values are billions (confirmed in his screenshot). Noah's 31 Aug instruction wins over the earlier "verified, closed" | Data accuracy | Noah/CCC (31 Aug) | ✅ Done (8 Sep) — root cause was two AC-stock series shown together: subtitle pulled hardcoded IEA/CCC (3.1B→6.5B) while bars plot live CLASP data (~1.5B→3.2B). Fixes: (1) ApplianceGrowthChart subtitle now DERIVED from the plotted BAU data (2025 vs 2050) so heading can't contradict bars; (2) y-axis title "Millions of units" → "Units in use" (ticks already show B/M); (3) scope note added under the chart distinguishing CLASP-modelled residential split AC from the "~3 billion ACs today" all-types IEA headline (not in conflict) |
 | EM-28 | Add note: household refrigerators have very low direct emissions (industry already shifted to ultra-low-GWP refrigerants, e.g. R-600a) | Content | Noah/CCC (31 Aug) | ✅ Done — note added to the direct/indirect paragraph (R-600a, direct challenge concentrated in AC) |
 | EM-29 | Document map methodology: how HFC emissions are integrated per country, the HFC source, and its reliability | Data accuracy | Christina Hayes/CCC (31 Aug) | 🟡 Medium |
 
@@ -186,9 +187,9 @@
 | CC-06 | Make page breaks more visible; add page numbers per tab | UI | Noah/CCC (31 Aug) | 🟡 Medium |
 | CC-07 | Remove "Partner Ecosystem" section entirely. Keep crediting data sources/reports, but drop the words "partner" and "partner ecosystem" everywhere (incl. "data partner" on Emissions map). Supersedes OV-02, OV-03; touches EM-05, EM-24 | Content | Noah/CCC (31 Aug) | ✅ Done (4 Sep) — removed the Partner Ecosystem page, sidebar nav item, /dashboard/partners route, PartnersPillar + PartnerEcosystem components, and VIEW_META.partners; tests updated. Per-pillar data-source logos RETAINED (VIEW_META.sources / SourceAttribution). Still open: "data partner" wording on Emissions map = EM-24 |
 | CC-08 | Stop talking only about ACs. Cover refrigerators too; use "space cooling and refrigeration" where broad | Narrative | Noah/CCC (31 Aug) | 🔴 High |
-| CC-09 | Clarify all emissions units: annual vs cumulative. Add "/yr" to headings, y-axes, hovers, top-line figures | Narrative | Noah/CCC (31 Aug) | 🔴 High |
+| CC-09 | Clarify all emissions units: annual vs cumulative. Add "/yr" to headings, y-axes, hovers, top-line figures | Narrative | Noah/CCC (31 Aug) | 🔴 High — Emissions pillar swept (8 Sep): trajectory + country-detail y-axes, map hovers/legend/caption, pie + global-total, top-source stat all now carry "/yr". STILL TO DO: Kigali trajectory chart, MEPS charts, Overview top-line cards, and any cumulative figures that should be explicitly labelled "cumulative" |
 | CC-10 | Spell out every acronym on first use (GWP, MEPS, etc.) | Content | Noah/CCC (31 Aug) | 🟡 Medium |
-| CC-11 | New build: "Latest News in Cooling" bubble. Prominent oval top-right of landing page, repeated on each tab's front page. Christina Hayes supplies summaries at an agreed cadence | UI / Content | Noah/CCC (31 Aug) | ✅ Done (per Manuel 4 Sep design: box on the side + single news page) — new /dashboard/news page (all items, category filters); Sidebar "Latest News" panel replaced by a "Cool News" link box to that page; Overview big below-section replaced by a compact "Cool News" box teasing the 3 latest and linking to the page. Still needs: Christina's cadence/format for supplying summaries; follow-up = remove dead news CSS left in Sidebar/OverviewPillar |
+| CC-11 | New build: "Latest News in Cooling" bubble. Prominent oval top-right of landing page, repeated on each tab's front page. Christina Hayes supplies summaries at an agreed cadence | UI / Content | Noah/CCC (31 Aug) | ✅ Done (per Manuel 4 Sep design: box on the side + single news page) — new /dashboard/news page (all items, category filters); Sidebar "Latest News" panel replaced by a "Cool News" link box to that page; Overview big below-section replaced by a compact "Cool News" box teasing the 3 latest and linking to the page. Dead news CSS removed from Sidebar.svelte + OverviewPillar.svelte (25 Sep 2026). Cadence/format confirmed: Christina Hayes (CCC) sends a weekly "Cooling Updates" digest most Fridays; it now REPLACES the news feed. 25 Sep 2026: rebuilt partner-news.ts from her 09/11 digest (News/NEWS.docx), 20 items as full-width bars grouped into "In case you missed it / Upcoming events / Other interesting reads", real source hyperlinks attached from the docx rels. Refresh workflow: Christina sends digest → Manuel pastes into News/NEWS.docx → ask Claude to update partner-news.ts |
 
 ---
 
@@ -199,13 +200,13 @@ Counts include the 31 Aug Noah/CCC batch. "Superseded" = prior Done items overri
 | Pillar | 🔴 High | 🟡 Medium | 🔵 Blocked | ⚪ Low | ✅ Done | ⚠️ Superseded |
 |--------|---------|----------|-----------|-------|--------|--------------|
 | Overview | 2 | 6 | 0 | 0 | 2 | 2 (OV-02, OV-03) |
-| Emissions | 7 | 7 | 1 | 0 | 12 | 0 (EM-09 reopened as EM-27) |
+| Emissions | 3 | 7 | 1 | 0 | 16 | 0 (EM-09 reopened as EM-27, now closed) |
 | MEPS | 8 | 6 | 0 | 0 | 13 | 2 (ME-12, ME-17) |
 | Kigali | 5 | 5 | 0 | 0 | 9 (1 discarded) | 0 |
 | Access | 0 | 0 | 1 | 0 | 7 (1 discarded) | 0 |
 | Policy | 1 | 1 | 1 | 1 | 10 | 0 |
 | Cross-cutting | 4 | 5 | 0 | 0 | 2 | 0 |
-| **Total** | **27** | **34** | **3** | **1** | **55** | **4** |
+| **Total** | **23** | **34** | **3** | **1** | **59** | **4** |
 
 ---
 

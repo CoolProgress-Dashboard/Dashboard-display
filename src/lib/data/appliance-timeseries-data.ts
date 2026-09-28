@@ -259,7 +259,7 @@ export const APPLIANCE_META: Record<ApplianceType, { label: string; icon: string
 export type MetricKey = 'stock' | 'energy' | 'emissions';
 
 export const METRIC_META: Record<MetricKey, { label: string; unit: string; yAxisLabel: string; field: keyof ApplianceTimeseriesPoint }> = {
-  stock: { label: 'Stock (Units)', unit: 'M', yAxisLabel: 'Millions of units', field: 'stockMillions' },
+  stock: { label: 'Stock (Units)', unit: 'M', yAxisLabel: 'Units in use', field: 'stockMillions' },
   energy: { label: 'Energy (TWh)', unit: 'TWh', yAxisLabel: 'TWh', field: 'energyTwh' },
   emissions: { label: 'Emissions (Mt CO\u2082e)', unit: 'Mt', yAxisLabel: 'Mt CO\u2082e', field: 'totalEmissionMt' },
 };

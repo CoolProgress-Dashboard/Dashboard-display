@@ -74,10 +74,37 @@
     ? 'fa-solid fa-chart-area'
     : APPLIANCE_META[selectedAppliance].icon;
 
-  // Reactive summary (only for single appliance)
-  $: summary = selectedAppliance !== 'All'
-    ? applianceSummaries[selectedAppliance][selectedMetric]
-    : null;
+  // Format a raw metric value for the subtitle so it always matches the plotted bars.
+  function formatMetricValue(metric: MetricKey, v: number): string {
+    if (metric === 'stock') {
+      return v >= 1000 ? `${(v / 1000).toFixed(1)} billion` : `${Math.round(v)} million`;
+    }
+    if (metric === 'energy') return `${Math.round(v).toLocaleString()} TWh`;
+    return `${Math.round(v).toLocaleString()} Mt`;
+  }
+
+  // Reactive summary (only for single appliance).
+  // today/by2050 are derived from the SAME live data the chart plots (CLASP-modelled
+  // residential appliances), so the subtitle can never contradict the bars (EM-27).
+  // highlight text stays from the curated summary; falls back to it entirely while loading.
+  // NOTE: effectiveData is passed in explicitly so Svelte tracks it as a dependency and
+  // recomputes the subtitle when live data arrives (referencing it only inside a called
+  // function would not register as a reactive dependency).
+  function computeSummary(app: ApplianceType | 'All', metric: MetricKey, data: ApplianceTimeseriesPoint[]) {
+    if (app === 'All') return null;
+    const base = applianceSummaries[app][metric];
+    const field = METRIC_META[metric].field;
+    const bau = data.filter(d => d.appliance === app && d.scenario === 'BAU');
+    const todayPt = bau.find(d => d.year === 2025);
+    const endPt = bau.find(d => d.year === 2050);
+    if (!todayPt || !endPt) return base; // loading / no live data → curated fallback
+    return {
+      ...base,
+      today: formatMetricValue(metric, (todayPt as any)[field] as number),
+      by2050: formatMetricValue(metric, (endPt as any)[field] as number),
+    };
+  }
+  $: summary = computeSummary(selectedAppliance, selectedMetric, effectiveData);
 
   // Reactive sources
   $: activeSources = getActiveSources(selectedAppliance);
