@@ -83,23 +83,24 @@
     </a>
   </div>
 
-  <!-- Cool News — fixed widget pinned to the bottom of the left pane -->
-  <a
-    href="/dashboard/news"
-    class="cool-news-widget"
-    class:active={activeView === 'news'}
-    data-view="news"
-    style="--fc: {FEATURED_NEWS.color}"
-  >
-    <div class="cnw-head">
-      <span class="cnw-eyebrow"><i class="fa-solid fa-newspaper"></i> Cool News</span>
-      <span class="cnw-count">{NEWS_COUNT}</span>
-    </div>
-    <div class="cnw-feature">
-      <p class="cnw-feature-text">{FEATURED_NEWS.headline}</p>
-    </div>
-    <span class="cnw-all">Read all cooling news <i class="fa-solid fa-arrow-right"></i></span>
-  </a>
+  <!-- Cool News — fixed widget pinned to the bottom of the left pane; hidden on the news page itself -->
+  {#if activeView !== 'news'}
+    <a
+      href="/dashboard/news"
+      class="cool-news-widget"
+      data-view="news"
+      style="--fc: {FEATURED_NEWS.color}"
+    >
+      <div class="cnw-head">
+        <span class="cnw-eyebrow"><i class="fa-solid fa-newspaper"></i> Cool News</span>
+        <span class="cnw-count">{NEWS_COUNT}</span>
+      </div>
+      <div class="cnw-feature">
+        <p class="cnw-feature-text">{FEATURED_NEWS.headline}</p>
+      </div>
+      <span class="cnw-all">Read all cooling news <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+  {/if}
 </aside>
 
 <style>
@@ -148,9 +149,6 @@
     border-color: #24664a;
     box-shadow: 0 8px 22px rgba(15, 42, 71, 0.12);
     transform: translateY(-2px);
-  }
-  .cool-news-widget.active {
-    border-color: #2D7D5A;
   }
 
   .cnw-head {

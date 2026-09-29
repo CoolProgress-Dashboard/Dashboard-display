@@ -31,7 +31,7 @@
 
     <header class="news-page-head">
       <span class="news-page-eyebrow"><i class="fa-solid fa-newspaper"></i> Cool News</span>
-      <h1 class="news-page-title">The latest in cooling</h1>
+      <h1 class="news-page-title">The latest news in cooling</h1>
       <p class="news-page-sub">{NEWS_SOURCE}. Updated {NEWS_LAST_UPDATED}.</p>
     </header>
 
