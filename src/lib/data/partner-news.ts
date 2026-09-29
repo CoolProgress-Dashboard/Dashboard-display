@@ -130,7 +130,7 @@ export const partnerNews: NewsItem[] = [
     icon: 'fa-fan',
     color: '#0d9488',
     date: '2026-09-06',
-    dateLabel: 'Sep 2026',
+    dateLabel: 'Aug & Sep 2026',
     headline: 'Is air conditioning the answer to extreme heat?',
     summary:
       'A record-breaking summer prompted a wave of coverage debating the role, and the limits, of air conditioning in a warming world.',
