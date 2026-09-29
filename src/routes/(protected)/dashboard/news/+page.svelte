@@ -47,8 +47,8 @@
             <article class="news-item" style="--c: {item.color}">
               <span class="news-ico"><i class="fa-solid {item.icon}"></i></span>
               <div class="news-body">
-                {#if item.date}
-                  <span class="news-date">{formatNewsDate(item.date)}</span>
+                {#if item.dateLabel || item.date}
+                  <span class="news-date">{item.dateLabel ?? formatNewsDate(item.date)}</span>
                 {/if}
                 {#if item.links.length === 1}
                   <a class="news-headline" href={item.links[0].url} target="_blank" rel="noopener noreferrer">{item.headline}</a>

@@ -17,6 +17,7 @@ export interface NewsItem {
   icon: string;        // FontAwesome icon relating to what the item is about
   color: string;       // pillar accent (or dark blue) used sparingly for icon + source
   date: string;        // ISO publication date (YYYY-MM-DD) of the source article/event
+  dateLabel?: string;  // optional override for multi-source items spanning several dates (e.g. "Aug & Sep 2026")
   headline: string;    // the key message, shown bold
   summary: string;     // supporting detail (may be empty for one-line reads)
   links: NewsLink[];   // one or more source links
@@ -35,6 +36,7 @@ export const partnerNews: NewsItem[] = [
     icon: 'fa-temperature-arrow-up',
     color: '#ea580c',
     date: '2026-09-10',
+    dateLabel: 'Aug & Sep 2026',
     headline: 'Hottest summer on record in more countries than ever',
     summary:
       'Summer 2026 broke records across the US and France, and globally August 2026 became Earth’s hottest month ever recorded.',
@@ -128,6 +130,7 @@ export const partnerNews: NewsItem[] = [
     icon: 'fa-fan',
     color: '#0d9488',
     date: '2026-09-06',
+    dateLabel: 'Sep 2026',
     headline: 'Is air conditioning the answer to extreme heat?',
     summary:
       'A record-breaking summer prompted a wave of coverage debating the role, and the limits, of air conditioning in a warming world.',
