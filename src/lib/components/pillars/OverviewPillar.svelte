@@ -19,12 +19,13 @@
         <div class="flow-hero-inner">
           <span class="flow-eyebrow">The Cooling Crisis</span>
           <h1 class="flow-hero-headline">Cooling is one of the most significant yet overlooked drivers of climate change.</h1>
-          <p class="flow-hero-body">It currently accounts for approximately 7% of global greenhouse gas emissions. Under business-as-usual, cooling-related emissions reach <strong>7.2 billion tonnes CO₂e by 2050</strong> as heatwaves become more frequent and populations grow.</p>
-          <p class="flow-hero-body">This trajectory is fueled by a massive surge in demand: an additional 3 billion room air conditioners are expected to come online globally by mid-century. This creates a double-edged impact where indirect emissions from high energy consumption and direct emissions from high GWP refrigerant leaks fuel a vicious cycle of increased emissions and further warming that leaves more than 1 billion people vulnerable to life-threatening heat.</p>
+          <p class="flow-hero-body">Cool Progress is a website designed to track how the world is addressing the climate impact of cooling, and where it still falls short.</p>
+          <p class="flow-hero-body">As the world warms and heatwaves become more frequent and intense, more people turn to air conditioners and fans to stay safe and comfortable. The IEA expects an additional 3 billion room air conditioners to come online by 2050, with India and Indonesia seeing the largest growth.</p>
+          <p class="flow-hero-body">Most of this equipment runs on electricity from fossil-fuel power plants and leaks refrigerants with a high global warming potential (GWP). Rising demand therefore stresses power grids, raises the risk of outages, and feeds a warming loop that drives yet more cooling demand. At the same time, more than 1 billion people still lack the cooling they need to stay safe.</p>
           <div class="flow-stats">
             <div class="flow-stat">
               <span class="flow-stat-num">~7%</span>
-              <span class="flow-stat-label">of global GHG emissions from cooling today — rising to 7.2 Gt CO₂e under BAU by 2050</span>
+              <span class="flow-stat-label">of global greenhouse gas emissions from cooling today — rising to ~10% by 2050 under business-as-usual</span>
               <span class="flow-stat-source"><a href="https://www.unep.org/resources/global-cooling-watch-2025" target="_blank" rel="noopener noreferrer">UNEP Global Cooling Watch 2025</a></span>
             </div>
             <div class="flow-stat-rule"></div>
@@ -90,7 +91,6 @@
           <div class="flow-opp-benefit"><i class="fa-solid fa-bolt-lightning"></i><span>Relieve grid stress and reduce the frequency of power outages</span></div>
           <div class="flow-opp-benefit"><i class="fa-solid fa-leaf"></i><span>Avoid the need for costly new power generation infrastructure</span></div>
           <div class="flow-opp-benefit"><i class="fa-solid fa-snowflake"></i><span>Prevent <strong>0.5°C</strong> of warming this century by phasing down high-GWP refrigerants<a class="flow-benefit-src" href="https://ozone.unep.org/kigali-amendment-overview" target="_blank" rel="noopener noreferrer">UNEP — Kigali Amendment Overview</a></span></div>
-          <div class="flow-opp-benefit"><i class="fa-solid fa-bolt"></i><span>Save <strong>1,300 TWh</strong> of electricity per year through global MEPS harmonization<a class="flow-benefit-src" href="https://www.unsdsn.org/resources/energy-rating-labels-and-potential-for-energy-savings-across-the-global-south/" target="_blank" rel="noopener noreferrer">UNSDSN CEET — Energy Rating Labels (2024)</a></span></div>
           <div class="flow-opp-benefit"><i class="fa-solid fa-heart-pulse"></i><span>Protect public health by drastically reducing heat-related illnesses and deaths</span></div>
           <div class="flow-opp-benefit"><i class="fa-solid fa-wheat-awn"></i><span>Secure food and medicine cold chains for the world's most vulnerable communities<a class="flow-benefit-src" href="https://www.seforall.org/data-stories/chilling-prospects-2025" target="_blank" rel="noopener noreferrer">SEforAll — Chilling Prospects 2025</a></span></div>
         </div>
@@ -136,7 +136,7 @@
               <div class="dp-item-num">02</div>
             </div>
             <h3 class="dp-item-label">Product Efficiency</h3>
-            <p class="dp-item-desc">Monitor MEPS adoption globally for room ACs, refrigerators, and fans — who has standards, how stringent, and where the biggest gaps remain.</p>
+            <p class="dp-item-desc">Monitor minimum energy performance standards (MEPS) adoption globally for room ACs, refrigerators, and fans — who has standards, how stringent, and where the biggest gaps remain.</p>
             <span class="dp-item-cta">Explore <i class="fa-solid fa-arrow-right"></i></span>
           </button>
           <div class="dp-divider"></div>

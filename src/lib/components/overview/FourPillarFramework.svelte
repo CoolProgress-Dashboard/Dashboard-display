@@ -23,7 +23,7 @@
       icon: 'fa-building',
       color: '#64748b',
       label: 'Building & Passive Cooling',
-      description: 'Better building design — insulation, shading, ventilation, and cool roofs — addresses cooling demand at the source.',
+      description: 'Thermally focused building designs (insulation, shading, ventilation, and cool roofs) cut cooling demand at the source while enhancing thermal comfort.',
       bullets: [
         'Can cut indoor temperatures by 5–8°C at near-zero operating cost',
         'Essential for new construction in fast-urbanising hot-climate regions',
@@ -37,11 +37,11 @@
       icon: 'fa-snowflake',
       color: '#5A8FC2',
       label: 'Climate Friendly Refrigerants',
-      description: 'Moving to low-GWP refrigerants under the Kigali Amendment — a strategic shift that can avert 0.5°C of warming this century.',
+      description: 'Moving to low- and ultra-low-GWP refrigerants under the Kigali Amendment, and managing them across their lifecycle — a strategic shift that can avert 0.5°C of warming this century.',
       bullets: [
         'HFCs are up to 12,000× more warming than CO₂ per molecule',
-        '175+ countries have ratified the Kigali Amendment',
-        'Full phase-down avoids ~105 billion tonnes CO₂e by 2100'
+        'The shift is from high-GWP HFCs to low-GWP (<750) and ultra-low-GWP (<10) alternatives such as R-32, R-290 and R-600a',
+        'Lifecycle management — leak prevention and end-of-life recovery — is as important as the refrigerant choice'
       ],
       route: 'kigali',
       comingSoon: false
@@ -54,7 +54,7 @@
       description: 'Shielding global energy grids by ensuring every unit sold meets a high-efficiency standard.',
       bullets: [
         'Best-in-class ACs are 3× more efficient than the least efficient on sale today',
-        'MEPS and energy labels close the efficiency gap across markets',
+        'Minimum energy performance standards (MEPS) and energy labels close the efficiency gap across markets',
         'Prevents 15–20 year lock-in of inefficient stock in growing markets'
       ],
       route: 'meps',

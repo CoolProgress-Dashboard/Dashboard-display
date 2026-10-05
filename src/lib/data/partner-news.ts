@@ -180,18 +180,6 @@ export const partnerNews: NewsItem[] = [
     ]
   },
   {
-    id: 'south-asia-cooling-roadshow',
-    section: 'events',
-    icon: 'fa-route',
-    color: '#E85A4F',
-    date: '2026-10-05',
-    headline: 'South Asia Cooling Innovation Road Show · Oct 5–14',
-    summary: 'Hosted by the World Bank Group, UK Government and the Cool Coalition.',
-    links: [
-      { label: 'Details', url: 'https://mailchi.mp/ifc/south-asia-cooling-2026?e=4e8e3f2254' }
-    ]
-  },
-  {
     id: 'read-grist-adapting',
     section: 'reads',
     icon: 'fa-arrows-rotate',
