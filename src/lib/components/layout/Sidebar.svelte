@@ -24,6 +24,7 @@
 
   const navLinks = [
     { view: 'overview',  label: 'Strategic Summary',       icon: 'fa-house',          color: '#0369a1' },
+    { view: 'progress',  label: 'Progress',                 icon: 'fa-gauge-high',     color: '#15803d' },
     { view: 'emissions', label: '1. Emissions',             icon: 'fa-smog',           color: '#dc2626' },
     { view: 'meps',      label: '2. Product Efficiency',    icon: 'fa-bolt',           color: '#d97706' },
     { view: 'kigali',    label: '3. Refrigerant Transition',icon: 'fa-flask',          color: '#0891b2' },

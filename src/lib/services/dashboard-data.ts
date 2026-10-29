@@ -141,6 +141,18 @@ export const loadRefrigerantBankData = async (
   );
 };
 
+// Loads JRAIA regional inverter and refrigerant-class series (split room ACs, 54 rows).
+export const loadJraiaRegionalData = async (
+  url: string,
+  key: string
+): Promise<import('./dashboard-types').JraiaRegionalRecord[]> => {
+  return safeFetch<import('./dashboard-types').JraiaRegionalRecord>(
+    url, key, 'jraia_inverter_refrigerant_regional',
+    'id,year,region_code,region_name,equipment_group,inverter_pct,a2l_pct,hfc_pct,hcfc_pct,others_pct,avg_gwp_ar6,region_ac_demand_thousand_units,units_value_kind,is_published,source_edition,source_url,notes',
+    '&equipment_group=eq.RAC%20Split-Type'
+  );
+};
+
 // Loads only the columns needed for the Kigali direct-emissions chart.
 // Fetches scenario_name + year + direct_emission_mt from global_model_subcool so
 // the caller can aggregate globally without transferring all columns.
@@ -229,7 +241,7 @@ export const loadDashboardData = async (
         url,
         key,
         'meps',
-        'country_code,country_name,policy_name,equipment_type,requirement_type,policy_instrument,status,year_adopted,year_revised,region'
+        'country_code,country_name,policy_name,equipment_type,requirement_type,policy_instrument,status,year_adopted,year_revised,region,notes'
       ),
       safeFetch<AccessRecord>(
         url,

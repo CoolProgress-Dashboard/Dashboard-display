@@ -54,6 +54,7 @@ export type Meps = {
   year_adopted?: number | null;
   year_revised?: number | null;
   region?: string | null;
+  notes?: string | null;
 };
 
 export type AccessRecord = {
@@ -300,6 +301,28 @@ export type RefrigerantBankRecord = {
   refrigerant: string;
   region: 'A5' | 'NA5';
   bank_tonnes: number;
+};
+
+// JRAIA World AC Demand: inverter rate and refrigerant class shares by region (RAC split-type).
+// avg_gwp_ar6 is derived (A2L as R-32, HFC excl. A2L as R-410A, HCFC as R-22).
+export type JraiaRegionalRecord = {
+  id: number;
+  year: number;
+  region_code: string;
+  region_name: string;
+  equipment_group: string;
+  inverter_pct: number | null;
+  a2l_pct: number | null;
+  hfc_pct: number | null;
+  hcfc_pct: number | null;
+  others_pct: number | null;
+  avg_gwp_ar6: number | null;
+  region_ac_demand_thousand_units: number | null;
+  units_value_kind: string | null;
+  is_published: boolean;
+  source_edition: string | null;
+  source_url: string | null;
+  notes: string | null;
 };
 
 export type CountrySpotlightRecord = {
