@@ -1434,12 +1434,16 @@
           <i class="fa-solid fa-earth-americas"></i>
           CO2 Emissions by Country
         </div>
-        <a href="/methodology#emissions-map" style="font-size: 0.68rem; color: #0369a1; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; white-space: nowrap;">
+        <a href="/methodology/emissions-map" style="font-size: 0.68rem; color: #0369a1; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; white-space: nowrap;">
           <i class="fa-solid fa-book-open" style="font-size: 0.6rem;"></i> Methodology
         </a>
       </div>
       <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.25rem; padding: 0;">
         Annual cooling-sector emissions, Mt CO₂/yr. Click a country for detailed breakdown.
+      </div>
+      <div style="font-size: 0.72rem; color: #64748b; margin-bottom: 0.5rem; padding: 0.35rem 0.5rem; background: rgba(217,117,64,0.05); border-left: 2px solid #D97540; border-radius: 0 4px 4px 0;">
+        <i class="fa-solid fa-triangle-exclamation" style="color: #D97540; margin-right: 0.3rem; font-size: 0.65rem;"></i>
+        <strong>Read with care:</strong> shading shows each country's absolute emissions. It is not adjusted for population or climate, so it is not a ranking of how well countries are performing.
       </div>
       <div id="emissions-clasp-note" style="display: none; font-size: 0.72rem; color: #64748b; margin-bottom: 0.5rem; padding: 0.35rem 0.5rem; background: rgba(3,105,161,0.04); border-left: 2px solid #0369a1; border-radius: 0 4px 4px 0;">
         <i class="fa-solid fa-circle-info" style="color: #0369a1; margin-right: 0.3rem; font-size: 0.65rem;"></i>

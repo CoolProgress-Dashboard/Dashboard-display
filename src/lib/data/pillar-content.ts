@@ -187,7 +187,7 @@ export const pillarContent: PillarContentMap = {
 			'It was the first time cooling received dedicated political attention at a UNFCCC COP. ' +
 			'But pledges alone do not reduce emissions. The gap between commitment and implementation remains the central challenge of global cooling governance.',
 		keyNarrative:
-			'The policy landscape for cooling spans multiple instruments. NDCs are the anchor: they set each country\'s climate targets under ' +
+			'The policy landscape for cooling spans multiple instruments. Nationally Determined Contributions (NDCs) are the anchor: they set each country\'s climate targets under ' +
 			'the Paris Agreement. Analysis of current NDC texts shows that fewer than 30% explicitly mention cooling, refrigerants, or the Kigali Amendment. ' +
 			'National Cooling Action Plans (NCAPs) provide dedicated roadmaps -- as of 2026, roughly 20 countries have completed or are developing NCAPs. ' +
 			'These plans typically address efficiency standards, refrigerant transitions, cooling access, and cold chain development. ' +

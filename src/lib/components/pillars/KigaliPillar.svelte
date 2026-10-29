@@ -42,7 +42,7 @@
     {
       value: String(ratifiedCount),
       label: 'Kigali parties ratified',
-      context: `${ratifiedCount} parties (countries plus the EU) have ratified the Kigali Amendment, covering over 95% of global HFC consumption. Source: UNEP Ozone Secretariat, verified July 2026.`
+      context: `${ratifiedCount} parties (countries plus the EU) have ratified the Kigali Amendment, covering over 95% of global hydrofluorocarbon (HFC) consumption. Source: UNEP Ozone Secretariat, verified July 2026.`
     },
     {
       value: '0.5\u00B0C',
@@ -57,7 +57,7 @@
     {
       value: 'GWP 3',
       label: 'R-290 propane (natural refrigerant)',
-      context: 'R-290 (propane) has a GWP of just 3, compared to 2,088 for R-410A. China and India already manufacture R-290 split ACs at scale.'
+      context: 'R-290 (propane) has a global warming potential (GWP) of just 3, compared to 2,088 for R-410A. Manufacturers in China and India already mass-produce R-290 split ACs.'
     }
   ];
 
@@ -776,7 +776,7 @@
               const pct = bauVal > 0 && p.seriesName !== 'Business as Usual'
                 ? ` (${((1 - p.value / bauVal) * 100).toFixed(0)}% below Business as Usual)`
                 : '';
-              result += `${p.marker} ${p.seriesName}: ${p.value.toFixed(1)} Mt CO\u2082e${pct}<br/>`;
+              result += `${p.marker} ${p.seriesName}: ${p.value.toFixed(1)} Mt CO\u2082e/yr${pct}<br/>`;
             });
             return result;
           }
@@ -797,7 +797,7 @@
         },
         yAxis: {
           type: 'value',
-          name: 'Direct Emissions (Mt CO\u2082e)',
+          name: 'Annual direct emissions (Mt CO\u2082e/yr)',
           nameTextStyle: { fontSize: 13, color: '#1e293b', fontWeight: 700 },
           nameGap: 55,
           axisLabel: { fontSize: 13, color: '#1e293b', fontWeight: 700 }
@@ -1139,6 +1139,77 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════
+         SECTION 1a — GWP VOCABULARY (KI-15: objective GWP terms + infographic)
+         Thresholds anchored on existing regulation; values are 100-year GWPs
+         (IPCC AR4, the basis used under the Kigali Amendment). Low <750 and
+         ultra-low <10 match the Overview vocabulary (OV-14).
+         ═══════════════════════════════════════════════════ -->
+    <div class="k-section" class:revealed>
+      <span class="k-eyebrow k-eyebrow-xl">Speaking the Same Language</span>
+      <h2 class="k-title k-title-xl">What does "low GWP" actually mean?</h2>
+      <p class="k-body">Global warming potential (GWP) measures how much heat one kilogram of a gas traps over 100 years, compared with one kilogram of CO₂ (GWP 1). There is no single official definition of "low GWP": the term is used for anything from below 1,000 down to below 10, which makes claims hard to compare. CoolProgress uses the vocabulary below, with each boundary taken from a threshold that already appears in regulation.</p>
+
+      <div class="k-gwp-ladder" role="list" aria-label="Refrigerant global warming potential categories, from very high to ultra-low">
+        <div class="k-gwp-row" role="listitem">
+          <div class="k-gwp-phase k-gwp-phase-today">Today</div>
+          <div class="k-gwp-band" style="--band:#b42318;--band-text:#fff;width:100%;">
+            <span class="k-gwp-name">Very high</span>
+            <span class="k-gwp-range">2,500 and above</span>
+            <span class="k-gwp-eg">HFC-23 (14,800), R-404A (3,922), R-507A (3,985)</span>
+          </div>
+        </div>
+        <div class="k-gwp-row" role="listitem">
+          <div class="k-gwp-phase k-gwp-phase-today">Today</div>
+          <div class="k-gwp-band" style="--band:#d9622b;--band-text:#fff;width:90%;">
+            <span class="k-gwp-name">High</span>
+            <span class="k-gwp-range">750 to 2,500</span>
+            <span class="k-gwp-eg">R-410A (2,088), HCFC-22 (1,810), R-134a (1,430)</span>
+          </div>
+        </div>
+        <div class="k-gwp-row" role="listitem">
+          <div class="k-gwp-phase k-gwp-phase-transition">Transition</div>
+          <div class="k-gwp-band" style="--band:#f2c14e;--band-text:#3d2c00;width:80%;">
+            <span class="k-gwp-name">Low</span>
+            <span class="k-gwp-range">150 to 750</span>
+            <span class="k-gwp-eg">R-32 (675), R-454B (466)</span>
+          </div>
+        </div>
+        <div class="k-gwp-row" role="listitem">
+          <div class="k-gwp-phase k-gwp-phase-transition">Transition</div>
+          <div class="k-gwp-band" style="--band:#a9d18e;--band-text:#1f3a12;width:70%;">
+            <span class="k-gwp-name">Very low</span>
+            <span class="k-gwp-range">10 to 150</span>
+            <span class="k-gwp-eg">HFC/HFO blends such as R-454C (148)</span>
+          </div>
+        </div>
+        <div class="k-gwp-row" role="listitem">
+          <div class="k-gwp-phase k-gwp-phase-target">Target</div>
+          <div class="k-gwp-band" style="--band:#2d7d5a;--band-text:#fff;width:60%;">
+            <span class="k-gwp-name">Ultra-low</span>
+            <span class="k-gwp-range">below 10</span>
+            <span class="k-gwp-eg">R-290 propane (3), R-600a isobutane (3), R-744 CO₂ (1), R-717 ammonia (0), pure HFOs such as R-1234yf (4)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="k-card-grid-2" style="margin-top:1rem;">
+        <div class="k-card">
+          <strong class="k-card-title">Where the boundaries come from</strong>
+          <p class="k-card-body"><strong>2,500:</strong> the EU F-Gas Regulation bans refrigerants at or above this GWP for servicing refrigeration equipment. <strong>750:</strong> the EU limit for new single split ACs holding less than 3 kg of refrigerant (tightening to 150 from 2029), close to the US AIM Act limit of 700 for new residential AC. <strong>150:</strong> the EU F-Gas Regulation (2024/573) limit for many categories of new equipment. <strong>10:</strong> the definition of ultra-low GWP in California's SB 1206. New York's Part 494 sets a similar limit of 10, measured over 20 years rather than 100.</p>
+        </div>
+        <div class="k-card">
+          <strong class="k-card-title">Why the low end matters</strong>
+          <p class="k-card-body">A refrigerant can be "low GWP" and still be hundreds of times more warming than CO₂: R-32 is a big improvement on R-410A, but it is a transition step, not the end point. Ultra-low-GWP refrigerants are the long-term target. Whatever the refrigerant, lifecycle management (preventing leaks, recovering gas at servicing and at end of life) cuts emissions from the equipment already installed.</p>
+        </div>
+      </div>
+      <p class="k-body" style="font-size:0.75rem;color:#64748b;margin-top:0.75rem;">GWP values are 100-year figures from the IPCC Fourth Assessment Report (AR4), the basis used under the Kigali Amendment. Other assessment reports give slightly different numbers. Sources:
+        <a href="https://eur-lex.europa.eu/eli/reg/2024/573/oj/eng" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;">EU F-Gas Regulation 2024/573</a> ·
+        <a href="https://www.epa.gov/climate-hfcs-reduction/aim-act" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;">US EPA AIM Act</a> ·
+        <a href="https://ww2.arb.ca.gov/our-work/programs/sb-1206-and-ab-663/about" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;">CARB SB 1206</a>
+      </p>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
          SECTION 1b — THE FRAMEWORK (KI-08: Montreal-to-Kigali primer)
          ═══════════════════════════════════════════════════ -->
     <div class="k-section" class:revealed>
@@ -1347,8 +1418,16 @@
       <p class="k-body" style="margin-top: 1.25rem;">The transition pathway runs from high-GWP HFCs toward increasingly sustainable options: lower-GWP HFCs like R-32 (GWP 675), HFO blends with GWPs under 150, and natural refrigerants — R-290 propane (GWP 3), R-600a isobutane (GWP 3), R-744 CO₂ (GWP 1), and R-717 ammonia (GWP 0). Natural refrigerants are the end state. They carry negligible direct climate impact and avoid the PFAS concerns increasingly associated with HFOs.</p>
 
       <!-- Market momentum callout -->
-      <div class="k-callout">
-        <strong>Market Momentum</strong>: Leading manufacturers in China and India are already producing R-290 split ACs at scale, proving that leapfrogging to natural refrigerants is a viable, ready-to-scale reality.
+      <div class="k-callout k-callout-strong">
+        <strong>Market Momentum</strong>: R-290 (propane) split ACs are already in mass production. In India, Godrej &amp; Boyce converted its split-AC line to R-290, with capacity for 300,000 units a year and more than 600,000 units sold with no reported safety incidents by 2019. In China, Midea, Gree, Haier and other leading manufacturers have converted production lines to R-290 with Multilateral Fund support. Leapfrogging straight to natural refrigerants is a proven, ready-to-scale option.
+        <div style="margin-top:0.5rem;font-size:0.75rem;">
+          Sources:
+          <a href="https://iifiir.org/en/news/hydrocarbons-as-refrigerants-in-air-conditioning" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;">IIR, Hydrocarbons as refrigerants in air conditioning (2019)</a>
+          &nbsp;·&nbsp;
+          <a href="https://www.unep.org/ozonaction/resources/factsheet/demonstrating-feasibility-r-290-based-ac-manufacturing-chinas-midea-and-meizhi" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;">UNEP OzonAction, R-290 AC manufacturing at Midea</a>
+          &nbsp;·&nbsp;
+          <a href="https://www.green-cooling-initiative.org/news-media/publications/publication-detail/2025/04/02/r290-split-air-conditioners-resource-guide-update-2025" target="_blank" rel="noopener noreferrer" style="color:#0369a1;font-weight:600;">Green Cooling Initiative, R290 Split Air Conditioners Resource Guide (2025)</a>
+        </div>
       </div>
     </div>
 
@@ -1561,7 +1640,7 @@
         <i class="fa-solid fa-circle-info"></i>
         Lifecycle refrigerant management is under-addressed but offers major near-term mitigation potential.
         See: <a href="https://www.ccacoalition.org/resources/guidance-sustainable-cooling-approaches-enhanced-ndcs" target="_blank" rel="noopener noreferrer">CCAC Guidance on Sustainable Cooling</a>
-        · <a href="https://kigalisim.org/" target="_blank" rel="noopener noreferrer">Kigali SIM</a>
+        · <a href="https://kigalisim.org/" target="_blank" rel="noopener noreferrer">KigaliSim (UC Berkeley)</a>
       </p>
 
       <!-- Cooling Pledge Badge -->
@@ -1592,9 +1671,9 @@
           <a href="https://eur-lex.europa.eu/eli/reg/2024/573/oj/eng" target="_blank" rel="noopener noreferrer" class="k-resource-link" style="margin-left:0.75rem;">Full legal text <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
         </div>
         <div class="k-card k-resource-card">
-          <strong class="k-card-title">EIA International — F-Gas &amp; HFC Campaign</strong>
-          <p class="k-card-body">EIA's international policy work on EU HFC phase-down, Kigali Amendment implementation, and illegal refrigerant trade. Includes country briefings and regulatory analysis.</p>
-          <a href="https://eia-international.org/our-work/climate/f-gas/" target="_blank" rel="noopener noreferrer" class="k-resource-link">EIA F-Gas work <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <strong class="k-card-title">EIA UK: F-Gas and HFC Campaign</strong>
+          <p class="k-card-body">The UK-based Environmental Investigation Agency's policy work on EU HFC phase-down, Kigali Amendment implementation, and illegal refrigerant trade. Includes country briefings and regulatory analysis.</p>
+          <a href="https://eia-international.org/our-work/climate/f-gas/" target="_blank" rel="noopener noreferrer" class="k-resource-link">EIA UK F-Gas work <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
         </div>
         <div class="k-card k-resource-card">
           <strong class="k-card-title">UNEP OzonAction — Kigali Fact Sheet Series</strong>
@@ -1606,11 +1685,44 @@
           <strong class="k-card-title">US EPA Technology Transitions Rule (AIM Act)</strong>
           <p class="k-card-body">Sets GWP limit of 700 for new residential AC systems from 2025/2026, effectively ending R-410A in new equipment across the United States.</p>
           <a href="https://www.epa.gov/climate-hfcs-reduction/aim-act" target="_blank" rel="noopener noreferrer" class="k-resource-link">EPA AIM Act page <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a href="https://eia.org/campaigns/climate/" target="_blank" rel="noopener noreferrer" class="k-resource-link" style="margin-left:0.75rem;">EIA US climate campaign <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
         </div>
         <div class="k-card k-resource-card">
-          <strong class="k-card-title">New York State Part 494</strong>
-          <p class="k-card-body">Sets GWP limit &lt;10 by 2034/2035 for almost all new cooling equipment using 20-year GWP metrics — one of the most ambitious sub-national targets globally.</p>
+          <strong class="k-card-title">US EPA HFC Data Hub</strong>
+          <p class="k-card-body">Official US data on HFC production, imports, allowance allocations and emissions reported under the AIM Act, with downloadable datasets.</p>
+          <a href="https://www.epa.gov/hfcs/hfc-data-hub" target="_blank" rel="noopener noreferrer" class="k-resource-link">EPA HFC Data Hub <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="k-card k-resource-card">
+          <strong class="k-card-title">New York Part 494 and California SB 1206</strong>
+          <p class="k-card-body">New York's Part 494 sets a GWP limit below 10 by 2034/2035 for almost all new cooling equipment, using 20-year GWP metrics. California's SB 1206 (2022) directs the state to transition away from HFCs to ultra-low-GWP (below 10) or no-GWP alternatives by 2035. Together, two of the most ambitious sub-national targets globally.</p>
           <a href="https://dec.ny.gov/regulatory/regulations/proposed-emergency-recently-adopted-regulations/climate-change" target="_blank" rel="noopener noreferrer" class="k-resource-link">NY DEC regulation <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a href="https://ww2.arb.ca.gov/our-work/programs/sb-1206-and-ab-663/about" target="_blank" rel="noopener noreferrer" class="k-resource-link" style="margin-left:0.75rem;">CARB: SB 1206 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a href="https://eia.org/campaigns/climate/us-state-refrigerant-policy-2/" target="_blank" rel="noopener noreferrer" class="k-resource-link" style="margin-left:0.75rem;">EIA US state policy tracker <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="k-card k-resource-card">
+          <strong class="k-card-title">Multilateral Fund: Country Programme Data</strong>
+          <p class="k-card-body">Country Programme data reported by developing countries to the Multilateral Fund, covering consumption of HCFCs and HFCs by substance and sector, plus prices.</p>
+          <a href="https://www.multilateralfund.org/our-work/cp-data-center" target="_blank" rel="noopener noreferrer" class="k-resource-link">MLF CP data centre <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="k-card k-resource-card">
+          <strong class="k-card-title">Ozone Secretariat Data Centre</strong>
+          <p class="k-card-body">Generate reports on each party's reported production and consumption of controlled substances, including HFCs under the Kigali Amendment.</p>
+          <a href="https://ozone.unep.org/countries/data-table" target="_blank" rel="noopener noreferrer" class="k-resource-link">Ozone Secretariat data <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="k-card k-resource-card">
+          <strong class="k-card-title">KigaliSim (UC Berkeley)</strong>
+          <p class="k-card-body">Open interactive tool from UC Berkeley's Schmidt Center for Data Science and Environment for simulating Montreal Protocol and Kigali Amendment policies, and their impacts on emissions, consumption and equipment.</p>
+          <a href="https://kigalisim.org/" target="_blank" rel="noopener noreferrer" class="k-resource-link">KigaliSim <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="k-card k-resource-card">
+          <strong class="k-card-title">Cool Technologies</strong>
+          <p class="k-card-body">Searchable database of manufacturers and users of HFC-free cooling equipment that runs on natural refrigerants and other sustainable technologies.</p>
+          <a href="https://cooltechnologies.org/" target="_blank" rel="noopener noreferrer" class="k-resource-link">Cool Technologies <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+        <div class="k-card k-resource-card">
+          <strong class="k-card-title">Climate-Friendly Supermarkets</strong>
+          <p class="k-card-body">Tracks supermarket refrigeration, one of the largest sources of HFC leaks, with a scorecard ranking retailers on their transition to climate-friendly refrigerants.</p>
+          <a href="https://www.climatefriendlysupermarkets.org/" target="_blank" rel="noopener noreferrer" class="k-resource-link">Website and scorecard <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
         </div>
         <div class="k-card k-resource-card">
           <strong class="k-card-title">Green Cooling Initiative (GCI)</strong>
@@ -1775,6 +1887,58 @@
   }
 
   /* Market momentum callout */
+  .k-callout-strong {
+    background: #ecf6f0;
+    border-left-color: #2d7d5a;
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+  }
+
+  /* KI-15 GWP vocabulary ladder */
+  .k-gwp-ladder {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 1.25rem;
+  }
+  .k-gwp-row {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .k-gwp-phase {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: right;
+  }
+  .k-gwp-phase-today { color: #b42318; }
+  .k-gwp-phase-transition { color: #8a6d1c; }
+  .k-gwp-phase-target { color: #2d7d5a; }
+  .k-gwp-band {
+    background: var(--band);
+    color: var(--band-text);
+    border-radius: 8px;
+    padding: 0.6rem 0.9rem;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 6rem 7.5rem 1fr;
+    gap: 0.6rem;
+    align-items: baseline;
+    box-sizing: border-box;
+  }
+  .k-gwp-name { font-weight: 800; font-size: 0.95rem; }
+  .k-gwp-range { font-weight: 700; font-size: 0.85rem; }
+  .k-gwp-eg { font-size: 0.8rem; }
+  @media (max-width: 720px) {
+    .k-gwp-row { grid-template-columns: 1fr; gap: 0.2rem; }
+    .k-gwp-phase { text-align: left; }
+    .k-gwp-band { width: 100% !important; grid-template-columns: 1fr; gap: 0.15rem; }
+  }
+
   .k-callout {
     background: transparent;
     border: none;

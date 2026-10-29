@@ -10,6 +10,7 @@
   import PillarInsight from '$lib/components/shared/PillarInsight.svelte';
   import FurtherReading from '$lib/components/shared/FurtherReading.svelte';
   import MepsLevelChart from '$lib/components/charts/MepsLevelChart.svelte';
+  import MepsLookup from '$lib/components/charts/MepsLookup.svelte';
   import MepsByRegionChart from '$lib/components/charts/MepsByRegionChart.svelte';
   import MepsEquipmentChart from '$lib/components/charts/MepsEquipmentChart.svelte';
   import PeakLoadChart from '$lib/components/charts/PeakLoadChart.svelte';
@@ -38,22 +39,22 @@
     {
       value: '3x',
       label: 'efficiency gap between best and worst',
-      context: 'The best split AC on the market today achieves a CSPF above 8.0 Wh/Wh, while many markets still allow units below 3.0 Wh/Wh. Source: CLASP.'
+      context: 'The best split AC on the market today achieves a cooling seasonal performance factor (CSPF) above 8.0 Wh/Wh, while many markets still allow units below 3.0 Wh/Wh. Source: CLASP.'
     },
     {
       value: '1,300',
       label: 'TWh annual savings potential',
-      context: 'If every country adopted MEPS at best-available-technology level, we avoid 1,300 TWh of annual electricity consumption -- roughly India\'s entire output. Source: UNSDSN CEET, Energy Rating Labels (2024), based on CLASP Mepsy modelling.'
+      context: 'If every country adopted minimum energy performance standards (MEPS) at best-available-technology level, the world would avoid 1,300 TWh of electricity use every year, roughly India\'s entire output. Source: UNSDSN CEET, Energy Rating Labels (2024), based on CLASP Mepsy modelling.'
     },
     {
       value: '40%',
       label: 'demand reduction achievable',
-      context: 'CLASP Mepsy modelling: universal adoption of best-available MEPS could cut sector-wide cooling energy consumption by 40–50% by 2050 across all appliance types and geographies, without reducing comfort or access. This is a whole-sector projection — individual technology gains can be higher.'
+      context: 'CLASP Mepsy modelling: universal adoption of best-available MEPS could cut sector-wide cooling energy consumption by 40–50% by 2050 across all appliance types and geographies, without reducing comfort or access. This is a whole-sector projection; individual technology gains can be higher.'
     },
     {
       value: '80+',
-      label: 'countries with some form of MEPS',
-      context: 'Over 80 countries have cooling-related Minimum Energy Performance Standards, but standards vary enormously in stringency, scope, and enforcement.'
+      label: 'countries with energy performance standards',
+      context: 'Over 80 countries have cooling-related minimum energy performance standards (MEPS), but standards vary enormously in stringency, scope, and enforcement.'
     }
   ];
 
@@ -998,6 +999,8 @@
         <span class="appliance-scope-badge"><i class="fa-solid fa-fan"></i> Fans</span>
       </div>
       <h2 class="meps-section-title">Most of the global market still prioritises low-cost, inefficient cooling equipment.</h2>
+      <p class="meps-body-text">As the world warms, the number of air conditioners and refrigerators in use is set to keep climbing, and with it the electricity they draw and the emissions they cause. The strain shows first on the grid. In Saudi Arabia cooling already accounts for around half of peak electricity demand, and in India its share of the peak could rise from about 10% today to 45% by 2050 (IEA). During heatwaves, when everyone switches on at once, that surge pushes grids to their limits and raises the risk of outages.</p>
+      <p class="meps-body-text">Minimum Energy Performance Standards (MEPS) are the key policy for bending this curve. They set the efficiency floor for every unit sold, and because cooling equipment lasts 10 years or more, every inefficient unit sold today locks in a decade of wasted energy. Yet many countries still have no MEPS for cooling, or have standards that are weak or long outdated.</p>
       <p class="meps-body-text">To shift this trajectory, two tools must work in tandem: Minimum Energy Performance Standards (MEPS) that legally set a floor on efficiency, and Energy Labels that drive consumer demand toward top-performing products.</p>
 
       <div class="meps-explainer">
@@ -1035,11 +1038,34 @@
       </div>
     </div>
 
+    <!-- U4E Country Savings Assessments: savings potential, up front (ME-22) -->
+    <a href="https://csa.united4efficiency.org/" target="_blank" rel="noopener noreferrer" class="u4e-cta-box">
+      <div class="u4e-cta-left">
+        <img src="/images/unep.png" alt="U4E – United for Efficiency" class="u4e-logo" />
+      </div>
+      <div class="u4e-cta-content">
+        <div class="u4e-cta-eyebrow">What stronger standards could save</div>
+        <div class="u4e-cta-title">Country Savings Assessments</div>
+        <p class="u4e-cta-desc">
+          U4E has quantified the electricity, emissions and money that <strong>156 developing countries</strong>
+          could save by adopting ambitious MEPS for room air conditioners, refrigerators and other products.
+          Each country report sets out the projected cut in electricity use, CO₂ emissions and consumer bills,
+          with regional assessments for ASEAN, East Africa, SADC, West Africa and more.
+        </p>
+        <p class="u4e-cta-desc u4e-cta-example">
+          <strong>Example, Nigeria:</strong> the air conditioner MEPS approved in February 2025, developed with U4E support,
+          are expected to save <strong>11.5 TWh of electricity a year</strong> and <strong>39 million tonnes of CO₂ by 2040</strong>,
+          as the required efficiency rises 6% by 2026, 36% by 2029 and 48% by 2031.
+        </p>
+      </div>
+      <div class="u4e-cta-arrow"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
+    </a>
+
     <!-- ═══ THE COST OF INACTION ═══ -->
     <div class="chapter-card" class:revealed>
       <span class="meps-eyebrow">The Cost of Inaction</span>
       <h2 class="meps-section-title">Environmental Dumping</h2>
-      <p class="meps-body-text">When standards are weak or nonexistent, it results in environmental dumping: manufacturers offload their least efficient models in unregulated markets. Every year, millions of these units are installed, locking in 10 to 15 years of excess energy consumption that no retrofit can resolve. With the efficiency gap between the best and worst products currently exceeding a factor of three, implementing robust MEPS and labels is the most effective way to prevent decades of energy waste and unnecessary grid stress.</p>
+      <p class="meps-body-text">When standards are weak or nonexistent, it results in environmental dumping: manufacturers offload their least efficient models into markets that don't have efficiency regulations, or that have weaker or outdated ones. Every year, millions of these units are installed, locking in 10 to 15 years of excess energy consumption that no retrofit can resolve. With the efficiency gap between the best and worst products currently exceeding a factor of three, implementing robust MEPS and labels is the most effective way to prevent decades of energy waste and unnecessary grid stress.</p>
     </div>
 
     <!-- ═══ THE INVERTER REVOLUTION ═══ -->
@@ -1058,6 +1084,35 @@
       <p class="meps-body-text">By eliminating the wasteful start-stop cycles, inverter ACs typically achieve <strong>around 25% to 30% energy savings</strong> over standard fixed-speed models (CLASP inverter benchmarking). The Global Cooling Prize showed that a five-fold improvement in efficiency is achievable for next-generation designs, underscoring the enormous headroom that still exists above today's best-available standards, even though no product on the market reaches it yet. For a typical household in a hot climate, this transition already slashes electricity bills and reduces the peak load on national power grids.</p>
     </div>
 
+    <!-- ═══ HOT AND HUMID CONDITIONS (ME-16) ═══ -->
+    <div class="chapter-card" class:revealed>
+      <span class="meps-eyebrow">Built for the Real Climate</span>
+      <h2 class="meps-section-title">Efficiency ratings fade exactly when cooling is needed most.</h2>
+      <p class="meps-body-text">Most AC efficiency ratings are measured at 35°C outdoors. Many of the fastest-growing cooling markets regularly run far hotter, and the hotter it gets outside, the harder a unit must work. Lab tests in India by the Centre for Science and Environment found that above 35°C, efficiency falls by about <strong>2.5% for every extra degree</strong>, and at 45°C to 50°C units drew <strong>17% to 28% more power</strong> while delivering less cooling. At 45°C, a 5-star rated split AC performed worse than a 1-star model.</p>
+      <p class="meps-body-text">Humidity adds a second, hidden load. In humid climates such as Southeast Asia, coastal India and West Africa, much of an AC's work is pulling moisture out of indoor air, which conventional units do by over-cooling the air, wasting energy and comfort. That is why test methods matter: seasonal metrics based on local temperature bins, such as India's ISEER or Nigeria's NSEER, and high-ambient tests give a far truer picture than a single 35°C rating.</p>
+
+      <div class="meps-highlight-row">
+        <div class="meps-highlight-pill" style="border-color:#D97540;">
+          <i class="fa-solid fa-temperature-arrow-up" style="color:#D97540;"></i>
+          <strong>−2.5% per °C</strong>
+          <span>efficiency lost for every degree above the 35°C rating point (CSE lab tests, India)</span>
+        </div>
+        <div class="meps-highlight-pill" style="border-color:#0369a1;">
+          <i class="fa-solid fa-droplet" style="color:#0369a1;"></i>
+          <strong>Hidden load</strong>
+          <span>in humid climates, removing moisture takes a large share of the cooling effort</span>
+        </div>
+        <div class="meps-highlight-pill" style="border-color:#2D7D5A;">
+          <i class="fa-solid fa-trophy" style="color:#2D7D5A;"></i>
+          <strong>5x lower impact</strong>
+          <span>achieved by the Global Cooling Prize winners under Indian field conditions</span>
+        </div>
+      </div>
+
+      <p class="meps-body-text">The Global Cooling Prize, launched by the Government of India, Mission Innovation and RMI, set out to solve exactly this problem. Prototypes were field-tested near New Delhi and lab-tested in Ahmedabad and Chennai between September 2020 and March 2021, and the two winners, Daikin with Nikken Sekkei and Gree with Tsinghua University, achieved <strong>more than five times lower climate impact</strong> than a standard unit. Both did it by handling heat and humidity separately: Daikin with two adapted indoor units that control temperature and moisture independently, Gree by switching between vapour compression, evaporative cooling and ventilation depending on the weather outside. Their lifecycle cost of ownership was estimated at around half that of the baseline unit. These designs show how much headroom remains above today's standards, and why the next generation of MEPS should be tested under the hot, humid conditions where most new ACs will be installed.</p>
+      <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> Sources: <a href="https://www.downtoearth.org.in/environment/cse-study-questions-energy-performance-of-acs-with-bee-star-rating-55072" target="_blank" rel="noopener noreferrer">CSE study on BEE-rated ACs (2016)</a>; <a href="https://globalcoolingprize.org/2021/04/" target="_blank" rel="noopener noreferrer">Global Cooling Prize winners announcement (2021)</a>.</p>
+    </div>
+
     <!-- ═══ SUPER-EFFICIENT FANS ═══ -->
     <div class="chapter-card" class:revealed>
       <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.5rem;">
@@ -1065,7 +1120,7 @@
         <span class="appliance-scope-badge"><i class="fa-solid fa-fan"></i> Fans</span>
       </div>
       <h2 class="meps-section-title">Super-Efficient Fans: A Quiet Revolution in Affordable Cooling</h2>
-      <p class="meps-body-text">For the billions of people who cannot afford or access air conditioning, electric fans represent the primary cooling technology — and a critical target for efficiency standards. Super-efficient fans (SEFs) now use approximately <strong>50% less electricity</strong> than conventional models while delivering equivalent or better airflow, thanks to brushless DC motor technology.</p>
+      <p class="meps-body-text">Electric fans are the most widely owned cooling appliance in the world. For billions of people who cannot afford or access air conditioning they are the main way to keep cool, but they are not only a substitute: many households, for example in India, own both and use fans alongside their AC. That makes fans a critical target for efficiency standards. Super-efficient fans (SEFs) now use approximately <strong>50% less electricity</strong> than conventional models while delivering equivalent or better airflow, thanks to brushless DC motor technology.</p>
 
       <div class="meps-highlight-row">
         <div class="meps-highlight-pill" style="border-color:#0369a1;">
@@ -1085,7 +1140,7 @@
         </div>
       </div>
 
-      <p class="meps-body-text">India's BEE 5-star label programme has been instrumental in scaling the SEF market, achieving significant price reductions as volumes grow. A similar market transformation potential exists across South and Southeast Asia and Sub-Saharan Africa — regions where fan ownership is high but grid-connected air conditioning remains unaffordable. Extending fan MEPS to cover brushless DC technology, combined with energy labels, can leapfrog decades of gradual improvement.</p>
+      <p class="meps-body-text">India's BEE 5-star label programme has been instrumental in scaling the SEF market, achieving significant price reductions as volumes grow. A similar market transformation potential exists across South and Southeast Asia and Sub-Saharan Africa — regions where fan ownership is high, whether as the main cooling appliance or alongside a growing number of ACs. Extending fan MEPS to cover brushless DC technology, combined with energy labels, can leapfrog decades of gradual improvement.</p>
     </div>
 
     <!-- ═══ RECENT MEPS UPDATES ═══ -->
@@ -1247,26 +1302,10 @@
     <!-- DATA: MEPS Stringency Chart -->
     <div class="meps-level-wrapper">
       <MepsLevelChart {mepsTimeline} {mepsLevels} />
+      <MepsLookup {mepsData} {mepsTimeline} />
       <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> All values source-verified against their legal instruments, July 2026. See the methodology for conversion equations and the full audit trail.</p>
     </div>
 
-    <!-- U4E Country Savings Assessments CTA -->
-    <a href="https://united4efficiency.org/countries/country-assessments/" target="_blank" rel="noopener noreferrer" class="u4e-cta-box">
-      <div class="u4e-cta-left">
-        <img src="/images/unep.png" alt="U4E – United for Efficiency" class="u4e-logo" />
-      </div>
-      <div class="u4e-cta-content">
-        <div class="u4e-cta-eyebrow">Go further with U4E</div>
-        <div class="u4e-cta-title">Country Savings Assessments</div>
-        <p class="u4e-cta-desc">
-          U4E has quantified the energy, emissions, and financial savings that <strong>156 developing countries</strong>
-          could achieve by implementing MEPS — including for room air conditioners and refrigerators.
-          Each country report covers projected reductions in electricity use, CO₂ emissions, and consumer bills.
-          Regional assessments are also available for ASEAN, East Africa, SADC, West Africa, and more.
-        </p>
-      </div>
-      <div class="u4e-cta-arrow"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
-    </a>
 
     <!-- ═══ Ch03 THE WAY FORWARD ═══ -->
     <div class="chapter-card" class:revealed>
@@ -1974,6 +2013,14 @@
     color: #475569;
     margin: 0;
     line-height: 1.55;
+  }
+
+  .u4e-cta-example {
+    margin-top: 0.6rem;
+    padding: 0.5rem 0.7rem;
+    background: rgba(255, 255, 255, 0.7);
+    border-left: 3px solid #008751;
+    border-radius: 0 6px 6px 0;
   }
 
   .u4e-cta-arrow {

@@ -48,6 +48,18 @@
       </div>
     </a>
 
+    <a href="/methodology/emissions-map" class="chart-card">
+      <div class="card-icon" style="background: rgba(217,117,64,0.1); color: #D97540;">
+        <i class="fa-solid fa-earth-americas"></i>
+      </div>
+      <div class="card-body">
+        <div class="card-eyebrow">Emissions Pillar</div>
+        <h2>Emissions by Country Map</h2>
+        <p>How direct (refrigerant HFC) and indirect (electricity) emissions are estimated per country, and how reliable they are.</p>
+        <span class="card-link">Read methodology <i class="fa-solid fa-arrow-right"></i></span>
+      </div>
+    </a>
+
     <a href="/methodology/peak-load" class="chart-card">
       <div class="card-icon" style="background: rgba(217,117,64,0.1); color: #D97540;">
         <i class="fa-solid fa-bolt"></i>

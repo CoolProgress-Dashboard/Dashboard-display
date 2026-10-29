@@ -166,7 +166,7 @@
               <div class="dp-item-num">05</div>
             </div>
             <h3 class="dp-item-label">National Plans & Commitments</h3>
-            <p class="dp-item-desc">Track the Global Cooling Pledge, NDC cooling mentions, Kigali Implementation Plans, and National Cooling Action Plans.</p>
+            <p class="dp-item-desc">Track the Global Cooling Pledge, cooling in Nationally Determined Contributions (NDCs), Kigali Implementation Plans, and National Cooling Action Plans.</p>
             <span class="dp-item-cta">Explore <i class="fa-solid fa-arrow-right"></i></span>
           </button>
         </div>

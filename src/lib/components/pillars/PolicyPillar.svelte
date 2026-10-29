@@ -38,7 +38,7 @@
     {
       value: String(gcpCount),
       label: 'Global Cooling Pledge countries',
-      context: `${gcpCount} countries have signed the Global Cooling Pledge, launched at COP28 in Dubai, December 2023. 49 have MEPS, 37 include cooling in their NDCs. Source: Cool Coalition.`
+      context: `${gcpCount} countries have signed the Global Cooling Pledge, launched at COP28 in Dubai, December 2023. 49 have minimum energy performance standards (MEPS), 37 include cooling in their Nationally Determined Contributions (NDCs). Source: Cool Coalition.`
     },
     {
       value: '<30%',
