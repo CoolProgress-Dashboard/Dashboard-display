@@ -500,7 +500,7 @@
           <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
             <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #0369a1; margin-bottom: 0.75rem; display: block;"></i>
             <h4 style="color: #0369a1; margin-bottom: 0.5rem;">Select a Country</h4>
-            <p style="font-size: 0.85rem;">Click on any country in the map above to view policy framework details including GCP, NDC, and NCAP status.</p>
+            <p style="font-size: 0.85rem;">Click on any country in the map above to view policy framework details including GCP and NCAP status.</p>
           </div>
         `;
       }
@@ -516,35 +516,23 @@
         }
 
         const pledgeRec = pledge.find((p: any) => p.country_code === code);
-        const ndcRec = getNdcRecord(code, getNdcFilters());
         const ncapRec = ncap.find((n: any) => n.country_code === code);
         const hasNcap = !!ncapRec;
 
         const hasGCP = pledgeRec && pledgeRec.signatory === 1;
-        const ndcStatus = ndcRec?.mention_status ?? 'No data';
         const ncapYear = ncapRec?.year ? ` (${ncapRec.year})` : '';
 
-        const ndcBorder = ndcStatus === 'Mentioned' ? '#6BADA0' : ndcStatus === 'Not mentioned' ? '#D4A843' : '#e2e8f0';
-        const ndcBg     = ndcStatus === 'Mentioned' ? '#f0fdf4' : '#f8fafc';
-        const ndcIcon   = ndcStatus === 'Mentioned' ? '#6BADA0' : ndcStatus === 'Not mentioned' ? '#D4A843' : '#94a3b8';
-        const ndcTitle  = ndcStatus === 'Mentioned' ? '#2D7D5A' : '#64748b';
-        const ndcLabel  = ndcStatus === 'Mentioned' ? 'Cooling Mentioned' : ndcStatus === 'Not mentioned' ? 'Not yet mentioned' : (ndcStatus || 'No Data');
 
         container.innerHTML = `
           <div style="background: #0369a1; color: #fff; border-radius: 0; padding: 0.5rem 0.75rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 700;">
             <i class="fa-solid fa-location-dot" style="font-size: 0.9rem;"></i>
             ${country.country_name || code}
           </div>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 0.6rem;">
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 0.6rem;">
             <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.5rem 0;border:none;border-top:1px solid rgba(0,0,0,0.06);background:transparent;">
               <i class="fa-solid fa-handshake" style="color: ${hasGCP ? '#6BADA0' : '#94a3b8'}; font-size: 1.5rem;"></i>
               <div style="font-weight: 700; color: ${hasGCP ? '#4A9088' : '#64748b'};">GCP</div>
               <div style="font-size: 0.75rem; color: #64748b;">${hasGCP ? 'Signatory' : 'Not signed'}</div>
-            </div>
-            <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.5rem 0;border:none;border-top:1px solid rgba(0,0,0,0.06);background:transparent;">
-              <i class="fa-solid fa-file-lines" style="color: ${ndcIcon}; font-size: 1.5rem;"></i>
-              <div style="font-weight: 700; color: ${ndcTitle};">NDC</div>
-              <div style="font-size: 0.75rem; color: #64748b;">${ndcLabel}</div>
             </div>
             <div class="policy-status-box" style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:0.25rem;padding:0.5rem 0;border:none;border-top:1px solid rgba(0,0,0,0.06);background:transparent;">
               <i class="fa-solid fa-file-shield" style="color: ${hasNcap ? '#5A8FC2' : '#94a3b8'}; font-size: 1.5rem;"></i>
@@ -553,7 +541,6 @@
             </div>
           </div>
           <div style="font-size: 0.7rem; color: #94a3b8; display: flex; justify-content: flex-end; gap: 0.75rem;">
-            <a href="https://unfccc.int/NDCREG" target="_blank" rel="noopener noreferrer" style="color:#5A8FC2;text-decoration:none;"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.65rem;"></i> NDC Registry</a>
             <a href="https://www.coolcoalition.org" target="_blank" rel="noopener noreferrer" style="color:#5A8FC2;text-decoration:none;"><i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.65rem;"></i> Cool Coalition</a>
           </div>
         `;
@@ -967,36 +954,6 @@
 
       }
 
-      function updateNCAPCharts() {
-        // Brazil excluded — NCAP process only recently initiated, data not yet confirmed
-        const ncapFiltered = ncap.filter((n: any) => n.country_code !== 'BRA');
-
-        const ncapYears = ncapFiltered.map((n: any) => n.year).filter((y: any): y is number => y !== null && y !== undefined).sort((a: number, b: number) => a - b);
-        const yearCounts2: Record<number, number> = {};
-        ncapYears.forEach((year: number) => { yearCounts2[year] = (yearCounts2[year] || 0) + 1; });
-        const years2 = Object.keys(yearCounts2).map(Number).sort((a, b) => a - b);
-        const counts2 = years2.map(y => yearCounts2[y]);
-
-        setChart('chart-ncap-timeline', {
-          tooltip: { trigger: 'axis' },
-          grid: { left: '3%', right: '3%', bottom: '15%', top: '8%', containLabel: true },
-          xAxis: categoryAxis(years2.map(String)),
-          yAxis: valueAxis(),
-          series: [{ name: 'NCAPs Developed', type: 'bar', data: counts2, itemStyle: { color: '#5A8FC2' } }]
-        });
-
-        const listEl = document.getElementById('ncap-countries-list');
-        if (listEl) {
-          const sortedNcap = [...ncapFiltered].sort((a: any, b: any) => a.country_name.localeCompare(b.country_name));
-          listEl.innerHTML = sortedNcap.map((n: any) => `
-            <div class="ncap-country-card">
-              <div class="ncap-country-name">${n.country_name}</div>
-              <div class="ncap-country-year">${n.year ? 'Adopted: ' + n.year : 'Year not specified'}</div>
-            </div>
-          `).join('');
-        }
-      }
-
       // ── Dynamic chart container builder ───────────────────────────────────
       function updatePolicyChartsForMapType(mapType: string) {
         const container = document.getElementById('policy-charts-container');
@@ -1150,20 +1107,6 @@
             </div>
           `;
           container.innerHTML = ncapCprBox + `
-            <div class="policy-charts-flat">
-              <div class="policy-chart-item">
-                <p class="p-chart-eyebrow">Timeline</p>
-                <h3 class="p-chart-title">NCAP Development Over Time</h3>
-                <p class="p-chart-subtitle">Number of National Cooling Action Plans adopted per year</p>
-                <div id="chart-ncap-timeline" class="chart-surface" style="width:100%;height:300px;min-height:300px;"></div>
-              </div>
-              <div class="policy-chart-item">
-                <p class="p-chart-eyebrow">Countries with NCAPs</p>
-                <h3 class="p-chart-title">Countries with National Cooling Action Plans</h3>
-                <p class="p-chart-subtitle">Tracked via Climate Policy Radar · Brazil excluded — NCAP process only recently initiated</p>
-                <div id="ncap-countries-list" class="ncap-countries-grid"></div>
-              </div>
-            </div>
             <div class="policy-charts-flat" style="padding-top:0;">
               <div class="policy-chart-item" style="grid-column: 1 / -1;">
                 <p class="p-chart-eyebrow">Global North</p>
@@ -1198,10 +1141,7 @@
               </div>
             </div>
           `;
-          requestAnimationFrame(() => {
-            updateNCAPCharts();
-            requestAnimationFrame(forceResizePolicyCharts);
-          });
+          requestAnimationFrame(forceResizePolicyCharts);
         }
       }
 
@@ -1520,7 +1460,7 @@
       <span class="ns-eyebrow">Where Things Stand</span>
       <h2 class="ns-title">Cooling Policy: From Pledges to Implementation</h2>
       <p class="ns-body">As of 2026, {gcpCount} governments have signed the Global Cooling Pledge, committing to a 68% cut in cooling-related emissions by 2050 relative to 2022 levels. Separately, the Global Cooling Watch 2025 finds that 134 countries reference cooling in their national climate strategies, a broad signal of awareness that extends well beyond the Pledge signatories. Of the {gcpCount} GCP signatories, 37 have also included cooling in their NDCs, showing that political endorsement does not automatically translate into binding climate commitments. Only 54 countries have enforceable regulations covering the three critical areas: passive cooling, high-efficiency standards (MEPS), and refrigerant transitions.</p>
-      <p class="ns-body">NDC 3.0s are the latest round of updated national climate commitments submitted under the Paris Agreement. While 134 countries submitted them, very few contain specific air conditioning efficiency requirements, exposing a significant gap between political awareness and binding policy depth.</p>
+      <!-- CLASP_NDC_BOX -->
       <p class="ns-body">As of 2026, ~25 countries have finalised or are developing National Cooling Action Plans (NCAPs) — dedicated roadmaps that bridge high-level pledges and ground-level enforcement. Regional harmonisation efforts, such as ASEAN and ECOWAS efficiency standards, are also accelerating the transition beyond individual national efforts.</p>
       <p class="ns-body">Targeted climate finance from the Montreal Protocol's Multilateral Fund and the Green Climate Fund is helping close the gap between planning and implementation across developing economies.</p>
       <div class="policy-layers">
@@ -1559,44 +1499,16 @@
         </div>
         <span class="viewing-pill">Viewing: <strong id="policy-viewing">Global</strong></span>
       </div>
-      <!-- TABS: GCP → NDC → NCAP (Kigali is in Kigali pillar) -->
+      <!-- TABS: GCP → NCAP (Kigali is in Kigali pillar; NDC tab removed 6 Nov, see CLASP box) -->
       <div class="policy-tabs">
         <button class="tab-btn policy-map-tab active" data-map="gcp" type="button">Global Cooling Pledge</button>
-        <button class="tab-btn policy-map-tab" data-map="ndc" type="button">NDC Cooling Mentions</button>
         <button class="tab-btn policy-map-tab" data-map="NCAP" type="button">NCAP</button>
       </div>
       <div class="filters-help" style="font-size: 0.8rem; color: #0369a1; margin: 0.75rem 0; padding: 0.5rem 0 0.5rem 0.75rem; background: transparent; border-left: 3px solid #0369a1;">
         <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
-        <strong>Switch tabs</strong> to explore different policy frameworks: GCP signatories, NDC cooling mentions, or National Cooling Action Plans.
+        <strong>Switch tabs</strong> to explore different policy frameworks: Global Cooling Pledge signatories or National Cooling Action Plans.
       </div>
-      <!-- NDC Filters -->
-      <div class="policy-filters" id="policy-ndc-filters">
-        <div class="filter-row" style="gap: 1rem;">
-          <div class="filter-group">
-            <label class="filter-label" for="policy-ndc-type">NDC Version</label>
-            <select id="policy-ndc-type" class="filter-select">
-              <!-- Options populated dynamically -->
-            </select>
-          </div>
-          <div class="filter-group">
-            <label class="filter-label" for="policy-ndc-category">Category</label>
-            <select id="policy-ndc-category" class="filter-select">
-              <!-- Options populated dynamically -->
-            </select>
-          </div>
-        </div>
-      </div>
-      <!-- NDC-only source attribution — shown only when NDC tab is active -->
-      <div id="ndc-clasp-source" style="display:none; align-items:center; gap:0.5rem; padding:0.45rem 0.75rem; background:#f0fdf4; border-left:3px solid #2D7D5A; border-radius:0 6px 6px 0; margin-bottom:0.5rem;">
-        <span style="font-size:0.72rem; color:#334155; font-weight:500;">NDC data source:</span>
-        <a href="https://www.clasp.ngo/tools/ndc-appliance-efficiency-toolkit/" target="_blank" rel="noopener noreferrer"
-          style="display:inline-flex; align-items:center; gap:0.35rem; text-decoration:none; color:#0369a1; font-size:0.72rem; font-weight:600;">
-          <img src="/images/clasp-logo.png" alt="CLASP" style="height:14px; width:auto; object-fit:contain; opacity:0.85;" />
-          <span>CLASP NDC Appliance Efficiency Toolkit</span>
-          <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.5rem; opacity:0.7;"></i>
-        </a>
-      </div>
-      <p class="chart-hint">Hover over a country to see its pledge status, NDC cooling mentions, and NCAP progress. Click a country to explore details.</p>
+      <p class="chart-hint">Hover over a country to see its pledge status and NCAP progress. Click a country to explore details.</p>
       <div id="ndc-map-container" class="map-surface"></div>
       <div class="legend legend-row">
         <span class="legend-label">Status:</span>
@@ -1609,7 +1521,7 @@
         <div class="country-placeholder" style="text-align: center; padding: 2rem; color: #64748b;">
           <i class="fa-solid fa-map-location-dot" style="font-size: 2rem; color: #0369a1; margin-bottom: 0.75rem; display: block;"></i>
           <h4 style="color: #0369a1; margin-bottom: 0.5rem;">Select a Country</h4>
-          <p style="font-size: 0.85rem;">Click on any country in the map above to view policy framework details including GCP, NDC, and NCAP status.</p>
+          <p style="font-size: 0.85rem;">Click on any country in the map above to view policy framework details including GCP and NCAP status.</p>
         </div>
       </div>
     </div>

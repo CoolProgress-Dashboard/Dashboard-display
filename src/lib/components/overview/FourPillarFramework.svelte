@@ -40,7 +40,7 @@
       description: 'Moving to low- and ultra-low-GWP refrigerants under the Kigali Amendment, and managing them across their lifecycle — a strategic shift that can avert 0.5°C of warming this century.',
       bullets: [
         'HFCs are up to 12,000× more warming than CO₂ per molecule',
-        'The shift is from high-GWP HFCs to low-GWP (<750) and ultra-low-GWP (<10) alternatives such as R-32, R-290 and R-600a',
+        'The shift is from high-GWP HFCs, through medium-GWP options such as R-32 (<750), to low-GWP (<150) and ultra-low-GWP (<10) alternatives such as R-290 and R-600a',
         'Lifecycle management — leak prevention and end-of-life recovery — is as important as the refrigerant choice'
       ],
       route: 'kigali',

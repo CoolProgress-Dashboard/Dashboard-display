@@ -405,8 +405,8 @@
       const legend = document.getElementById('kigali-legend');
       if (!legend) return;
       legend.innerHTML = `
-    <div class="legend-item"><div class="legend-color" style="background:#2D7D5A"></div>More ambitious reduction plan</div>
-    <div class="legend-item"><div class="legend-color" style="background:#6BADA0"></div>Standard reduction plan</div>
+    <div class="legend-item"><div class="legend-color" style="background:#2D7D5A"></div>More ambitious HFC reduction plan</div>
+    <div class="legend-item"><div class="legend-color" style="background:#6BADA0"></div>Standard HFC reduction plan</div>
     <div class="legend-item"><div class="legend-color" style="background:#B8D4C4;border:1px solid #a0c0b4;"></div>Ratified only</div>
     <div class="legend-item"><div class="legend-color" style="background:#e5e7eb;border:1px solid #cbd5e1;"></div>Not ratified</div>
   `;
@@ -1141,17 +1141,21 @@
     <!-- ═══════════════════════════════════════════════════
          SECTION 1a — GWP VOCABULARY (KI-15: objective GWP terms + infographic)
          Thresholds anchored on existing regulation; values are 100-year GWPs
-         (IPCC AR4, the basis used under the Kigali Amendment). Low <750 and
-         ultra-low <10 match the Overview vocabulary (OV-14).
+         (IPCC AR4, the basis used under the Kigali Amendment). Bands: very high,
+         high, medium (150 to 750), low (10 to 150), ultra-low (<10), per Manuel 6 Nov.
          ═══════════════════════════════════════════════════ -->
     <div class="k-section" class:revealed>
       <span class="k-eyebrow k-eyebrow-xl">Speaking the Same Language</span>
       <h2 class="k-title k-title-xl">What does "low GWP" actually mean?</h2>
       <p class="k-body">Global warming potential (GWP) measures how much heat one kilogram of a gas traps over 100 years, compared with one kilogram of CO₂ (GWP 1). There is no single official definition of "low GWP": the term is used for anything from below 1,000 down to below 10, which makes claims hard to compare. CoolProgress uses the vocabulary below, with each boundary taken from a threshold that already appears in regulation.</p>
 
-      <div class="k-gwp-ladder" role="list" aria-label="Refrigerant global warming potential categories, from very high to ultra-low">
+      <div class="k-gwp-wrap">
+      <div class="k-gwp-axis" aria-hidden="true">
+        <span class="k-gwp-line"></span>
+        <span class="k-gwp-target">Target</span>
+      </div>
+      <div class="k-gwp-ladder" role="list" aria-label="Refrigerant global warming potential categories, from very high to ultra-low (the target)">
         <div class="k-gwp-row" role="listitem">
-          <div class="k-gwp-phase k-gwp-phase-today">Today</div>
           <div class="k-gwp-band" style="--band:#b42318;--band-text:#fff;width:100%;">
             <span class="k-gwp-name">Very high</span>
             <span class="k-gwp-range">2,500 and above</span>
@@ -1159,7 +1163,6 @@
           </div>
         </div>
         <div class="k-gwp-row" role="listitem">
-          <div class="k-gwp-phase k-gwp-phase-today">Today</div>
           <div class="k-gwp-band" style="--band:#d9622b;--band-text:#fff;width:90%;">
             <span class="k-gwp-name">High</span>
             <span class="k-gwp-range">750 to 2,500</span>
@@ -1167,29 +1170,27 @@
           </div>
         </div>
         <div class="k-gwp-row" role="listitem">
-          <div class="k-gwp-phase k-gwp-phase-transition">Transition</div>
           <div class="k-gwp-band" style="--band:#f2c14e;--band-text:#3d2c00;width:80%;">
-            <span class="k-gwp-name">Low</span>
+            <span class="k-gwp-name">Medium</span>
             <span class="k-gwp-range">150 to 750</span>
             <span class="k-gwp-eg">R-32 (675), R-454B (466)</span>
           </div>
         </div>
         <div class="k-gwp-row" role="listitem">
-          <div class="k-gwp-phase k-gwp-phase-transition">Transition</div>
           <div class="k-gwp-band" style="--band:#a9d18e;--band-text:#1f3a12;width:70%;">
-            <span class="k-gwp-name">Very low</span>
+            <span class="k-gwp-name">Low</span>
             <span class="k-gwp-range">10 to 150</span>
             <span class="k-gwp-eg">HFC/HFO blends such as R-454C (148)</span>
           </div>
         </div>
         <div class="k-gwp-row" role="listitem">
-          <div class="k-gwp-phase k-gwp-phase-target">Target</div>
           <div class="k-gwp-band" style="--band:#2d7d5a;--band-text:#fff;width:60%;">
             <span class="k-gwp-name">Ultra-low</span>
             <span class="k-gwp-range">below 10</span>
             <span class="k-gwp-eg">R-290 propane (3), R-600a isobutane (3), R-744 CO₂ (1), R-717 ammonia (0), pure HFOs such as R-1234yf (4)</span>
           </div>
         </div>
+      </div>
       </div>
 
       <div class="k-card-grid-2" style="margin-top:1rem;">
@@ -1199,7 +1200,7 @@
         </div>
         <div class="k-card">
           <strong class="k-card-title">Why the low end matters</strong>
-          <p class="k-card-body">A refrigerant can be "low GWP" and still be hundreds of times more warming than CO₂: R-32 is a big improvement on R-410A, but it is a transition step, not the end point. Ultra-low-GWP refrigerants are the long-term target. Whatever the refrigerant, lifecycle management (preventing leaks, recovering gas at servicing and at end of life) cuts emissions from the equipment already installed.</p>
+          <p class="k-card-body">A refrigerant marketed as "low GWP" can still be hundreds of times more warming than CO₂: R-32 is a big improvement on R-410A, but at 675 it sits in the medium band, a transition step, not the end point. Ultra-low-GWP refrigerants are the long-term target. Whatever the refrigerant, lifecycle management (preventing leaks, recovering gas at servicing and at end of life) cuts emissions from the equipment already installed.</p>
         </div>
       </div>
       <p class="k-body" style="font-size:0.75rem;color:#64748b;margin-top:0.75rem;">GWP values are 100-year figures from the IPCC Fourth Assessment Report (AR4), the basis used under the Kigali Amendment. Other assessment reports give slightly different numbers. Sources:
@@ -1446,13 +1447,19 @@
         </div>
         <!-- Legend -->
         <div id="kigali-legend" style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;justify-content:center;font-size:0.75rem;padding:0.75rem 1rem;border-top:1px solid #e2e8f0;background:#f8fafb;"></div>
-        <!-- Ratification progress bar -->
-        <div style="padding:0.5rem 1rem 0.75rem;background:#f8fafb;border-top:1px solid #f1f5f9;">
-          <div style="height:8px;border-radius:999px;overflow:hidden;background:#e5e7eb;display:flex;">
-            <div id="kigali-progress-ratified" style="height:100%;background:#6BADA0;width:0%;transition:width 0.8s ease;border-radius:999px 0 0 999px;"></div>
-            <div id="kigali-progress-notratified" style="height:100%;background:#e5e7eb;width:0%;transition:width 0.8s ease;"></div>
+        <!-- What the map categories mean (closed by default) -->
+        <details class="k-map-key">
+          <summary class="k-map-key-btn"><i class="fa-solid fa-book-open"></i> Definitions <i class="fa-solid fa-chevron-down k-map-key-chev"></i></summary>
+          <div class="k-map-key-body">
+          <p class="k-map-key-intro"><strong>Ratified</strong> means a country has completed its national approval of the Kigali Amendment and is now legally bound by its HFC phase-down schedule. A <strong>Kigali Implementation Plan (KIP)</strong> is a developing country's national plan, approved and funded by the Multilateral Fund, that sets how and when it makes its first HFC cut.</p>
+          <dl class="k-map-key-grid">
+            <div><dt><span class="k-key-sw" style="background:#2D7D5A"></span>More ambitious HFC reduction plan</dt><dd>Developing (Article 5) countries whose approved KIP commits to a first HFC cut deeper than the Kigali default of 10% by 2029. EU member states are also shown here, because the EU F-Gas Regulation goes further than Kigali.</dd></div>
+            <div><dt><span class="k-key-sw" style="background:#6BADA0"></span>Standard HFC reduction plan</dt><dd>Developing countries whose approved KIP matches the Kigali default first cut, and developed (non-Article 5) countries outside the EU, which follow the Kigali schedule as agreed.</dd></div>
+            <div><dt><span class="k-key-sw" style="background:#B8D4C4;border:1px solid #a0c0b4"></span>Ratified only</dt><dd>Countries that have ratified and are bound by the schedule but have no approved KIP on record yet, so no national reduction plan is shown.</dd></div>
+            <div><dt><span class="k-key-sw" style="background:#e5e7eb;border:1px solid #cbd5e1"></span>Not ratified</dt><dd>Countries that have not yet ratified the Kigali Amendment, so they are not legally bound by its HFC phase-down.</dd></div>
+          </dl>
           </div>
-        </div>
+        </details>
         <!-- Country detail panel -->
         <div id="kigali-country-detail" style="border-top:1px solid #e2e8f0;padding:1rem;">
           <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;font-size:0.72rem;color:#64748b;">
@@ -1895,29 +1902,71 @@
     font-size: 1rem;
   }
 
+  /* Kigali map key: plain-language meaning of each category */
+  .k-map-key { padding: 0.6rem 1rem; background: #f8fafb; border-top: 1px solid #f1f5f9; text-align: center; }
+  .k-map-key-btn {
+    display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer; list-style: none;
+    font-size: 0.8rem; font-weight: 700; color: #2D7D5A; background: #fff;
+    border: 1px solid #b8d4c4; border-radius: 999px; padding: 0.35rem 0.9rem;
+  }
+  .k-map-key-btn::-webkit-details-marker { display: none; }
+  .k-map-key-btn:hover { background: #eef6f1; }
+  .k-map-key-btn:focus-visible { outline: 2px solid #2D7D5A; outline-offset: 2px; }
+  .k-map-key-chev { font-size: 0.7rem; transition: transform 0.2s ease; }
+  .k-map-key[open] .k-map-key-chev { transform: rotate(180deg); }
+  .k-map-key-body { text-align: left; padding-top: 0.85rem; }
+  .k-map-key-intro { font-size: 0.82rem; color: #334155; line-height: 1.55; margin: 0 0 0.75rem; }
+  .k-map-key-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem 1.5rem; margin: 0; }
+  .k-map-key-grid dt { font-size: 0.8rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 0.45rem; }
+  .k-map-key-grid dd { font-size: 0.78rem; color: #475569; line-height: 1.5; margin: 0.15rem 0 0 1.3rem; }
+  .k-key-sw { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; display: inline-block; }
+  @media (max-width: 720px) { .k-map-key-grid { grid-template-columns: 1fr; } }
+
   /* KI-15 GWP vocabulary ladder */
+  .k-gwp-wrap {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+  /* One arrow from red (today) to green (target) instead of per-row phase labels */
+  .k-gwp-axis {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.4rem 0 0;
+  }
+  .k-gwp-line {
+    position: relative;
+    flex: 1;
+    width: 5px;
+    border-radius: 3px;
+    background: linear-gradient(to bottom, #b42318, #d9622b, #f2c14e, #a9d18e, #2d7d5a);
+    margin-bottom: 10px;
+  }
+  .k-gwp-line::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -10px;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 11px solid #2d7d5a;
+  }
+  .k-gwp-target {
+    margin-top: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #2d7d5a;
+  }
   .k-gwp-ladder {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
-    margin-top: 1.25rem;
   }
-  .k-gwp-row {
-    display: grid;
-    grid-template-columns: 6.5rem 1fr;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .k-gwp-phase {
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    text-align: right;
-  }
-  .k-gwp-phase-today { color: #b42318; }
-  .k-gwp-phase-transition { color: #8a6d1c; }
-  .k-gwp-phase-target { color: #2d7d5a; }
   .k-gwp-band {
     background: var(--band);
     color: var(--band-text);
@@ -1934,8 +1983,7 @@
   .k-gwp-range { font-weight: 700; font-size: 0.85rem; }
   .k-gwp-eg { font-size: 0.8rem; }
   @media (max-width: 720px) {
-    .k-gwp-row { grid-template-columns: 1fr; gap: 0.2rem; }
-    .k-gwp-phase { text-align: left; }
+    .k-gwp-wrap { grid-template-columns: 2.5rem 1fr; gap: 0.5rem; }
     .k-gwp-band { width: 100% !important; grid-template-columns: 1fr; gap: 0.15rem; }
   }
 

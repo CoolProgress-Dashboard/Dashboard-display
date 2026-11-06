@@ -319,7 +319,8 @@ export const loadDashboardData = async (
         'country_spotlights',
         'id,spotlight_id,name,region,flag_emoji,narrative,meps_status,dominant_refrigerant,key_challenge,source,stats'
       ),
-      safeFetch<KigaliCountryOverride>(url, key, 'kigali_country_schedule_overrides', 'country_code,group_type'),
+      safeFetch<KigaliCountryOverride>(url, key, 'kigali_country_schedule_overrides',
+        'country_code,group_type,freeze_year,step1_year,step1_pct,step2_year,step2_pct,step3_year,step3_pct,step4_year,step4_pct,step5_year,step5_pct,notes'),
       safeFetch<AccessCountryPct>(url, key, 'access_country_pct', 'country_code,country_name,national_pop,total_at_risk,pct_at_risk,female_at_risk,male_at_risk,year'),
       safeFetch<MepsTimelineRecord>(
         url,

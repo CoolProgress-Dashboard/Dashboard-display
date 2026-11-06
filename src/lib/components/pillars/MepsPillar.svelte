@@ -1273,10 +1273,14 @@
       <span class="meps-csp-sub">Explore its MEPS status and energy efficiency policy details</span>
     </div>
 
+    <!-- DATA: Country x appliance lookup -->
+    <div class="meps-level-wrapper">
+      <MepsLookup {mepsData} {mepsTimeline} />
+    </div>
+
     <!-- DATA: MEPS Stringency Chart -->
     <div class="meps-level-wrapper">
       <MepsLevelChart {mepsTimeline} {mepsLevels} />
-      <MepsLookup {mepsData} {mepsTimeline} />
       <p class="meps-data-disclaimer"><i class="fa-solid fa-circle-info"></i> All values source-verified against their legal instruments, July 2026. See the methodology for conversion equations and the full audit trail.</p>
     </div>
 
