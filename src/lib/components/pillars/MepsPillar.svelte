@@ -14,6 +14,7 @@
   import MepsByRegionChart from '$lib/components/charts/MepsByRegionChart.svelte';
   import MepsEquipmentChart from '$lib/components/charts/MepsEquipmentChart.svelte';
   import PeakLoadChart from '$lib/components/charts/PeakLoadChart.svelte';
+  import GlobalInverterShareChart from '$lib/components/charts/GlobalInverterShareChart.svelte';
   import type { Meps, Country, MepsTimelineRecord, MepsLevelRecord, PeakLoadRecord } from '$lib/services/dashboard-types';
 
   export let active: boolean = false;
@@ -112,6 +113,7 @@
     let mepsRegionFilter = '';
     let mepsEquipmentTypes: string[] = [];
     let selectedMepsCountry = '';
+    const EQUIP_LABELS: Record<string, string> = { 'Air Conditioning': 'Air conditioners', 'Domestic Refrigeration': 'Refrigerators', 'Fans': 'Fans' };
     let mepsMapSvg: any = null;
 
     // ---- ECharts instance registry ----
@@ -365,9 +367,7 @@
       const equipPill = document.getElementById('meps-meta-equipment');
       if (regionPill) regionPill.innerHTML = `<i class="fa-solid fa-earth-americas"></i> ${mepsRegionFilter || 'All Regions'}`;
       if (equipPill) {
-        const activeEquip = mepsEquipmentTypes.length;
-        const totalEquip = 3;
-        const equipText = activeEquip === 0 || activeEquip === totalEquip ? 'All Equipment' : `${activeEquip}/${totalEquip} Equipment`;
+        const equipText = EQUIP_LABELS[mepsEquipmentTypes[0]] ?? mepsEquipmentTypes[0] ?? '';
         equipPill.innerHTML = `<i class="fa-solid fa-cogs"></i> ${equipText}`;
       }
       updateMepsFilterStatusBar();
@@ -378,9 +378,7 @@
       const equipTag = document.getElementById('meps-filter-equipment');
       if (regionTag) regionTag.innerHTML = `<i class="fa-solid fa-earth-americas"></i> ${mepsRegionFilter || 'All Regions'}`;
       if (equipTag) {
-        const activeEquip = mepsEquipmentTypes.length;
-        const totalEquip = 3;
-        const equipText = activeEquip === 0 || activeEquip === totalEquip ? 'All Equipment' : `${activeEquip}/${totalEquip} Equipment`;
+        const equipText = EQUIP_LABELS[mepsEquipmentTypes[0]] ?? mepsEquipmentTypes[0] ?? '';
         equipTag.innerHTML = `<i class="fa-solid fa-cogs"></i> ${equipText}`;
       }
       const statusTitle = document.getElementById('meps-status-title');
@@ -436,8 +434,7 @@
               <span style="font-size:0.75rem;font-weight:500;color:#64748b;background:#f1f5f9;padding:0.15rem 0.5rem;border-radius:999px;">${country.region || ''}</span>
             </div>
             <div style="margin-top:0.25rem;display:flex;align-items:center;gap:0.5rem;">
-              <span style="font-size:0.8rem;font-weight:700;color:${statusColor};background:${statusColor}18;padding:0.15rem 0.6rem;border-radius:999px;border:1px solid ${statusColor}30;">${status.label}</span>
-              <span style="font-size:0.78rem;color:#64748b;">${allRecords.length} ${allRecords.length === 1 ? 'policy' : 'policies'} on record</span>
+              <span style="font-size:0.8rem;font-weight:700;color:${statusColor};background:${statusColor}18;padding:0.15rem 0.6rem;border-radius:999px;border:1px solid ${statusColor}30;">${EQUIP_LABELS[mepsEquipmentTypes[0]] ?? ''}: ${status.label}</span>
             </div>
           </div>
         </div>
@@ -462,11 +459,10 @@
             <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
               <i class="fa-solid ${icon}" style="color:${color};font-size:0.9rem;"></i>
               <span style="font-weight:700;font-size:0.9rem;color:#0f172a;">${et}</span>
-              <span style="margin-left:auto;font-size:0.72rem;color:#64748b;background:#f1f5f9;padding:1px 7px;border-radius:10px;">${appRecs.length}</span>
             </div>
             <div style="display:flex;gap:0.4rem;margin-bottom:0.5rem;flex-wrap:wrap;">
-              ${mepsR.length ? `<span style="font-size:0.7rem;background:#EBF4EE;color:#2D7D5A;padding:2px 7px;border-radius:4px;font-weight:600;">${mepsR.length} MEPS</span>` : ''}
-              ${labelsR.length ? `<span style="font-size:0.7rem;background:#fef3d0;color:#D4A843;padding:2px 7px;border-radius:4px;font-weight:600;">${labelsR.length} Labels</span>` : ''}
+              ${mepsR.length ? `<span style="font-size:0.7rem;background:#EBF4EE;color:#2D7D5A;padding:2px 7px;border-radius:4px;font-weight:600;">MEPS</span>` : ''}
+              ${labelsR.length ? `<span style="font-size:0.7rem;background:#fef3d0;color:#D4A843;padding:2px 7px;border-radius:4px;font-weight:600;">Labels</span>` : ''}
               ${firstAdopted ? `<span style="font-size:0.7rem;color:#94a3b8;">Since ${firstAdopted}</span>` : ''}
             </div>`;
           appRecs.forEach(r => {
@@ -751,45 +747,32 @@
         });
       }
 
+      // One appliance at a time: the map never combines appliance types
       const toggleContainer = document.getElementById('meps-equipment-toggles');
       if (toggleContainer) {
         const equipTypes = ['Air Conditioning', 'Domestic Refrigeration', 'Fans'];
-        mepsEquipmentTypes = [...equipTypes];
+        mepsEquipmentTypes = [equipTypes[0]];
         toggleContainer.innerHTML = '';
         equipTypes.forEach(et => {
           const btn = document.createElement('button');
-          btn.className = 'toggle-btn active';
+          const isActive = et === equipTypes[0];
+          btn.className = isActive ? 'toggle-btn active' : 'toggle-btn';
           btn.type = 'button';
           btn.dataset.equipment = et;
-          btn.textContent = et;
+          btn.setAttribute('aria-pressed', String(isActive));
+          btn.textContent = EQUIP_LABELS[et] ?? et;
           btn.addEventListener('click', () => {
-            btn.classList.toggle('active');
-            if (btn.classList.contains('active')) {
-              if (!mepsEquipmentTypes.includes(et)) mepsEquipmentTypes.push(et);
-            } else {
-              mepsEquipmentTypes = mepsEquipmentTypes.filter(e => e !== et);
-            }
+            if (mepsEquipmentTypes[0] === et) return;
+            mepsEquipmentTypes = [et];
+            toggleContainer.querySelectorAll<HTMLButtonElement>('.toggle-btn').forEach(b => {
+              const on = b.dataset.equipment === et;
+              b.classList.toggle('active', on);
+              b.setAttribute('aria-pressed', String(on));
+            });
             updateMepsView();
+            if (selectedMepsCountry) updateMepsCountryDetail(selectedMepsCountry);
           });
           toggleContainer.appendChild(btn);
-        });
-      }
-
-      // "Select all" / "Select none" convenience buttons
-      const mepsEquipAll = document.getElementById('meps-equip-all');
-      if (mepsEquipAll) {
-        mepsEquipAll.addEventListener('click', () => {
-          mepsEquipmentTypes = ['Air Conditioning', 'Domestic Refrigeration', 'Fans'];
-          document.querySelectorAll<HTMLButtonElement>('#meps-equipment-toggles .toggle-btn').forEach(btn => btn.classList.add('active'));
-          updateMepsView();
-        });
-      }
-      const mepsEquipNone = document.getElementById('meps-equip-none');
-      if (mepsEquipNone) {
-        mepsEquipNone.addEventListener('click', () => {
-          mepsEquipmentTypes = [];
-          document.querySelectorAll<HTMLButtonElement>('#meps-equipment-toggles .toggle-btn').forEach(btn => btn.classList.remove('active'));
-          updateMepsView();
         });
       }
     }
@@ -853,24 +836,13 @@
             const code = countryIdToCode[normalizeId(d.id)];
             const country = countries.find(c => c.country_code === code);
             const status = getMepsStatus(code);
-            const allRecs = mepsData.filter(m => m.country_code === code);
-            const mepsRecs = allRecs.filter(r => isMepsRecord(r));
-            const labelRecs = allRecs.filter(r => isLabelRecord(r));
-            const equips = [...new Set(allRecs.map(m => m.equipment_type).filter(Boolean))];
-            const updateYears = allRecs.map(r => r.year_revised || r.year_adopted).filter(Boolean) as number[];
+            const recs = getMapFilteredMeps().filter(m => m.country_code === code);
+            const updateYears = recs.map(r => r.year_revised || r.year_adopted).filter(Boolean) as number[];
             const lastUpdate = updateYears.length ? Math.max(...updateYears) : null;
             let html = `<strong style="font-size:1.05em;color:#0f2a47">${country?.country_name || code || 'Unknown'}</strong>`
+              + `<br><span style="font-size:0.8em;color:#64748b">${EQUIP_LABELS[mepsEquipmentTypes[0]] ?? ''}</span>`
               + `<br><span style="display:inline-flex;align-items:center;gap:5px;font-weight:700;color:#0f2a47"><span style="width:9px;height:9px;border-radius:50%;background:${getMepsColor(status.level)};display:inline-block;border:1px solid rgba(0,0,0,0.2)"></span>${status.label}</span>`;
             if (lastUpdate) html += `<br><span style="font-size:1.25em;font-weight:800;color:#0f2a47">Last updated: ${lastUpdate}</span>`;
-            if (allRecs.length > 0) {
-              html += `<br><span style="color:#334155;font-size:0.85em">`;
-              if (mepsRecs.length > 0) html += `MEPS policies: ${mepsRecs.length}`;
-              if (mepsRecs.length > 0 && labelRecs.length > 0) html += ` | `;
-              if (labelRecs.length > 0) html += `Labelling policies: ${labelRecs.length}`;
-              html += `</span>`;
-              if (equips.length > 0) html += `<br><span style="font-size:0.8em;color:#334155">${equips.join(', ')}</span>`;
-              html += `<br><span style="font-size:0.72em;color:#64748b">Counts = policy records in the CLASP database, one per appliance and requirement type</span>`;
-            }
             if (tooltip) {
               tooltip.innerHTML = html;
               (tooltip as any).style.opacity = 1;
@@ -1075,6 +1047,8 @@
       <p class="meps-body-text">For decades, the standard room air conditioner operated like a simple light switch: either 100% ON or OFF. When your room got too warm, the compressor would kick in with a massive surge of power, blast cold air until the target was reached, and then abruptly shut down. This "fixed-speed" cycle is notoriously inefficient — much like driving a car by flooring it and then slamming on the brakes repeatedly.</p>
       <p class="meps-body-text">The Inverter Revolution changed the game. Instead of a switch, an inverter acts like a dimmer. It uses a variable-speed drive to slow down or speed up the compressor based on the actual cooling need. Once the room is cool, the inverter keeps the compressor running at a low, ultra-efficient hum.</p>
 
+      <GlobalInverterShareChart />
+
       <div class="meps-inverter-stat-highlight">
         <div class="meps-inverter-stat-value">25% to 30%</div>
         <div class="meps-inverter-stat-label">energy savings over standard fixed-speed models</div>
@@ -1252,7 +1226,7 @@
         <!-- Description highlight box -->
         <div class="map-view-description">
           <i class="fa-solid fa-sliders" style="margin-right: 0.5rem;"></i>
-          Choose to see MEPS and label coverage for Refrigerators, Split ACs and Fans.
+          Choose one appliance at a time: air conditioners, refrigerators or fans.
         </div>
         <!-- Title -->
         <div class="combined-map-header-top">
@@ -1276,7 +1250,7 @@
         </div>
         <div class="meps-map-metric-note">
           <i class="fa-solid fa-circle-info"></i>
-          Hover counts show the number of policy records per country in the CLASP Policy Resource Center database (one record per appliance and requirement type). They indicate policy coverage, not stringency; see the MEPS Stringency chart below for levels.
+          The map shows whether a country has MEPS or labels for the selected appliance (CLASP Policy Resource Center). It shows coverage, not stringency; see the MEPS Stringency chart below for levels.
         </div>
         <div class="progress-bar" id="meps-progress">
           <span class="progress-segment" id="meps-progress-both" title="MEPS & Labels" style="background:#4A9088"></span>
