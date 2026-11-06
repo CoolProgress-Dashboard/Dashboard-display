@@ -9,23 +9,15 @@
   export let active = true;
   export let onPillarInfoClick: (() => void) | null = null;
 
-  // Reference GWP100 values (IPCC AR6) used to derive average GWP from the JRAIA classes
-  const GWP_REF = [
-    { code: 'R-22', cls: 'HCFC', gwp: 1960 },
-    { code: 'R-410A', cls: 'HFC', gwp: 2256 },
-    { code: 'R-32', cls: 'A2L', gwp: 771 },
-    { code: 'R-290', cls: 'reference only', gwp: 0.02 },
-  ];
-
-  // JRAIA regions in alphabetical order (display order is never a ranking)
+  // JRAIA regions grouped by geography, Asia first (display order is never a ranking)
   const REGIONS: { code: string; label: string; note?: string }[] = [
     { code: 'AFR',          label: 'Africa' },
-    { code: 'ASIA_EX_JPCN', label: 'Rest of Asia',
-      note: 'JRAIA reports this region as "Asia (excl. Japan/China)": the Asian markets other than Japan and China, combined. JRAIA does not list the countries. Japan and China have their own cards.' },
     { code: 'CHN',          label: 'China',
       note: "Context: China's room AC efficiency standard (MEPS) GB 21455-2019 (SAMR) took effect on 1 July 2020. The timing coincides with the rise; this chart alone does not show that the MEPS caused it. Other public sources (e.g. IIR) report different China figures." },
-    { code: 'EUR',          label: 'Europe' },
     { code: 'JPN',          label: 'Japan' },
+    { code: 'ASIA_EX_JPCN', label: 'Rest of Asia',
+      note: 'JRAIA reports this region as "Asia (excl. Japan/China)": the Asian markets other than Japan and China, combined. JRAIA does not list the countries. Japan and China have their own cards.' },
+    { code: 'EUR',          label: 'Europe' },
     { code: 'LAC',          label: 'Latin America' },
     { code: 'MEA',          label: 'Middle East' },
     { code: 'NAM',          label: 'North America' },
@@ -35,10 +27,10 @@
 
   // Refrigerant classes as JRAIA reports them; "≈" names follow the average GWP mapping
   const CLASSES = [
-    { key: 'hcfc_pct',   name: 'HCFC ≈ R-22 (GWP 1,960)',            color: CAT[3] },
-    { key: 'hfc_pct',    name: 'HFC excl. A2L ≈ R-410A (GWP 2,256)', color: CAT[2] },
-    { key: 'a2l_pct',    name: 'A2L ≈ R-32 (GWP 771)',               color: CAT[0] },
-    { key: 'others_pct', name: 'Others',                            color: CAT[5] },
+    { key: 'hcfc_pct',   name: 'HCFC ≈ R-22 · 1,960',  color: CAT[3] },
+    { key: 'hfc_pct',    name: 'HFC ≈ R-410A · 2,256', color: CAT[2] },
+    { key: 'a2l_pct',    name: 'A2L ≈ R-32 · 771',     color: CAT[0] },
+    { key: 'others_pct', name: 'Others',               color: CAT[5] },
   ] as const;
   type ClassKey = (typeof CLASSES)[number]['key'];
   type Shares = Record<ClassKey, number>;
@@ -104,7 +96,7 @@
 
   // ── REGION BY REGION: each region on its own, both topics ─────────────────
   // Objective: show how each region moved over time, without comparing regions in one chart.
-  // Misread: regions are not ranked (alphabetical); gaps are not zeros; 2025 (JRAIA estimate) is held back.
+  // Misread: regions are not ranked (grouped by geography); gaps are not zeros; 2025 (JRAIA estimate) is held back.
   // Proof: JRAIA RAC split-type shares for that region only.
   $: regionData = REGIONS.map(r => {
     const inv = published.filter(x => x.region_code === r.code && x.inverter_pct != null).sort((a, b) => a.year - b.year);
@@ -121,7 +113,6 @@
   });
   type RegionData = (typeof regionData)[number];
   $: shown = regionData.filter(r => r.inv.length || r.mix.length);
-  $: notShown = regionData.filter(r => !r.inv.length && !r.mix.length);
 
   // ── ECharts: one instance per chart element via a Svelte action ─────────
   let echartsMod: Promise<any> | null = null;
@@ -149,21 +140,21 @@
   };
   const axisCat = (data: string[]) => ({
     type: 'category', data,
-    axisLine: { lineStyle: { color: CHROME.AXIS_LINE } }, axisTick: { show: false },
-    axisLabel: { color: CHROME.AXIS_LABEL, fontSize: 12, fontWeight: 600, interval: 0 },
+    axisLine: { lineStyle: { color: '#cbd5e1' } }, axisTick: { show: false },
+    axisLabel: { color: '#334155', fontSize: 12, fontWeight: 700, interval: 0, margin: 10 },
   });
   const axisPct = {
-    type: 'value', min: 0, max: 100,
-    splitLine: { lineStyle: { color: CHROME.SPLIT_LINE } },
-    axisLabel: { color: CHROME.AXIS_LABEL, fontSize: 12, formatter: (v: number) => v + '%' },
+    type: 'value', min: 0, max: 100, interval: 25,
+    splitLine: { lineStyle: { color: '#eef2f6', type: 'dashed' } },
+    axisLabel: { color: '#94a3b8', fontSize: 11, formatter: (v: number) => v + '%' },
   };
   const segLabel = (prefix = '', color = '#fff') => ({
     show: true, color, fontSize: 11, fontWeight: 700,
     formatter: (p: any) => (p.value >= 7 ? `${prefix ? prefix + ' ' : ''}${Math.round(p.value)}%` : ''),
   });
   const legend = (names: string[]) => ({
-    top: 0, left: 0, data: names, icon: 'roundRect', itemWidth: 12, itemHeight: 8,
-    textStyle: { color: CHROME.AXIS_LABEL, fontSize: 11 },
+    top: 0, left: 0, data: names, icon: 'circle', itemWidth: 8, itemHeight: 8, itemGap: 12,
+    textStyle: { color: '#475569', fontSize: 11 },
   });
   const dashed = { borderColor: '#0f172a', borderWidth: 1.5, borderType: 'dashed', opacity: 0.85 };
   const swatch = (c: string) => `<span style="display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;background:${c}"></span>`;
@@ -180,13 +171,13 @@
         },
       },
       legend: legend(['Inverter', 'Fixed speed']),
-      grid: { left: 4, right: 4, top: 32, bottom: 4, containLabel: true },
+      grid: { left: 4, right: 4, top: 56, bottom: 4, containLabel: true },
       xAxis: axisCat(points.map(p => p.label)),
       yAxis: axisPct,
       series: [
-        { name: 'Inverter', type: 'bar', stack: 'inv', barMaxWidth: 46, itemStyle: { color: INVERTER }, label: segLabel(),
+        { name: 'Inverter', type: 'bar', stack: 'inv', barWidth: '46%', barMaxWidth: 52, itemStyle: { color: INVERTER, borderRadius: [0, 0, 4, 4] }, label: segLabel(),
           data: points.map(p => ({ value: p.inv, itemStyle: p.est ? dashed : undefined })) },
-        { name: 'Fixed speed', type: 'bar', stack: 'inv', barMaxWidth: 46, itemStyle: { color: FIXED }, label: segLabel('', '#0f172a'),
+        { name: 'Fixed speed', type: 'bar', stack: 'inv', barWidth: '46%', barMaxWidth: 52, itemStyle: { color: FIXED, borderRadius: [4, 4, 0, 0] }, label: { show: false },
           data: points.map(p => ({ value: 100 - p.inv, itemStyle: p.est ? dashed : undefined })) },
       ],
     };
@@ -208,9 +199,9 @@
       xAxis: axisCat(points.map(p => p.label)),
       yAxis: axisPct,
       series: CLASSES.map(c => ({
-        name: c.name, type: 'bar', stack: 'mix', barMaxWidth: 46,
+        name: c.name, type: 'bar', stack: 'mix', barWidth: '46%', barMaxWidth: 52,
         itemStyle: { color: c.color },
-        label: segLabel(),
+        label: c.key === 'a2l_pct' || c.key === 'hfc_pct' ? segLabel() : { show: false },
         data: points.map(p => ({ value: p.shares[c.key], itemStyle: p.est ? dashed : undefined })),
       })),
     };
@@ -223,19 +214,19 @@
         ...tooltipBase, trigger: 'axis', axisPointer: { type: 'shadow' },
         formatter: (ps: any[]) => `<b>${points[ps[0].dataIndex].year}</b><br/>Average GWP100 (AR6): <b>${fmt(ps[0].value)}</b>`,
       },
-      grid: { left: 4, right: 4, top: 36, bottom: 4, containLabel: true },
+      grid: { left: 4, right: 4, top: 56, bottom: 4, containLabel: true },
       xAxis: axisCat(points.map(p => String(p.year))),
       yAxis: {
-        type: 'value', min: 0, name: 'Average GWP100 (AR6)', nameTextStyle: { color: CHROME.TEXT_SECONDARY, fontSize: 11, align: 'left' },
-        splitLine: { lineStyle: { color: CHROME.SPLIT_LINE } }, axisLabel: { color: CHROME.AXIS_LABEL, fontSize: 12, formatter: (v: number) => fmt(v) },
+        type: 'value', min: 0, max: 1500, interval: 500,
+        splitLine: { lineStyle: { color: '#eef2f6', type: 'dashed' } }, axisLabel: { color: '#94a3b8', fontSize: 11, formatter: (v: number) => fmt(v) },
       },
       series: [{
-        type: 'bar', barMaxWidth: 46, itemStyle: { color: AVG_GWP, borderRadius: [3, 3, 0, 0] },
+        type: 'bar', barWidth: '46%', barMaxWidth: 52, itemStyle: { color: AVG_GWP, borderRadius: [4, 4, 0, 0] },
         label: { show: true, position: 'insideTop', color: '#fff', fontSize: 12, fontWeight: 800, formatter: (p: any) => fmt(p.value) },
         data: vals,
         markLine: change == null ? undefined : {
-          silent: true, symbol: ['none', 'arrow'], lineStyle: { type: 'dashed', color: '#0f172a' },
-          label: { position: 'middle', formatter: `${change > 0 ? '+' : ''}${fmt(change, 1)}%`, color: '#0f172a', fontWeight: 800, fontSize: 12, backgroundColor: '#fff', padding: [2, 4] },
+          silent: true, symbol: ['none', 'arrow'], symbolSize: 7, lineStyle: { type: 'dashed', color: '#475569', width: 1.2 },
+          label: { position: 'middle', formatter: `${change > 0 ? '+' : ''}${fmt(change, 1)}%`, color: '#fff', fontWeight: 800, fontSize: 11, backgroundColor: '#334155', borderRadius: 999, padding: [3, 8] },
           data: [[{ coord: [0, vals[0]] }, { coord: [vals.length - 1, vals[vals.length - 1]] }]],
         },
       }],
@@ -290,36 +281,23 @@
           All three charts use the same {gRegions.length} regions in every year, weighted by each region's air conditioner demand, so the years compare like for like.
           This is not world coverage: Africa and Latin America are not published by JRAIA.
         </p>
-        <span class="pg-scope-badge"><i class="fa-solid fa-wind"></i> Room AC (RAC) split-type sales; {gRegions.length} JRAIA regions, weighted by AC demand</span>
+        <span class="pg-scope">Room AC (RAC) split-type sales; {gRegions.length} JRAIA regions, weighted by AC demand</span>
 
-        <div class="pg-chart-grid">
+        <div class="pg-chart-grid pg-g3">
           <div class="pg-chart-card">
-            <h3 class="pg-chart-title">Inverter share of new room AC sales</h3>
+            <h3 class="pg-chart-title">Inverter share</h3>
+            <p class="pg-chart-sub">Share of new split room AC units sold</p>
             <div class="pg-chart" use:chart={gInvOpt}></div>
           </div>
           <div class="pg-chart-card">
-            <h3 class="pg-chart-title">Demand weighted average refrigerant GWP</h3>
+            <h3 class="pg-chart-title">Average refrigerant GWP</h3>
+            <p class="pg-chart-sub">Demand weighted, GWP100 (IPCC AR6)</p>
             <div class="pg-chart" use:chart={gGwpOpt}></div>
           </div>
-        </div>
-        <div class="pg-chart-grid pg-c3">
           <div class="pg-chart-card">
-            <h3 class="pg-chart-title">Refrigerant class share of new room AC sales</h3>
+            <h3 class="pg-chart-title">Refrigerant class mix</h3>
+            <p class="pg-chart-sub">Share of units by class; legend shows the GWP used</p>
             <div class="pg-chart" use:chart={gMixOpt}></div>
-          </div>
-          <div class="pg-chart-card pg-ref-card">
-            <table class="pg-ref">
-              <caption>Reference GWP100 (IPCC AR6)</caption>
-              <tbody>
-                {#each GWP_REF as g}
-                  <tr><th scope="row">{g.code} <span>({g.cls})</span></th><td>{fmt(g.gwp, g.gwp < 1 ? 2 : 0)}</td></tr>
-                {/each}
-              </tbody>
-            </table>
-            <p class="pg-foot">
-              JRAIA publishes refrigerant classes (A2L, HFC, HCFC, others), not named gases. The "≈" names follow the mapping used to derive
-              average GWP. R-290 is shown in the reference table only; JRAIA does not publish an R-290 share.
-            </p>
           </div>
         </div>
         <p class="pg-source">
@@ -335,12 +313,12 @@
         <span class="pg-eyebrow">Region by region</span>
         <h2 class="pg-section-title">How each region moved, on its own</h2>
         <p class="pg-body-text">
-          Each region has its own charts for inverter share and refrigerant mix. Regions are listed alphabetically and are not compared
+          Each region has its own charts for inverter share and refrigerant mix. Regions are grouped by geography, not ranked, and are not compared
           in one chart, because years, coverage and market structure differ.
         </p>
         <nav class="pg-region-nav" aria-label="Jump to region">
           {#each shown as r (r.code)}
-            <a href="#region-{r.code}" class="pg-chip">{r.label}</a>
+            <a href="#region-{r.code}">{r.label}</a>
           {/each}
         </nav>
       </div>
@@ -349,23 +327,17 @@
         <div class="chapter-card pg-region" id="region-{r.code}" class:revealed>
           <div class="pg-region-head">
             <h2 class="pg-region-title">{r.label}</h2>
-            <span class="pg-scope-badge"><i class="fa-solid fa-wind"></i> Room AC (RAC) split-type sales share, {r.label}</span>
+            <span class="pg-scope">Room AC (RAC) split-type sales share, {r.label}</span>
           </div>
-          <ul class="pg-facts">
-            {#if r.invFrom && r.invTo}
-              <li>Inverter share: <b>{fmt(num(r.invFrom.inverter_pct))}%</b> in {r.invFrom.year}, <b>{fmt(num(r.invTo.inverter_pct))}%</b> in {r.invTo.year}</li>
-            {/if}
-            {#if r.gwpFrom && r.gwpTo}
-              <li>Average refrigerant GWP: <b>{fmt(num(r.gwpFrom.avg_gwp_ar6))}</b> in {r.gwpFrom.year}, <b>{fmt(num(r.gwpTo.avg_gwp_ar6))}</b> in {r.gwpTo.year}</li>
-            {/if}
-          </ul>
           <div class="pg-chart-grid">
             <div class="pg-chart-card">
-              <h3 class="pg-chart-title">Inverter share of new sales</h3>
+              <h3 class="pg-chart-title">Inverter share</h3>
+              <p class="pg-chart-sub">Share of new split room AC units sold</p>
               <div class="pg-chart pg-chart-region" use:chart={regionInvOpt(r)}></div>
             </div>
             <div class="pg-chart-card">
-              <h3 class="pg-chart-title">Refrigerant class share of new sales</h3>
+              <h3 class="pg-chart-title">Refrigerant class mix</h3>
+              <p class="pg-chart-sub">Share of units by class; legend shows the GWP used</p>
               <div class="pg-chart pg-chart-region" use:chart={regionMixOpt(r)}></div>
               {#if r.mix.some(x => x.avg_gwp_ar6 != null)}
                 <dl class="pg-gwp-strip">
@@ -377,7 +349,7 @@
               {/if}
             </div>
           </div>
-          {#if r.note}<p class="pg-context-note"><i class="fa-solid fa-circle-info"></i> {r.note}</p>{/if}
+          {#if r.note}<p class="pg-context-note">{r.note}</p>{/if}
           <p class="pg-source">
             Source: {SOURCE} Editions: {r.editions.join(', ')}.
             No JRAIA data for 2018 to 2020; those years are left out, not interpolated. The 2017 edition does not separate A2L from HFC, so the refrigerant chart starts in 2021.
@@ -447,20 +419,7 @@
     margin-bottom: 16px;
   }
 
-  .pg-scope-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: #475569;
-    background: #f1f5f9;
-    border: 1px solid #cbd5e1;
-    border-radius: 999px;
-    padding: 0.2rem 0.6rem;
-    margin-bottom: 1rem;
-  }
-  .pg-scope-badge i { font-size: 0.6rem; color: #64748b; }
+  .pg-scope { display: block; font-size: 0.8rem; color: #64748b; margin: 0 0 1.25rem; }
 
   .pg-section-title {
     font-size: 1.9rem;
@@ -481,62 +440,53 @@
   }
   .pg-muted { color: #64748b; }
 
-  .pg-foot { font-size: 0.8rem; color: #64748b; margin: 0.6rem 0 0; line-height: 1.5; }
   .pg-source {
     font-size: 0.78rem;
     color: #64748b;
     line-height: 1.55;
     margin: 0.9rem 0 0;
     padding-top: 0.6rem;
-    border-top: 1px solid #f1f5f9;
   }
 
   /* ── Charts ─────────────────────────────────── */
-  .pg-chart-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem; }
-  .pg-c3 { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); }
-  .pg-chart-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1rem; min-width: 0; }
-  .pg-ref-card { align-self: start; }
-  .pg-chart-title { font-size: 0.95rem; font-weight: 800; color: #0f172a; margin: 0 0 0.25rem; }
-  .pg-chart { width: 100%; height: 340px; }
-  .pg-chart-region { height: 300px; }
+  /* Charts sit on the page; a thin vertical rule separates neighbours instead of boxes */
+  .pg-chart-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 0; margin-bottom: 0.75rem; }
+  .pg-g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pg-chart-card { min-width: 0; padding: 0 2rem; border-left: 1px solid #dbe2ea; }
+  .pg-chart-grid:not(.pg-g3) > .pg-chart-card:nth-child(2n + 1),
+  .pg-g3 > .pg-chart-card:nth-child(3n + 1) { padding-left: 0; border-left: none; }
+  .pg-chart-grid:not(.pg-g3) > .pg-chart-card:nth-child(2n),
+  .pg-g3 > .pg-chart-card:nth-child(3n) { padding-right: 0; }
+  .pg-chart-title { font-size: 1rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.01em; }
+  .pg-chart-title::before {
+    content: ''; display: block; width: 28px; height: 3px; border-radius: 2px; background: #15803d; margin-bottom: 0.5rem;
+  }
+  .pg-chart-sub { font-size: 0.78rem; color: #64748b; margin: 0.1rem 0 0.25rem; }
+  .pg-chart { width: 100%; height: 320px; }
+  .pg-chart-region { height: 290px; }
 
-  .pg-ref { border-collapse: collapse; font-size: 0.85rem; }
-  .pg-ref caption { text-align: left; font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem; }
-  .pg-ref th { text-align: left; font-weight: 800; color: #0f172a; padding: 0.3rem 1.5rem 0.3rem 0; border-top: 1px solid #f1f5f9; }
-  .pg-ref th span { font-weight: 500; color: #64748b; }
-  .pg-ref td { padding: 0.3rem 0; border-top: 1px solid #f1f5f9; font-variant-numeric: tabular-nums; }
+
 
   /* ── Region cards ───────────────────────────── */
-  .pg-region-nav { display: flex; flex-wrap: wrap; gap: 0.45rem; }
-  .pg-chip {
-    display: inline-flex; align-items: center;
-    font-size: 0.8rem; font-weight: 700; color: #0f172a; text-decoration: none;
-    background: #fff; border: 1.5px solid #cbd5e1; border-radius: 999px;
-    padding: 0.32rem 0.85rem; transition: border-color 0.2s, color 0.2s;
-  }
-  .pg-chip:hover, .pg-chip:focus-visible { border-color: #15803d; color: #15803d; }
+  .pg-region-nav { display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; }
+  .pg-region-nav a { font-size: 0.9rem; font-weight: 700; color: #15803d; text-decoration: none; }
+  .pg-region-nav a:hover, .pg-region-nav a:focus-visible { text-decoration: underline; }
 
   .pg-region { scroll-margin-top: 80px; }
   .pg-region-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
-  .pg-region-head .pg-scope-badge { margin-bottom: 0; }
-  .pg-region-title { font-size: 1.5rem; font-weight: 900; color: #0f172a; margin: 0; letter-spacing: -0.02em; }
-  .pg-facts { list-style: none; padding: 0; margin: 0 0 1rem; display: flex; flex-wrap: wrap; gap: 0.4rem 1.75rem; font-size: 0.95rem; color: #1e293b; }
-  .pg-facts b { font-variant-numeric: tabular-nums; }
+  .pg-region-head .pg-scope { margin: 0; }
+  .pg-region-title { font-size: 1.6rem; font-weight: 900; color: #0f172a; margin: 0; letter-spacing: -0.02em; }
 
   .pg-gwp-strip {
     display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 1rem;
-    margin: 0.5rem 0 0; padding-top: 0.6rem; border-top: 1px solid #f1f5f9; font-size: 0.8rem;
+    margin: 0.25rem 0 0; font-size: 0.8rem;
   }
   .pg-gwp-strip dt { font-weight: 800; color: #475569; }
   .pg-gwp-strip dd { margin: 0; display: inline-flex; gap: 0.3rem; }
   .pg-gwp-strip dd span { color: #64748b; }
   .pg-gwp-strip dd b { color: #0f172a; font-variant-numeric: tabular-nums; }
 
-  .pg-context-note {
-    font-size: 0.85rem; color: #334155; line-height: 1.55; margin: 0;
-    padding: 0.6rem 0.8rem; background: #f8fafc; border-left: 3px solid #15803d; border-radius: 0 4px 4px 0;
-  }
-  .pg-context-note i { color: #15803d; margin-right: 0.3rem; }
+  .pg-context-note { font-size: 0.85rem; color: #475569; line-height: 1.55; margin: 0.25rem 0 0; max-width: 900px; font-style: italic; }
 
   /* ── Notes ──────────────────────────────────── */
   .pg-notes { display: flex; flex-direction: column; gap: 0.25rem; }
@@ -559,26 +509,23 @@
     place-items: center;
     font-size: 0.75rem;
     color: #15803d;
-    background: rgba(21, 128, 61, 0.1);
+    background: none;
     margin-top: 0.1rem;
   }
 
-  .pg-disclaimer {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.78rem;
-    color: #64748b;
-    font-style: italic;
-    margin: 0.75rem 0 0;
-    padding: 0.5rem 0.75rem;
-    background: #f8fafc;
-    border-left: 3px solid #cbd5e1;
-    border-radius: 0 4px 4px 0;
+  .pg-disclaimer { display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: #64748b; font-style: italic; margin: 0.75rem 0 0; }
+
+  @media (max-width: 1250px) {
+    .pg-g3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .pg-g3 > .pg-chart-card { padding: 0 2rem; border-left: 1px solid #dbe2ea; }
+    .pg-g3 > .pg-chart-card:nth-child(2n + 1) { padding-left: 0; border-left: none; }
+    .pg-g3 > .pg-chart-card:nth-child(2n) { padding-right: 0; }
   }
 
   @media (max-width: 900px) {
-    .pg-chart-grid, .pg-c3 { grid-template-columns: 1fr; }
+    .pg-chart-grid, .pg-g3 { grid-template-columns: 1fr; }
+    .pg-chart-grid > .pg-chart-card { padding: 1.25rem 0 0 !important; border-left: none !important; border-top: 1px solid #dbe2ea; }
+    .pg-chart-grid > .pg-chart-card:first-child { padding-top: 0 !important; border-top: none; }
   }
 
   @media (max-width: 768px) {
